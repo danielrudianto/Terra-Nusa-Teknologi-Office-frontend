@@ -67,14 +67,18 @@ export interface IRekapPO {
 
 /** Baris barang/jasa milik sebuah dokumen. */
 export interface IRekapItem {
+  /** Dipakai mencocokkan baris anak dengan induknya. */
+  id?: number | null;
   purchaseOrderID: number;
   task: string | null;
   quantity: number | string;
   price: number | string;
   unit: string | null;
   remarks_1: string | null;
-  remarks_4: string | null;
-  remarks_5: string | null;
+  /** Terisi pada baris mobilisasi/demobilisasi; kosong pada baris biasa. */
+  itemKind?: string | null;
+  /** Baris alat yang biaya ini menempel padanya. */
+  parentItemID?: number | null;
   itemDescription: string | null;
   sku: string | null;
   equipmentName: string | null;
@@ -112,40 +116,35 @@ function namaBarang(it: IRekapItem): string {
 /**
  * Baris sebuah dokumen, TERMASUK mobilisasi dan demobilisasi.
  *
- * Keduanya tersimpan pada baris alatnya (`remarks_4`, `remarks_5`) dan
- * dicetak sebagai baris bernomor tersendiri pada dokumen, agar vendor dapat
- * merujuknya di invoice. Tanpa memunculkannya di sini, penjumlahan baris
- * lebih kecil daripada nilai dokumennya — dan selisihnya tampak seperti
- * kesalahan hitung.
+ * Keduanya kini BARIS SUNGGUHAN, bukan lagi dua angka yang menumpang pada
+ * `remarks_4`/`remarks_5` baris alatnya — sehingga tidak perlu lagi
+ * dimunculkan sendiri di sini; ia datang bersama baris lainnya, sudah
+ * berurutan di bawah induknya.
+ *
+ * Yang masih perlu dikerjakan hanyalah menyebut ALAT mana yang dimobilisasi.
+ * Tanpa itu, rekap proyek berisi deretan baris bernama "Mobilisasi" yang
+ * tidak dapat dibedakan satu sama lain — dan rekap ini justru dibaca untuk
+ * menelusuri ke mana biaya sebuah proyek pergi.
  */
 export function barisRekapDokumen(po: IRekapPO, items: IRekapItem[]): IBaris[] {
+  const namaInduk = new Map<number, string>();
+  for (const it of items) {
+    if (it.id != null && !it.itemKind) namaInduk.set(Number(it.id), namaBarang(it));
+  }
+
   const hasil: IBaris[] = [];
   for (const it of items) {
     if (it.purchaseOrderID !== po.id) continue;
+    const milik =
+      it.itemKind && it.parentItemID != null
+        ? namaInduk.get(Number(it.parentItemID))
+        : null;
     hasil.push({
-      uraian: namaBarang(it),
+      uraian: milik ? `${namaBarang(it)} — ${milik}` : namaBarang(it),
       volume: angka(it.quantity),
       harga: angka(it.price),
       satuan: it.unit || '—',
     });
-    const mob = angka(it.remarks_4);
-    if (mob > 0) {
-      hasil.push({
-        uraian: 'Mobilisasi alat',
-        volume: 1,
-        harga: mob,
-        satuan: 'LS',
-      });
-    }
-    const demob = angka(it.remarks_5);
-    if (demob > 0) {
-      hasil.push({
-        uraian: 'Demobilisasi alat',
-        volume: 1,
-        harga: demob,
-        satuan: 'LS',
-      });
-    }
   }
   return hasil;
 }

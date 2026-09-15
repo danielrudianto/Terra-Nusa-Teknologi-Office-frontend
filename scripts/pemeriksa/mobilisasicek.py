@@ -1,21 +1,28 @@
 """
-Cetak PO-B tanpa memekarkan mobilisasi.
+Cetak PO-B tanpa menamai baris mobilisasi.
 
-Mobilisasi dan demobilisasi menumpang pada `remarks_4` dan `remarks_5` baris
-alatnya, dan dicetak sebagai baris bernomor tersendiri lewat
-`perluasItemMobilisasi`. Yang menjumlah — dokumen maupun pratinjau — menghitung
-`quantity * price` per baris, sehingga keduanya TIDAK ikut selama masih
-menumpang.
+SEBELUMNYA pemeriksa ini menjaga hal lain: mobilisasi menumpang pada
+`remarks_4`/`remarks_5` baris alatnya dan sama sekali BUKAN baris, sehingga
+tiap pemanggilan `printPurchaseOrderB` harus memekarkannya sendiri — dan yang
+lupa menerbitkan dokumen tanpa mobilisasi, bernilai lebih kecil daripada yang
+sudah ditandatangani vendor.
 
-Setiap pemanggilan `printPurchaseOrderB` karena itu harus memekarkan lebih
-dulu, DAN meneruskan `remarks_4` serta `remarks_5` — tanpa keduanya fungsi
-pemekaran tidak menemukan nilainya dan diam-diam tidak memekarkan apa pun.
+Penumpangan itu sudah dibongkar: mobilisasi kini baris sungguhan di
+`purchase_order_items`, dengan `itemKind` dan `parentItemID`. Nilainya ikut
+terjumlah seperti baris lain, dan tidak ada lagi yang dapat lupa memekarkan.
 
-Gejalanya: cetak ulang bernilai lebih kecil daripada dokumen yang sudah
-ditandatangani vendor, dan selisihnya tampak seperti kesalahan hitung pada
-lembar yang seharusnya identik.
+Yang TERSISA untuk dijaga adalah namanya. Yang tersimpan sengaja seadanya —
+"Mobilisasi" — karena nama alatnya ada di baris induknya dan menyalinnya
+berarti dokumen menyimpan nama yang dapat berbeda dari master bila master itu
+diperbaiki. Nama lengkapnya ("Mobilisasi Crane 25T sesuai pada nomor 4")
+disusun `namaiBarisMobilisasi` saat mencetak.
 
-Sudah terjadi pada cetak ulang dari daftar.
+Yang lupa memanggilnya menerbitkan SPK dengan deretan baris bernama
+"Mobilisasi" polos — nilainya benar, totalnya benar, tetapi vendor tidak dapat
+mengetahui alat mana yang dimaksud, pada dokumen yang justru dipakainya untuk
+merujuk baris dalam invoice.
+
+Gejalanya tidak muncul sebagai galat apa pun.
 """
 
 import re
@@ -47,7 +54,7 @@ def periksa(akar: str = FE) -> list[str]:
                         break
             blok = s[m.start():akhir]
 
-            # Yang tidak menyebut `items` mewarisi dari objek lain; pemekaran
+            # Yang tidak menyebut `items` mewarisi dari objek lain; penamaan
             # sudah terjadi di sana.
             if 'items:' not in blok:
                 continue
@@ -56,27 +63,32 @@ def periksa(akar: str = FE) -> list[str]:
             #
             # `printPurchaseOrderB` dipakai juga oleh perangkat lunak (5.1.12),
             # pertanggungan (6.4.2), dan pelatihan (6.5.2) — semuanya jasa,
-            # tanpa alat, tanpa mobilisasi. Menuntut pemekaran di sana hanya
+            # tanpa alat, tanpa mobilisasi. Menuntut penamaan di sana hanya
             # menghasilkan temuan keliru yang membuat pemeriksa ini berhenti
             # dibaca.
             #
-            # Dikenali dari isi barisnya: yang menyebut `equipment_name` atau
-            # `remarks_4` memang membawa alat.
-            if not re.search(r'equipment_name|remarks_4|mobilisasi', blok, re.I):
+            # Dikenali dari isi barisnya: yang menyebut `equipment_name`,
+            # `itemKind`, atau `mobilisasi` memang membawa alat.
+            if not re.search(r'equipment_name|itemKind|mobilisasi', blok, re.I):
                 continue
 
             baris = s[:m.start()].count('\n') + 1
             nama = p.replace(akar + '/', '')
 
-            if 'perluasItemMobilisasi' not in blok:
+            if 'namaiBarisMobilisasi' not in blok:
                 masalah.append(
-                    f'{nama}:{baris}: `printPurchaseOrderB` tidak memekarkan '
-                    f'mobilisasi — nilainya hilang dari dokumen'
+                    f'{nama}:{baris}: `printPurchaseOrderB` tidak menamai '
+                    f'baris mobilisasi — tercetak "Mobilisasi" tanpa alatnya'
                 )
-            elif 'remarks_4' not in blok:
+            elif not re.search(r'\bitemKind\b', blok):
                 masalah.append(
-                    f'{nama}:{baris}: memekarkan tetapi tidak meneruskan '
-                    f'`remarks_4` — tidak ada yang dipekarkan'
+                    f'{nama}:{baris}: menamai tetapi tidak meneruskan '
+                    f'`itemKind` — tidak ada yang dikenali sebagai baris anak'
+                )
+            elif not re.search(r'\bparentItemID\b', blok):
+                masalah.append(
+                    f'{nama}:{baris}: meneruskan `itemKind` tanpa '
+                    f'`parentItemID` — namanya tidak menyebut alat mana pun'
                 )
 
     return masalah
@@ -84,7 +96,7 @@ def periksa(akar: str = FE) -> list[str]:
 
 if __name__ == '__main__':
     h = periksa()
-    print(f'cetak PO-B tanpa mobilisasi: {len(h)}')
+    print(f'cetak PO-B tanpa nama mobilisasi: {len(h)}')
     print()
     for x in h[:20]:
         print(f'  {x}')

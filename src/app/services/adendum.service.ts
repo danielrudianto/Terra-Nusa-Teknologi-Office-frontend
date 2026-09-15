@@ -6,6 +6,7 @@ import { map } from 'rxjs/operators';
 import moment from 'moment';
 
 import { ApiService } from './api.service';
+import { gabungBarisMobilisasi } from '../helpers/purchase-order-b.helper';
 
 /**
  * Pengisian awal formulir dari dokumen yang diadendum.
@@ -296,8 +297,10 @@ export class AdendumService {
       fromDate: x.remarks_1 ?? undefined,
       toDate: x.remarks_2 ?? undefined,
       location: x.remarks_3 ?? undefined,
-      mobilisasi: Number(x.remarks_4) || 0,
-      demobilisasi: Number(x.remarks_5) || 0,
+      // Baris tersendiri sejak mobilisasi berhenti menumpang `remarks_4`;
+      // `gabungBarisMobilisasi` sudah mengembalikannya ke bidang ini.
+      mobilisasi: Number(x.mobilisasi) || 0,
+      demobilisasi: Number(x.demobilisasi) || 0,
       task: x.task ?? undefined,
       item_id: x.item_id ?? undefined,
       equipment_id: x.equipment_id ?? undefined,
@@ -363,7 +366,23 @@ export class AdendumService {
    * tanpa menyadarinya.
    */
   barisInduk(induk: any): any[] {
-    const items = induk?.items || [];
+    /*
+     * Baris mobilisasi digabungkan kembali ke baris alatnya lebih dulu.
+     *
+     * Di basis data mobilisasi adalah baris tersendiri — itulah yang membuat
+     * certificate of payment dapat menyertifikasinya. Tetapi FORMULIRNYA
+     * tetap mengetiknya sebagai dua isian di dalam baris alat, karena
+     * mobilisasi tidak pernah berdiri sendiri tanpa alat yang dimobilisasi.
+     *
+     * Tanpa penggabungan ini, dokumen yang dibuka kembali menampilkan baris
+     * "Mobilisasi" berdiri sendiri di antara alat-alatnya — bentuk yang tidak
+     * pernah diketik siapa pun, dan yang bila disimpan ulang akan dipecah
+     * sekali lagi.
+     *
+     * Varian lain tidak terpengaruh: baris tanpa `itemKind` dilewatkan apa
+     * adanya.
+     */
+    const items = gabungBarisMobilisasi(induk?.items || []);
 
     /*
      * Pada mode UBAH, volumenya disalin APA ADANYA.

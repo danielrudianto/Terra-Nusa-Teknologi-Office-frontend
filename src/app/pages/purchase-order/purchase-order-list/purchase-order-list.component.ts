@@ -29,7 +29,7 @@ import { printPurchaseOrderC } from '../../../helpers/purchase-order-c.helper';
 import { printPurchaseOrderD } from '../../../helpers/purchase-order-d.helper';
 import {
   printPurchaseOrderB,
-  perluasItemMobilisasi,
+  namaiBarisMobilisasi,
 } from '../../../helpers/purchase-order-b.helper';
 import { printPurchaseOrderH } from '../../../helpers/purchase-order-h.helper';
 import { PurchaseOrderViewComponent } from '../purchase-order-view/purchase-order-view.component';
@@ -934,11 +934,11 @@ export class PurchaseOrderListComponent {
             // PO-B, sesuai templatenya waktu itu.
             return printPurchaseOrderB({
               ...printData,
-              // Sama dengan jalur formulir: mobilisasi disisipkan
-              // sebagai baris pekerjaan tersendiri. Ditulis lewat fungsi
-              // yang sama supaya cetak ulang tidak dapat berbeda dari
-              // cetakan pertamanya.
-              items: perluasItemMobilisasi(
+              // Baris mobilisasi sudah ada di `data.items`, berurutan di
+              // bawah induknya. Yang tersisa hanyalah melengkapi namanya —
+              // lewat fungsi yang sama seperti jalur formulir, supaya cetak
+              // ulang tidak dapat berbeda dari cetakan pertamanya.
+              items: namaiBarisMobilisasi(
                 (data.items || []).map((it: any) => ({
                   name:
                     it.equipment_name ||
@@ -948,8 +948,8 @@ export class PurchaseOrderListComponent {
                   quantity: Number(it.quantity) || 0,
                   unit: it.unit,
                   price: Number(it.price) || 0,
-                  remarks_4: it.remarks_4,
-                  remarks_5: it.remarks_5,
+                  itemKind: it.itemKind,
+                  parentItemID: it.parentItemID,
                 })),
               ),
               includePpn: Number(data.ppn) > 0,
@@ -1338,19 +1338,21 @@ export class PurchaseOrderListComponent {
             supplierCity: data.supplierCity ?? '',
             supplierNpwp: data.supplierNpwp ?? '',
             /*
-             * Mobilisasi DIPEKARKAN, sama seperti saat dokumennya pertama
-             * kali dicetak.
+             * Mobilisasi DINAMAI, sama seperti saat dokumennya pertama kali
+             * dicetak. Barisnya sendiri datang dari basis data.
              *
-             * Tanpa ini, cetak ulang kehilangan baris mobilisasi dan
-             * demobilisasi — dan subtotalnya lebih kecil daripada dokumen
-             * yang sudah ditandatangani vendor. Selisihnya tampak seperti
-             * kesalahan hitung pada lembar yang seharusnya identik.
+             * Dahulu barisnya harus dikarang di sini, dan yang lupa
+             * mengarangnya menerbitkan cetak ulang tanpa baris mobilisasi —
+             * subtotalnya lebih kecil daripada dokumen yang sudah
+             * ditandatangani vendor, dan selisihnya tampak seperti kesalahan
+             * hitung pada lembar yang seharusnya identik.
              *
-             * `remarks_4` dan `remarks_5` HARUS ikut diteruskan; tanpa
-             * keduanya `perluasItemMobilisasi` tidak menemukan nilainya dan
-             * diam-diam tidak memekarkan apa pun.
+             * `itemKind` dan `parentItemID` HARUS ikut diteruskan; tanpa
+             * keduanya baris mobilisasi tercetak sebagai "Mobilisasi" polos,
+             * tanpa menyebut alat mana pun — pada dokumen yang justru dipakai
+             * vendor untuk merujuk baris dalam invoicenya.
              */
-            items: perluasItemMobilisasi(
+            items: namaiBarisMobilisasi(
               (data.items || []).map((it: any) => ({
                 name:
                   it.equipment_name || it.item_description || it.task || '',
@@ -1361,8 +1363,8 @@ export class PurchaseOrderListComponent {
                 quantity: Number(it.quantity) || 0,
                 unit: it.unit,
                 price: Number(it.price) || 0,
-                remarks_4: it.remarks_4,
-                remarks_5: it.remarks_5,
+                itemKind: it.itemKind,
+                parentItemID: it.parentItemID,
               })),
             ),
             includePpn: Number(data.ppn) > 0,

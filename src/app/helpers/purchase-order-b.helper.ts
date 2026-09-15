@@ -28,6 +28,15 @@ import {
   angkaSatuan,
 } from './purchase-order-shared.helper';
 
+/**
+ * Jenis baris yang MENEMPEL pada baris alat di atasnya.
+ *
+ * Harus sama persis dengan `JENIS_ANAK` di
+ * `repository/purchase_order_item_repository.py`; server membuang nilai di
+ * luar daftar ini.
+ */
+export type JenisBarisAnak = 'mobilisasi' | 'demobilisasi';
+
 export interface IPurchaseOrderBItem {
   /** Uraian pekerjaan / alat yang disewa. */
   name: string;
@@ -35,16 +44,26 @@ export interface IPurchaseOrderBItem {
   unit: string;
   price: number;
   /**
-   * Mobilisasi dan demobilisasi, dititipkan pada kolom keterangan.
+   * Mobilisasi dan demobilisasi, sebagaimana diketik pada FORMULIR.
    *
-   * `purchase_order_items` sudah menyediakan enam kolom keterangan dan tiga
-   * di antaranya belum terpakai; menambah kolom basis data untuk dua angka
-   * yang hanya dipakai satu varian tidak sepadan.
+   * Di basis data keduanya bukan lagi angka yang menempel di sini melainkan
+   * BARIS tersendiri — lihat `pecahBarisMobilisasi`. Dua bidang ini hanya
+   * hidup di antara formulir dan pemecahnya.
    *
-   * Bertipe teks karena kolomnya memang teks — dibaca dengan `Number()`.
+   * Sebelumnya keduanya dititipkan pada `remarks_4`/`remarks_5`, dan karena
+   * itu tidak pernah menjadi baris: yang tercetak pada SPK dikarang saat
+   * mencetak. Certificate of payment menyertifikasi per baris, sehingga
+   * mobilisasi tidak punya tempat untuk menaruh volumenya — dan SPK yang
+   * sepertiga nilainya mobilisasi hanya dapat disertifikasi dua pertiga.
    */
-  remarks_4?: string | number | null;
-  remarks_5?: string | number | null;
+  mobilisasi?: number | null;
+  demobilisasi?: number | null;
+  /** Terisi pada baris anak; kosong pada baris biasa. */
+  itemKind?: JenisBarisAnak | null;
+  /** Posisi induknya di dalam daftar yang sedang dikirim ke server. */
+  parentIndex?: number | null;
+  /** `id` induknya, untuk baris yang dibaca dari basis data. */
+  parentItemID?: number | null;
   /**
    * Keterangan di bawah nama, dicetak lebih kecil.
    *
@@ -327,9 +346,9 @@ function buildItemTable(data: IPurchaseOrderB) {
    * jumlahnya. Bila mobilisasi disembunyikan di dalam angka itu, hitungannya
    * tidak pernah cocok dan yang memeriksa menyangka ada salah hitung.
    *
-   * Nilainya dititipkan pada `remarks_4` dan `remarks_5` — kolom keterangan
-   * yang memang belum terpakai. Dibaca dengan `Number()` karena kolomnya
-   * teks.
+   * Sejak mobilisasi menjadi baris sungguhan di basis data, barisnya sudah
+   * ada di dalam `data.items` saat sampai ke sini — tidak lagi dikarang di
+   * tempat ini. Yang tersisa hanyalah mencetaknya seperti baris lain.
    */
   const rows = data.items.map((item, i) => {
     const amount = nilaiBaris(item);
@@ -363,9 +382,8 @@ function buildItemTable(data: IPurchaseOrderB) {
   const subTotal = data.items.reduce(
     (acc, item) =>
       acc +
-      // Mobilisasi sudah menjadi baris tersendiri lewat
-      // `perluasItemMobilisasi`, sehingga terhitung di sini seperti baris
-      // lainnya — dan ikut DPP, karena itu ikut kena PPN.
+      // Mobilisasi sudah menjadi baris tersendiri, sehingga terhitung di
+      // sini seperti baris lainnya — dan ikut DPP, karena itu ikut kena PPN.
       nilaiBaris(item),
     0,
   );
@@ -532,37 +550,124 @@ function pasalTitle(text: string) {
  * pernah sampai ke dokumen: kedua jalur menyusun daftar itemnya sendiri dan
  * keduanya lupa menyertakannya.
  */
-export function perluasItemMobilisasi(
+export function pecahBarisMobilisasi(
   items: readonly IPurchaseOrderBItem[],
 ): IPurchaseOrderBItem[] {
   const hasil: IPurchaseOrderBItem[] = [];
 
   items.forEach((item) => {
     hasil.push(item);
-    const nomorAlat = hasil.length; // nomor baris alatnya, setelah disisipkan
+    // Posisi induknya DI DALAM daftar hasil — dipakai `parentIndex` saat
+    // menyimpan, karena pada dokumen baru induknya belum punya `id`.
+    const posisiInduk = hasil.length - 1;
 
-    const tambahan: Array<[string, number]> = [
-      ['Mobilisasi', Number(item.remarks_4) || 0],
-      ['Demobilisasi', Number(item.remarks_5) || 0],
+    const tambahan: Array<[string, JenisBarisAnak, number]> = [
+      ['Mobilisasi', 'mobilisasi', Number(item.mobilisasi) || 0],
+      ['Demobilisasi', 'demobilisasi', Number(item.demobilisasi) || 0],
     ];
 
-    tambahan.forEach(([label, nilai]) => {
-      // Yang bernilai nol tidak dicetak: PO tanpa mobilisasi tampil persis
-      // seperti sebelumnya.
+    tambahan.forEach(([judul, jenis, nilai]) => {
+      // Yang bernilai nol tidak menjadi baris: SPK tanpa mobilisasi tampil
+      // persis seperti sebelumnya, tanpa baris "Mobilisasi Rp 0".
       if (nilai <= 0) return;
       hasil.push({
-        name: `${label} ${item.name || ''} sesuai pada nomor ${nomorAlat}`.replace(
-          /\s+/g,
-          ' ',
-        ),
+        // Nama SEADANYA. Nama lengkapnya ("Mobilisasi Crane 25T sesuai pada
+        // nomor 4") disusun `namaiBarisMobilisasi` saat mencetak, dari
+        // induknya — bukan disimpan, supaya nama alat yang kelak diperbaiki
+        // di master tidak meninggalkan salinan basi pada dokumen.
+        name: judul,
         quantity: 1,
         unit: 'LS',
         price: nilai,
+        itemKind: jenis,
+        parentIndex: posisiInduk,
       });
     });
   });
 
   return hasil;
+}
+
+/**
+ * Kebalikan `pecahBarisMobilisasi`: kembalikan baris anak ke induknya.
+ *
+ * Dipakai saat dokumen dibuka kembali untuk disunting. Formulir sewa alat
+ * mengetik mobilisasi sebagai dua isian di dalam baris alatnya — dan itu
+ * memang bentuk yang benar untuk diketik, karena mobilisasi tidak pernah
+ * berdiri sendiri tanpa alat yang dimobilisasi.
+ *
+ * Yang berubah oleh perbaikan ini hanya CARA MENYIMPANNYA. Tanpa penggabungan
+ * di sini, dokumen lama akan terbuka dengan baris "Mobilisasi" berdiri
+ * sendiri di antara alat-alatnya, dan yang menyuntingnya menghadapi bentuk
+ * yang tidak pernah ia ketik.
+ *
+ * Baris anak yang induknya TIDAK ditemukan tetap dikembalikan apa adanya —
+ * dibuang berarti nilainya lenyap dari dokumen saat disimpan ulang.
+ */
+export function gabungBarisMobilisasi(rows: readonly any[]): any[] {
+  // Disalin dulu: yang memanggil masih memegang daftar aslinya, dan
+  // mengubahnya di tempat membuat pemanggil kedua menerima baris yang sudah
+  // tergabung sebagian.
+  const salinan = (rows ?? []).map((r) => ({ ...r }));
+
+  const perId = new Map<number, any>();
+  salinan.forEach((r) => {
+    if (r?.id != null && !r?.itemKind) perId.set(Number(r.id), r);
+  });
+
+  const hasil: any[] = [];
+  salinan.forEach((r) => {
+    const induk =
+      r?.itemKind && r?.parentItemID != null
+        ? perId.get(Number(r.parentItemID))
+        : null;
+    if (induk) {
+      // Nilainya kembali ke isian induknya; barisnya sendiri tidak ikut ke
+      // formulir — ia akan dipecah lagi saat disimpan.
+      induk[r.itemKind] = Number(r.price) || 0;
+      return;
+    }
+    hasil.push(r);
+  });
+
+  return hasil;
+}
+
+/**
+ * Lengkapi nama baris mobilisasi dengan alat dan nomor barisnya.
+ *
+ * Dipakai SESUDAH barisnya ada — baik yang baru dipecah dari formulir maupun
+ * yang dibaca dari basis data. Satu tempat untuk keduanya: sebelumnya kedua
+ * jalur cetak menyusun daftarnya masing-masing, dan keduanya lupa
+ * menyertakan mobilisasi sama sekali.
+ *
+ * Nomor yang disebut adalah nomor CETAK induknya — nomor yang benar-benar
+ * tertera di kolom kiri dokumen, sesudah baris mobilisasi lain ikut terhitung.
+ * Itulah yang dicari vendor ketika membaca "sesuai pada nomor 4".
+ */
+export function namaiBarisMobilisasi(
+  items: readonly IPurchaseOrderBItem[],
+): IPurchaseOrderBItem[] {
+  // Nomor cetak induk terakhir yang dilewati; baris anak selalu menyusul
+  // induknya karena backend mengurutkannya begitu (lihat `URUT_BARIS`).
+  let nomorInduk = 0;
+  let namaInduk = '';
+
+  return items.map((item, i) => {
+    if (!item.itemKind) {
+      nomorInduk = i + 1;
+      namaInduk = item.name || '';
+      return item;
+    }
+    const judul = item.name || '';
+    return {
+      ...item,
+      name: `${judul} ${namaInduk} sesuai pada nomor ${nomorInduk}`.replace(
+        /\s+/g,
+        ' ',
+      ),
+    };
+  });
 }
 
 export function printPurchaseOrderB(

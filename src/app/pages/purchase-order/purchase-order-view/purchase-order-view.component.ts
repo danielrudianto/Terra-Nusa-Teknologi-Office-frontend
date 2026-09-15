@@ -683,51 +683,25 @@ export class PurchaseOrderViewComponent
   }
 
   /**
-   * Mobilisasi dan demobilisasi, yang menumpang pada kolom keterangan.
+   * Mobilisasi baris ini — yang kini SELALU nol.
    *
-   * `purchase_order_items` tidak punya kolom tersendiri untuk keduanya,
-   * sehingga PO-B menyimpannya di `remarks_4` dan `remarks_5`. Keduanya
-   * nilai NYATA yang ditagihkan — pada `009-SPK-NVTM-B` jumlahnya
-   * Rp 3.500.000 dari total Rp 11.000.000.
+   * Dulu mobilisasi menumpang pada `remarks_4`/`remarks_5` baris alatnya dan
+   * TIDAK pernah menjadi baris; yang tercetak pada SPK dikarang saat
+   * mencetak. Layar ini karena itu harus menambahkannya sendiri ke nilai
+   * baris alatnya — sambil menjaga agar tidak terhitung dua kali pada
+   * dokumen yang barisnya sudah dipekarkan, yang dikenali dari NAMA barisnya
+   * karena memang tidak ada penanda lain.
+   *
+   * Sejak mobilisasi menjadi baris sungguhan, seluruh kerumitan itu tidak
+   * punya pekerjaan lagi: barisnya datang sendiri, dengan `quantity` dan
+   * `price`-nya sendiri, dan ikut terjumlah seperti baris mana pun.
+   *
+   * Dipertahankan sebagai nol, bukan dibuang, karena template masih
+   * memanggilnya — dan mengembalikan nol membuat penanda "+ mobilisasi" di
+   * bawah nama alat tidak pernah muncul, yang memang benar sekarang.
    */
-  mobilisasiBaris(item: any): number {
-    return this.mobilisasi(item);
-  }
-
-  private mobilisasi(item: any): number {
-    /*
-     * HANYA pada dokumen sewa alat (tipe B).
-     *
-     * `remarks_4` dipakai berbeda-beda antar jenis: pada PO-B ia nilai
-     * mobilisasi, sedangkan pada PO-A ia nama supir atau nomor resi.
-     * Menjumlahkannya tanpa memeriksa jenisnya membuat `Number("Budi")`
-     * bernilai NaN — atau, lebih buruk, nomor resi berangka ikut tertambah
-     * ke dalam nilai dokumen.
-     */
-    if (String(this.data?.purchaseType || '').toUpperCase() !== 'B') return 0;
-
-    /*
-     * NOL bila barisnya sudah DIPEKARKAN.
-     *
-     * `perluasItemMobilisasi` menyisipkan mobilisasi dan demobilisasi sebagai
-     * baris pekerjaan tersendiri — dan baris alatnya TETAP membawa nilainya
-     * di `remarks_4` dan `remarks_5`. Menjumlahkan keduanya membuat setiap
-     * mobilisasi terhitung DUA KALI: sekali menempel pada alatnya, sekali
-     * sebagai barisnya sendiri.
-     *
-     * Gejalanya: baris alat bernilai lebih besar daripada `volume x harga`
-     * satuannya, dan subtotalnya melampaui yang tertera di layar pengisian.
-     *
-     * Pemekaran dikenali dari adanya baris yang menyebut alat ini — bukan
-     * dari penanda tersendiri, karena baris hasil pemekaran tidak menyimpan
-     * apa pun yang membedakannya selain namanya.
-     */
-    const dipekarkan = (this.data?.items || []).some((x: any) =>
-      /^(Mobilisasi|Demobilisasi)\b/.test(String(x?.name || '')),
-    );
-    if (dipekarkan) return 0;
-
-    return (Number(item?.remarks_4) || 0) + (Number(item?.remarks_5) || 0);
+  mobilisasiBaris(_item: any): number {
+    return 0;
   }
 
   lineTotal(item: any): number {
@@ -745,11 +719,11 @@ export class PurchaseOrderViewComponent
      * apa adanya, sehingga pratinjaunya menampilkan 299.999,7 padahal formulir
      * dan PDF-nya sudah 300.000 — pratinjau berbeda dari dokumen yang terbit.
      *
-     * Mobilisasi IKUT dihitung: tanpa itu dialog menampilkan Rp 7.500.000
-     * untuk dokumen yang `dpp`-nya Rp 11.000.000, dan yang membacanya
-     * menyangka salah satunya rusak.
+     * Mobilisasi tidak lagi ditambahkan di sini: ia baris tersendiri, dan
+     * `subTotal` menjumlahkannya lewat perulangan yang sama seperti baris
+     * lain. Menambahkannya di sini membuatnya terhitung DUA KALI.
      */
-    return nilaiBaris(item) + this.mobilisasi(item);
+    return nilaiBaris(item);
   }
 
   get subTotal(): number {

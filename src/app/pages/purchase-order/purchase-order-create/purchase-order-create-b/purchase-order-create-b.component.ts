@@ -45,7 +45,8 @@ import {
 } from '../../../../constants/clause-templates';
 import {
   printPurchaseOrderB,
-  perluasItemMobilisasi,
+  pecahBarisMobilisasi,
+  namaiBarisMobilisasi,
 } from '../../../../helpers/purchase-order-b.helper';
 import { isTempoTerm } from '../../../../helpers/purchase-order-shared.helper';
 import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
@@ -481,8 +482,9 @@ export class PurchaseOrderCreateBComponent implements OnInit {
    * memang tidak ada pada katalog, sehingga tidak pernah terbaca.
    *
    * Nilainya diambil dari kolom penyimpanannya masing-masing — periode dan
-   * lokasi menumpang pada `remarks_1..3`, mobilisasi pada `remarks_4` dan
-   * `remarks_5`.
+   * lokasi menumpang pada `remarks_1..3`. Mobilisasi TIDAK lagi menumpang:
+   * ia baris tersendiri, dan sudah dikembalikan ke bidang `mobilisasi` /
+   * `demobilisasi` oleh `gabungBarisMobilisasi`.
    */
   private barisDariDokumen(x: any): FormGroup {
     const g = this.buildRental(
@@ -509,8 +511,10 @@ export class PurchaseOrderCreateBComponent implements OnInit {
       fromDate: x?.remarks_1 ?? '',
       toDate: x?.remarks_2 ?? '',
       location: x?.remarks_3 ?? '',
-      mobilisasi: Number(x?.remarks_4) || 0,
-      demobilisasi: Number(x?.remarks_5) || 0,
+      // Sudah digabungkan kembali dari baris anaknya oleh
+      // `gabungBarisMobilisasi` sebelum sampai ke sini.
+      mobilisasi: Number(x?.mobilisasi) || 0,
+      demobilisasi: Number(x?.demobilisasi) || 0,
       // Dokumen lama tidak menyimpannya; `bacaJumlahAlat` mengembalikan satu,
       // sehingga dokumen itu terbuka persis seperti sebelum kolom ini ada.
       ...bacaJumlahAlat(x?.remarks_6),
@@ -1080,32 +1084,36 @@ export class PurchaseOrderCreateBComponent implements OnInit {
       templateVersion: this.templateVersion,
       billing_requirements: {},
       // equipment rentals -> purchase_order_items (equipment_id -> master_equipment)
-      items: this.t.controls.map((c) => {
-        const x = c.getRawValue();
-        return {
-          equipment_id: x.equipment_id,
-          item_id: x.item_id ?? null,
-          quantity: x.unit === 'LS' ? 1 : x.quantity,
-          price: x.price,
-          unit: x.unit,
-          remarks_1: this.toISO(x.fromDate), // dari tanggal
-          remarks_2: this.toISO(x.toDate), // sampai tanggal
-          remarks_3: x.location, // lokasi kerja
-          /*
-           * Mobilisasi dan demobilisasi ditumpangkan pada kolom `remarks`
-           * yang masih kosong, bukan dengan menambah kolom baru.
-           *
-           * `purchase_order_items` sudah menyediakan enam kolom keterangan
-           * dan tiga di antaranya belum terpakai; menambah kolom berarti
-           * migrasi basis data untuk dua angka yang hanya dipakai satu
-           * varian.
-           *
-           * Disimpan sebagai TEKS karena kolomnya memang teks — dibaca
-           * kembali dengan `Number()` saat mencetak.
-           */
-          remarks_4: String(Number(x.mobilisasi) || 0), // mobilisasi
-          remarks_5: String(Number(x.demobilisasi) || 0), // demobilisasi
-          /*
+      /*
+       * Mobilisasi dan demobilisasi disimpan sebagai BARIS TERSENDIRI.
+       *
+       * Sebelumnya keduanya ditumpangkan pada `remarks_4`/`remarks_5` baris
+       * alatnya, dan karena itu tidak pernah menjadi baris: yang tercetak
+       * pada SPK dikarang saat mencetak. Certificate of payment
+       * menyertifikasi per `purchase_order_items.id`, sehingga mobilisasi
+       * tidak punya tempat untuk menaruh volumenya — dan SPK yang sepertiga
+       * nilainya mobilisasi hanya dapat disertifikasi dua pertiga, selamanya.
+       *
+       * `parentIndex` menunjuk POSISI induknya di dalam daftar ini; server
+       * yang menerjemahkannya menjadi `parentItemID` setelah induknya
+       * tersimpan dan punya `id`.
+       */
+      items: pecahBarisMobilisasi(
+        this.t.controls.map((c) => {
+          const x = c.getRawValue();
+          return {
+            name: x.name,
+            equipment_id: x.equipment_id,
+            item_id: x.item_id ?? null,
+            quantity: x.unit === 'LS' ? 1 : x.quantity,
+            price: x.price,
+            unit: x.unit,
+            mobilisasi: Number(x.mobilisasi) || 0,
+            demobilisasi: Number(x.demobilisasi) || 0,
+            remarks_1: this.toISO(x.fromDate), // dari tanggal
+            remarks_2: this.toISO(x.toDate), // sampai tanggal
+            remarks_3: x.location, // lokasi kerja
+            /*
            * Jumlah alat beserta satuannya, mis. `10|set`.
            *
            * Kolom keterangan terakhir yang belum terpakai pada varian ini,
@@ -1116,9 +1124,21 @@ export class PurchaseOrderCreateBComponent implements OnInit {
            * "30 bulan" — angkanya benar, tetapi sepuluh setnya hilang dan
            * tidak dapat dipulihkan saat dokumennya dibuka kembali.
            */
-          remarks_6: simpanJumlahAlat(x.jumlahUnit, x.satuanUnit),
-        };
-      }),
+            remarks_6: simpanJumlahAlat(x.jumlahUnit, x.satuanUnit),
+          } as any;
+        }),
+      ).map(({ name, mobilisasi, demobilisasi, ...baris }: any) =>
+        /*
+         * Baris ANAK menyimpan namanya di `task`; baris alat TIDAK.
+         *
+         * Nama alat datang dari `master_equipment` lewat join saat dibaca —
+         * menyalinnya ke `task` berarti dokumen menyimpan nama yang dapat
+         * berbeda dari masternya bila master itu diperbaiki. Baris
+         * mobilisasi tidak menunjuk master mana pun, jadi namanya memang
+         * harus ikut tersimpan.
+         */
+        baris.itemKind ? { ...baris, task: name } : baris,
+      ),
       customData: {
         /*
          * Penanda bahwa dokumen ini berasal dari formulir sewa alat.
@@ -1195,9 +1215,10 @@ export class PurchaseOrderCreateBComponent implements OnInit {
       supplierCity: v.supplierCity,
       supplierNpwp: v.supplierNpwp,
       supplierPIC: v.supplierPIC,
-      // `perluasItemMobilisasi` menyisipkan mobilisasi dan demobilisasi
-      // sebagai baris pekerjaan tersendiri, bernomor sendiri.
-      items: perluasItemMobilisasi(
+      // Dipecah lalu dinamai — urutan yang sama seperti saat menyimpan,
+      // sehingga pratinjau dan dokumen tidak pernah berselisih.
+      items: namaiBarisMobilisasi(
+        pecahBarisMobilisasi(
         this.t.controls.map((c) => {
           const x = c.getRawValue();
           return {
@@ -1228,10 +1249,11 @@ export class PurchaseOrderCreateBComponent implements OnInit {
                 : volumeCetak(x.jumlahUnit, x.quantity, x.unit).volume,
             unit: x.unit,
             price: Number(x.price) || 0,
-            remarks_4: String(Number(x.mobilisasi) || 0),
-            remarks_5: String(Number(x.demobilisasi) || 0),
+            mobilisasi: Number(x.mobilisasi) || 0,
+            demobilisasi: Number(x.demobilisasi) || 0,
           };
         }),
+        ),
       ),
       includePpn: !!v.includePPN,
       /*
@@ -1298,19 +1320,17 @@ export class PurchaseOrderCreateBComponent implements OnInit {
      */
     const asal = this.t?.controls?.map((c: any) => c.getRawValue()) ?? [];
     /*
-     * Mobilisasi dan demobilisasi DIPECAH menjadi baris tersendiri, sama
-     * seperti saat dicetak.
+     * Baris mobilisasi SUDAH ada di dalam `baris` — `formatData()` memakai
+     * muatan simpan, yang sejak sekarang memecahnya sendiri. Yang tersisa
+     * di sini hanyalah melengkapi namanya, sama seperti saat mencetak.
      *
-     * `formatData()` mengembalikan baris apa adanya, dengan mobilisasi masih
-     * menumpang di `remarks_4` dan `remarks_5`. Yang menjumlah — baik
-     * pratinjau maupun dokumen — menghitung `quantity * price` per baris,
-     * sehingga keduanya tidak pernah ikut selama masih menumpang.
-     *
-     * Akibatnya pratinjau menampilkan subtotal yang lebih kecil daripada
-     * dokumen yang terbit sesudahnya, dan itu justru pada lembar yang
-     * dipakai memeriksa sebelum menandatangani.
+     * Dulu pratinjau menampilkan subtotal yang lebih KECIL daripada dokumen
+     * yang terbit sesudahnya — karena mobilisasi masih menumpang di
+     * `remarks_4` dan penjumlah mana pun menghitung `quantity * price` per
+     * baris. Selisih itu muncul justru pada lembar yang dipakai memeriksa
+     * sebelum menandatangani.
      */
-    const items = perluasItemMobilisasi(
+    const items = namaiBarisMobilisasi(
       baris.map((it: any, i: number) => ({
         ...it,
         item_description:
