@@ -236,6 +236,24 @@
   animation: prp-masuk 0.25s cubic-bezier(0.2, 0.7, 0.3, 1) both;
 }
 
+/*
+ * Jarak antar kartu.
+ *
+ * Kartunya tidak punya margin sama sekali, dan induknya `.prp` tidak
+ * menyetel `gap` — jadi "Kontrak terpakai" dan "Kemajuan pekerjaan" duduk
+ * bersentuhan, dan dua kartu yang berhimpit terbaca seperti satu kartu
+ * dengan garis di tengahnya.
+ *
+ * Ditulis sebagai `+` (saudara langsung), bukan `margin-bottom` pada tiap
+ * kartu: yang terakhir tidak perlu menyisakan ruang kosong di dasar halaman.
+ * `*ngIf` yang menyembunyikan kartu tengah meninggalkan simpul komentar, dan
+ * komentar bukan elemen — jadi kedekatan `+` tetap berlaku ketika kartu
+ * "Arus per minggu" sedang tidak ditampilkan.
+ */
+.prp-kartu + .prp-kartu {
+  margin-top: 1.25rem;
+}
+
 @keyframes prp-masuk {
   from { opacity: 0; transform: translateY(0.4rem); }
   to   { opacity: 1; transform: none; }
