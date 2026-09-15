@@ -23,7 +23,7 @@
         <li class="at-item">
           <span class="at-item__mark">
             @if (e.userID) {
-              <app-avatar [userId]="e.userID" [size]="28"></app-avatar>
+              <app-avatar [userId]="e.userID" [name]="e.userName" [size]="28" />
             } @else {
               <span class="at-item__icon"
                 ><mat-icon>{{ icon(e.action) }}</mat-icon></span

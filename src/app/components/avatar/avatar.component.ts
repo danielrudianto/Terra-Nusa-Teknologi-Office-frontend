@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
-import { AvatarService } from '../../services/avatar.service';
+import { AvatarService, KeadaanAvatar } from '../../services/avatar.service';
 import {
   AvatarConfig,
   buildAvatarSvg,
@@ -95,6 +95,14 @@ export class AvatarComponent implements OnChanges, OnDestroy {
   svg: SafeHtml | null = null;
   private sub?: Subscription;
 
+  /**
+   * Inisial — yang tampil selama avatarnya belum/tidak ada.
+   *
+   * Ini BUKAN cadangan yang jarang terpakai; ia yang membedakan orang yang
+   * belum menyetel avatar. Sebelumnya semuanya digambar sebagai satu wajah
+   * bawaan yang sama, sehingga dua orang berbeda tampil identik — dan orang
+   * yang avatarnya gagal dimuat tampak berganti wajah.
+   */
   get initials(): string {
     const source = (this.name || '').trim();
     if (!source) return '?';
@@ -118,10 +126,35 @@ export class AvatarComponent implements OnChanges, OnDestroy {
       this.sub = this.avatarService
         .get(this.userId)
         .subscribe((config) => this.render(config));
+      return;
+    }
+
+    /*
+     * Nama berubah sementara avatarnya belum ada: inisialnya harus ikut.
+     *
+     * Tanpa cabang ini, baris yang namanya datang belakangan (daftar yang
+     * memuat nama lewat langganan terpisah) tetap menampilkan inisial lama —
+     * atau `?`.
+     */
+    if (changes['name'] && !this.svg) {
+      // `svg` memang null; templatenya membaca `initials` langsung, jadi
+      // tidak ada yang perlu dihitung ulang di sini selain memicu render.
+      this.svg = null;
     }
   }
 
-  private render(config: Partial<AvatarConfig>): void {
+  /**
+   * `null` berarti belum/tidak ada avatarnya — dan yang digambar INISIAL.
+   *
+   * Menggambar `DEFAULT_AVATAR` di sini adalah persoalan yang diperbaiki:
+   * wajah bawaan itu satu wajah tertentu, dipakai bersama oleh semua orang
+   * yang belum menyetel avatar dan oleh setiap pengambilan yang gagal.
+   */
+  private render(config: KeadaanAvatar | Partial<AvatarConfig> | null): void {
+    if (!config) {
+      this.svg = null;
+      return;
+    }
     // Built from our own constants only — no user supplied markup ever reaches
     // this string, so bypassing the sanitiser here is safe.
     this.svg = this.sanitizer.bypassSecurityTrustHtml(buildAvatarSvg(config));

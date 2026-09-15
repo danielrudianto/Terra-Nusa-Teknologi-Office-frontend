@@ -30,7 +30,7 @@
     [attr.aria-label]="'common.account' | translate"
   >
     @if (userId) {
-      <app-avatar [userId]="userId" [size]="34"></app-avatar>
+      <app-avatar [userId]="userId" [name]="displayName" [size]="34" />
     } @else {
       <span class="tn-account__avatar">{{ initials }}</span>
     }
@@ -57,7 +57,7 @@
   >
     <div class="tn-account-menu__head" mat-menu-item disabled>
       @if (userId) {
-        <app-avatar [userId]="userId" [size]="48"></app-avatar>
+        <app-avatar [userId]="userId" [name]="displayName" [size]="48" />
       } @else {
         <span class="tn-account__avatar tn-account__avatar--lg">{{
           initials

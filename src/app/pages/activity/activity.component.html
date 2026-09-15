@@ -156,7 +156,7 @@
           <td mat-cell *matCellDef="let e">
             <div class="al-who">
               @if (e.userID) {
-                <app-avatar [userId]="e.userID" [size]="26"></app-avatar>
+                <app-avatar [userId]="e.userID" [name]="e.userName" [size]="26" />
               }
               <span class="al-primary">{{ e.userName || "—" }}</span>
             </div>

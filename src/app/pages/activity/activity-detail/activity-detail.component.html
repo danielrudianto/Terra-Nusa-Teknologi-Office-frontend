@@ -2,7 +2,7 @@
   <div class="ad-head" mat-dialog-title appDialogGeser>
     <span class="ad-head__avatar">
       @if (entry.userID) {
-        <app-avatar [userId]="entry.userID" [size]="40"></app-avatar>
+        <app-avatar [userId]="entry.userID" [name]="entry.userName" [size]="40" />
       } @else {
         <span class="ad-head__icon"><mat-icon>history</mat-icon></span>
       }

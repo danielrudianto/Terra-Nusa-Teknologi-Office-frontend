@@ -214,7 +214,7 @@
     @if (f["createdAt"].value) {
       <div class="pv-created">
         @if (createdBy) {
-          <app-avatar [userId]="createdBy" [size]="28"></app-avatar>
+          <app-avatar [userId]="createdBy" [name]="createdByName" [size]="28" />
         }
         <span class="pv-created__text">
           {{ "purchaseView.createdOn" | translate }}
