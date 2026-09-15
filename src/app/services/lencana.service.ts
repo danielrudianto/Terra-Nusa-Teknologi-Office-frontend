@@ -77,6 +77,21 @@ export class LencanaService {
     this.router.events
       .pipe(filter((e) => e instanceof NavigationEnd))
       .subscribe(() => this.segarkan());
+
+    /*
+     * DAN sekali saat dibuat. Ini yang semula tertinggal.
+     *
+     * Layanan ini baru lahir ketika menu samping dirender pertama kali — dan
+     * pada pemuatan halaman langsung (mengetik alamatnya, atau menyegarkan
+     * dengan F5) `NavigationEnd` yang pertama SUDAH LEWAT saat itu. Tanpa
+     * panggilan ini, lencananya tidak pernah mengambil apa pun sampai
+     * pengguna berpindah menu — dan yang membuka aplikasi lalu berhenti di
+     * halaman pertamanya tidak melihat lencana sama sekali.
+     *
+     * Gejalanya menipu karena berpindah menu SEKALI membuat semuanya muncul,
+     * sehingga saat diperiksa ulang ia tampak bekerja.
+     */
+    this.segarkan();
   }
 
   segarkan(): void {
