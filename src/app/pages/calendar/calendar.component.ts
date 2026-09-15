@@ -11,6 +11,7 @@ import { CalendarTableComponent } from './calendar-table/calendar-table.componen
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ProyeksiKasComponent } from './proyeksi-kas/proyeksi-kas.component';
 import { RefreshButtonComponent } from '../../components/refresh-button/refresh-button.component';
 
 @Component({
@@ -27,6 +28,7 @@ import { RefreshButtonComponent } from '../../components/refresh-button/refresh-
     MatIconModule,
     RefreshButtonComponent,
     MatTooltipModule,
+    ProyeksiKasComponent,
   ],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss',

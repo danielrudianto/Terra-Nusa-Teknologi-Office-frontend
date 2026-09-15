@@ -1684,6 +1684,21 @@
     "scopeTitle": "Cash out covers purchases and reimbursements only. ",
     "scopeHint": "Operating expenses and payroll have no project column in the system, so they cannot be traced here. This cash-out figure is a lower bound, not the full picture."
   },
+  "proyeksiKas": {
+    "judul": "Cash projection — 3 months",
+    "ket": "Starts from today's cash, not from the month shown above.",
+    "dasarJudul": "Based on cash plans only. ",
+    "dasarKet": "Sales invoices carry no due date in the system, so incoming money cannot be placed on a timeline. To avoid a falsely pessimistic line, outgoing money comes from plans too. This projection is only as good as what you enter.",
+    "kosong": "No cash plans in the next three months yet.",
+    "kasSekarang": "Cash today",
+    "rencanaKeluar": "Planned out",
+    "rencanaMasuk": "Planned in",
+    "terendah": "Lowest balance",
+    "padaPekan": "week of",
+    "seriBalance": "Cash balance",
+    "minusSejak": "Cash crosses zero in the week of {{pekan}} — something must land before then.",
+    "diLuar": "{{n}} plan(s) fall outside these three months and are not drawn."
+  },
   "bank": {
     "filterKeadaan": "State filter",
     "keadaanAktif": "Active",

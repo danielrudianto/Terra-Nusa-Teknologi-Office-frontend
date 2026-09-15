@@ -1684,6 +1684,21 @@
     "scopeTitle": "现金流出仅涵盖采购与报销。",
     "scopeHint": "系统中的运营费用与薪资没有项目字段，无法归集到此处。该流出金额为下限，并非全貌。"
   },
+  "proyeksiKas": {
+    "judul": "现金预测 — 3 个月",
+    "ket": "从今天的现金起算，而非上方所显示的月份。",
+    "dasarJudul": "仅基于现金计划。",
+    "dasarKet": "系统中的销售发票没有到期日，因此收入无法落在时间轴上。为避免出现失真的悲观曲线，支出同样只取自计划。此预测的准确度取决于所录入的内容。",
+    "kosong": "未来三个月尚无现金计划。",
+    "kasSekarang": "今日现金",
+    "rencanaKeluar": "计划流出",
+    "rencanaMasuk": "计划流入",
+    "terendah": "最低余额",
+    "padaPekan": "所在周",
+    "seriBalance": "现金余额",
+    "minusSejak": "现金将在 {{pekan}} 当周跌破零 — 在此之前必须有款项到账。",
+    "diLuar": "有 {{n}} 项计划落在这三个月之外，未绘入图表。"
+  },
   "bank": {
     "filterKeadaan": "状态筛选",
     "keadaanAktif": "有效",

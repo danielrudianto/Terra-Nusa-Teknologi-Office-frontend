@@ -1,0 +1,103 @@
+<!--
+  Proyeksi kas — kartu tersendiri di bawah kalender.
+
+  Kalender menjawab "bulan ini bagaimana". Kartu ini menjawab pertanyaan yang
+  berbeda: "mulai dari posisi sekarang, tiga bulan ke depan kasnya sampai atau
+  tidak". Karena itu ia TIDAK ikut bulan yang sedang dibuka di atas — titik
+  mulainya selalu hari ini.
+
+  Disembunyikan seluruhnya bagi yang tidak memegang `bank` (rutenya dijaga
+  `bank:read`): kalendernya tetap utuh, dan tidak ada spanduk galat untuk
+  sesuatu yang memang bukan urusannya.
+-->
+<div class="pk-kartu" *ngIf="!terkunci()">
+  <div class="pk-kepala">
+    <div>
+      <div class="pk-judul">{{ "proyeksiKas.judul" | translate }}</div>
+      <p class="pk-ket">{{ "proyeksiKas.ket" | translate }}</p>
+    </div>
+  </div>
+
+  <!--
+    DASARNYA disebut di muka, bukan di panduan.
+
+    Proyeksi ini hanya sebaik rencana kas yang diisi orang. Yang membacanya
+    tanpa tahu itu akan menyimpulkan kasnya aman padahal yang belum dicatat
+    memang tidak pernah ikut terhitung — dan keterangan yang cuma ada di
+    panduan tidak pernah sampai ke orang yang sedang menatap angkanya.
+  -->
+  <div class="pk-dasar">
+    <mat-icon>info_outline</mat-icon>
+    <div>
+      <strong>{{ "proyeksiKas.dasarJudul" | translate }}</strong>
+      <span>{{ "proyeksiKas.dasarKet" | translate }}</span>
+    </div>
+  </div>
+
+  <p class="pk-kosong" *ngIf="!memuat() && !adaRencana()">
+    {{ "proyeksiKas.kosong" | translate }}
+  </p>
+
+  <ng-container *ngIf="adaRencana()">
+    <div class="pk-kpi">
+      <div class="pk-sel">
+        <div class="pk-label">{{ "proyeksiKas.kasSekarang" | translate }}</div>
+        <div class="pk-nilai">{{ saldoSekarang() | number: "1.0-0" }}</div>
+      </div>
+      <div class="pk-sel">
+        <div class="pk-label">{{ "proyeksiKas.rencanaKeluar" | translate }}</div>
+        <div class="pk-nilai">{{ totalKeluar() | number: "1.0-0" }}</div>
+      </div>
+      <div class="pk-sel">
+        <div class="pk-label">{{ "proyeksiKas.rencanaMasuk" | translate }}</div>
+        <div class="pk-nilai">{{ totalMasuk() | number: "1.0-0" }}</div>
+      </div>
+
+      <!--
+        Yang ditonjolkan saldo TERENDAH, bukan saldo di ujung proyeksi.
+
+        Saldo akhir dapat kembali positif setelah tagihan cair, sementara
+        kasnya sempat minus di tengah jalan — dan yang minus di tengah itulah
+        yang harus dibereskan lebih dulu. Angka akhir yang sehat menyembunyikan
+        persis persoalan yang dicari orang di sini.
+      -->
+      <div
+        class="pk-sel pk-sel--utama"
+        [class.pk-sel--buruk]="(titikTerendah()?.saldo ?? 0) < 0"
+        *ngIf="titikTerendah()"
+      >
+        <div class="pk-label">{{ "proyeksiKas.terendah" | translate }}</div>
+        <div class="pk-nilai">
+          {{ titikTerendah()!.saldo | number: "1.0-0" }}
+        </div>
+        <div class="pk-ket">
+          {{ "proyeksiKas.padaPekan" | translate }}
+          {{ titikTerendah()!.label }}
+        </div>
+      </div>
+    </div>
+
+    <div class="pk-peringatan" *ngIf="pekanMinusPertama()">
+      <mat-icon>warning_amber</mat-icon>
+      <span>
+        {{
+          "proyeksiKas.minusSejak" | translate: { pekan: pekanMinusPertama() }
+        }}
+      </span>
+    </div>
+
+    <!--
+      Rencana di luar tiga bulan disebut jumlahnya, bukan didiamkan.
+
+      Dibuang tanpa keterangan, yang mengisinya akan mengira rencananya hilang
+      — dan mengisinya lagi.
+    -->
+    <p class="pk-luar" *ngIf="diLuarJangkauan() > 0">
+      {{ "proyeksiKas.diLuar" | translate: { n: diLuarJangkauan() } }}
+    </p>
+
+    <div class="pk-grafik">
+      <canvas baseChart type="line" [data]="data()" [options]="opsi"></canvas>
+    </div>
+  </ng-container>
+</div>

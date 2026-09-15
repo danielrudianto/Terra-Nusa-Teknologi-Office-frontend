@@ -68,4 +68,19 @@
     [viewMode]="viewMode.value"
     [penyegar]="penyegar"
   ></app-calendar-table>
+
+  <!--
+    Proyeksi kas — kartu tersendiri, TIDAK ikut bulan yang sedang dibuka.
+
+    Kalender di atas menjawab "bulan ini bagaimana". Kartu ini menjawab
+    "mulai dari posisi sekarang, tiga bulan ke depan kasnya sampai atau
+    tidak" — dan titik mulainya selalu hari ini. Kalau ia ikut berpindah
+    bulan, ia berhenti menjadi proyeksi dan menjadi kalender kedua.
+
+    Rekening yang dipilih tetap diteruskan, supaya angkanya SEPAKAT dengan
+    kisi di atasnya. Dua angka kas pada satu halaman yang berbeda karena
+    saringan yang tidak sama adalah cara tercepat membuat keduanya berhenti
+    dipercaya.
+  -->
+  <app-proyeksi-kas [bankAccounts]="bankAccounts" [penyegar]="penyegar" />
 </div>

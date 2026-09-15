@@ -1,69 +1,82 @@
-# Arus kas, tab progress, dan nomor tender — FRONTEND
+# Proyeksi kas 3 bulan di bawah kalender
 
-**Pasang zip backend tender dulu** (termasuk SQL-nya), lalu yang ini.
+**Frontend saja, tanpa perubahan skema, tanpa endpoint baru.** Keduanya sudah
+ada: `dashboard/cash-position` dan `payment-plans`.
+
+> Berkas i18n ikut (13 kunci baru × 3 bahasa). Gabungkan kalau ada perubahan
+> i18n lain yang belum di-commit.
+
+---
+
+## Temuan yang menentukan bentuknya
+
+`purchases` punya `dueDate`, jadi uang **keluar** bisa ditaruh di garis waktu.
+Tetapi `sales_invoices` **tidak punya tanggal jatuh tempo maupun termin sama
+sekali** — yang diketahui cuma berapa yang belum dibayar, bukan kapan masuknya.
+
+Kalau pengeluaran diambil dari dokumen sementara pemasukan tidak bisa, garisnya
+**pesimis palsu**: uang keluar lengkap, uang masuk hampir nol. Itu bukan
+proyeksi, itu kecemasan yang digambar.
+
+Jadi (pilihan Anda): **dua-duanya dari rencana kas**. Simetris dan jujur —
+kalau satu arah tidak bisa ditempatkan di waktu, yang lain pun jangan.
+
+Batasan itu **dicetak di kartunya**, bukan disimpan di panduan. Keterangan
+yang cuma ada di panduan tidak pernah sampai ke orang yang sedang menatap
+angkanya.
 
 ---
 
-## 1. Arus kas: garis LURUS
+## Tiga keputusan di dalamnya
 
-`tension: 0`. Sempat melengkung, dan lengkungannya menimbulkan masalahnya
-sendiri — chart.js menarik kurva **melewati** titik datanya, sehingga pada
-bulan tanpa penerimaan garis "kas masuk" tercelup di bawah nol dan menggambar
-penerimaan negatif yang tidak pernah ada. Saya sempat menambalnya dengan
-`cubicInterpolationMode: 'monotone'`.
+**1. Mulai dari KAS HARI INI, bukan saldo awal bulan yang sedang dibuka.**
+Kartunya tidak ikut berpindah bulan bersama kalender di atasnya. Kalau ikut,
+ia berhenti jadi proyeksi dan jadi kalender kedua — dan kalau titik mulainya
+bukan uang yang benar-benar ada di rekening, seluruh garis bergeser sebanyak
+selisih itu tanpa ada yang menyadarinya.
 
-**Garis lurus membuat seluruh persoalan itu tidak ada**: segmen lurus tidak
-dapat melampaui kedua ujungnya. Dan memang lebih jujur untuk data bulanan —
-tidak ada yang tahu apa yang terjadi di antara dua bulan, dan kurva yang halus
-menyiratkan perjalanan yang tidak pernah diukur. Usul Anda lebih baik daripada
-tambalan saya.
+**2. PEKANAN, bukan bulanan.** Tiga bulan secara bulanan berarti **tiga titik**
+— itu bukan garis, itu tiga angka yang dihubungkan. Pekanan memberi 13 titik:
+cukup untuk melihat pekan mana kasnya menipis, dan itulah satu-satunya hal
+yang dicari orang di sini.
 
-## 2. Jendela otomatis: ~10 titik di layar Anda
+**3. Rencana TERLEWAT masuk ke pekan pertama**, bukan dibuang dan bukan
+ditaruh di tanggal aslinya yang sudah lewat. Uangnya belum bergerak,
+kewajibannya belum hilang. Dibuang, ia membuat proyeksinya terbaca lebih sehat
+daripada keadaannya — tepat pada bulan yang paling perlu diwaspadai.
 
-Dulu **~64px per titik**, dengan alasan "di bawah itu label bulan bertumpuk".
-Itu benar sebagai **batas bawah**, tetapi salah dipakai sebagai ukuran yang
-nyaman: ia menjejalkan sebanyak mungkin bulan sampai tepat sebelum labelnya
-rusak, dan hasilnya padat tanpa ada yang memintanya.
+## Yang ditonjolkan: saldo TERENDAH, bukan saldo akhir
 
-Sekarang **~160px per titik**, ditetapkan dari layar nyata: pada 1920×1200
-wadah grafiknya sekitar 1590px (layar dikurangi menu samping dan padding), dan
-1590/160 ≈ **10**. Dibatasi 5..20. Presetnya jadi `Otomatis · 6 · 10 · 18`.
+Saldo di ujung proyeksi bisa kembali positif setelah tagihan cair, sementara
+kasnya sempat minus di tengah jalan — dan yang minus di tengah itulah yang
+harus dibereskan lebih dulu. Angka akhir yang sehat menyembunyikan persis
+persoalan yang dicari orang di sini. Pekan pertama menembus nol juga disebut
+sebagai kalimat, bukan cuma digambar.
 
-> Kalau jumlahnya masih terasa aneh, sebutkan angkanya — `lebarWadahTerukur`
-> menyimpan lebar yang benar-benar terbaca, jadi kita bisa langsung tahu
-> apakah yang meleset pengukurannya atau ambangnya.
+## Hal-hal kecil yang disengaja
 
-## 3. Tab progress: dua hal yang Anda tunjuk
-
-**`%` yang hilang pada SELISIH.** Dua sel di sebelahnya berbunyi "6,35%" dan
-"8,9%"; sel ini selisih keduanya, jadi satuannya sama. Tanpa `%`, "-2,6" di
-antara dua persen terbaca sebagai entah apa — dan pembacanya mengira
-selisihnya kecil sekali.
-
-**Tanggal mentah.** `2026-09-12` → `12 Sep 2026`, di KPI dan di daftar
-riwayatnya. `YYYY-MM-DD` bentuk penyimpanan, bukan bentuk baca.
-
-Diurai **sebagai teks**, bukan lewat `new Date(...)`: `new Date('2026-09-12')`
-adalah tengah malam UTC dan di zona barat UTC mundur jadi 11 September.
-Tanggal opname yang meleset sehari tidak akan pernah dicurigai — dan kekeliruan
-yang sama sudah dua kali muncul di sistem ini (kurva kalender, pengemberan
-bulan arus kas).
-
-## 4. Nomor tender tampil
-
-Daftar dan layar tender memakai `documentNumber`, dengan `number` sebagai
-jaring pengaman — kalau SQL-nya belum dijalankan, jatuh ke nomor lama jauh
-lebih baik daripada "—" di seluruh daftar, yang terbaca seperti data hilang.
-
----
+- Rekening yang dipilih di kalender **diteruskan** ke kartunya. Dua angka kas
+  pada satu halaman yang berbeda karena saringan yang tidak sama adalah cara
+  tercepat membuat keduanya berhenti dipercaya.
+- Rencana di luar tiga bulan **disebut jumlahnya**. Dibuang tanpa keterangan,
+  yang mengisinya akan mengira rencananya hilang — dan mengisinya lagi.
+- Rutenya dijaga `bank:read`; yang tidak berhak tidak melihat kartunya sama
+  sekali, dan kalendernya tetap utuh.
+- Garis **lurus**, sama seperti arus kas proyek sesudah permintaan Anda.
+- Permintaan rencananya mulai dari **Senin pekan ini**, bukan dari hari ini —
+  kalau tidak, rencana yang jatuh Senin sementara hari ini Rabu tidak pernah
+  terambil, dan aturan "terlewat masuk pekan pertama" tidak punya apa-apa
+  untuk dipindahkan.
 
 ## Uji
 
-**55 spec lolos** pada halaman proyek (dari 52). Empat uji baru: garis lurus
-(`tension: 0` dan tidak ada `cubicInterpolationMode`), tanggal terbaca,
-jendela otomatis pada beberapa lebar, dan penjepitannya di kedua ujung.
+9 spec, semuanya lolos. Dibuktikan menggigit:
 
-> Satu uji saya sempat merah dan itu menemukan cacat sungguhan:
-> `tanggalBaca('bukan tanggal')` mengembalikan `'bukan tang'` — saya memotong
-> 10 huruf SEBELUM mencocokkan pola. Nilai yang bukan tanggal jadi
-> dikembalikan terpenggal, menambah keanehan kedua di atas yang pertama.
+```
+rencana terlewat dibuang  → "TERLEWAT masuk ke pekan pertama" GAGAL
+pekan kosong dilewati     → "tepat sebanyak pekan yang diminta" +
+                             "saldo berjalan kumulatif" GAGAL
+status tidak disaring     → "hanya status `rencana` yang dihitung" GAGAL
+```
+
+Build bersih, `terjemahcek` 0.
