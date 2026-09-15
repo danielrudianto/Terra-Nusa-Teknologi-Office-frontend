@@ -266,6 +266,191 @@ describe('ProjectReport — arus kas', () => {
     expect(f.componentInstance.tabAktif()).toBe('arus-kas');
   }));
 
+  // ------------------------------------------------------------------
+  // Pemilih seri
+  // ------------------------------------------------------------------
+
+  describe('pemilih seri', () => {
+    it('seri yang dimatikan DIBUANG dari datasets, bukan ditandai hidden', fakeAsync(() => {
+      /*
+       * `hidden` menyembunyikan garisnya tetapi nilainya tetap ikut
+       * menentukan rentang sumbu Y. Saldo yang bergerak di -700 sampai -200
+       * akan tetap digambar pada sumbu yang membentang sampai +500 hanya
+       * karena kas masuk yang TIDAK TERLIHAT masih ada di sana — dan garis
+       * yang diminta tampil sendirian justru jadi gepeng.
+       */
+      const f = buat(ARUS);
+      f.componentInstance.muat('R501');
+      tick();
+
+      expect(f.componentInstance.dataArusKas().datasets.length).toBe(3);
+
+      f.componentInstance.toggleSeriKas('masuk');
+      f.componentInstance.toggleSeriKas('keluar');
+
+      const ds = f.componentInstance.dataArusKas().datasets;
+      expect(ds.length).toBe(1);
+      expect(ds.some((d: any) => d.hidden)).toBeFalse();
+    }));
+
+    it('seri terakhir tidak dapat dimatikan', fakeAsync(() => {
+      // Grafik tanpa satu pun garis adalah kotak kosong dengan sumbu: tidak
+      // ada galat, tidak ada keterangan, dan yang mematikannya belum tentu
+      // ingat bahwa ia sendiri penyebabnya.
+      const f = buat(ARUS);
+      f.componentInstance.muat('R501');
+      tick();
+
+      f.componentInstance.toggleSeriKas('masuk');
+      f.componentInstance.toggleSeriKas('keluar');
+      expect(f.componentInstance.seriKasTerkunci('saldo')).toBeTrue();
+
+      f.componentInstance.toggleSeriKas('saldo');
+      expect(f.componentInstance.seriKasAktif('saldo')).toBeTrue();
+      expect(f.componentInstance.dataArusKas().datasets.length).toBe(1);
+    }));
+
+    it('warna chip berasal dari sumber yang sama dengan warna garis', fakeAsync(() => {
+      // Ditulis dua kali, chip hijau dan garis merah akan menunjuk hal yang
+      // sama tanpa satu pun galat — dan yang membacanya menyimpulkan
+      // grafiknya yang salah, bukan warnanya.
+      const f = buat(ARUS);
+      f.componentInstance.muat('R501');
+      tick();
+
+      const ds: any[] = f.componentInstance.dataArusKas().datasets as any[];
+      const urut: any[] = ['masuk', 'keluar', 'saldo'];
+      urut.forEach((k, i) => {
+        expect(ds[i].borderColor).toBe(f.componentInstance.warnaSeriKas(k));
+      });
+    }));
+  });
+
+  // ------------------------------------------------------------------
+  // Jendela geser
+  // ------------------------------------------------------------------
+
+  describe('jendela geser', () => {
+    /** 18 bulan: keluar 100 tiap bulan, tanpa pemasukan. */
+    const PANJANG = {
+      outgoing: Array.from({ length: 18 }, (_, i) => ({
+        date:
+          `${2025 + Math.floor(i / 12)}-` +
+          `${String((i % 12) + 1).padStart(2, '0')}-10`,
+        amount: 100,
+      })),
+      incoming: [],
+    };
+
+    it('bawaannya menampilkan jendela TERBARU, bukan yang paling awal', fakeAsync(() => {
+      // Yang membuka laporan arus kas menanyakan posisi kas SEKARANG.
+      // Memaksanya menggeser ke ujung kanan lebih dulu setiap kali adalah
+      // pekerjaan yang tidak ada gunanya.
+      const f = buat(PANJANG);
+      f.componentInstance.muat('R501');
+      tick();
+
+      const semua = f.componentInstance.titikArusKas();
+      const tampil = f.componentInstance.titikTampil();
+
+      expect(semua.length).toBe(18);
+      expect(tampil.length).toBe(f.componentInstance.lebarJendela());
+      expect(tampil[tampil.length - 1].bulan).toBe(semua[semua.length - 1].bulan);
+    }));
+
+    it('saldo di jendela tetap kumulatif sejak AWAL proyek', fakeAsync(() => {
+      /*
+       * Yang dipotong adalah TITIK yang saldonya sudah kumulatif — bukan
+       * pembayarannya. Kalau pembayarannya yang disaring lebih dulu, saldo di
+       * jendela ini dimulai ulang dari nol, dan proyek yang sudah menalangi
+       * setahun terbaca baru mulai.
+       */
+      const f = buat(PANJANG);
+      f.componentInstance.muat('R501');
+      tick();
+
+      const tampil = f.componentInstance.titikTampil();
+      const pertama = tampil[0];
+
+      // Bulan ke-7 dari 18 (jendela 12): sudah -700, bukan -100.
+      expect(pertama.keluar).toBe(100);
+      expect(pertama.saldo).toBeLessThan(-100);
+      expect(tampil[tampil.length - 1].saldo).toBe(-1800);
+    }));
+
+    it('mundur lalu maju kembali ke posisi semula', fakeAsync(() => {
+      const f = buat(PANJANG);
+      f.componentInstance.muat('R501');
+      tick();
+
+      const awal = f.componentInstance.titikTampil().map((x) => x.bulan);
+      f.componentInstance.geserKeBelakang();
+      expect(f.componentInstance.titikTampil().map((x) => x.bulan)).not.toEqual(awal);
+
+      f.componentInstance.geserKeDepan();
+      expect(f.componentInstance.titikTampil().map((x) => x.bulan)).toEqual(awal);
+    }));
+
+    it('tidak dapat mundur melewati bulan pertama', fakeAsync(() => {
+      const f = buat(PANJANG);
+      f.componentInstance.muat('R501');
+      tick();
+
+      for (let i = 0; i < 20; i++) f.componentInstance.geserKeBelakang();
+
+      const tampil = f.componentInstance.titikTampil();
+      const semua = f.componentInstance.titikArusKas();
+      expect(tampil[0].bulan).toBe(semua[0].bulan);
+      expect(tampil.length).toBe(f.componentInstance.lebarJendela());
+      expect(f.componentInstance.bisaMundur()).toBeFalse();
+    }));
+
+    it('melebarkan jendela mengembalikan ke bulan terkini', fakeAsync(() => {
+      // Melebarkan dari posisi tengah membuat tampilannya melompat ke rentang
+      // yang tidak diminta siapa pun.
+      const f = buat(PANJANG);
+      f.componentInstance.muat('R501');
+      tick();
+
+      f.componentInstance.geserKeBelakang();
+      expect(f.componentInstance.bisaMaju()).toBeTrue();
+
+      f.componentInstance.pilihJendela(24);
+      expect(f.componentInstance.bisaMaju()).toBeFalse();
+      // 18 titik dengan jendela 24: semuanya muat, kendalinya disembunyikan.
+      expect(f.componentInstance.titikTampil().length).toBe(18);
+      expect(f.componentInstance.jendelaDipakai()).toBeFalse();
+    }));
+
+    it('kendali jendela disembunyikan bila semuanya muat', fakeAsync(() => {
+      // Kendali yang tidak dapat melakukan apa-apa hanya menyiratkan ada
+      // sesuatu yang tersembunyi.
+      const f = buat(ARUS); // hanya 3 bulan
+      f.componentInstance.muat('R501');
+      tick();
+
+      expect(f.componentInstance.jendelaDipakai()).toBeFalse();
+      expect(f.componentInstance.titikTampil().length).toBe(3);
+    }));
+
+    it('geser yang tertinggal di luar jangkauan dijepit, bukan mengosongkan grafik', fakeAsync(() => {
+      // `geserKas` bertahan; berpindah ke proyek yang lebih pendek membuat
+      // nilainya melewati ujung. Dijepit di `geserSah`, bukan hanya di
+      // tombolnya.
+      const f = buat(PANJANG);
+      f.componentInstance.muat('R501');
+      tick();
+
+      f.componentInstance.geserKas.set(999);
+      expect(f.componentInstance.titikTampil().length).toBe(
+        f.componentInstance.lebarJendela(),
+      );
+      expect(f.componentInstance.titikTampil()[0].bulan).toBe(
+        f.componentInstance.titikArusKas()[0].bulan,
+      );
+    }));
+  });
+
   it('tanpa pembayaran bukan galat', fakeAsync(() => {
     // Proyek yang baru berjalan punya kas keluar tanpa kas masuk; yang
     // berjalan dengan uang muka punya kebalikannya. Keduanya normal.

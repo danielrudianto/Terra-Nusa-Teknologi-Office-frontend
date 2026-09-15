@@ -1663,6 +1663,13 @@
     "errNothingChanged": "Tidak ada yang berubah."
   },
   "projectCashflow": {
+    "show": "Tampilkan",
+    "lastSeries": "Setidaknya satu garis harus tetap tampil.",
+    "older": "Bulan sebelumnya",
+    "newer": "Bulan berikutnya",
+    "latest": "Ke terkini",
+    "windowSize": "Titik per layar",
+    "windowAuto": "Otomatis",
     "section": "Arus kas proyek",
     "sectionHint": "Kapan uangnya benar-benar bergerak — bukan kapan dokumennya terbit.",
     "tab": "Arus kas",

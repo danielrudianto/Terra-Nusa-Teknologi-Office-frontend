@@ -1663,6 +1663,13 @@
     "errNothingChanged": "Nothing changed."
   },
   "projectCashflow": {
+    "show": "Show",
+    "lastSeries": "At least one line must stay visible.",
+    "older": "Earlier months",
+    "newer": "Later months",
+    "latest": "Jump to latest",
+    "windowSize": "Points per view",
+    "windowAuto": "Auto",
     "section": "Project cash flow",
     "sectionHint": "When the money actually moved — not when the paperwork was issued.",
     "tab": "Cash flow",

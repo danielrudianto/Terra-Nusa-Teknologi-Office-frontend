@@ -1663,6 +1663,13 @@
     "errNothingChanged": "没有任何更改。"
   },
   "projectCashflow": {
+    "show": "显示",
+    "lastSeries": "至少需保留一条曲线。",
+    "older": "更早的月份",
+    "newer": "更晚的月份",
+    "latest": "回到最新",
+    "windowSize": "每屏点数",
+    "windowAuto": "自动",
     "section": "项目现金流",
     "sectionHint": "资金实际发生的时点，而非单据开具的时点。",
     "tab": "现金流",

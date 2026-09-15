@@ -698,7 +698,102 @@
             </div>
           </div>
 
-          <div class="prp-prog__grafik">
+          <!--
+            Pemilih seri.
+
+            Tiga garis sekaligus menjawab "kenapa"; satu garis menjawab
+            "berapa". Yang ingin melihat saldo saja sedang bertanya hal yang
+            berbeda — dan dua garis lain di sana membuat sumbunya ikut
+            menyesuaikan nilai yang tidak sedang ia baca.
+
+            Titik warnanya diambil dari sumber yang SAMA dengan warna
+            garisnya, jadi chip dan garis tidak dapat berbeda.
+          -->
+          <div class="prp-tahun prp-seri">
+            <span class="prp-tahun__label">
+              {{ "projectCashflow.show" | translate }}
+            </span>
+            <div class="prp-tahun__pilihan">
+              <button
+                type="button"
+                *ngFor="let k of KUNCI_SERI_KAS"
+                [class.on]="seriKasAktif(k)"
+                [disabled]="seriKasTerkunci(k)"
+                [matTooltip]="
+                  seriKasTerkunci(k)
+                    ? ('projectCashflow.lastSeries' | translate)
+                    : ''
+                "
+                (click)="toggleSeriKas(k)"
+              >
+                <span
+                  class="prp-seri__titik"
+                  [style.background]="warnaSeriKas(k)"
+                ></span>
+                {{ labelSeriKas(k) | translate }}
+              </button>
+            </div>
+          </div>
+
+          <!--
+            Jendela geser — hanya digambar bila titiknya memang lebih banyak
+            daripada yang muat. Kendali yang tidak dapat melakukan apa-apa
+            hanya menyiratkan ada sesuatu yang tersembunyi.
+          -->
+          <div class="prp-tahun prp-jendela" *ngIf="jendelaDipakai()">
+            <div class="prp-jendela__geser">
+              <button
+                type="button"
+                class="prp-jendela__nav"
+                [disabled]="!bisaMundur()"
+                [matTooltip]="'projectCashflow.older' | translate"
+                (click)="geserKeBelakang()"
+              >
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+              <span class="prp-jendela__rentang">{{ labelJendela() }}</span>
+              <button
+                type="button"
+                class="prp-jendela__nav"
+                [disabled]="!bisaMaju()"
+                [matTooltip]="'projectCashflow.newer' | translate"
+                (click)="geserKeDepan()"
+              >
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+              <button
+                type="button"
+                class="prp-jendela__kini"
+                *ngIf="bisaMaju()"
+                (click)="keTerkini()"
+              >
+                {{ "projectCashflow.latest" | translate }}
+              </button>
+            </div>
+
+            <span class="prp-tahun__label">
+              {{ "projectCashflow.windowSize" | translate }}
+            </span>
+            <div class="prp-tahun__pilihan">
+              <button
+                type="button"
+                *ngFor="let p of PILIHAN_JENDELA"
+                [class.on]="pilihanJendela() === p"
+                (click)="pilihJendela(p)"
+              >
+                {{
+                  p === "auto"
+                    ? ("projectCashflow.windowAuto" | translate) +
+                      " (" +
+                      jendelaOtomatis() +
+                      ")"
+                    : p
+                }}
+              </button>
+            </div>
+          </div>
+
+          <div class="prp-prog__grafik" #wadahGrafik>
             <canvas
               baseChart
               type="line"

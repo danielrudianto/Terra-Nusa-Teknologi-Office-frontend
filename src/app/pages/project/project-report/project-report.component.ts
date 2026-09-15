@@ -1,4 +1,14 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  OnInit,
+  computed,
+  effect,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -203,6 +213,21 @@ function awalMinggu(tanggal: any): string | null {
   const dua = (n: number) => String(n).padStart(2, '0');
   return `${t.getFullYear()}-${dua(t.getMonth() + 1)}-${dua(t.getDate())}`;
 }
+
+export type KunciSeriKas = 'masuk' | 'keluar' | 'saldo';
+
+/**
+ * Warna tiap seri arus kas — SATU sumber.
+ *
+ * Chip pemilih seri memakai warna ini juga. Ditulis dua kali, chip hijau dan
+ * garis merah akan menunjuk hal yang sama tanpa satu pun galat — dan yang
+ * membacanya menyimpulkan grafiknya salah, bukan warnanya.
+ */
+export const WARNA_KAS: Record<KunciSeriKas, { garis: string; isi: string }> = {
+  masuk: { garis: '#0f9d58', isi: 'rgba(15, 157, 88, 0.10)' },
+  keluar: { garis: '#d93025', isi: 'rgba(217, 48, 37, 0.10)' },
+  saldo: { garis: '#154dec', isi: 'rgba(21, 77, 236, 0.10)' },
+};
 
 /** Satu bulan pada grafik arus kas. */
 export interface TitikKas {
@@ -859,6 +884,10 @@ export class ProjectReportComponent implements OnInit {
   private muatArusKas(): void {
     this.arusKasMasuk.set([]);
     this.arusKasKeluar.set([]);
+    // Proyek baru selalu dibuka pada bulan terkini, bukan pada posisi geser
+    // proyek sebelumnya — rentang yang sama tidak berarti apa-apa di proyek
+    // yang umurnya berbeda.
+    this.geserKas.set(0);
 
     const k = this.kode();
     if (!k) return;
@@ -915,6 +944,150 @@ export class ProjectReportComponent implements OnInit {
 
   readonly adaArusKas = computed(() => this.titikArusKas().length > 0);
 
+  // ------------------------------------------------------------------
+  // Jendela geser: proyek panjang tidak muat dibaca sekaligus
+  // ------------------------------------------------------------------
+  //
+  // Proyek dua tahun adalah 24 titik. Dijejalkan ke satu lebar kartu,
+  // labelnya bertumpuk dan bentuk garisnya hilang — yang tersisa cuma
+  // kecenderungan kasar, padahal yang dicari justru bulan tertentu.
+  //
+  // Jendelanya MUNDUR dari yang terbaru, bukan maju dari awal: yang membuka
+  // laporan arus kas menanyakan posisi kas SEKARANG, dan memaksanya menggeser
+  // ke ujung kanan lebih dulu setiap kali adalah pekerjaan yang tidak ada
+  // gunanya.
+
+  private readonly wadahGrafik =
+    viewChild<ElementRef<HTMLElement>>('wadahGrafik');
+
+  /** Lebar wadah grafik dalam px; 0 berarti belum terukur. */
+  private readonly lebarWadah = signal(0);
+
+  /** `'auto'` = menyesuaikan lebar layar. */
+  readonly pilihanJendela = signal<number | 'auto'>('auto');
+
+  readonly PILIHAN_JENDELA: (number | 'auto')[] = ['auto', 6, 12, 24];
+
+  /**
+   * Titik ke sekian dari UJUNG KANAN; 0 berarti menampilkan yang terbaru.
+   *
+   * Dihitung dari ujung kanan, bukan dari awal, supaya menambah bulan baru
+   * tidak menggeser tampilan orang yang sedang melihat bagian terkini.
+   */
+  readonly geserKas = signal(0);
+
+  constructor() {
+    /*
+     * Lebar diukur dari WADAHNYA, bukan dari `window.innerWidth`.
+     *
+     * Menu samping dapat dilipat, dan kartunya juga dipakai pada layar lebar
+     * yang jendelanya separuh. Mengukur jendela peramban memberi jawaban yang
+     * benar hanya pada satu susunan layar.
+     */
+    let pengamat: ResizeObserver | undefined;
+
+    effect(() => {
+      const el = this.wadahGrafik()?.nativeElement;
+      pengamat?.disconnect();
+      pengamat = undefined;
+      if (!el || typeof ResizeObserver === 'undefined') return;
+
+      pengamat = new ResizeObserver((baris) => {
+        const w = Math.round(baris[0]?.contentRect?.width ?? 0);
+        if (w > 0) this.lebarWadah.set(w);
+      });
+      pengamat.observe(el);
+    });
+
+    inject(DestroyRef).onDestroy(() => pengamat?.disconnect());
+  }
+
+  /**
+   * Berapa titik yang muat, dihitung dari lebar wadahnya.
+   *
+   * ~64px per titik: di bawah itu label bulan ("Sep 26") mulai bertumpuk dan
+   * chart.js memiringkannya, yang justru membuat sumbunya makin sulit dibaca
+   * daripada sekadar menampilkan lebih sedikit bulan.
+   *
+   * Dibatasi 4..24. Batas bawah supaya jendelanya tetap berbentuk garis dan
+   * bukan dua titik; batas atas karena di atas 24 (dua tahun) tidak ada lagi
+   * yang dapat dibaca per bulan, dan yang butuh gambaran sepanjang itu
+   * sedang menanyakan hal yang berbeda.
+   */
+  readonly jendelaOtomatis = computed(() => {
+    const w = this.lebarWadah();
+    if (!w) return 12;
+    return Math.max(4, Math.min(24, Math.round(w / 64)));
+  });
+
+  readonly lebarJendela = computed(() => {
+    const p = this.pilihanJendela();
+    return p === 'auto' ? this.jendelaOtomatis() : p;
+  });
+
+  /** Jendelanya cuma berarti kalau titiknya memang lebih banyak. */
+  readonly jendelaDipakai = computed(
+    () => this.titikArusKas().length > this.lebarJendela(),
+  );
+
+  /** `geserKas` dijepit di sini, bukan hanya di tombolnya. */
+  readonly geserSah = computed(() => {
+    const maks = Math.max(0, this.titikArusKas().length - this.lebarJendela());
+    return Math.max(0, Math.min(maks, this.geserKas()));
+  });
+
+  readonly bisaMundur = computed(
+    () =>
+      this.geserSah() <
+      Math.max(0, this.titikArusKas().length - this.lebarJendela()),
+  );
+  readonly bisaMaju = computed(() => this.geserSah() > 0);
+
+  /**
+   * Titik yang benar-benar digambar.
+   *
+   * Yang dipotong adalah TITIK yang saldonya sudah kumulatif sejak awal
+   * proyek — bukan pembayarannya. Kalau pembayarannya yang disaring lebih
+   * dulu, saldo di jendela ini akan dimulai ulang dari nol, dan proyek yang
+   * sudah menalangi setahun terbaca baru mulai.
+   */
+  readonly titikTampil = computed<TitikKas[]>(() => {
+    const semua = this.titikArusKas();
+    const lebar = this.lebarJendela();
+    if (semua.length <= lebar) return semua;
+
+    const akhir = semua.length - this.geserSah();
+    return semua.slice(Math.max(0, akhir - lebar), akhir);
+  });
+
+  /** Rentang yang sedang tampil, disebut sebagai teks. */
+  readonly labelJendela = computed(() => {
+    const t = this.titikTampil();
+    if (!t.length) return '';
+    return t.length === 1 ? t[0].label : `${t[0].label} – ${t[t.length - 1].label}`;
+  });
+
+  geserKeBelakang(): void {
+    if (!this.bisaMundur()) return;
+    this.geserKas.set(this.geserSah() + this.lebarJendela());
+  }
+
+  geserKeDepan(): void {
+    if (!this.bisaMaju()) return;
+    this.geserKas.set(Math.max(0, this.geserSah() - this.lebarJendela()));
+  }
+
+  keTerkini(): void {
+    this.geserKas.set(0);
+  }
+
+  pilihJendela(p: number | 'auto'): void {
+    this.pilihanJendela.set(p);
+    // Kembali ke ujung kanan: melebarkan jendela dari posisi tengah membuat
+    // tampilannya melompat ke rentang yang tidak diminta siapa pun.
+    this.geserKas.set(0);
+  }
+
   /** Saldo kas pada titik terakhir; `null` bila belum ada pembayaran. */
   readonly saldoKasAkhir = computed<number | null>(() => {
     const t = this.titikArusKas();
@@ -941,13 +1114,79 @@ export class ProjectReportComponent implements OnInit {
     return t ? t.label : null;
   });
 
+  /**
+   * Seri mana yang sedang digambar.
+   *
+   * Tiga garis sekaligus menjawab "kenapa"; satu garis menjawab "berapa".
+   * Yang ingin melihat saldo saja sedang bertanya hal yang berbeda, dan dua
+   * garis lain di sana hanya membuat sumbunya ikut menyesuaikan nilai yang
+   * tidak sedang ia baca.
+   */
+  readonly seriKas = signal<Record<KunciSeriKas, boolean>>({
+    masuk: true,
+    keluar: true,
+    saldo: true,
+  });
+
+  readonly KUNCI_SERI_KAS: KunciSeriKas[] = ['masuk', 'keluar', 'saldo'];
+
+  /** Warna chip diambil dari sumber yang SAMA dengan warna garisnya. */
+  warnaSeriKas(k: KunciSeriKas): string {
+    return WARNA_KAS[k].garis;
+  }
+
+  labelSeriKas(k: KunciSeriKas): string {
+    return `projectCashflow.series${
+      k === 'masuk' ? 'In' : k === 'keluar' ? 'Out' : 'Balance'
+    }`;
+  }
+
+  seriKasAktif(k: KunciSeriKas): boolean {
+    return this.seriKas()[k];
+  }
+
+  /**
+   * Seri terakhir tidak dapat dimatikan.
+   *
+   * Grafik tanpa satu pun garis adalah kotak kosong dengan sumbu — tidak ada
+   * galat, tidak ada keterangan, dan yang mematikannya belum tentu ingat
+   * bahwa ia sendiri penyebabnya. Chipnya dibuat `disabled` supaya sebabnya
+   * terlihat sebelum ditekan, bukan sesudahnya.
+   */
+  readonly seriKasTerakhir = computed(
+    () => Object.values(this.seriKas()).filter(Boolean).length === 1,
+  );
+
+  seriKasTerkunci(k: KunciSeriKas): boolean {
+    return this.seriKasTerakhir() && this.seriKas()[k];
+  }
+
+  toggleSeriKas(k: KunciSeriKas): void {
+    if (this.seriKasTerkunci(k)) return;
+    this.seriKas.update((s) => ({ ...s, [k]: !s[k] }));
+  }
+
   readonly dataArusKas = computed<ChartData<'line'>>(() => {
-    const t = this.titikArusKas();
-    return {
-      labels: t.map((x) => x.label),
-      datasets: [
-        /*
-         * `cubicInterpolationMode: 'monotone'`, BUKAN `tension`.
+    // `titikTampil`, bukan `titikArusKas`: yang digambar adalah jendelanya.
+    // KPI di atas tetap memakai seluruh proyek — dua pertanyaan berbeda.
+    const t = this.titikTampil();
+    const aktif = this.seriKas();
+
+    /*
+     * Seri yang dimatikan DIBUANG dari `datasets`, bukan ditandai `hidden`.
+     *
+     * `hidden` menyembunyikan garisnya tetapi nilainya tetap ikut
+     * menentukan rentang sumbu Y. Saldo yang bergerak di -600 jt sampai
+     * -100 jt akan tetap digambar pada sumbu yang membentang sampai +450 jt
+     * hanya karena kas masuk yang tidak terlihat masih ada di sana — dan
+     * garis yang diminta tampil sendirian justru jadi gepeng.
+     *
+     * Dibuang dari daftarnya, sumbunya menyesuaikan pada yang benar-benar
+     * dibaca.
+     */
+    const semua = [
+      /*
+       * `cubicInterpolationMode: 'monotone'`, BUKAN `tension`.
          *
          * Ditemukan saat merender grafiknya sungguhan: dengan `tension: 0.25`,
          * chart.js melengkungkan garis MELEWATI titik datanya. Pada deret yang
@@ -959,19 +1198,21 @@ export class ProjectReportComponent implements OnInit {
          * Sudah diukur: titik kendali kurvanya tidak lagi menembus garis nol.
          */
         {
+          kunci: 'masuk' as KunciSeriKas,
           label: this.translate.instant('projectCashflow.seriesIn'),
           data: t.map((x) => x.masuk),
-          borderColor: '#0f9d58',
-          backgroundColor: 'rgba(15, 157, 88, 0.10)',
-          cubicInterpolationMode: 'monotone',
+          borderColor: WARNA_KAS.masuk.garis,
+          backgroundColor: WARNA_KAS.masuk.isi,
+          cubicInterpolationMode: 'monotone' as const,
           pointRadius: 2,
         },
         {
+          kunci: 'keluar' as KunciSeriKas,
           label: this.translate.instant('projectCashflow.seriesOut'),
           data: t.map((x) => x.keluar),
-          borderColor: '#d93025',
-          backgroundColor: 'rgba(217, 48, 37, 0.10)',
-          cubicInterpolationMode: 'monotone',
+          borderColor: WARNA_KAS.keluar.garis,
+          backgroundColor: WARNA_KAS.keluar.isi,
+          cubicInterpolationMode: 'monotone' as const,
           pointRadius: 2,
         },
         {
@@ -982,16 +1223,23 @@ export class ProjectReportComponent implements OnInit {
            * tanpa tahu mana yang harus dibaca. Saldo adalah jawabannya; masuk
            * dan keluar adalah sebabnya.
            */
+          kunci: 'saldo' as KunciSeriKas,
           label: this.translate.instant('projectCashflow.seriesBalance'),
           data: t.map((x) => x.saldo),
-          borderColor: '#154dec',
-          backgroundColor: 'rgba(21, 77, 236, 0.10)',
+          borderColor: WARNA_KAS.saldo.garis,
+          backgroundColor: WARNA_KAS.saldo.isi,
           borderWidth: 2.5,
           fill: true,
-          cubicInterpolationMode: 'monotone',
+          cubicInterpolationMode: 'monotone' as const,
           pointRadius: 2,
         },
-      ],
+    ];
+
+    return {
+      labels: t.map((x) => x.label),
+      datasets: semua
+        .filter((d) => aktif[d.kunci])
+        .map(({ kunci, ...sisa }) => sisa),
     };
   });
 
@@ -1578,6 +1826,9 @@ export class ProjectReportComponent implements OnInit {
     if (t === this.tahun()) return;
     this.tahun.set(t);
     this.kategoriTerbuka.set(null);
+    // Ganti tahun = ganti rentang. Posisi geser lama menunjuk bulan yang
+    // sudah tidak ada di daftarnya.
+    this.geserKas.set(0);
 
     // Kedipan yang sama dengan sakelar internal: angka yang berubah
     // diam-diam lebih membingungkan daripada angka yang berubah terlihat.

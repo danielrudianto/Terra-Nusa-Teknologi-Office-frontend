@@ -270,6 +270,105 @@
  * ada yang perlu dibereskan. Memakai warna peringatan untuk keterangan biasa
  * membuat peringatan yang sungguhan berhenti dibaca.
  */
+/* ---- pemilih seri arus kas ---- */
+.prp-seri {
+  margin: 1rem 0 0;
+}
+.prp-seri__titik {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  margin-right: 0.45rem;
+  vertical-align: 1px;
+  /*
+   * Titiknya TIDAK ikut meredup saat chipnya mati.
+   *
+   * Warnanya di situ untuk menjawab "garis yang mana", dan pertanyaan itu
+   * justru muncul saat serinya sedang tidak tampil. Meredupkannya membuat
+   * satu-satunya keterangan warna hilang tepat ketika dibutuhkan.
+   */
+  opacity: 1;
+}
+.prp-tahun__pilihan button:disabled {
+  /*
+   * Seri terakhir tidak dapat dimatikan — lihat `seriKasTerkunci`.
+   *
+   * `not-allowed`, bukan `default`: kursornya yang memberi tahu sebelum
+   * ditekan. Grafik tanpa satu pun garis adalah kotak kosong yang tidak
+   * menjelaskan apa pun tentang sebabnya.
+   */
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+/* ---- jendela geser ---- */
+.prp-jendela {
+  margin: 0.75rem 0 0;
+  justify-content: flex-start;
+}
+.prp-jendela__geser {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-right: 0.6rem;
+}
+.prp-jendela__nav {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line, #e4e9fb);
+  border-radius: 999px;
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  cursor: pointer;
+}
+.prp-jendela__nav:hover:not(:disabled) {
+  border-color: var(--brand, #154dec);
+  color: var(--brand, #154dec);
+}
+.prp-jendela__nav:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.prp-jendela__nav .mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  line-height: 18px;
+}
+.prp-jendela__rentang {
+  /*
+   * Lebar minimum supaya tombol kiri-kanan tidak bergeser.
+   *
+   * Tanpa ini, "Sep 26 – Agu 27" dan "Jan 26" menghasilkan lebar berbeda,
+   * dan tombol berikutnya berpindah tempat tepat saat orang hendak
+   * menekannya lagi.
+   */
+  min-width: 9.5rem;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink, #212630);
+  font-variant-numeric: tabular-nums;
+}
+.prp-jendela__kini {
+  height: 32px;
+  padding: 0 0.7rem;
+  border: 1px solid var(--line, #e4e9fb);
+  border-radius: 999px;
+  background: var(--surface, #fff);
+  color: var(--brand, #154dec);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.prp-jendela__kini:hover {
+  border-color: var(--brand, #154dec);
+}
+
 .prp-peringatan--ket {
   background: var(--info-bg, #eef3ff);
   color: var(--info-fg, #274690);
