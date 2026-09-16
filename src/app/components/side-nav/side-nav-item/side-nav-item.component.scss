@@ -262,8 +262,21 @@
   padding: 0 5px;
   border-radius: 8px;
 
-  background: color-mix(in srgb, #e5484d 14%, transparent);
-  color: #e5484d;
+  /*
+   * WARNA AKSEN, bukan merah.
+   *
+   * Merah dipilih semula karena lencana ini menandai sesuatu yang menunggu
+   * tindakan. Tetapi di menu samping yang seluruhnya biru, satu titik merah
+   * terbaca sebagai GALAT — dan lencana ini bukan galat, ia antrean kerja
+   * yang wajar. Merah untuk keadaan yang wajar membuat merah yang sungguhan
+   * berhenti dibaca.
+   *
+   * Dipakai token `--brand`, bukan nilai mati: ia sudah punya padanan gelap,
+   * jadi lencananya ikut benar di tema gelap tanpa aturan tambahan — yang
+   * dulu tidak, karena `#e5484d` ditulis langsung.
+   */
+  background: color-mix(in srgb, var(--brand, #154dec) 14%, transparent);
+  color: var(--brand-strong, #0f3fd0);
   font-size: 10px;
   font-weight: 700;
   line-height: 16px;
@@ -279,6 +292,8 @@
  * putih — cukup kecil untuk tidak berteriak, cukup pekat untuk terbaca.
  */
 .side-navigation-button__wrapper.active .snav-badge {
-  background: #e5484d;
+  /* Pada baris aktif latarnya sudah biru muda, jadi lencananya dipadatkan
+     supaya tetap terbaca — warnanya sama, kepekatannya yang berbeda. */
+  background: var(--brand, #154dec);
   color: #fff;
 }

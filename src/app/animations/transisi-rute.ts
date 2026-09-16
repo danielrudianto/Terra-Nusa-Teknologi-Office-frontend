@@ -27,7 +27,10 @@ import {
  *
  * Dua ketukan, bukan satu:
  *
- *   1. Isi halaman naik 14px sambil muncul, dengan skala 0.985 -> 1.
+ *   1. Isi halaman naik 18px sambil muncul, dengan skala 0.98 -> 1.
+ *      (Semula 14px/0.985. Dinaikkan karena pada layar besar gerakan sekecil
+ *      itu selesai sebelum mata sempat menangkapnya — ia ada, tetapi tidak
+ *      terbaca sebagai apa pun.)
  *      Skalanya nyaris tak terlihat dan memang harus begitu — ia yang membuat
  *      halaman terasa "datang", bukan sekadar berubah terang.
  *   2. Judul halaman menyusul 70ms kemudian.
@@ -74,7 +77,7 @@ export const transisiRute = trigger('transisiRute', [
   transition(
     '* => *',
     [
-      style({ opacity: 0, transform: 'translateY(14px) scale(0.985)' }),
+      style({ opacity: 0, transform: 'translateY(18px) scale(0.98)' }),
       query(
         KETUKAN_KEDUA,
         style({ opacity: 0, transform: 'translateY(8px)' }),

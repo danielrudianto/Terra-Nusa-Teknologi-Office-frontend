@@ -170,8 +170,31 @@ export class MainComponent {
      */
     this.permissionService.load();
 
-    this.label = this.route.snapshot.firstChild!.data['title'];
+    /*
+     * KUNCI RUTE dan LANGGANANNYA dipasang SEBELUM apa pun yang dapat
+     * melempar.
+     *
+     * Barisnya dulu berbunyi `this.route.snapshot.firstChild!.data['title']`.
+     * Tanda `!` itu janji kepada pemeriksa tipe, bukan jaminan saat berjalan:
+     * bila `firstChild` ternyata `null` — rute yang belum selesai dialihkan,
+     * atau anak yang belum teraktifkan saat komponen ini dibuat — barisnya
+     * melempar `TypeError`, dan `ngOnInit` BERHENTI DI SITU.
+     *
+     * Akibatnya langganan `router.events` di bawahnya tidak pernah terpasang.
+     * `kunciRute` lalu membeku pada nilai awalnya untuk seluruh sesi, pemicu
+     * `* => *` tidak pernah melihat nilai yang berbeda, dan transisi
+     * halamannya TIDAK PERNAH jalan lagi sesudah pemuatan pertama — persis
+     * gejala "kok ganti halaman tidak ada transisinya".
+     *
+     * Satu galat di konsol saat halaman dibuka, lalu senyap. Judul halaman
+     * pun ikut berhenti diperbarui, tetapi itu jauh lebih mudah dikira
+     * kesengajaan daripada dikenali sebagai akibat.
+     *
+     * Karena itu urutannya dibalik: yang menyalakan transisi dipasang lebih
+     * dulu, dan pembacaan judulnya dibuat tidak mungkin melempar.
+     */
     this.kunciRute.set(this.router.url);
+    this.label = this.route.snapshot.firstChild?.data?.['title'] ?? this.label;
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
@@ -200,8 +223,19 @@ export class MainComponent {
         }),
       )
       .subscribe((route: ActivatedRoute) => {
-        this.label = route.snapshot.data['title'];
+        /*
+         * Kunci transisi disetel LEBIH DULU, dan judulnya dibaca dengan
+         * pengaman.
+         *
+         * Alasan yang sama seperti di atas: `route.snapshot.data['title']`
+         * pada rute tanpa `title` menghasilkan `undefined` — itu tidak apa —
+         * tetapi `snapshot` yang tidak ada akan melempar, dan pelemparan di
+         * dalam `subscribe` MEMATIKAN LANGGANANNYA. Sesudah itu tidak ada
+         * satu pun perpindahan halaman yang menyalakan transisi lagi, dan
+         * tidak ada apa pun di layar yang menunjukkannya.
+         */
         this.kunciRute.set(this.router.url);
+        this.label = route?.snapshot?.data?.['title'] ?? '';
       });
   }
 
