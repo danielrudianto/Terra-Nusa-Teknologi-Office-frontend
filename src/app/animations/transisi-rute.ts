@@ -157,7 +157,10 @@ export const transisiRute = trigger('transisiRute', [
         durasi: DURASI_TRANSISI,
         jeda: JEDA_JUDUL,
         kurva: KURVA,
-        mulai: `translateY(${JARAK_NAIK}px) scale(0.98)`,
+        // Ditulis HARFIAH, bukan merujuk `MULAI_TRANSISI` di bawah:
+        // `const` yang dirujuk sebelum dideklarasikan melempar saat
+        // modulnya dievaluasi, dan yang gagal adalah seluruh aplikasi.
+        mulai: 'translateY(4vh) scale(0.985)',
       },
     },
   ),
@@ -219,11 +222,32 @@ export type JenisTransisi =
  * halamannya.
  */
 export const MULAI_TRANSISI: Record<JenisTransisi, string> = {
-  'push-up': `translateY(${JARAK_NAIK}px) scale(0.98)`,
-  'push-down': `translateY(-${JARAK_NAIK}px) scale(0.98)`,
+  /*
+   * JARAKNYA relatif terhadap LAYAR (vh/vw), bukan piksel tetap.
+   *
+   * Inilah sebabnya "morph jalan, push up/down tidak". Keduanya berjalan —
+   * yang berbeda seberapa besar TERBACANYA:
+   *
+   *   * `scale()` besarnya sebanding dengan tinggi elemennya. Pada daftar
+   *     Purchase Order yang panjangnya ribuan piksel, `scale(0.94)` menggeser
+   *     isi di sekitar mata puluhan piksel — jelas terlihat.
+   *   * `translateY(18px)` besarnya 18px, apa pun tinggi halamannya. Pada
+   *     halaman Pengaturan yang pendek itu terbaca; pada daftar yang panjang
+   *     ia tenggelam.
+   *
+   * Satu jenis terasa bekerja dan yang lain tidak, padahal keduanya berjalan
+   * persis seperti yang diperintahkan. Tidak ada galat — memang tidak ada
+   * yang rusak.
+   *
+   * `vh`/`vw` membuat jaraknya sebanding dengan LAYAR, yang tetap sama entah
+   * halamannya pendek atau panjang. Skala kecil tetap dipertahankan supaya
+   * gerakannya punya kedalaman, bukan sekadar bergeser.
+   */
+  'push-up': 'translateY(4vh) scale(0.985)',
+  'push-down': 'translateY(-4vh) scale(0.985)',
   morph: 'scale(0.94)',
-  'slide-left': 'translateX(28px)',
-  'slide-right': 'translateX(-28px)',
+  'slide-left': 'translateX(6vw)',
+  'slide-right': 'translateX(-6vw)',
   none: 'none',
 };
 

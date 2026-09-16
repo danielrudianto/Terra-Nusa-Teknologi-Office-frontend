@@ -203,13 +203,15 @@ describe('Transisi rute', () => {
   it('arah naik dan turun benar-benar berlawanan', () => {
     const naik = setelanTransisi('push-up', 500).mulai;
     const turun = setelanTransisi('push-down', 500).mulai;
-    expect(naik).toContain('translateY(18px)');
-    expect(turun).toContain('translateY(-18px)');
+    // Jaraknya relatif LAYAR (vh), bukan piksel tetap — lihat alasannya di
+    // `MULAI_TRANSISI`. Yang dijaga di sini arahnya, bukan angkanya.
+    expect(naik).toContain('translateY(4vh)');
+    expect(turun).toContain('translateY(-4vh)');
   });
 
   it('geser kiri dan kanan berlawanan pada sumbu X', () => {
-    expect(setelanTransisi('slide-left', 500).mulai).toContain('translateX(28px)');
-    expect(setelanTransisi('slide-right', 500).mulai).toContain('translateX(-28px)');
+    expect(setelanTransisi('slide-left', 500).mulai).toContain('translateX(6vw)');
+    expect(setelanTransisi('slide-right', 500).mulai).toContain('translateX(-6vw)');
   });
 
   it('morph tidak MEMINDAHKAN apa pun', () => {
@@ -218,6 +220,31 @@ describe('Transisi rute', () => {
     const m = setelanTransisi('morph', 500).mulai;
     expect(m).toContain('scale(');
     expect(m).not.toContain('translate');
+  });
+
+  it('jarak gerakannya relatif LAYAR, bukan piksel tetap', () => {
+    /*
+     * Inti "morph jalan, push up/down tidak".
+     *
+     * `scale()` besarnya sebanding dengan tinggi elemennya; pada daftar
+     * sepanjang ribuan piksel ia menggeser isi puluhan piksel dan jelas
+     * terlihat. `translateY(18px)` tetap 18px apa pun tinggi halamannya —
+     * terbaca di halaman pendek, tenggelam di halaman panjang.
+     *
+     * Keduanya berjalan persis seperti diperintahkan; yang berbeda hanya
+     * seberapa besar TERBACANYA. Tidak ada galat, karena memang tidak ada
+     * yang rusak.
+     */
+    for (const j of JENIS_TRANSISI) {
+      if (j.nilai === 'none' || j.nilai === 'morph') continue;
+      const m = setelanTransisi(j.nilai, 500).mulai;
+      expect(m)
+        .withContext(
+          `jenis "${j.nilai}" memakai jarak piksel tetap — ia akan tenggelam ` +
+            `pada halaman daftar yang panjang, dan terbaca sebagai "tidak jalan"`,
+        )
+        .toMatch(/translate[XY]\(-?[\d.]+v[hw]\)/);
+    }
   });
 
   it('durasi dijepit ke rentang yang sah', () => {
