@@ -1,12 +1,3 @@
-import {
-  animate,
-  group,
-  query,
-  style,
-  transition,
-  trigger,
-} from '@angular/animations';
-
 /**
  * Transisi antar halaman — SATU definisi untuk seluruh aplikasi.
  *
@@ -88,111 +79,37 @@ export const JEDA_JUDUL = 70;
 /** Jarak naik isi halaman saat muncul, px. */
 export const JARAK_NAIK = 18;
 
-const KURVA = 'cubic-bezier(0.22, 1, 0.36, 1)';
-
 /**
- * Anak yang mendapat ketukan kedua.
- *
- * `app-header-title` dipakai sebagian besar halaman berutinya. Yang tidak
- * memakainya cukup kehilangan ketukan keduanya — `optional: true` membuat
- * query yang tidak menemukan apa pun TIDAK melempar. Tanpa itu, satu halaman
- * tanpa header akan menggagalkan animasinya dengan galat yang menyebut
- * selector, bukan halamannya.
+ * Melambat panjang di ujung: gerakannya berhenti dengan lembut alih-alih
+ * mendadak berhenti. Diekspor karena `TransisiHalamanDirective` memakai kurva
+ * yang sama lewat Web Animations API — dua kurva yang "mirip" akan berbeda
+ * dalam sebulan, dan perbedaannya terasa tanpa dapat ditunjuk.
  */
-const KETUKAN_KEDUA = 'app-header-title';
+export const KURVA = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
-export const transisiRute = trigger('transisiRute', [
-  transition(
-    '* => *',
-    [
-      /*
-       * Halaman yang DITINGGALKAN disembunyikan seketika.
-       *
-       * Mesin animasi Angular menahan pembuangan simpul anak selama induknya
-       * masih punya animasi berjalan. Pada durasi 300ms hal itu nyaris tidak
-       * terlihat; pada 1,5 detik halaman lamanya tergambar penuh di bawah
-       * yang baru — dua halaman bertumpuk, persis yang dilaporkan.
-       *
-       * `style({ display: 'none' })` tanpa `animate()`: tidak ada animasi
-       * keluar, tidak ada halaman lama yang ditahan untuk digambar. Simpulnya
-       * tetap ada di DOM sampai mesinnya membuangnya — itu di luar kuasa kita
-       * — tetapi berhenti tergambar dan berhenti memakan ruang.
-       *
-       * TERUS TERANG: saya TIDAK berhasil mereproduksi tumpukannya di dalam
-       * uji, bahkan dengan router sungguhan. Jadi ini penanganan atas GEJALA
-       * yang terbukti dari tangkapan layar, bukan atas sebab yang saya
-       * pahami. Ia tidak berbiaya apa pun bila tidak ada simpul yang keluar.
-       */
-      query(':leave', style({ display: 'none' }), { optional: true }),
-
-      // Bentuk gerakannya SELURUHNYA datang dari parameter `mulai`.
-      //
-      // Dulu `geser` dan `skala` terpisah, dan itu hanya cukup untuk gerakan
-      // tegak. Sejak jenisnya dapat dipilih pengguna — naik, turun, geser
-      // kiri, geser kanan, morph — satu transform utuh adalah satu-satunya
-      // bentuk yang tidak perlu ditambah setiap kali ada jenis baru.
-      style({ opacity: 0, transform: '{{ mulai }}' }),
-      query(
-        KETUKAN_KEDUA,
-        style({ opacity: 0, transform: 'translateY(8px)' }),
-        { optional: true },
-      ),
-      group([
-        animate(
-          '{{ durasi }}ms {{ kurva }}',
-          style({ opacity: 1, transform: 'none' }),
-        ),
-        query(
-          KETUKAN_KEDUA,
-          animate(
-            '{{ durasi }}ms {{ jeda }}ms {{ kurva }}',
-            style({ opacity: 1, transform: 'none' }),
-          ),
-          { optional: true },
-        ),
-      ]),
-    ],
-    {
-      params: {
-        durasi: DURASI_TRANSISI,
-        jeda: JEDA_JUDUL,
-        kurva: KURVA,
-        // Ditulis HARFIAH, bukan merujuk `MULAI_TRANSISI` di bawah:
-        // `const` yang dirujuk sebelum dideklarasikan melempar saat
-        // modulnya dievaluasi, dan yang gagal adalah seluruh aplikasi.
-        mulai: 'translateY(4vh) scale(0.985)',
-      },
-    },
-  ),
-]);
-
-/**
- * Transisi untuk layout BERSARANG (mis. Data Master).
+/*
+ * PEMICU ANIMASI ANGULAR SUDAH TIDAK ADA DI BERKAS INI.
  *
- * Sama persis, kecuali satu hal: kemunculan PERTAMA tidak dianimasikan.
+ * Dulu ada dua: `transisiRute` untuk kerangka utama dan `transisiRuteBersarang`
+ * untuk Data Master. Keduanya terpasang pada pembungkus `<router-outlet>`, dan
+ * di situlah persoalannya — bukan pada isi animasinya.
  *
- * Tanpa itu, membuka Data Master dari menu samping memainkan dua animasi
- * sekaligus — kerangka utama menganimasikan seluruh halaman Master, dan pada
- * saat yang sama outlet di dalam Master menganimasikan isinya. Keduanya
- * memudar dari nol, jadi opasitasnya berkalian: isinya sampai lebih lambat
- * daripada yang dimaksudkan keduanya, dan terbaca sebagai halaman yang berat.
+ * Mesin animasi Angular MENUNDA pembuangan simpul anak selama induknya masih
+ * punya animasi berjalan. Pembungkus outlet adalah induk komponen halaman,
+ * jadi halaman LAMA ditahan sampai animasinya rampung. Dua akibatnya pernah
+ * dilaporkan sebagai dua keluhan terpisah — halaman bertumpuk, dan aplikasi
+ * yang makin lambat setiap perpindahan — padahal satu sebab.
  *
- * Berpindah DI DALAM Master (Equipment -> Item) tetap beranimasi, karena di
- * situ kerangka utama tidak berganti apa pun dan tidak ada yang menganimasikan
- * selain ini.
+ * Gerakannya sekarang dijalankan `TransisiHalamanDirective` lewat Web
+ * Animations API, yang tidak tahu apa-apa tentang penyisipan maupun
+ * pembuangan simpul. Yang tinggal di berkas ini hanya BENTUK dan DURASI
+ * gerakannya; keduanya dipakai direktif itu.
+ *
+ * `scripts/pemeriksa/transisicek.py` menolak pemicu animasi apa pun pada
+ * template yang berisi `<router-outlet>`, supaya bentuk lamanya tidak kembali
+ * lewat layout baru yang ditulis orang lain.
  */
-export const transisiRuteBersarang = trigger('transisiRuteBersarang', [
-  // Kosong = tidak ada animasi, bukan "animasi tanpa langkah".
-  transition('void => *', []),
-  transition(
-    '* => *',
-    [
-      style({ opacity: 0, transform: '{{ mulai }}' }),
-      animate('{{ durasi }}ms {{ kurva }}', style({ opacity: 1, transform: 'none' })),
-    ],
-    { params: { durasi: DURASI_TRANSISI, kurva: KURVA, mulai: 'translateY(10px)' } },
-  ),
-]);
+
 
 /**
  * Durasi yang benar-benar dipakai, menghormati "kurangi gerak".

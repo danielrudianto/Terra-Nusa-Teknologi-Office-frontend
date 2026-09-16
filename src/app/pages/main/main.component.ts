@@ -14,9 +14,7 @@ import {
 import { filter, map } from 'rxjs';
 import { VersiService } from 'src/app/services/versi.service';
 import { MatIconModule } from '@angular/material/icon';
-import {
-  transisiRute,
-} from '../../animations/transisi-rute';
+import { TransisiHalamanDirective } from '../../animations/transisi-halaman.directive';
 import { SettingsService } from '../../services/setting.service';
 
 @Component({
@@ -29,11 +27,20 @@ import { SettingsService } from '../../services/setting.service';
     PanduanPanelComponent,
     PanduanFabComponent,
     MatIconModule,
+    TransisiHalamanDirective,
   ],
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
   standalone: true,
-  animations: [transisiRute],
+  /*
+   * TIDAK ada `animations: [...]`.
+   *
+   * Pemicu animasi Angular pada pembungkus outlet adalah INDUK komponen
+   * halaman, dan mesin animasinya menunda pembuangan simpul anak selama
+   * animasi induknya berjalan. Itulah dua halaman yang terlihat bertumpuk —
+   * dan, karena komponennya tidak pernah dihancurkan, itu pula yang membuat
+   * aplikasinya makin lambat setiap perpindahan.
+   */
 })
 export class MainComponent {
   readonly versi = inject(VersiService);

@@ -26,20 +26,19 @@
       Transisi halaman dipasang pada PEMBUNGKUS outlet, bukan pada outletnya.
 
       `<router-outlet>` sendiri tidak merender apa pun — komponen halaman
-      disisipkan sebagai SAUDARA di sebelahnya, bukan sebagai anaknya. Trigger
-      yang dipasang di sana tidak akan menyentuh isi halaman sama sekali, dan
+      disisipkan sebagai SAUDARA di sebelahnya, bukan sebagai anaknya. Yang
+      dipasang di outletnya tidak akan menyentuh isi halaman sama sekali, dan
       gejalanya persis seperti animasi yang tidak pernah menyala.
+
+      Yang menjalankannya BUKAN LAGI pemicu animasi Angular. Pemicu pada induk
+      outlet menunda pembuangan halaman lama selama animasinya berjalan —
+      halaman bertumpuk, dan komponennya tidak pernah dihancurkan. Lihat
+      `animations/transisi-halaman.directive.ts`.
     -->
     <div
       class="dashboard__container__router"
-      [@transisiRute]="{
-        value: kunciRute(),
-        params: {
-          durasi: setelan().durasi,
-          jeda: setelan().jeda,
-          mulai: setelan().mulai
-        }
-      }"
+      [appTransisiHalaman]="kunciRute()"
+      [transisiSetelan]="setelan()"
     >
       <router-outlet></router-outlet>
     </div>

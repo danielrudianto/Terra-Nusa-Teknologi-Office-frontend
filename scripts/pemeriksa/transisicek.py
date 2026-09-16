@@ -40,6 +40,7 @@ Ditambah satu hal yang bukan soal kerusakan melainkan soal orang:
 """
 
 import os
+import pathlib
 import re
 import sys
 
@@ -48,6 +49,10 @@ ANIM = os.path.join(AKAR, 'src', 'app', 'animations', 'transisi-rute.ts')
 MAIN_HTML = os.path.join(AKAR, 'src', 'app', 'pages', 'main', 'main.component.html')
 MAIN_TS = os.path.join(AKAR, 'src', 'app', 'pages', 'main', 'main.component.ts')
 MASTER_TS = os.path.join(AKAR, 'src', 'app', 'pages', 'master', 'master.component.ts')
+MASTER_HTML = os.path.join(AKAR, 'src', 'app', 'pages', 'master', 'master.component.html')
+DIREKTIF = os.path.join(
+    AKAR, 'src', 'app', 'animations', 'transisi-halaman.directive.ts'
+)
 SETELAN_SVC = os.path.join(AKAR, 'src', 'app', 'services', 'setting.service.ts')
 
 
@@ -90,6 +95,7 @@ def periksa():
     masalah = []
 
     anim = _tanpa_komentar(_baca(ANIM))
+    dirtif = _tanpa_komentar(_baca(DIREKTIF))
     html = _tanpa_komentar(_baca(MAIN_HTML))
     main = _tanpa_komentar(_baca(MAIN_TS))
     master = _tanpa_komentar(_baca(MASTER_TS))
@@ -99,22 +105,76 @@ def periksa():
     if not anim:
         return ['src/app/animations/transisi-rute.ts tidak ada']
 
-    # --- 1. trigger tidak boleh menempel pada router-outlet ---------------
-    if re.search(r'<router-outlet[^>]*\[@', html):
+    # --- 1. TIDAK ADA pemicu animasi pada induk <router-outlet> ----------
+    #
+    # ATURAN YANG PALING MENENTUKAN DI BERKAS INI.
+    #
+    # Mesin animasi Angular MENUNDA pembuangan simpul anak selama induknya
+    # masih punya animasi yang berjalan. Pembungkus `<router-outlet>` adalah
+    # induk komponen halaman, jadi pemicu di sana menunda pembuangan halaman
+    # LAMA sampai animasinya rampung.
+    #
+    # Akibatnya dua, dan keduanya pernah dilaporkan sebagai keluhan terpisah:
+    #
+    #   * halaman lama tergambar di atas yang baru — dua halaman bertumpuk;
+    #   * komponennya TIDAK PERNAH DIHANCURKAN, jadi pendeteksi perubahannya
+    #     masih ikut setiap putaran dan setiap perpindahan menambah satu lagi.
+    #     Itulah "makin lama makin lambat".
+    #
+    # Pada durasi 300ms nyaris tidak terlihat; sejak durasinya dapat disetel
+    # sampai 1,5 detik ia terbaca sebagai kerusakan. Gerakannya sekarang
+    # dijalankan `TransisiHalamanDirective` lewat Web Animations API, yang
+    # tidak tahu apa-apa tentang penyisipan maupun pembuangan simpul.
+    #
+    # Disapu SELURUH template, bukan hanya dua yang dikenal: yang menambah
+    # layout beroutlet berikutnya tidak akan tahu aturan ini ada.
+    for berkas in sorted(pathlib.Path(AKAR, 'src/app').rglob('*.html')):
+        isi = _tanpa_komentar(berkas.read_text(encoding='utf-8'))
+        if '<router-outlet' not in isi:
+            continue
+        for m in re.finditer(r'\[@[A-Za-z0-9_]+\]', isi):
+            masalah.append(
+                f'{berkas.relative_to(pathlib.Path(AKAR, "src/app"))}: '
+                f'`{m.group(0)}` dipasang di template yang berisi '
+                '`<router-outlet>` — mesin animasi Angular akan menunda '
+                'pembuangan halaman lama, jadi halamannya bertumpuk dan '
+                'komponennya tidak pernah dihancurkan. Pakai '
+                '`[appTransisiHalaman]`'
+            )
+
+    if '[appTransisiHalaman]' not in html:
         masalah.append(
-            'main.component.html: trigger dipasang pada `<router-outlet>` — '
-            'halaman disisipkan sebagai SAUDARA outlet, bukan anaknya, jadi '
-            'animasinya tidak akan menyentuh isi halaman sama sekali'
-        )
-    if '[@transisiRute]' not in html:
-        masalah.append(
-            'main.component.html: `[@transisiRute]` tidak terpasang — '
+            'main.component.html: `[appTransisiHalaman]` tidak terpasang — '
             'perpindahan lewat menu samping kembali tanpa transisi'
         )
-    if 'animations: [transisiRute]' not in main:
+    if 'TransisiHalamanDirective' not in main:
         masalah.append(
-            'main.component.ts: `transisiRute` tidak didaftarkan di '
-            '`animations` — bindingnya di template diam-diam tidak berfungsi'
+            'main.component.ts: `TransisiHalamanDirective` tidak diimpor — '
+            'bindingnya di template diam-diam tidak berfungsi'
+        )
+    if re.search(r'animations:\s*\[', main):
+        masalah.append(
+            'main.component.ts: masih punya `animations: [...]` — lihat '
+            'alasannya di atas'
+        )
+
+    # Animasi sebelumnya WAJIB dibatalkan sebelum yang baru dimulai.
+    #
+    # Tanpa itu, delapan perpindahan beruntun meninggalkan sembilan animasi
+    # pada elemen yang sama — diukur, bukan dikira. Lihat
+    # `transisi-halaman.directive.spec.ts`.
+    if '.cancel()' not in dirtif:
+        masalah.append(
+            'transisi-halaman.directive.ts: animasi sebelumnya tidak '
+            'dibatalkan — perpindahan yang cepat menumpuk animasi pada elemen '
+            'yang sama'
+        )
+    if "fill: 'backwards'" not in dirtif:
+        masalah.append(
+            "transisi-halaman.directive.ts: ketukan kedua tanpa "
+            "`fill: 'backwards'` — judulnya tergambar penuh selama jedanya "
+            'lalu melompat ke nol; kedipan itu lebih terlihat daripada '
+            'gerakan yang dimaksudkan'
         )
 
     # --- 2. kuncinya berubah tiap halaman ---------------------------------
@@ -127,40 +187,34 @@ def periksa():
             'tidak berubah di antara keduanya dan animasinya tidak menyala'
         )
 
-    # --- 3. query wajib optional ------------------------------------------
-    panggilan_query = _panggilan(anim, 'query')
-    if not panggilan_query:
-        masalah.append(
-            'transisi-rute.ts: tidak ada `query(...)` sama sekali — ketukan '
-            'kedua (judul halaman menyusul) hilang, dan yang tersisa cuma '
-            'fade biasa'
-        )
-    for isi in panggilan_query:
-        if 'optional: true' not in isi:
-            masalah.append(
-                'transisi-rute.ts: ada `query(...)` tanpa `optional: true` — '
-                'satu halaman tanpa elemen itu akan MELEMPAR dan menjatuhkan '
-                'animasi seluruh aplikasi'
-            )
-            break
-
     # --- 4. layout bersarang tidak memainkan animasi keduanya -------------
-    if 'transisiRuteBersarang' not in anim:
-        masalah.append('transisi-rute.ts: `transisiRuteBersarang` hilang')
-    else:
-        blok = anim[anim.index('transisiRuteBersarang'):]
-        if not re.search(r"transition\(\s*'void => \*'\s*,\s*\[\s*\]\s*\)", blok):
-            masalah.append(
-                "transisi-rute.ts: `transisiRuteBersarang` tidak menonaktifkan "
-                "`void => *` — membuka Data Master akan memainkan DUA animasi "
-                'sekaligus, opasitasnya berkalian, dan halamannya terasa berat'
-            )
-    if 'transisiRuteBersarang' not in master:
+    #
+    # Tanpa `transisiLewatiPertama`, membuka Data Master dari menu samping
+    # memainkan DUA animasi sekaligus — kerangka utama menganimasikan seluruh
+    # halaman Master sementara outlet di dalamnya menganimasikan isinya.
+    # Keduanya memudar dari nol, jadi opasitasnya berkalian: isinya sampai
+    # lebih lambat daripada yang dimaksudkan keduanya, dan terbaca sebagai
+    # halaman yang berat. Tidak ada galat; hanya terasa lambat.
+    master_html = _tanpa_komentar(_baca(MASTER_HTML))
+    if '[transisiLewatiPertama]="true"' not in master_html:
         masalah.append(
-            'master.component.ts: tidak memakai `transisiRuteBersarang` — '
+            'master.component.html: `transisiLewatiPertama` tidak disetel — '
+            'membuka Data Master akan memainkan DUA animasi sekaligus, '
+            'opasitasnya berkalian, dan halamannya terasa berat'
+        )
+    if 'TransisiHalamanDirective' not in master:
+        masalah.append(
+            'master.component.ts: tidak memakai `TransisiHalamanDirective` — '
             'kalau ia punya definisi animasinya sendiri, dua definisi yang '
             '"mirip" akan berbeda dalam sebulan dan bedanya terasa tanpa '
             'dapat ditunjuk'
+        )
+    if 'transisiParams' not in master:
+        masalah.append(
+            'master.component.ts: setelannya tidak datang dari '
+            'SettingsService — jenis gerakan yang dipilih pengguna berlaku di '
+            'seluruh aplikasi KECUALI di dalam Data Master, tanpa ada yang '
+            'menjelaskan kenapa'
         )
 
     # --- 5. prefers-reduced-motion, DAN pilihan penggunanya ----------------
@@ -199,32 +253,11 @@ def periksa():
             masalah.append(f'main.component.ts: {sebab}')
 
     # Pilihan pengguna harus benar-benar sampai ke templatenya.
-    if 'setelan().mulai' not in main_html:
+    if 'setelan()' not in main_html:
         masalah.append(
             'main.component.html: pemicu tidak menerima `mulai` dari setelan — '
             'jenis gerakan yang dipilih pengguna tidak akan berpengaruh'
         )
-
-    # --- 6. tidak ada :leave / position absolute --------------------------
-    # `:leave` boleh dipakai untuk MENYEMBUNYIKAN, tidak untuk MENGANIMASIKAN.
-    #
-    # Aturan ini semula melarang `:leave` sama sekali, dengan alasan halaman
-    # lama tidak boleh ditahan di DOM. Alasannya benar; larangannya keliru —
-    # mesin animasi menahan simpulnya SENDIRI, ada atau tidak ada `:leave`,
-    # dan satu-satunya cara membuatnya berhenti tergambar justru lewat
-    # `:leave`. Yang harus dilarang adalah menganimasikannya.
-    for m in re.finditer(r"query\(\s*':leave'([\s\S]{0,400}?)\}\s*\)", anim):
-        if 'animate(' in m.group(1):
-            masalah.append(
-                'transisi-rute.ts: `:leave` memakai `animate()` — halaman lama '
-                'ditahan untuk digambar bersama yang baru, dua kali kerja '
-                'render pada saat paling sibuk'
-            )
-        if 'position' in m.group(1) and 'absolute' in m.group(1):
-            masalah.append(
-                'transisi-rute.ts: `:leave` memakai `position: absolute` — '
-                'penumpukannya merusak tinggi halaman serta posisi gulir'
-            )
 
     return masalah
 

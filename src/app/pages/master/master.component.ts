@@ -1,11 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import {
-  durasiHormatiGerak,
-  transisiRuteBersarang,
-} from '../../animations/transisi-rute';
+import { TransisiHalamanDirective } from '../../animations/transisi-halaman.directive';
+import { SettingsService } from '../../services/setting.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { PermissionService } from '../../services/permission.service';
 
@@ -27,27 +25,40 @@ interface MasterNavItem {
 @Component({
   selector: 'app-master',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, TranslatePipe],
+  imports: [
+    CommonModule,
+    RouterModule,
+    MatIconModule,
+    TranslatePipe,
+    TransisiHalamanDirective,
+  ],
   templateUrl: './master.component.html',
   styleUrl: './master.component.scss',
   /*
-   * Definisinya dipindah ke `animations/transisi-rute.ts`.
+   * TIDAK ada `animations: [...]` lagi.
    *
-   * Dulu ditulis di sini, dan kerangka utama tidak punya transisi sama
-   * sekali — jadi berpindah DI DALAM Data Master ada gerakannya sementara
-   * berpindah lewat menu samping berganti begitu saja. Ketidakkonsistenan
-   * itu justru membuat yang tanpa gerakan terasa lebih kaku daripada kalau
-   * memang tidak ada di mana-mana.
-   *
-   * Versi bersarang TIDAK menganimasikan kemunculan pertamanya — lihat
-   * alasannya di berkas itu.
+   * Pemicu animasi Angular yang terpasang pada INDUK `<router-outlet>`
+   * menunda pembuangan simpul halaman lama selama animasinya berjalan —
+   * itulah halaman yang terlihat bertumpuk, dan itu pula yang membuat
+   * komponennya tidak pernah dihancurkan. Gerakannya sekarang dijalankan
+   * `TransisiHalamanDirective` lewat Web Animations API, yang tidak tahu
+   * apa-apa tentang penyisipan maupun pembuangan simpul.
    */
-  animations: [transisiRuteBersarang],
 })
 export class MasterComponent {
   constructor(private translate: TranslateService) {}
 
-  readonly durasiTransisi = durasiHormatiGerak();
+  private readonly settings = inject(SettingsService);
+
+  /**
+   * Setelan transisi yang BERLAKU.
+   *
+   * Dulu halaman ini hanya meminjam DURASINYA dan memakai gerakan tetap
+   * `translateY(10px)`. Akibatnya jenis yang dipilih pengguna di Pengaturan —
+   * morph, geser kiri, dan seterusnya — berlaku di seluruh aplikasi KECUALI
+   * di dalam Data Master, tanpa ada yang menjelaskan kenapa.
+   */
+  readonly setelan = computed(() => this.settings.transisiParams());
 
   /**
    * Menu samping halaman master.

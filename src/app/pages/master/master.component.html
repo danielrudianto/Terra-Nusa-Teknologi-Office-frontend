@@ -45,7 +45,17 @@
 
   <!-- content -->
   <section class="master-content">
-    <div class="master-anim" [@transisiRuteBersarang]="{ value: getRouteState(outlet), params: { durasi: durasiTransisi } }">
+    <!--
+      Transisi dijalankan lewat Web Animations API, bukan pemicu animasi
+      Angular. Pemicu pada INDUK outlet menunda pembuangan halaman lama;
+      lihat `animations/transisi-halaman.directive.ts`.
+    -->
+    <div
+      class="master-anim"
+      [appTransisiHalaman]="getRouteState(outlet)"
+      [transisiSetelan]="setelan()"
+      [transisiLewatiPertama]="true"
+    >
       <router-outlet #outlet="outlet"></router-outlet>
     </div>
   </section>
