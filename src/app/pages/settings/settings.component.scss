@@ -484,20 +484,54 @@
 }
 
 /* ---------- transisi halaman ---------- */
+
 .st-row--kolom {
   flex-direction: column;
   align-items: stretch;
   gap: 0.75rem;
 }
 
+/*
+ * MEMENUHI LEBAR KARTUNYA.
+ *
+ * Sebelumnya ada `max-width: 420px` di sini. Akibatnya kotak pilihan dan
+ * penggesernya berhenti di sekitar sepertiga kartu sementara sisanya kosong —
+ * dan yang paling terbaca sebagai salah adalah penggesernya, yang mengkerut
+ * jadi seruas kecil di pojok kiri.
+ *
+ * Batas lebar itu masuk akal untuk kotak isian teks, yang memang jadi sulit
+ * dibaca bila terlalu panjang. Penggeser tidak begitu: makin panjang
+ * relnya, makin halus nilai yang dapat dipilih. Rel 130px untuk rentang
+ * 0,1–1,5 detik berarti tiap piksel meloncat sekitar 11ms.
+ */
 .st-transisi {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  max-width: 420px;
+  width: 100%;
 }
 
 .st-transisi__jenis {
+  width: 100%;
+}
+
+/*
+ * `mat-slider` tidak melebar sendiri.
+ *
+ * Bawaannya menyesuaikan ISI, bukan induknya — lebar sesungguhnya diukur
+ * 112px, yaitu `min-width` bawaan Material — jadi tanpa baris ini ia tetap
+ * seruas pendek betapa pun lebar kartunya, dan tidak ada galat apa pun yang
+ * menunjukkannya.
+ *
+ * Disasar lewat TURUNAN, bukan lewat kelas sendiri. Menambahkan kelas berarti
+ * templatenya ikut harus berubah, dan perbaikan yang seharusnya satu berkas
+ * gaya menjadi dua berkas yang harus dikirim bersama — kalau salah satunya
+ * tertinggal, aturannya tidak berlaku dan tidak ada yang memberitahu.
+ *
+ * Lebarnya disetel pada elemen `mat-slider`-nya, bukan pada `input` di
+ * dalamnya: yang menggambar relnya elemen luar.
+ */
+.st-transisi__durasi mat-slider {
   width: 100%;
 }
 
