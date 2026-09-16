@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { pisahTag } from '../../../helpers/tag-input.helper';
 import { TranslateService } from '@ngx-translate/core';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, inject } from '@angular/core';
@@ -76,32 +77,45 @@ export class SupplierCreateComponent {
   areas: string[] = [];
 
   ngOnInit(): void {
-    this.supplierFormGroup.controls['soldItems'].valueChanges.subscribe(
-      (value) => {
-        // if there is a comma, split the string into an array
-        if (value.includes(',') && value.length > 1) {
-          const item = value.slice(0, -1);
-          if (!this.items.includes(item)) {
-            this.items.push(item);
-            this.supplierFormGroup.patchValue({
-              soldItems: '',
-            });
-          }
-        }
-      },
-    );
+    this.pasangIsianTag('soldItems', () => this.items);
 
-    this.supplierFormGroup.controls['serviceAreas'].valueChanges.subscribe(
-      (value) => {
-        // if there is a comma, split the string into an array
-        if (value.includes(',') && value.length > 1) {
-          const item = value.slice(0, -1);
-          if (!this.areas.includes(item)) {
-            this.areas.push(item);
-            this.supplierFormGroup.patchValue({
-              serviceAreas: '',
-            });
-          }
+    this.pasangIsianTag('serviceAreas', () => this.areas);
+  }
+
+
+  /**
+   * Menyambungkan satu isian teks ke daftar pilnya.
+   *
+   * Ditulis SEKALI dan dipakai keempat isian (item & area, pada formulir buat
+   * maupun ubah). Sebelumnya logikanya disalin empat kali — dan keempat
+   * salinan membawa keempat cacat yang sama, yang berarti memperbaikinya di
+   * satu tempat dulu tidak akan pernah sampai ke tiga tempat lain.
+   *
+   * `emitEvent: false` pada pengosongan isiannya disengaja: tanpa itu,
+   * `patchValue` memicu `valueChanges` lagi dan langganan ini memanggil
+   * dirinya sendiri. Hari ini putarannya berhenti karena nilai barunya tidak
+   * memuat koma — tetapi itu kebetulan, bukan jaminan.
+   */
+  private pasangIsianTag(kendali: string, daftar: () => string[]): void {
+    this.supplierFormGroup.controls[kendali].valueChanges.subscribe(
+      (nilai: string | null) => {
+        const hasil = pisahTag(nilai, daftar());
+        if (!hasil.tag.length && hasil.sisa === (nilai ?? '')) return;
+
+        daftar().push(...hasil.tag);
+        this.supplierFormGroup.patchValue(
+          { [kendali]: hasil.sisa },
+          { emitEvent: false },
+        );
+
+        // Yang kembar DIBERITAHUKAN. Didiamkan, yang mengetiknya melihat
+        // kotaknya kosong tanpa pil baru dan mengira ketikannya hilang.
+        if (hasil.adaKembar) {
+          this.snackBar.open(
+            this.translate.instant('supplier.tagKembar'),
+            'OK',
+            { duration: 2500 },
+          );
         }
       },
     );

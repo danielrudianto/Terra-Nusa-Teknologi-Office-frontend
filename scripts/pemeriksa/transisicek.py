@@ -206,12 +206,25 @@ def periksa():
         )
 
     # --- 6. tidak ada :leave / position absolute --------------------------
-    if ':leave' in anim:
-        masalah.append(
-            'transisi-rute.ts: memakai `:leave` — halaman lama ditahan di DOM '
-            'bersama yang baru, dua kali kerja render pada saat paling sibuk, '
-            'dan penumpukannya merusak tinggi halaman serta posisi gulir'
-        )
+    # `:leave` boleh dipakai untuk MENYEMBUNYIKAN, tidak untuk MENGANIMASIKAN.
+    #
+    # Aturan ini semula melarang `:leave` sama sekali, dengan alasan halaman
+    # lama tidak boleh ditahan di DOM. Alasannya benar; larangannya keliru —
+    # mesin animasi menahan simpulnya SENDIRI, ada atau tidak ada `:leave`,
+    # dan satu-satunya cara membuatnya berhenti tergambar justru lewat
+    # `:leave`. Yang harus dilarang adalah menganimasikannya.
+    for m in re.finditer(r"query\(\s*':leave'([\s\S]{0,400}?)\}\s*\)", anim):
+        if 'animate(' in m.group(1):
+            masalah.append(
+                'transisi-rute.ts: `:leave` memakai `animate()` — halaman lama '
+                'ditahan untuk digambar bersama yang baru, dua kali kerja '
+                'render pada saat paling sibuk'
+            )
+        if 'position' in m.group(1) and 'absolute' in m.group(1):
+            masalah.append(
+                'transisi-rute.ts: `:leave` memakai `position: absolute` — '
+                'penumpukannya merusak tinggi halaman serta posisi gulir'
+            )
 
     return masalah
 

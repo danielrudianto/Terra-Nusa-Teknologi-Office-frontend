@@ -729,6 +729,7 @@
     "supplierEmail": "Supplier email",
     "ketikLaluTekanKomaUntuk": "输入后按逗号（,）添加",
     "itemsSoldSelection": "Items sold selection",
+    "tagKembar": "该值已在列表中。",
     "removeItem": "Remove item",
     "areasSelection": "Areas selection",
     "removeArea": "Remove area",

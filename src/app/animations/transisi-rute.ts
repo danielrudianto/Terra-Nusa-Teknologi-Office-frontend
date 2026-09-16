@@ -105,6 +105,26 @@ export const transisiRute = trigger('transisiRute', [
   transition(
     '* => *',
     [
+      /*
+       * Halaman yang DITINGGALKAN disembunyikan seketika.
+       *
+       * Mesin animasi Angular menahan pembuangan simpul anak selama induknya
+       * masih punya animasi berjalan. Pada durasi 300ms hal itu nyaris tidak
+       * terlihat; pada 1,5 detik halaman lamanya tergambar penuh di bawah
+       * yang baru — dua halaman bertumpuk, persis yang dilaporkan.
+       *
+       * `style({ display: 'none' })` tanpa `animate()`: tidak ada animasi
+       * keluar, tidak ada halaman lama yang ditahan untuk digambar. Simpulnya
+       * tetap ada di DOM sampai mesinnya membuangnya — itu di luar kuasa kita
+       * — tetapi berhenti tergambar dan berhenti memakan ruang.
+       *
+       * TERUS TERANG: saya TIDAK berhasil mereproduksi tumpukannya di dalam
+       * uji, bahkan dengan router sungguhan. Jadi ini penanganan atas GEJALA
+       * yang terbukti dari tangkapan layar, bukan atas sebab yang saya
+       * pahami. Ia tidak berbiaya apa pun bila tidak ada simpul yang keluar.
+       */
+      query(':leave', style({ display: 'none' }), { optional: true }),
+
       // Bentuk gerakannya SELURUHNYA datang dari parameter `mulai`.
       //
       // Dulu `geser` dan `skala` terpisah, dan itu hanya cukup untuk gerakan

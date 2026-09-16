@@ -729,6 +729,7 @@
     "supplierEmail": "Supplier email",
     "ketikLaluTekanKomaUntuk": "Type, then press comma (,) to add",
     "itemsSoldSelection": "Items sold selection",
+    "tagKembar": "That value is already in the list.",
     "removeItem": "Remove item",
     "areasSelection": "Areas selection",
     "removeArea": "Remove area",
