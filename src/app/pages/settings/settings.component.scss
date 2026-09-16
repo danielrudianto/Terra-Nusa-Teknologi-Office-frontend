@@ -482,3 +482,56 @@
     color: var(--faint, #9aa0ab);
   }
 }
+
+/* ---------- transisi halaman ---------- */
+.st-row--kolom {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+.st-transisi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-width: 420px;
+}
+
+.st-transisi__jenis {
+  width: 100%;
+}
+
+.st-transisi__baris {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+
+  strong {
+    color: var(--ink, #212630);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.st-transisi__batas {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--faint, #9aa0ab);
+  margin-top: -0.35rem;
+}
+
+/* Durasi tidak berarti apa-apa saat jenisnya "tidak ada"; diredupkan,
+   bukan disembunyikan — yang hilang dari layar membuat orang mengira
+   setelannya rusak. */
+.st-transisi__durasi.mati {
+  opacity: 0.45;
+}
+
+.st-transisi__coba {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+}

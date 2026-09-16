@@ -48,6 +48,7 @@ ANIM = os.path.join(AKAR, 'src', 'app', 'animations', 'transisi-rute.ts')
 MAIN_HTML = os.path.join(AKAR, 'src', 'app', 'pages', 'main', 'main.component.html')
 MAIN_TS = os.path.join(AKAR, 'src', 'app', 'pages', 'main', 'main.component.ts')
 MASTER_TS = os.path.join(AKAR, 'src', 'app', 'pages', 'master', 'master.component.ts')
+SETELAN_SVC = os.path.join(AKAR, 'src', 'app', 'services', 'setting.service.ts')
 
 
 def _baca(p: str) -> str:
@@ -92,6 +93,8 @@ def periksa():
     html = _tanpa_komentar(_baca(MAIN_HTML))
     main = _tanpa_komentar(_baca(MAIN_TS))
     master = _tanpa_komentar(_baca(MASTER_TS))
+    main_html = html
+    setelan_svc = _tanpa_komentar(_baca(SETELAN_SVC))
 
     if not anim:
         return ['src/app/animations/transisi-rute.ts tidak ada']
@@ -160,18 +163,47 @@ def periksa():
             'dapat ditunjuk'
         )
 
-    # --- 5. prefers-reduced-motion ----------------------------------------
+    # --- 5. prefers-reduced-motion, DAN pilihan penggunanya ----------------
+    #
+    # Setelan sistem hanya menentukan NILAI AWAL. Dulu ia memaksa durasi 0,
+    # dan akibatnya tidak dapat dibedakan dari animasi yang rusak: halamannya
+    # berganti begitu saja, tanpa apa pun di layar maupun di konsol yang
+    # menjelaskannya. Tiga kiriman berturut-turut terbuang karenanya.
     if 'prefers-reduced-motion' not in anim:
         masalah.append(
             'transisi-rute.ts: `prefers-reduced-motion` tidak dihormati — '
             'bagi yang menyalakannya, gerakan halaman bukan soal selera'
         )
-    for nama, isi in (('main', main), ('master', master)):
-        if 'durasiHormatiGerak' not in isi:
-            masalah.append(
-                f'{nama}.component.ts: tidak memakai `durasiHormatiGerak()` — '
-                'animasinya tetap penuh meski pengguna minta hemat gerak'
-            )
+
+    if re.search(r'durasi:\s*0\b', anim) and 'none' not in anim:
+        masalah.append(
+            'transisi-rute.ts: durasi 0 dipakai di luar pilihan "none" — '
+            'transisi yang dimatikan diam-diam tidak dapat dibedakan dari '
+            'animasi yang rusak'
+        )
+
+    if 'gerakDikurangi' not in setelan_svc:
+        masalah.append(
+            'setting.service.ts: tidak membaca `gerakDikurangi()` — setelan '
+            '"kurangi gerak" tidak lagi menentukan nilai awalnya'
+        )
+
+    for kunci, sebab in (
+        (
+            'transisiParams',
+            'parameternya tidak datang dari SettingsService, jadi pilihan di '
+            'halaman Pengaturan tidak berpengaruh',
+        ),
+    ):
+        if kunci not in main:
+            masalah.append(f'main.component.ts: {sebab}')
+
+    # Pilihan pengguna harus benar-benar sampai ke templatenya.
+    if 'setelan().mulai' not in main_html:
+        masalah.append(
+            'main.component.html: pemicu tidak menerima `mulai` dari setelan — '
+            'jenis gerakan yang dipilih pengguna tidak akan berpengaruh'
+        )
 
     # --- 6. tidak ada :leave / position absolute --------------------------
     if ':leave' in anim:

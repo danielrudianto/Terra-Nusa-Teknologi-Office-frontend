@@ -406,7 +406,6 @@
     "bankAccount": "Rekening",
     "createdAt": "Dibuat pada",
     "document": "Dokumen",
-    "opponent": "Lawan Transaksi",
     "approvalStatus": "Status Persetujuan",
     "documentStatus": "Status Dokumen",
     "sku": "SKU",
@@ -1858,8 +1857,8 @@
     "balance": "Saldo",
     "balancePlan": "Saldo (rencana)",
     "balanceActual": "Saldo (aktual)",
-    "balancePlanHint": "Saldo termasuk rencana kas yang masih menunggu \u2014 untuk memperkirakan apakah kasnya cukup.",
-    "balanceActualHint": "Saldo hanya dari uang yang sudah benar-benar bergerak \u2014 untuk dicocokkan ke rekening.",
+    "balancePlanHint": "Saldo termasuk rencana kas yang masih menunggu — untuk memperkirakan apakah kasnya cukup.",
+    "balanceActualHint": "Saldo hanya dari uang yang sudah benar-benar bergerak — untuk dicocokkan ke rekening.",
     "exportPlan": "Termasuk rencana kas",
     "exportActual": "Realisasi saja",
     "dailyTitle": "Kalender Harian",
@@ -2566,7 +2565,12 @@
     "notifMati": "Nonaktif",
     "notifNyalaOk": "Notifikasi dinyalakan di perangkat ini.",
     "notifMatiOk": "Notifikasi dimatikan di perangkat ini.",
-    "notifTakDidukung": "Peramban ini belum mendukung notifikasi."
+    "notifTakDidukung": "Peramban ini belum mendukung notifikasi.",
+    "transisi": "Transisi antar halaman",
+    "transisiHint": "Gerakan saat berpindah halaman dari menu samping.",
+    "transisiJenis": "Jenis gerakan",
+    "transisiDurasi": "Lama gerakan",
+    "transisiCoba": "Perubahannya langsung berlaku — coba klik beberapa menu di kiri setelah mengubahnya."
   },
   "allowanceForm": {
     "title": "Tambah Allowance",
@@ -5413,7 +5417,7 @@
     "masaPajakKosongkan": "Kosongkan masa pajak",
     "masaPajakSama": "Masa yang dipilih sama dengan bulan tanggal invoice, jadi akan disimpan sebagai ikut tanggal invoice.",
     "masaPajakMundur": "Masa pajak mendahului tanggal invoice — bentuk faktur pengganti. Dokumennya terbit pada bulan pembetulan, masanya tetap mengikuti faktur asli.",
-    "masaPajakJauh": "Masa pajak jauh dari tanggal invoice. Periksa lagi tahunnya \u2014 salah tahun memindahkan angka ke SPT yang mungkin sudah dilaporkan."
+    "masaPajakJauh": "Masa pajak jauh dari tanggal invoice. Periksa lagi tahunnya — salah tahun memindahkan angka ke SPT yang mungkin sudah dilaporkan."
   },
   "lunas": {
     "selisihJudul": "Selisihnya kecil",
@@ -5425,5 +5429,13 @@
     "belumDulu": "Belum, nanti dulu",
     "tandaiLunas": "Tandai lunas",
     "ditunda": "Belum ditandai lunas — selisihnya dibiarkan apa adanya."
+  },
+  "transisi": {
+    "pushUp": "Naik (push up)",
+    "pushDown": "Turun (push down)",
+    "morph": "Morph (membesar halus)",
+    "slideLeft": "Geser kiri",
+    "slideRight": "Geser kanan",
+    "none": "Tidak ada"
   }
 }

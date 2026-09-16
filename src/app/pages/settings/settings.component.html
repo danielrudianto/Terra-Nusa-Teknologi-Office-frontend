@@ -246,6 +246,82 @@
 
     <div class="st-divider"></div>
 
+    <!--
+      TRANSISI HALAMAN.
+
+      Ditaruh di Tampilan, bukan di tempat lain: yang diaturnya memang soal
+      bagaimana aplikasinya terlihat, dan orang mencarinya di sini.
+
+      Diberi pilihan, bukan ditetapkan satu. Setelan "kurangi gerak" di sistem
+      operasi dulu memaksa transisinya mati, dan akibatnya tidak dapat
+      dibedakan dari animasi yang rusak — halamannya berganti begitu saja,
+      tanpa satu pun keterangan. Sekarang setelan itu hanya memilihkan nilai
+      AWAL yang tidak memindahkan apa pun, dan yang memakainya tetap dapat
+      menentukan sendiri.
+    -->
+    <div class="st-row st-row--kolom">
+      <div class="st-row__text">
+        <span class="st-row__label">{{ "settings.transisi" | translate }}</span>
+        <span class="st-row__hint">{{
+          "settings.transisiHint" | translate
+        }}</span>
+      </div>
+
+      <div class="st-transisi">
+        <mat-form-field appearance="outline" class="st-transisi__jenis">
+          <mat-label>{{ "settings.transisiJenis" | translate }}</mat-label>
+          <mat-select
+            [value]="settings.transisiJenis()"
+            (valueChange)="ubahJenisTransisi($event)"
+          >
+            @for (j of JENIS_TRANSISI; track j.nilai) {
+              <mat-option [value]="j.nilai">{{
+                j.labelKey | translate
+              }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!--
+          Penggeser, bukan kotak isian.
+
+          Yang dinilai orang di sini bukan angkanya melainkan RASANYA, dan
+          rasa itu hanya dapat dibandingkan dengan mencoba. Penggeser membuat
+          mencoba berbiaya satu gerakan; kotak isian membuatnya berbiaya
+          mengetik, menghapus, mengetik lagi.
+        -->
+        <div class="st-transisi__durasi" [class.mati]="settings.transisiJenis() === 'none'">
+          <div class="st-transisi__baris">
+            <span>{{ "settings.transisiDurasi" | translate }}</span>
+            <strong>{{ durasiDetik(settings.transisiDurasi()) }} s</strong>
+          </div>
+          <mat-slider
+            [min]="DURASI_MIN"
+            [max]="DURASI_MAX"
+            [step]="50"
+            [discrete]="true"
+            [disabled]="settings.transisiJenis() === 'none'"
+          >
+            <input
+              matSliderThumb
+              [value]="settings.transisiDurasi()"
+              (valueChange)="ubahDurasiTransisi($event)"
+            />
+          </mat-slider>
+          <div class="st-transisi__batas">
+            <span>{{ durasiDetik(DURASI_MIN) }} s</span>
+            <span>{{ durasiDetik(DURASI_MAX) }} s</span>
+          </div>
+        </div>
+
+        <p class="st-transisi__coba">
+          {{ "settings.transisiCoba" | translate }}
+        </p>
+      </div>
+    </div>
+
+    <div class="st-divider"></div>
+
     <!-- tombol panduan melayang -->
     <div class="st-row">
       <div class="st-row__text">

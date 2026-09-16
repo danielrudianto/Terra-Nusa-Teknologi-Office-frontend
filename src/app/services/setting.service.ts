@@ -1,4 +1,13 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, computed, signal } from '@angular/core';
+
+import {
+  DURASI_BAWAAN,
+  JenisTransisi,
+  MULAI_TRANSISI,
+  gerakDikurangi,
+  jepitDurasi,
+  setelanTransisi,
+} from '../animations/transisi-rute';
 
 export type TextScale = 'sm' | 'md' | 'lg';
 export type ThemeMode = 'light' | 'dark' | 'system';
@@ -207,6 +216,8 @@ const BRAND_KEY = 'app_brand_color';
 const PAGE_SIZE_KEY = 'app_page_size';
 const DENSITY_KEY = 'app_density';
 const GUIDE_FAB_KEY = 'app_guide_fab';
+const TRANSISI_JENIS_KEY = 'app_transisi_jenis';
+const TRANSISI_DURASI_KEY = 'app_transisi_durasi';
 
 const SCALE_FACTOR: Record<TextScale, number> = {
   sm: 0.92,
@@ -229,6 +240,46 @@ export class SettingsService {
    * biasa, sakelarnya tidak akan berpengaruh sampai halaman dimuat ulang.
    */
   private readonly _guideFab = signal(true);
+
+  /*
+   * TRANSISI HALAMAN — sinyal, bukan field biasa.
+   *
+   * Kerangka utama membacanya lewat `computed`, dan `computed` hanya
+   * menghitung ulang bila sinyal yang dibacanya berubah. Sebagai field biasa,
+   * mengubah pilihannya di Pengaturan tidak akan berpengaruh sampai halaman
+   * dimuat ulang — dan yang menggeser penggeser durasinya tidak akan melihat
+   * apa pun berubah, jadi ia menyimpulkan setelannya tidak berfungsi.
+   */
+  private readonly _transisiJenis = signal<JenisTransisi>('push-up');
+  private readonly _transisiDurasi = signal<number>(DURASI_BAWAAN);
+
+  readonly transisiJenis = this._transisiJenis.asReadonly();
+  readonly transisiDurasi = this._transisiDurasi.asReadonly();
+
+  /** Parameter siap pakai untuk pemicu animasi. */
+  readonly transisiParams = computed(() =>
+    setelanTransisi(this._transisiJenis(), this._transisiDurasi()),
+  );
+
+  setTransisiJenis(jenis: JenisTransisi): void {
+    if (!(jenis in MULAI_TRANSISI)) return;
+    this._transisiJenis.set(jenis);
+    try {
+      localStorage.setItem(TRANSISI_JENIS_KEY, jenis);
+    } catch {
+      // Mode penyamaran: cukup berlaku sesi ini.
+    }
+  }
+
+  setTransisiDurasi(ms: number): void {
+    const nilai = jepitDurasi(ms);
+    this._transisiDurasi.set(nilai);
+    try {
+      localStorage.setItem(TRANSISI_DURASI_KEY, String(nilai));
+    } catch {
+      /* tidak fatal */
+    }
+  }
 
   get textScale(): TextScale {
     return this._textScale;
@@ -357,6 +408,33 @@ export class SettingsService {
     const savedDensity = localStorage.getItem(DENSITY_KEY) as Density | null;
     if (savedDensity === 'normal' || savedDensity === 'compact') {
       this._density = savedDensity;
+    }
+
+    /*
+     * Transisi halaman.
+     *
+     * "Kurangi gerak" di sistem operasi hanya menentukan NILAI AWAL, bukan
+     * keputusan akhir. Sebelumnya setelan itu memaksa durasi 0 tanpa ada
+     * cara mengubahnya dari dalam aplikasi — dan akibatnya tidak dapat
+     * dibedakan dari animasi yang rusak. Sekarang ia memilihkan jenis yang
+     * tidak memindahkan apa pun (`morph`) dan durasi yang singkat, lalu
+     * berhenti ikut campur begitu penggunanya memilih sendiri.
+     */
+    const savedJenis = localStorage.getItem(
+      TRANSISI_JENIS_KEY,
+    ) as JenisTransisi | null;
+    const savedDurasi = localStorage.getItem(TRANSISI_DURASI_KEY);
+
+    if (savedJenis && savedJenis in MULAI_TRANSISI) {
+      this._transisiJenis.set(savedJenis);
+    } else if (gerakDikurangi()) {
+      this._transisiJenis.set('morph');
+    }
+
+    if (savedDurasi !== null) {
+      this._transisiDurasi.set(jepitDurasi(savedDurasi));
+    } else if (gerakDikurangi()) {
+      this._transisiDurasi.set(250);
     }
 
     this.applyTextScale();

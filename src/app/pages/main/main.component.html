@@ -34,7 +34,11 @@
       class="dashboard__container__router"
       [@transisiRute]="{
         value: kunciRute(),
-        params: { durasi: durasiTransisi, jeda: jedaJudul }
+        params: {
+          durasi: setelan().durasi,
+          jeda: setelan().jeda,
+          mulai: setelan().mulai
+        }
       }"
     >
       <router-outlet></router-outlet>

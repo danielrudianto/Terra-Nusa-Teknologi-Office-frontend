@@ -15,10 +15,9 @@ import { filter, map } from 'rxjs';
 import { VersiService } from 'src/app/services/versi.service';
 import { MatIconModule } from '@angular/material/icon';
 import {
-  durasiHormatiGerak,
-  JEDA_JUDUL,
   transisiRute,
 } from '../../animations/transisi-rute';
+import { SettingsService } from '../../services/setting.service';
 
 @Component({
   selector: 'app-main',
@@ -94,8 +93,19 @@ export class MainComponent {
    * memasang pendengar `matchMedia` untuk itu berarti satu langganan lagi
    * yang harus dibersihkan demi hal yang praktis tidak pernah berubah.
    */
-  readonly durasiTransisi = durasiHormatiGerak();
-  readonly jedaJudul = JEDA_JUDUL;
+  /**
+   * Parameter transisi yang berlaku di peramban ini.
+   *
+   * Saat "kurangi gerak" menyala di sistem operasi, yang dibuang GERAKANNYA —
+   * perpindahan dan penskalaan menjadi nol — sementara pudar-menyalanya tetap
+   * ada. Sebelumnya durasinya disetel 0, dan akibatnya tidak dapat dibedakan
+   * dari animasi yang rusak: halamannya berganti begitu saja, tanpa apa pun
+   * yang menjelaskan kenapa.
+   */
+  private readonly settings = inject(SettingsService);
+
+  /** Parameter transisi yang BERLAKU; berubah seketika saat Pengaturan diubah. */
+  readonly setelan = computed(() => this.settings.transisiParams());
 
   @HostListener('window:resize')
   sesuaikanLayar(): void {

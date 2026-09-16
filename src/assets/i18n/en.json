@@ -372,7 +372,7 @@
     "destination": "Destination",
     "poNumber": "PO No.",
     "value": "Value",
-    "opponent": "Opponent",
+    "opponent": "Counterparty",
     "incomeType": "Income type",
     "address": "Address",
     "phone": "Phone number",
@@ -406,7 +406,6 @@
     "bankAccount": "Bank Account",
     "createdAt": "Created at",
     "document": "Document",
-    "opponent": "Counterparty",
     "approvalStatus": "Approval Status",
     "documentStatus": "Document Status",
     "sku": "SKU",
@@ -1858,8 +1857,8 @@
     "balance": "Balance",
     "balancePlan": "Balance (planned)",
     "balanceActual": "Balance (actual)",
-    "balancePlanHint": "Balance including cash plans still pending \u2014 for judging whether cash will hold.",
-    "balanceActualHint": "Balance from money that has actually moved \u2014 for reconciling against accounts.",
+    "balancePlanHint": "Balance including cash plans still pending — for judging whether cash will hold.",
+    "balanceActualHint": "Balance from money that has actually moved — for reconciling against accounts.",
     "exportPlan": "Includes cash plans",
     "exportActual": "Realised only",
     "dailyTitle": "Daily calendar",
@@ -2566,7 +2565,12 @@
     "notifMati": "Off",
     "notifNyalaOk": "Notifications enabled on this device.",
     "notifMatiOk": "Notifications disabled on this device.",
-    "notifTakDidukung": "This browser does not support notifications yet."
+    "notifTakDidukung": "This browser does not support notifications yet.",
+    "transisi": "Page transition",
+    "transisiHint": "The movement when you switch pages from the side menu.",
+    "transisiJenis": "Movement",
+    "transisiDurasi": "Duration",
+    "transisiCoba": "Changes apply immediately — click through a few menu items after changing it."
   },
   "allowanceForm": {
     "title": "Add Allowance",
@@ -5413,7 +5417,7 @@
     "masaPajakKosongkan": "Clear tax period",
     "masaPajakSama": "The selected period is the same month as the invoice date, so it will be stored as following the invoice date.",
     "masaPajakMundur": "The tax period precedes the invoice date — the replacement-invoice pattern. The document is issued in the month of the correction while the period still follows the original invoice.",
-    "masaPajakJauh": "The tax period is far from the invoice date. Check the year \u2014 a wrong year moves the amount into a return that may already be filed."
+    "masaPajakJauh": "The tax period is far from the invoice date. Check the year — a wrong year moves the amount into a return that may already be filed."
   },
   "lunas": {
     "selisihJudul": "Small difference",
@@ -5425,5 +5429,13 @@
     "belumDulu": "Not yet",
     "tandaiLunas": "Mark settled",
     "ditunda": "Not marked settled — the difference is left as it is."
+  },
+  "transisi": {
+    "pushUp": "Push up",
+    "pushDown": "Push down",
+    "morph": "Morph (gentle scale)",
+    "slideLeft": "Slide left",
+    "slideRight": "Slide right",
+    "none": "None"
   }
 }

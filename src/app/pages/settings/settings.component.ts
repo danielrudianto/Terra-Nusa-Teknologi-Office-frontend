@@ -11,6 +11,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSliderModule } from '@angular/material/slider';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from '../../../app/services/api.service';
 import { AuthService } from '../../../app/services/auth.service';
@@ -36,11 +38,19 @@ import {
   LangOption,
   LanguageService,
 } from '../../../app/services/language.service';
+import {
+  DURASI_MAX,
+  DURASI_MIN,
+  JENIS_TRANSISI,
+  JenisTransisi,
+} from '../../animations/transisi-rute';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
   imports: [
+    MatSliderModule,
+    MatSelectModule,
     AvatarComponent,
     MatTooltipModule,
     TranslatePipe,
@@ -57,6 +67,29 @@ import {
   styleUrl: './settings.component.scss',
 })
 export class SettingsComponent implements OnInit {
+  /* ---------- transisi halaman ---------- */
+  readonly JENIS_TRANSISI = JENIS_TRANSISI;
+  readonly DURASI_MIN = DURASI_MIN;
+  readonly DURASI_MAX = DURASI_MAX;
+
+  /**
+   * Durasi dalam DETIK untuk ditampilkan; disimpan dalam milidetik.
+   *
+   * "0,5 s" jauh lebih mudah dinilai daripada "500 ms" saat yang dibandingkan
+   * adalah seberapa lama suatu gerakan terasa.
+   */
+  durasiDetik(ms: number): string {
+    return (ms / 1000).toFixed(2).replace(/0$/, '').replace('.', ',');
+  }
+
+  ubahJenisTransisi(jenis: JenisTransisi): void {
+    this.settings.setTransisiJenis(jenis);
+  }
+
+  ubahDurasiTransisi(ms: number): void {
+    this.settings.setTransisiDurasi(ms);
+  }
+
   readonly versi = inject(VersiService);
   private readonly push = inject(PushService);
   private readonly izin = inject(PermissionService);

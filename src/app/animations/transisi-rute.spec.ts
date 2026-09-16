@@ -3,9 +3,14 @@ import { TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import {
-  DURASI_TRANSISI,
-  JEDA_JUDUL,
-  durasiHormatiGerak,
+  DURASI_BAWAAN,
+  DURASI_MAX,
+  DURASI_MIN,
+  JENIS_TRANSISI,
+  JenisTransisi,
+  MULAI_TRANSISI,
+  jepitDurasi,
+  setelanTransisi,
   transisiRute,
   transisiRuteBersarang,
 } from './transisi-rute';
@@ -38,7 +43,7 @@ import {
       id="bungkus"
       [@transisiRute]="{
         value: kunci,
-        params: { durasi: durasi, jeda: jeda },
+        params: { durasi: durasi, jeda: jeda, mulai: mulai },
       }"
     >
       <app-header-title>judul</app-header-title>
@@ -51,8 +56,9 @@ import {
 })
 class TuanRumah {
   kunci = '/Awal';
-  durasi = DURASI_TRANSISI;
-  jeda = JEDA_JUDUL;
+  durasi = DURASI_BAWAAN;
+  jeda = 70;
+  mulai = MULAI_TRANSISI['push-up'];
 }
 
 @Component({
@@ -61,7 +67,7 @@ class TuanRumah {
   template: `
     <div
       id="bungkus"
-      [@transisiRuteBersarang]="{ value: kunci, params: { durasi: durasi } }"
+      [@transisiRuteBersarang]="{ value: kunci, params: { durasi: durasi, mulai: 'translateY(10px)' } }"
     >
       <p>isi</p>
     </div>
@@ -69,7 +75,7 @@ class TuanRumah {
 })
 class TuanRumahBersarang {
   kunci = '/Awal';
-  durasi = DURASI_TRANSISI;
+  durasi = DURASI_BAWAAN;
 }
 
 /**
@@ -145,30 +151,6 @@ describe('Transisi rute', () => {
     expect(animasiAktif(bungkus).length).toBe(0);
   });
 
-  it('durasi 0 membuatnya lewat tanpa terlihat', () => {
-    /*
-     * "Kurangi gerak" menyetel durasinya 0. Itu disengaja — tetapi juga
-     * berarti bahwa siapa pun yang menyalakannya di sistem operasinya akan
-     * melaporkan "tidak ada transisi", dan itu BUKAN bug.
-     *
-     * Diuji supaya perbedaan kedua keadaan itu tercatat di suatu tempat,
-     * bukan ditebak setiap kali ada yang melaporkannya.
-     */
-    const f = pasang<TuanRumah>(TuanRumah);
-    const bungkus: HTMLElement = f.nativeElement.querySelector('#bungkus');
-    (bungkus as any).getAnimations().forEach((a: Animation) => a.finish());
-
-    f.componentInstance.durasi = 0;
-    f.componentInstance.kunci = '/Lain';
-    f.detectChanges();
-
-    const total = animasiAktif(bungkus).reduce(
-      (a, x) => a + Number((x.effect?.getTiming().duration as number) ?? 0),
-      0,
-    );
-    expect(total).toBe(0);
-  });
-
   it('kemunculan pertama IKUT beranimasi pada kerangka utama', () => {
     /*
      * `void => *` cocok dengan `* => *`, jadi membuka halaman pertama kali
@@ -202,10 +184,105 @@ describe('Transisi rute', () => {
     expect(animasiAktif(bungkus).length).toBeGreaterThan(0);
   });
 
-  it('durasiHormatiGerak mengembalikan angka yang masuk akal', () => {
-    const d = durasiHormatiGerak();
-    expect(d === 0 || d === DURASI_TRANSISI).toBeTrue();
-    expect(durasiHormatiGerak(500) === 0 || durasiHormatiGerak(500) === 500)
-      .toBeTrue();
+  // ------------------------------------------------------------------
+  // Jenis dan durasi yang DIPILIH PENGGUNA
+  // ------------------------------------------------------------------
+
+  it('setiap jenis punya transform awal yang BERBEDA', () => {
+    /*
+     * Kalau dua jenis menghasilkan transform yang sama, pilihannya ada di
+     * layar tetapi tidak berarti apa-apa — dan yang memilihnya menyimpulkan
+     * setelannya rusak. Tidak ada galat, tentu saja.
+     */
+    const mulai = JENIS_TRANSISI.filter((j) => j.nilai !== 'none').map(
+      (j) => setelanTransisi(j.nilai, 500).mulai,
+    );
+    expect(new Set(mulai).size).toBe(mulai.length);
+  });
+
+  it('arah naik dan turun benar-benar berlawanan', () => {
+    const naik = setelanTransisi('push-up', 500).mulai;
+    const turun = setelanTransisi('push-down', 500).mulai;
+    expect(naik).toContain('translateY(18px)');
+    expect(turun).toContain('translateY(-18px)');
+  });
+
+  it('geser kiri dan kanan berlawanan pada sumbu X', () => {
+    expect(setelanTransisi('slide-left', 500).mulai).toContain('translateX(28px)');
+    expect(setelanTransisi('slide-right', 500).mulai).toContain('translateX(-28px)');
+  });
+
+  it('morph tidak MEMINDAHKAN apa pun', () => {
+    // Inilah jenis yang aman bagi yang menyalakan "kurangi gerak": ia
+    // berubah ukuran, tidak berpindah tempat.
+    const m = setelanTransisi('morph', 500).mulai;
+    expect(m).toContain('scale(');
+    expect(m).not.toContain('translate');
+  });
+
+  it('durasi dijepit ke rentang yang sah', () => {
+    expect(jepitDurasi(50)).toBe(DURASI_MIN);
+    expect(jepitDurasi(9999)).toBe(DURASI_MAX);
+    expect(jepitDurasi(500)).toBe(500);
+    expect(jepitDurasi('bukan angka')).toBe(DURASI_BAWAAN);
+    // `Number(null)` dan `Number('')` sama-sama 0 — dan 0 itu terhingga.
+    // Tanpa penjagaan khusus, keduanya dijepit ke 100ms, bukan ke bawaannya.
+    expect(jepitDurasi(null)).toBe(DURASI_BAWAAN);
+    expect(jepitDurasi(undefined)).toBe(DURASI_BAWAAN);
+    expect(jepitDurasi('')).toBe(DURASI_BAWAAN);
+    expect(setelanTransisi('push-up', 5).durasi).toBe(DURASI_MIN);
+    expect(setelanTransisi('push-up', 99999).durasi).toBe(DURASI_MAX);
+  });
+
+  it('jeda ketukan kedua menyusut bersama durasinya', () => {
+    /*
+     * Jeda tetap 70ms pada transisi 120ms berarti judulnya baru MULAI
+     * bergerak saat isinya sudah selesai — dua ketukan yang dimaksud saling
+     * mendahului, dan hasilnya terbaca sebagai tersendat.
+     */
+    expect(setelanTransisi('push-up', 120).jeda).toBeLessThan(120);
+    expect(setelanTransisi('push-up', 1500).jeda).toBe(70);
+  });
+
+  it('"tidak ada" memang meniadakan — dan itu pilihan sadar', () => {
+    const s = setelanTransisi('none', 500);
+    expect(s.durasi).toBe(0);
+    expect(s.mulai).toBe('none');
+  });
+
+  it('jenis yang tidak dikenal kembali ke push-up, bukan kosong', () => {
+    // Nilai dari localStorage dapat berisi apa saja — termasuk sisa versi
+    // lama. Transform kosong membuat animasinya tidak menggerakkan apa pun.
+    const s = setelanTransisi('ngawur' as JenisTransisi, 500);
+    expect(s.mulai).toBe(MULAI_TRANSISI['push-up']);
+  });
+
+  it('SETIAP jenis benar-benar menghasilkan animasi di peramban', () => {
+    /*
+     * Penjaga yang sesungguhnya. Angka yang benar tidak membuktikan ada yang
+     * bergerak; hanya peramban yang dapat menjawabnya.
+     */
+    // Dipasang SEKALI lalu jenisnya diganti-ganti; memanggil
+    // `configureTestingModule` lagi setelah modulnya terbentuk ditolak
+    // TestBed, dan galatnya menyebut `inject`, bukan penyebab sebenarnya.
+    const f = pasang<TuanRumah>(TuanRumah);
+    const bungkus: HTMLElement = f.nativeElement.querySelector('#bungkus');
+
+    for (const j of JENIS_TRANSISI) {
+      if (j.nilai === 'none') continue;
+
+      (bungkus as any).getAnimations().forEach((a: Animation) => a.finish());
+
+      const s = setelanTransisi(j.nilai, 500);
+      f.componentInstance.durasi = s.durasi;
+      f.componentInstance.jeda = s.jeda;
+      f.componentInstance.mulai = s.mulai;
+      f.componentInstance.kunci = '/Halaman-' + j.nilai;
+      f.detectChanges();
+
+      expect(animasiAktif(bungkus).length)
+        .withContext(`jenis "${j.nilai}" tidak menghasilkan animasi apa pun`)
+        .toBeGreaterThan(0);
+    }
   });
 });

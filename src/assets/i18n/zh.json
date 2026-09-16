@@ -406,7 +406,6 @@
     "bankAccount": "银行账户",
     "createdAt": "创建于",
     "document": "文档",
-    "opponent": "交易对方",
     "approvalStatus": "审批状态",
     "documentStatus": "文档状态",
     "sku": "SKU",
@@ -1856,12 +1855,12 @@
     "expense": "支出",
     "income": "收入",
     "balance": "余额",
-    "balancePlan": "\u4f59\u989d\uff08\u8ba1\u5212\uff09",
-    "balanceActual": "\u4f59\u989d\uff08\u5b9e\u9645\uff09",
-    "balancePlanHint": "\u5305\u542b\u5f85\u6267\u884c\u73b0\u91d1\u8ba1\u5212\u7684\u4f59\u989d\uff0c\u7528\u4e8e\u5224\u65ad\u8d44\u91d1\u662f\u5426\u5145\u8db3\u3002",
-    "balanceActualHint": "\u4ec5\u7edf\u8ba1\u5df2\u5b9e\u9645\u53d1\u751f\u7684\u8d44\u91d1\u53d8\u52a8\uff0c\u7528\u4e8e\u4e0e\u8d26\u6237\u5bf9\u8d26\u3002",
-    "exportPlan": "\u5305\u542b\u73b0\u91d1\u8ba1\u5212",
-    "exportActual": "\u4ec5\u5b9e\u9645\u53d1\u751f",
+    "balancePlan": "余额（计划）",
+    "balanceActual": "余额（实际）",
+    "balancePlanHint": "包含待执行现金计划的余额，用于判断资金是否充足。",
+    "balanceActualHint": "仅统计已实际发生的资金变动，用于与账户对账。",
+    "exportPlan": "包含现金计划",
+    "exportActual": "仅实际发生",
     "dailyTitle": "每日日历",
     "copy": "复制",
     "loadingAccounts": "Loading accounts…",
@@ -2566,7 +2565,12 @@
     "notifMati": "关闭",
     "notifNyalaOk": "已在此设备上启用通知。",
     "notifMatiOk": "已在此设备上关闭通知。",
-    "notifTakDidukung": "此浏览器尚不支持通知。"
+    "notifTakDidukung": "此浏览器尚不支持通知。",
+    "transisi": "页面过渡",
+    "transisiHint": "从侧边菜单切换页面时的动效。",
+    "transisiJenis": "动效类型",
+    "transisiDurasi": "持续时间",
+    "transisiCoba": "修改立即生效 — 改完后请点击左侧几个菜单试试。"
   },
   "allowanceForm": {
     "title": "添加津贴",
@@ -5425,5 +5429,13 @@
     "belumDulu": "暂不",
     "tandaiLunas": "标记为已结清",
     "ditunda": "未标记为已结清——差额保持原样。"
+  },
+  "transisi": {
+    "pushUp": "向上推入",
+    "pushDown": "向下推入",
+    "morph": "Morph（柔和缩放）",
+    "slideLeft": "向左滑入",
+    "slideRight": "向右滑入",
+    "none": "无"
   }
 }
