@@ -187,3 +187,15 @@ $line: var(--line, #eef0f3);
     cursor: default;
   }
 }
+
+/*
+ * Pil yang dapat dihapus dengan mengklik BADANNYA.
+ *
+ * Kursornya harus berubah. Tanpa itu, sasaran yang baru saja ditambahkan
+ * tidak terlihat sebagai sasaran sama sekali — dan persoalan yang diperbaiki
+ * (orang mengklik pil lalu tidak terjadi apa-apa) cuma bergeser menjadi
+ * "tidak ada yang tahu pilnya bisa diklik".
+ */
+.pil-hapus {
+  cursor: pointer;
+}

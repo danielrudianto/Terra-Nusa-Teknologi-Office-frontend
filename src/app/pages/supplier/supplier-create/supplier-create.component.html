@@ -123,14 +123,38 @@
 
       <!-- Items sold -->
       <div class="sc-tags" *ngIf="items.length > 0">
+        <!--
+          PIL-nya sendiri yang menjadi sasaran hapus, bukan cuma tanda ×-nya.
+
+          Sasaran × hanya ~18px; pilnya setinggi ~28px dan selebar teksnya.
+          Orang mengklik pilnya — itu sasaran yang terlihat — lalu tidak
+          terjadi apa-apa: tanpa galat, tanpa umpan balik. Yang mengkliknya
+          menyimpulkan pilnya memang tidak bisa dihapus.
+
+          Tanda ×-nya TETAP ADA, dan bukan hiasan: ia yang dapat dicapai
+          papan ketik. Badan pil hanya menambah sasaran bagi tetikus.
+
+          `type="button"` ditulis walau Material sudah menahan pengirimannya
+          dengan `preventDefault()`. Tombol tanpa tipe di dalam `<form>`
+          bertipe `submit`; menggantungkan diri pada penanganan pustaka
+          berarti klik × akan MENGIRIM formulir pemasok begitu penanganan itu
+          berubah.
+        -->
         <mat-chip-set [attr.aria-label]="'supplier.itemsSoldSelection' | translate">
           <mat-chip
             *ngFor="let item of items"
+            class="pil-hapus"
             [removable]="true"
             (removed)="remove(item)"
+            (click)="remove(item)"
+            [attr.title]="'common.klikUntukHapus' | translate"
           >
             {{ item }}
-            <button matChipRemove [attr.aria-label]="'supplier.removeItem' | translate">
+            <button
+              matChipRemove
+              type="button"
+              [attr.aria-label]="'supplier.removeItem' | translate"
+            >
               <mat-icon>close</mat-icon>
             </button>
           </mat-chip>
@@ -152,11 +176,18 @@
         <mat-chip-set [attr.aria-label]="'supplier.areasSelection' | translate">
           <mat-chip
             *ngFor="let item of areas"
+            class="pil-hapus"
             [removable]="true"
             (removed)="removeArea(item)"
+            (click)="removeArea(item)"
+            [attr.title]="'common.klikUntukHapus' | translate"
           >
             {{ item }}
-            <button matChipRemove [attr.aria-label]="'supplier.removeArea' | translate">
+            <button
+              matChipRemove
+              type="button"
+              [attr.aria-label]="'supplier.removeArea' | translate"
+            >
               <mat-icon>close</mat-icon>
             </button>
           </mat-chip>

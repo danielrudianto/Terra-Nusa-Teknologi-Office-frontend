@@ -326,9 +326,19 @@
           <div class="pof-pill pof-span2">
             <mat-chip-set>
               @for (u of ujiTerpilih; track u) {
-                <mat-chip [removable]="true" (removed)="hapusUji(u)">
+                <mat-chip
+                  class="pil-hapus"
+                  [removable]="true"
+                  (removed)="hapusUji(u)"
+                  (click)="hapusUji(u)"
+                  [attr.title]="'common.klikUntukHapus' | translate"
+                >
                   {{ u }}
-                  <button matChipRemove [attr.aria-label]="'common.delete' | translate">
+                  <button
+                    matChipRemove
+                    type="button"
+                    [attr.aria-label]="'common.delete' | translate"
+                  >
                     <mat-icon>close</mat-icon>
                   </button>
                 </mat-chip>

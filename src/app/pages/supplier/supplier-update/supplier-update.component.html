@@ -227,11 +227,14 @@
           <mat-chip-set [attr.aria-label]="'supplier.itemsSoldSelection' | translate">
             <mat-chip
               *ngFor="let item of items"
+              class="pil-hapus"
               [removable]="true"
               (removed)="remove(item)"
+              (click)="remove(item)"
+              [attr.title]="'common.klikUntukHapus' | translate"
             >
               {{ item }}
-              <button matChipRemove class="su-chip-x" [attr.aria-label]="'supplier.removeItem' | translate">
+              <button matChipRemove type="button" class="su-chip-x" [attr.aria-label]="'supplier.removeItem' | translate">
                 <svg
                   width="14"
                   height="14"
@@ -263,11 +266,14 @@
           <mat-chip-set [attr.aria-label]="'supplier.areasSelection' | translate">
             <mat-chip
               *ngFor="let area of areas"
+              class="pil-hapus"
               [removable]="true"
               (removed)="removeArea(area)"
+              (click)="removeArea(area)"
+              [attr.title]="'common.klikUntukHapus' | translate"
             >
               {{ area }}
-              <button matChipRemove class="su-chip-x" [attr.aria-label]="'supplier.removeArea' | translate">
+              <button matChipRemove type="button" class="su-chip-x" [attr.aria-label]="'supplier.removeArea' | translate">
                 <svg
                   width="14"
                   height="14"
