@@ -56,19 +56,42 @@
             keterangannya jelas.
           -->
           @if (f["purchaseOrderName"].value) {
-            <button
-              type="button"
-              class="pv-value pv-polink"
-              [class.pv-polink--missing]="!purchaseOrderId"
-              [title]="
-                purchaseOrderId
-                  ? 'Buka dokumen purchase order'
-                  : 'Dokumen belum tersedia'
-              "
-              (click)="viewPurchaseOrder()"
-            >
-              {{ f["purchaseOrderName"].value }}
-            </button>
+            <div class="pv-po">
+              <button
+                type="button"
+                class="pv-value pv-polink"
+                [class.pv-polink--missing]="!purchaseOrderId"
+                [title]="
+                  (purchaseOrderId
+                    ? 'purchaseView.bukaDokumenPo'
+                    : 'purchaseView.dokumenPoBelumAda'
+                  ) | translate
+                "
+                (click)="viewPurchaseOrder()"
+              >
+                {{ f["purchaseOrderName"].value }}
+              </button>
+
+              <!--
+                Tombol salin, BUKAN mengandalkan seleksi teks.
+
+                Nomornya sekarang tombol — dan teks di dalam tombol sulit
+                disorot: menekan lalu menggeser terbaca sebagai klik, jadi
+                yang terjadi malah dokumennya terbuka. Sejak nomornya dapat
+                ditekan, menyalinnya justru menjadi lebih sulit daripada
+                sebelumnya.
+              -->
+              <button
+                mat-icon-button
+                type="button"
+                class="pv-salin"
+                (click)="salinNomorPo()"
+                [title]="'purchaseView.salinNomorPo' | translate"
+                [attr.aria-label]="'purchaseView.salinNomorPo' | translate"
+              >
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
           } @else {
             <span class="pv-value">—</span>
           }

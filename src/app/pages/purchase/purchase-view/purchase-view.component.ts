@@ -31,6 +31,7 @@ import { AvatarComponent } from '../../../components/avatar/avatar.component';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 import { POLA_NOMOR_PO } from '../../../constants/nomor-dokumen';
+import { salinTeks } from 'src/app/helpers/salin.helper';
 
 @Component({
   selector: 'app-purchase-view',
@@ -68,6 +69,26 @@ export class PurchaseViewComponent {
    * pembelian lama kerap mengacu pada nomor yang dicatat sebelum purchase
    * order dibuat di sistem.
    */
+  /**
+   * Menyalin nomor PO ke papan klip.
+   *
+   * Umpan baliknya WAJIB, berhasil maupun tidak. Menyalin tidak mengubah apa
+   * pun di layar, jadi tanpa pesan tidak ada cara membedakan "sudah tersalin"
+   * dari "tombolnya tidak berfungsi" — dan yang menekannya baru tahu saat
+   * menempel di tempat lain dan yang muncul isi papan klip sebelumnya.
+   */
+  async salinNomorPo(): Promise<void> {
+    const nomor = String(this.f['purchaseOrderName'].value ?? '').trim();
+    if (!nomor) return;
+
+    const berhasil = await salinTeks(nomor);
+    this.snackBar.open(
+      this.translate.instant(berhasil ? 'notify.copied' : 'notify.copyFailed'),
+      'Close',
+      { duration: 3000 },
+    );
+  }
+
   viewPurchaseOrder() {
     if (!this.purchaseOrderId) {
       this.snack.open(

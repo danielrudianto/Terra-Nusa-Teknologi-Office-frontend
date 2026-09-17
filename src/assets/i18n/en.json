@@ -3111,7 +3111,10 @@
     "rejectNamed": "Reject {{name}}? The status cannot be reverted from this screen."
   },
   "purchaseView": {
-    "createdOn": "Document created on"
+    "createdOn": "Document created on",
+    "bukaDokumenPo": "Open the purchase order document",
+    "dokumenPoBelumAda": "Document not available yet",
+    "salinNomorPo": "Copy PO number"
   },
   "audit": {
     "sisaPerubahan": "…and {{n}} more changes",
@@ -3862,7 +3865,8 @@
     "rejectSuccess": "Purchase order rejected",
     "formInvalid": "Some fields need attention. Check the ones marked in red.",
     "taxInvoiceSaved": "Tax invoice number saved",
-    "taxPeriodNotStored": "The invoice number was saved, but the tax period was NOT. The server is probably not updated or not restarted — the VAT position will keep using the invoice date until this is fixed."
+    "taxPeriodNotStored": "The invoice number was saved, but the tax period was NOT. The server is probably not updated or not restarted — the VAT position will keep using the invoice date until this is fixed.",
+    "copyFailed": "Copy failed"
   },
   "panduan": {
     "title": "Guide",
