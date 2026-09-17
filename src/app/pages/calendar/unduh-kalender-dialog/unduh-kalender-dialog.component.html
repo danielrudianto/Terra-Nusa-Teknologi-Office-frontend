@@ -55,7 +55,7 @@
             matInput
             [matDatepicker]="pMulai"
             [ngModel]="mulai()"
-            (ngModelChange)="mulai.set($event)"
+            (ngModelChange)="mulai.set(keTanggal($event))"
             name="mulai"
             readonly
           />
@@ -78,7 +78,7 @@
             [min]="mulai()"
             [max]="maksAkhir()"
             [ngModel]="akhir()"
-            (ngModelChange)="akhir.set($event)"
+            (ngModelChange)="akhir.set(keTanggal($event))"
             name="akhir"
             readonly
           />

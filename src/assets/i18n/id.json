@@ -5438,5 +5438,20 @@
     "slideLeft": "Geser kiri",
     "slideRight": "Geser kanan",
     "none": "Tidak ada"
+  },
+  "grupPilihan": {
+    "buildings": "Buildings",
+    "general": "General",
+    "humanResources": "Human Resources",
+    "legal": "Legal",
+    "marketing": "Marketing",
+    "miscIncome": "Miscelanous income",
+    "officeExpenses": "Office Expenses",
+    "otherIncome": "Other income",
+    "progress": "Progress",
+    "projectExpenses": "Project Expenses",
+    "ptkpMarried": "Kawin",
+    "ptkpSingle": "Tidak kawin",
+    "tax": "Tax"
   }
 }

@@ -5438,5 +5438,20 @@
     "slideLeft": "Slide left",
     "slideRight": "Slide right",
     "none": "None"
+  },
+  "grupPilihan": {
+    "buildings": "Buildings",
+    "general": "General",
+    "humanResources": "Human Resources",
+    "legal": "Legal",
+    "marketing": "Marketing",
+    "miscIncome": "Miscellaneous income",
+    "officeExpenses": "Office Expenses",
+    "otherIncome": "Other income",
+    "progress": "Progress",
+    "projectExpenses": "Project Expenses",
+    "ptkpMarried": "Married (K)",
+    "ptkpSingle": "Single (TK)",
+    "tax": "Tax"
   }
 }

@@ -98,7 +98,7 @@
             formControlName="taxCategory"
             [placeholder]="'employee.selectTaxCategory' | translate"
           >
-            <mat-optgroup label="Tidak kawin">
+            <mat-optgroup [label]="'grupPilihan.ptkpSingle' | translate">
               <mat-option value="TK/0">{{
                 "salarySlip.tk0" | translate
               }}</mat-option>
@@ -112,7 +112,7 @@
                 "salarySlip.tk3" | translate
               }}</mat-option>
             </mat-optgroup>
-            <mat-optgroup label="Kawin">
+            <mat-optgroup [label]="'grupPilihan.ptkpMarried' | translate">
               <mat-option value="K/0">{{
                 "salarySlip.k0" | translate
               }}</mat-option>

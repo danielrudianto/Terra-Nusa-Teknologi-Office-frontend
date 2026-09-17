@@ -5438,5 +5438,20 @@
     "slideLeft": "向左滑入",
     "slideRight": "向右滑入",
     "none": "无"
+  },
+  "grupPilihan": {
+    "buildings": "建筑",
+    "general": "常规",
+    "humanResources": "Human Resources",
+    "legal": "Legal",
+    "marketing": "Marketing",
+    "miscIncome": "Miscellaneous income",
+    "officeExpenses": "Office Expenses",
+    "otherIncome": "Other income",
+    "progress": "Progress",
+    "projectExpenses": "Project Expenses",
+    "ptkpMarried": "已婚 (K)",
+    "ptkpSingle": "未婚 (TK)",
+    "tax": "Tax"
   }
 }

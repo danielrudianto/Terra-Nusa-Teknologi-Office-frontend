@@ -62,7 +62,7 @@
         <mat-form-field appearance="outline" class="ic-span2">
           <mat-label>{{ "income.incomeType" | translate }}</mat-label>
           <mat-select formControlName="incomeType">
-            <mat-optgroup label="Other income">
+            <mat-optgroup [label]="'grupPilihan.otherIncome' | translate">
               <mat-option value="7.1">{{
                 "income.typeInterestFull" | translate
               }}</mat-option>
@@ -76,7 +76,7 @@
                 "income.typeOtherFull" | translate
               }}</mat-option>
             </mat-optgroup>
-            <mat-optgroup label="Miscelanous income">
+            <mat-optgroup [label]="'grupPilihan.miscIncome' | translate">
               <mat-option value="7.4">{{
                 "income.typeRoundingUpFull" | translate
               }}</mat-option>
