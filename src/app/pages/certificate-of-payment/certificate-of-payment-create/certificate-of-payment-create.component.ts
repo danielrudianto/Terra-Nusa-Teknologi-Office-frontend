@@ -88,6 +88,19 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
   /** Id CoP bila sedang MENYUNTING; kosong bila membuat baru. */
   copId: number | null = null;
 
+  /**
+   * Versi baris CoP yang sedang disunting.
+   *
+   * Dibaca saat memuat, dikirim kembali saat menyimpan. Server membandingkan
+   * keduanya; bila sudah berbeda, ada yang menyimpan lebih dulu dan
+   * penyimpanan ini ditolak alih-alih menimpa pekerjaannya.
+   *
+   * Tidak perlu disegarkan setelah menyimpan: layar ini selalu berpindah ke
+   * daftar begitu tersimpan, jadi tidak ada keadaan di mana versinya basi
+   * sementara formulirnya masih terbuka.
+   */
+  private versiCop: number | null = null;
+
   readonly memuat = signal(false);
   readonly menyimpan = signal(false);
 
@@ -319,6 +332,8 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
     this.memuat.set(true);
     try {
       const cop: any = await firstValueFrom(this.service.detail(id));
+      this.versiCop =
+        typeof cop.rowVersion === 'number' ? cop.rowVersion : null;
       this.tanggal.setValue(cop.date ? new Date(cop.date) : null);
       this.periodeAwal.setValue(
         cop.periodStart ? new Date(cop.periodStart) : null,
@@ -618,6 +633,13 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
             periodEnd: this.tanggalTeks(this.periodeAkhir.value),
             note: this.catatan.value || null,
             items,
+            // `?? undefined`, BUKAN `?? 0`.
+            //
+            // Nol adalah versi yang SAH — setiap baris dimulai dari sana.
+            // Mengirim nol untuk "tidak tahu" berarti menabrak dokumen yang
+            // memang belum pernah disunting, dan penyimpanan yang benar
+            // ditolak tanpa sebab yang dapat dijelaskan.
+            rowVersion: this.versiCop ?? undefined,
           }),
         );
       } else {

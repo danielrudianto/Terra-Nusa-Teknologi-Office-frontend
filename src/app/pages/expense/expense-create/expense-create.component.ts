@@ -80,6 +80,15 @@ export class ExpenseCreateComponent {
   editMode = false;
   editId: number | null = null;
 
+  /**
+   * Versi baris beban yang sedang disunting.
+   *
+   * Dibaca saat memuat, dikirim kembali saat menyimpan. Bila sudah berbeda,
+   * ada yang menyimpan lebih dulu sejak layar ini dibuka, dan servernya
+   * menolak alih-alih menimpa.
+   */
+  private versiBeban: number | null = null;
+
   isFinal: boolean = false;
   filteredOptions: IBank[] = [];
   options: IBank[] = banks;
@@ -244,6 +253,8 @@ export class ExpenseCreateComponent {
     this.apiService.get(`expenses/${id}`, {}).subscribe({
       next: (res: any) => {
         const e = res?.expense ?? res;
+        this.versiBeban =
+          typeof e?.rowVersion === 'number' ? e.rowVersion : null;
         if (e) this.isiFormDariBeban(e);
       },
       error: (error) => {
@@ -545,7 +556,18 @@ export class ExpenseCreateComponent {
     // MODE UBAH: kirim PUT, tanpa membuat pembayaran, lalu kembali ke daftar.
     if (this.editMode && this.editId != null) {
       this.apiService
-        .put(`expenses/${this.editId}`, expenseData)
+        /*
+         * Versinya ditambahkan HANYA pada penyimpanan perubahan.
+         *
+         * `expenseData` dipakai bersama oleh jalur buat-baru, dan beban yang
+         * belum ada belum punya versi apa pun — mengirimkannya di sana hanya
+         * menambah bidang yang diabaikan server, sambil menyiratkan sesuatu
+         * yang tidak benar bagi yang membacanya nanti.
+         */
+        .put(`expenses/${this.editId}`, {
+          ...expenseData,
+          rowVersion: this.versiBeban ?? undefined,
+        })
         .subscribe({
           next: (_) => {
             this.snackBar.open(

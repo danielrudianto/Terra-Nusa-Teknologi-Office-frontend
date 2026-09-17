@@ -334,6 +334,16 @@ export class CertificateOfPaymentService {
       periodEnd?: string | null;
       note?: string | null;
       items?: BarisCoPInput[];
+      /**
+       * Versi baris yang DIBACA layar penyuntingnya.
+       *
+       * Server menolak penyimpanan bila versinya sudah bertambah — artinya
+       * ada yang menyimpan lebih dulu sejak layar ini dibuka. Tanpa bidang
+       * ini, penjagaannya di server tidak pernah menyala: permintaan tanpa
+       * versi sengaja diperlakukan seperti sebelumnya, supaya penyuntingan
+       * tidak berhenti pada jeda antara deploy backend dan frontend.
+       */
+      rowVersion?: number;
     },
   ) {
     return this.api.put(`${CertificateOfPaymentService.JALUR}/${id}`, body);
