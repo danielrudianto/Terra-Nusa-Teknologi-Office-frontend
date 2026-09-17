@@ -1,0 +1,9 @@
+
+bank/bank-list/bank-list
+  - pencarian mendahului keping penyaring; urutannya harus keping → pencarian → muat ulang
+  - pencarian tidak berdiri tepat sebelum tombol muat ulang; urutan bilah alat: mat-form-field → mat-chip-listbox → app-refresh-button
+
+payment/payment-list/payment-list
+  - pencarian tidak berdiri tepat sebelum tombol muat ulang; urutan bilah alat: mat-chip-listbox → app-refresh-button → mat-form-field → button → mat-form-field → mat-form-field → button
+
+23 halaman daftar diperiksa, 2 menyimpang.

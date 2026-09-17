@@ -1,0 +1,7 @@
+daftarcek: 264 berkas .scss diperiksa
+
+3 temuan:
+
+  - src/app/mobile/hapus-pembelian/hapus-pembelian.component.scss: gerakan `!important` dipakai tetapi @keyframes-nya tidak pernah ditulis — yang menggerakkannya diam tanpa galat
+  - src/app/mobile/persetujuan-po/persetujuan-po.component.scss: gerakan `!important` dipakai tetapi @keyframes-nya tidak pernah ditulis — yang menggerakkannya diam tanpa galat
+  - src/app/mobile/persetujuan-reimbursement/persetujuan-reimbursement.component.scss: gerakan `!important` dipakai tetapi @keyframes-nya tidak pernah ditulis — yang menggerakkannya diam tanpa galat
