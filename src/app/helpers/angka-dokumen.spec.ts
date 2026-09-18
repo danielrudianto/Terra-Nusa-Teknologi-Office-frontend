@@ -77,15 +77,45 @@ describe('volume dan satuan', () => {
   });
 });
 
-describe('pemformat lama tetap ada untuk dokumen lain', () => {
-  it('`rupiah()` masih tanpa desimal', () => {
+describe('tidak ada lagi dua pemformat nominal', () => {
+  /*
+   * PENGUJIAN INI DIBALIK, dan itu disengaja.
+   *
+   * Dulu ia berbunyi "`rupiah()` masih tanpa desimal", dengan alasan:
+   * "faktur penjualan, rekap tender, dan unduhan laporan proyek masih
+   * memakainya; diuji supaya perubahan pada dokumen purchase order tidak
+   * diam-diam ikut mengubah ketiganya."
+   *
+   * Alasan itu benar pada zamannya — yang salah adalah keadaan yang
+   * dijaganya. Satu nilai uang ditulis "1.000.000" pada satu dokumen dan
+   * "1.000.000,00" pada dokumen berikutnya, untuk angka yang sama, dan tidak
+   * ada apa pun di layar yang menjelaskan kenapa. Pengujian ini justru
+   * mengunci keadaan itu di tempatnya.
+   *
+   * Sekarang keduanya meneruskan ke `uangDokumen()`, dan yang dijaga adalah
+   * bahwa keduanya TIDAK BOLEH berbeda lagi.
+   */
+  it('`rupiah()` dan `rupiahDokumen()` menghasilkan tulisan yang sama', () => {
+    for (const n of [0, 1_000_000, 1_234_567 * 0.11, 1.005, 999.999]) {
+      expect(rupiah(n))
+        .withContext(`dua pemformat nominal berselisih pada ${n}`)
+        .toBe(rupiahDokumen(n));
+    }
+  });
+
+  it('keduanya dua desimal', () => {
+    expect(rupiah(1_000_000)).toBe('1.000.000,00');
+    expect(rupiah(1_234_567 * 0.11)).toBe('135.802,37');
+  });
+
+  it('VOLUME tetap berbeda — dan itu yang memang harus berbeda', () => {
     /*
-     * Faktur penjualan, rekap tender, dan unduhan laporan proyek masih
-     * memakainya. Diuji supaya perubahan pada dokumen purchase order tidak
-     * diam-diam ikut mengubah ketiganya.
+     * Penyeragaman ini soal NILAI UANG. Volume 10 set tetap "10": desimal
+     * palsu terbaca seperti ketelitian yang tidak ada, dan pada satuan
+     * seperti "set" pecahan memang mustahil.
      */
-    expect(rupiah(1_000_000)).toBe('1.000.000');
-    expect(rupiah(1_234_567 * 0.11)).toBe('135.802');
+    expect(angkaSatuan(10)).toBe('10');
+    expect(rupiahDokumen(10)).toBe('10,00');
   });
 });
 

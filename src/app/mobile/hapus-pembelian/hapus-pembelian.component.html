@@ -29,7 +29,7 @@
     <button type="button" class="mhp-kartu" (click)="buka(p)">
       <div class="mhp-baris1">
         <span class="mhp-nomor">{{ p.invoiceName || p.id }}</span>
-        <span class="mhp-nilai">{{ nilai(p) | number: "1.0-0" }}</span>
+        <span class="mhp-nilai">{{ nilai(p) | number: "1.2-2" }}</span>
       </div>
       <div class="mhp-baris2">
         <span class="mhp-nama">{{ p.supplier_name || p.supplierName || "\u2014" }}</span>
@@ -60,7 +60,7 @@
         <dd>{{ dipilih.purchaseOrderName || "\u2014" }}</dd>
 
         <dt>{{ "mobile.pembelian.total" | translate }}</dt>
-        <dd>{{ nilai(dipilih) | number: "1.0-0" }}</dd>
+        <dd>{{ nilai(dipilih) | number: "1.2-2" }}</dd>
       </dl>
 
       <div class="mhp-peringatan">

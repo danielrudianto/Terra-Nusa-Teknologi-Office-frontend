@@ -359,7 +359,7 @@
                 thousandSeparator=" "
                 mask="separator.2"
                 prefix="Rp. "
-                placeholder="{{ hitungBaris(i) | number: '1.0-2' }}"
+                placeholder="{{ hitungBaris(i) | number: '1.2-2' }}"
               />
               @if (jumlahMenyimpang(i)) {
                 <mat-error>{{
@@ -412,15 +412,15 @@
       <div class="po5112-summary">
         <div class="po5112-summary__row">
           <span>{{ "common.subtotalDpp" | translate }}</span
-          ><span>Rp {{ subTotal | number: "1.0-2" }}</span>
+          ><span>Rp {{ subTotal | number: "1.2-2" }}</span>
         </div>
         <div class="po5112-summary__row" *ngIf="ppnAmount > 0">
           <span>{{ "po5112.vat11" | translate }}</span
-          ><span>Rp {{ ppnAmount | number: "1.0-2" }}</span>
+          ><span>Rp {{ ppnAmount | number: "1.2-2" }}</span>
         </div>
         <div class="po5112-summary__row po5112-summary__total">
           <span>{{ "common.total" | translate }}</span
-          ><span>Rp {{ grandTotal | number: "1.0-2" }}</span>
+          ><span>Rp {{ grandTotal | number: "1.2-2" }}</span>
         </div>
       </div>
     </div>

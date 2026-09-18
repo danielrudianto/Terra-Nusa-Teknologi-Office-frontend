@@ -46,7 +46,7 @@
       <button type="button" class="mrb-kartu" (click)="buka(r)">
         <div class="mrb-baris1">
           <span class="mrb-nomor">{{ r.name || r.id }}</span>
-          <span class="mrb-nilai">{{ nilai(r) | number: "1.0-0" }}</span>
+          <span class="mrb-nilai">{{ nilai(r) | number: "1.2-2" }}</span>
         </div>
         <div class="mrb-baris2">
           <span class="mrb-nama">{{ r.bankAccountName || "\u2014" }}</span>
@@ -120,7 +120,7 @@
             (click)="salin(nilai(dipilih))"
             [attr.aria-label]="'mobile.salin' | translate"
           >
-            <span class="mrb-rinci__total">{{ nilai(dipilih) | number: "1.0-0" }}</span>
+            <span class="mrb-rinci__total">{{ nilai(dipilih) | number: "1.2-2" }}</span>
             <mat-icon>content_copy</mat-icon>
           </button>
         </dd>
@@ -142,7 +142,7 @@
               <li class="mrb-item__baris">
                 <div class="mrb-item__atas">
                   <span class="mrb-item__nama">{{ it.description || "\u2014" }}</span>
-                  <span class="mrb-item__nilai">{{ (it.amount || 0) | number: "1.0-0" }}</span>
+                  <span class="mrb-item__nilai">{{ (it.amount || 0) | number: "1.2-2" }}</span>
                 </div>
                 @if (it.date) {
                   <span class="mrb-item__tanggal">{{ it.date | date: "d MMM y" }}</span>

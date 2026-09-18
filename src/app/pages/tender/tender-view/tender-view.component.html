@@ -340,7 +340,7 @@
                     >
                       @if (harga(q, it.id) !== null) {
                         <span class="tv-harga">
-                          {{ harga(q, it.id) | number: "1.0-0" }}
+                          {{ harga(q, it.id) | number: "1.2-2" }}
                         </span>
                         @if (catatanBaris(q, it.id)) {
                           <span class="tv-harga__catatan">{{
@@ -361,7 +361,7 @@
                 <td class="tv-td-item">{{ "tender.subtotal" | translate }}</td>
                 @for (q of quotes; track q.id) {
                   <td class="tv-td-total">
-                    {{ total(q) | number: "1.0-0" }}
+                    {{ total(q) | number: "1.2-2" }}
                     @if (tidakLengkap(q)) {
                       <span class="tv-total__ket">{{
                         "tender.totalSebagian" | translate
@@ -416,7 +416,7 @@
                         {{ q.ppnPercentage | number: "1.0-2" }}%
                       </span>
                       <span class="tv-ppn__nilai">
-                        {{ nilaiPpn(q) | number: "1.0-0" }}
+                        {{ nilaiPpn(q) | number: "1.2-2" }}
                       </span>
                     } @else {
                       <span class="tv-ppn__tidak">{{
@@ -431,7 +431,7 @@
                 <td class="tv-td-item">{{ "tender.dibayarkan" | translate }}</td>
                 @for (q of quotes; track q.id) {
                   <td class="tv-td-total">
-                    {{ dibayarkan(q) | number: "1.0-0" }}
+                    {{ dibayarkan(q) | number: "1.2-2" }}
                   </td>
                 }
               </tr>
@@ -441,7 +441,7 @@
                 @for (q of quotes; track q.id) {
                   <td class="tv-td-total">
                     @if (biayaLain(q)) {
-                      {{ biayaLain(q) | number: "1.0-0" }}
+                      {{ biayaLain(q) | number: "1.2-2" }}
                       @if (q.otherCostNote) {
                         <span class="tv-total__ket tv-total__ket--biasa">{{
                           q.otherCostNote
@@ -463,7 +463,7 @@
                     class="tv-td-biaya"
                     [class.murah]="isBiayaTerendah(q)"
                   >
-                    <strong>{{ biayaSebenarnya(q) | number: "1.0-0" }}</strong>
+                    <strong>{{ biayaSebenarnya(q) | number: "1.2-2" }}</strong>
                     @if (tidakLengkap(q)) {
                       <span class="tv-total__ket">{{
                         "tender.totalSebagian" | translate
@@ -601,7 +601,7 @@
               }
               <span class="tv-menang__nilai">
                 {{ "tender.biayaSebenarnya" | translate }}
-                {{ biayaSebenarnya(pemenang) | number: "1.0-2" }}
+                {{ biayaSebenarnya(pemenang) | number: "1.2-2" }}
               </span>
             </div>
           </div>

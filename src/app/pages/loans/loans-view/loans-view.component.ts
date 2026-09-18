@@ -184,8 +184,8 @@ export class LoansViewComponent implements OnInit {
     if (this.loan == null) return;
     const fmt = (n: number) =>
       new Intl.NumberFormat('id-ID', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
       }).format(n);
 
     const text =

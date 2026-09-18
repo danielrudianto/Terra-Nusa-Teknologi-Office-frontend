@@ -1,4 +1,5 @@
 import { Chart, registerables } from 'chart.js';
+import { uangDokumenRp } from './uang.helper';
 
 /**
  * Pendaftaran dan setelan dasar chart.js — SATU tempat.
@@ -53,25 +54,25 @@ export function pastikanChart(): void {
 }
 
 /**
- * Nominal rupiah untuk tooltip — BULAT, tanpa pecahan.
+ * Nominal rupiah untuk tooltip — dua desimal, seperti di mana pun.
  *
- * `toLocaleString('id-ID')` menampilkan sampai tiga angka di belakang koma.
- * Pada angka yang disusun dari penjumlahan `float`, itu membocorkan galat
- * pembulatannya ke layar: `Rp 535.401.957,759` untuk saldo yang di kartu
- * sebelahnya tertulis `535.401.958`. Angkanya sama; yang berbeda cara
- * menuliskannya — dan dua tulisan berbeda untuk satu angka membuat keduanya
- * berhenti dipercaya.
+ * KENAPA ALASANNYA BERBALIK
  *
- * Rupiah tidak punya pecahan sen dalam pemakaian sehari-hari, jadi
- * dibulatkan, bukan dipangkas: `.5` ke atas mengikuti aturan yang sama
- * dengan yang dipakai pipe `number` di seluruh aplikasi.
+ * Dulu ini sengaja BULAT. Alasannya benar pada zamannya: `toLocaleString`
+ * tanpa pengaturan menampilkan sampai tiga desimal, dan pada angka yang
+ * disusun dari penjumlahan `float` itu membocorkan galat pembulatannya ke
+ * layar — `Rp 535.401.957,759` untuk saldo yang di kartu sebelahnya tertulis
+ * `535.401.958`. Dua tulisan berbeda untuk satu angka membuat keduanya
+ * berhenti dipercaya, jadi tooltipnya disamakan dengan kartunya.
+ *
+ * Yang berubah adalah KARTUNYA. Seluruh nilai uang di aplikasi ini sekarang
+ * dua desimal, jadi membulatkan di sini justru menghasilkan selisih yang dulu
+ * dihindari — dengan arah yang terbalik. Dan dua desimal tetap menutup
+ * kebocoran `float` yang menjadi sebab aslinya: yang dibuang tiga desimal,
+ * bukan dua.
  */
 export function rupiah(nilai: unknown): string {
-  const n = Number(nilai);
-  if (!Number.isFinite(n)) return 'Rp 0';
-  return `Rp ${Math.round(n).toLocaleString('id-ID', {
-    maximumFractionDigits: 0,
-  })}`;
+  return uangDokumenRp(nilai);
 }
 
 /**

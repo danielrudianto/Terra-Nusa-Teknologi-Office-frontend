@@ -4,6 +4,7 @@ import { PDFDocument } from 'pdf-lib';
 
 import { documentFonts } from '../constants/document-font.constant';
 import type { HarianRekap, SelKalender } from './kalender-rekap-excel';
+import { uangDokumen } from './uang.helper';
 
 /**
  * Kalender kas sebagai PDF — untuk dibaca dan diedarkan, bukan diolah.
@@ -39,10 +40,7 @@ const GARIS = '#bfbfbf';
 
 function rp(n: number): string {
   if (!n) return '';
-  return n.toLocaleString('id-ID', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  return uangDokumen(n);
 }
 
 /** Nominal bertanda: merah bila keluar, seperti pada kisi Excel-nya. */

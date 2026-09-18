@@ -54,15 +54,15 @@
                 {{ sumberLabel(r) }}
               </span>
             </td>
-            <td class="num">{{ nilaiDpp(r) | number: "1.0-0" }}</td>
-            <td class="num">{{ nilaiPpn(r) | number: "1.0-0" }}</td>
+            <td class="num">{{ nilaiDpp(r) | number: "1.2-2" }}</td>
+            <td class="num">{{ nilaiPpn(r) | number: "1.2-2" }}</td>
           </tr>
         </tbody>
         <tfoot>
           <tr>
             <td colspan="3">{{ "common.total" | translate }}</td>
-            <td class="num">{{ totalDpp | number: "1.0-0" }}</td>
-            <td class="num">{{ total | number: "1.0-0" }}</td>
+            <td class="num">{{ totalDpp | number: "1.2-2" }}</td>
+            <td class="num">{{ total | number: "1.2-2" }}</td>
           </tr>
         </tfoot>
       </table>

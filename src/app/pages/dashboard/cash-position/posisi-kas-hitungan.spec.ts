@@ -75,10 +75,23 @@ describe('posisi kas — hitungan di kepala kartu', () => {
 });
 
 describe('posisi kas — nol negatif', () => {
+  it('SELALU dua desimal, walau angkanya bulat', () => {
+    /*
+     * Kolom nominal yang sebagian barisnya berdesimal dan sebagian tidak
+     * sulit dibandingkan sekilas — dan itulah yang dilakukan orang saat
+     * membuka beranda.
+     */
+    const c = komponen();
+
+    expect(c.formatIDR(7_500_000)).toContain(',00');
+    expect(c.formatIDR(0)).toContain(',00');
+    expect(c.formatIDR(1234.5)).toContain(',50');
+  });
+
   it('tidak pernah mencetak tanda minus pada nol', () => {
     const c = komponen();
 
-    for (const n of [-0, -0.3, -0.49, 0, 0.4]) {
+    for (const n of [-0, -0.001, -0.004, 0, 0.002]) {
       expect(c.formatIDR(n))
         .withContext(`${n} tercetak dengan tanda minus`)
         .not.toContain('-');
@@ -90,6 +103,9 @@ describe('posisi kas — nol negatif', () => {
 
     expect(c.formatIDR(-4_511_900)).toContain('-');
     expect(c.formatIDR(-1)).toContain('-');
+    // Sejak angkanya dicetak dua desimal, −0,30 adalah saldo SUNGGUHAN.
+    // Ambang lamanya (0,5) akan menelannya menjadi "Rp 0,00".
+    expect(c.formatIDR(-0.3)).toContain('-');
   });
 
   it('warna merahnya sepakat dengan angka yang tercetak', () => {
@@ -100,12 +116,13 @@ describe('posisi kas — nol negatif', () => {
      */
     const c = komponen();
 
-    for (const n of [-0, -0.3, -0.49, 0, 5]) {
+    for (const n of [-0, -0.001, -0.004, 0, 5]) {
       expect(c.negatif(n))
         .withContext(`${n} diwarnai merah padahal tercetak nol/positif`)
         .toBeFalse();
     }
 
+    expect(c.negatif(-0.3)).toBeTrue();
     expect(c.negatif(-1)).toBeTrue();
     expect(c.negatif(-4_511_900)).toBeTrue();
   });

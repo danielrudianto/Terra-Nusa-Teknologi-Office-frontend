@@ -672,7 +672,7 @@ export async function berkasRekapTenderExcel(d: DataRekap): Promise<Workbook> {
     d.quotes.forEach((q, i) => {
       const c = r.getCell(i + 2);
       c.value = hargaBaris(q, it.id) ?? null;
-      c.numFmt = '#,##0';
+      c.numFmt = '#,##0.00';
       c.alignment = { horizontal: 'right', vertical: 'middle' };
     });
     for (let c = 1; c <= kolomTerakhir; c++) r.getCell(c).border = tepiSel(kolom(c));
@@ -730,7 +730,7 @@ export async function berkasRekapTenderExcel(d: DataRekap): Promise<Workbook> {
     return r;
   };
 
-  tambah('Subtotal', d.quotes.map((q) => subtotal(d, q)), { fmt: '#,##0' });
+  tambah('Subtotal', d.quotes.map((q) => subtotal(d, q)), { fmt: '#,##0.00' });
   tambah('Pengiriman', d.quotes.map(kirimTeks), { rata: 'center' });
 
   /*
@@ -750,9 +750,9 @@ export async function berkasRekapTenderExcel(d: DataRekap): Promise<Workbook> {
     { fmt: '0%', rata: 'right' },
   );
 
-  tambah('Nilai PPN', d.quotes.map((q) => nilaiPpn(d, q)), { fmt: '#,##0' });
-  tambah('Dibayarkan', d.quotes.map((q) => dibayarkan(d, q)), { fmt: '#,##0' });
-  tambah('Biaya lain', d.quotes.map((q) => Number(q.otherCost) || 0), { fmt: '#,##0' });
+  tambah('Nilai PPN', d.quotes.map((q) => nilaiPpn(d, q)), { fmt: '#,##0.00' });
+  tambah('Dibayarkan', d.quotes.map((q) => dibayarkan(d, q)), { fmt: '#,##0.00' });
+  tambah('Biaya lain', d.quotes.map((q) => Number(q.otherCost) || 0), { fmt: '#,##0.00' });
   tambah('Keterangan biaya lain', d.quotes.map((q) => q.otherCostNote || '—'), {
     bungkus: true,
     tinggi: 30,
@@ -761,7 +761,7 @@ export async function berkasRekapTenderExcel(d: DataRekap): Promise<Workbook> {
   tambah('BIAYA SEBENARNYA', d.quotes.map((q) => biayaSebenarnya(d, q)), {
     tebal: true,
     latar: 'FFE7ECFB',
-    fmt: '#,##0',
+    fmt: '#,##0.00',
   });
 
   tambah('Termin', d.quotes.map(terminTeks), { rata: 'center' });

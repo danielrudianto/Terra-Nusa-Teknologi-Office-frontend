@@ -198,7 +198,7 @@
                   !belumTertagihSamaSekali(p) && margin(p) < 0
                 "
               >
-                {{ margin(p) | number: "1.0-0" }}
+                {{ margin(p) | number: "1.2-2" }}
               </span>
               <span class="pml-kartu__persen">
                 @if (persenTakTerhitung(p)) {
@@ -221,25 +221,25 @@
               <div class="pml-kartu__baris">
                 <span>{{ "projectMargin.kontrak" | translate }}</span>
                 <span class="pml-kartu__nilai">{{
-                  p.kontrak | number: "1.0-0"
+                  p.kontrak | number: "1.2-2"
                 }}</span>
               </div>
               <div class="pml-kartu__baris">
                 <span>{{ "projectMargin.tertagih" | translate }}</span>
                 <span class="pml-kartu__nilai">{{
-                  tertagih(p) | number: "1.0-0"
+                  tertagih(p) | number: "1.2-2"
                 }}</span>
               </div>
               <div class="pml-kartu__baris">
                 <span>{{ "projectMargin.belumTertagih" | translate }}</span>
                 <span class="pml-kartu__nilai pml-belum">{{
-                  belumTertagih(p) | number: "1.0-0"
+                  belumTertagih(p) | number: "1.2-2"
                 }}</span>
               </div>
               <div class="pml-kartu__baris">
                 <span>{{ "projectMargin.biaya" | translate }}</span>
                 <span class="pml-kartu__nilai">{{
-                  biaya(p) | number: "1.0-0"
+                  biaya(p) | number: "1.2-2"
                 }}</span>
               </div>
 
@@ -270,25 +270,25 @@
         <div class="pml-kartu__baris">
           <span>{{ "projectMargin.kontrak" | translate }}</span>
           <span class="pml-kartu__nilai">{{
-            total.kontrak | number: "1.0-0"
+            total.kontrak | number: "1.2-2"
           }}</span>
         </div>
         <div class="pml-kartu__baris">
           <span>{{ "projectMargin.tertagih" | translate }}</span>
           <span class="pml-kartu__nilai">{{
-            total.tertagih | number: "1.0-0"
+            total.tertagih | number: "1.2-2"
           }}</span>
         </div>
         <div class="pml-kartu__baris">
           <span>{{ "projectMargin.belumTertagih" | translate }}</span>
           <span class="pml-kartu__nilai pml-belum">{{
-            total.belum | number: "1.0-0"
+            total.belum | number: "1.2-2"
           }}</span>
         </div>
         <div class="pml-kartu__baris">
           <span>{{ "projectMargin.biaya" | translate }}</span>
           <span class="pml-kartu__nilai">{{
-            total.biaya | number: "1.0-0"
+            total.biaya | number: "1.2-2"
           }}</span>
         </div>
         <div class="pml-kartu__baris pml-kartu__baris--margin">
@@ -296,7 +296,7 @@
           <span
             class="pml-kartu__nilai"
             [class.pml-rugi]="total.margin < 0"
-            >{{ total.margin | number: "1.0-0" }}</span
+            >{{ total.margin | number: "1.2-2" }}</span
           >
         </div>
       </div>
@@ -413,22 +413,22 @@
                 Yang belum dapat DIHITUNG hanya persentasenya; itu ditulis
                 "—", dan itu berbeda artinya dari 0,0%.
               -->
-              <td class="pml-num">{{ p.kontrak | number: "1.0-0" }}</td>
-              <td class="pml-num">{{ tertagih(p) | number: "1.0-0" }}</td>
+              <td class="pml-num">{{ p.kontrak | number: "1.2-2" }}</td>
+              <td class="pml-num">{{ tertagih(p) | number: "1.2-2" }}</td>
               <!--
                 Belum tertagih: pekerjaan yang sudah disepakati tetapi belum
                 difakturkan. Angka besar pada proyek yang hampir selesai
                 adalah tanda ada yang lupa ditagihkan.
               -->
               <td class="pml-num pml-belum">
-                {{ belumTertagih(p) | number: "1.0-0" }}
+                {{ belumTertagih(p) | number: "1.2-2" }}
               </td>
-              <td class="pml-num">{{ biaya(p) | number: "1.0-0" }}</td>
+              <td class="pml-num">{{ biaya(p) | number: "1.2-2" }}</td>
               <td
                 class="pml-num"
                 [class.pml-rugi]="!belumTertagihSamaSekali(p) && margin(p) < 0"
               >
-                {{ margin(p) | number: "1.0-0" }}
+                {{ margin(p) | number: "1.2-2" }}
               </td>
               <td class="pml-num pml-persen">
                 @if (persenTakTerhitung(p)) {
@@ -451,14 +451,14 @@
           -->
           <tr class="pml-total">
             <td>{{ "projectMargin.totalTampil" | translate }}</td>
-            <td class="pml-num">{{ total.kontrak | number: "1.0-0" }}</td>
-            <td class="pml-num">{{ total.tertagih | number: "1.0-0" }}</td>
+            <td class="pml-num">{{ total.kontrak | number: "1.2-2" }}</td>
+            <td class="pml-num">{{ total.tertagih | number: "1.2-2" }}</td>
             <td class="pml-num pml-belum">
-              {{ total.belum | number: "1.0-0" }}
+              {{ total.belum | number: "1.2-2" }}
             </td>
-            <td class="pml-num">{{ total.biaya | number: "1.0-0" }}</td>
+            <td class="pml-num">{{ total.biaya | number: "1.2-2" }}</td>
             <td class="pml-num" [class.pml-rugi]="total.margin < 0">
-              {{ total.margin | number: "1.0-0" }}
+              {{ total.margin | number: "1.2-2" }}
             </td>
             <td class="pml-num"></td>
           </tr>

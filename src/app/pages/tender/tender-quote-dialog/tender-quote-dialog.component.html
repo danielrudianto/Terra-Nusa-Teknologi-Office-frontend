@@ -305,7 +305,7 @@
           <span>
             {{ "tender.ditawar" | translate: { n: jumlahDitawar, total: t.length } }}
           </span>
-          <span>Rp {{ total | number: "1.0-0" }}</span>
+          <span>Rp {{ total | number: "1.2-2" }}</span>
         </div>
 
         @if (pakaiPpn) {
@@ -314,24 +314,24 @@
               {{ "tender.ppn" | translate }}
               {{ formGroup.value.ppnPercentage }}%
             </span>
-            <span>Rp {{ nilaiPpn | number: "1.0-0" }}</span>
+            <span>Rp {{ nilaiPpn | number: "1.2-2" }}</span>
           </div>
           <div class="tq-ringkas__baris">
             <span>{{ "tender.dibayarkan" | translate }}</span>
-            <span>Rp {{ totalDibayar | number: "1.0-0" }}</span>
+            <span>Rp {{ totalDibayar | number: "1.2-2" }}</span>
           </div>
         }
 
         @if (biayaLain) {
           <div class="tq-ringkas__baris tq-ringkas__baris--kecil">
             <span>{{ "tender.biayaLain" | translate }}</span>
-            <span>Rp {{ biayaLain | number: "1.0-0" }}</span>
+            <span>Rp {{ biayaLain | number: "1.2-2" }}</span>
           </div>
         }
 
         <div class="tq-ringkas__baris tq-ringkas__baris--utama">
           <span>{{ "tender.biayaSebenarnya" | translate }}</span>
-          <strong>Rp {{ biayaSebenarnya | number: "1.0-0" }}</strong>
+          <strong>Rp {{ biayaSebenarnya | number: "1.2-2" }}</strong>
         </div>
       </div>
     </form>

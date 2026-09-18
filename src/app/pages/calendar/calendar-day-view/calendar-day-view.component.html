@@ -7,7 +7,7 @@
   <mat-dialog-content class="cdv-content">
     <div class="cdv-total">
       <span class="cdv-total__label">{{ "calendar.balance" | translate }}</span>
-      <span class="cdv-total__value">Rp {{ selected | number: "0.2-2" }}</span>
+      <span class="cdv-total__value">Rp {{ selected | number: "1.2-2" }}</span>
     </div>
 
     <mat-selection-list
@@ -32,7 +32,7 @@
           [innerHTML]="getDescription(item)"
         ></div>
         <div matListItemLine class="cdv-item__amount">
-          Rp {{ item.amount | number: "0.2-2" }}
+          Rp {{ item.amount | number: "1.2-2" }}
         </div>
       </mat-list-option>
     </mat-selection-list>

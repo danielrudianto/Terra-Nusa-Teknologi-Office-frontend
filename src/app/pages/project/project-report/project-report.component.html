@@ -85,12 +85,12 @@
           DPP tetap disebut di bawahnya — ia yang dipakai menghitung margin,
           dan yang membaca perlu tahu angka mana yang mana.
         -->
-        <div class="prp-nilai">{{ nominalKontrak() | number: "1.0-0" }}</div>
+        <div class="prp-nilai">{{ nominalKontrak() | number: "1.2-2" }}</div>
         <div class="prp-ket">
           {{ "projectReport.contractGrossHint" | translate }}
           <span *ngIf="nominalKontrak() !== nilaiKontrak()">
             &middot; {{ "projectReport.dppValue" | translate }}
-            {{ nilaiKontrak() | number: "1.0-0" }}
+            {{ nilaiKontrak() | number: "1.2-2" }}
           </span>
         </div>
       </div>
@@ -104,7 +104,7 @@
       -->
       <div class="prp-sel">
         <div class="prp-label">{{ "projectReport.cost" | translate }}</div>
-        <div class="prp-nilai">{{ biayaSeumurProyek() | number: "1.0-0" }}</div>
+        <div class="prp-nilai">{{ biayaSeumurProyek() | number: "1.2-2" }}</div>
         <div class="prp-ket" *ngIf="nilaiKontrak() > 0">
           {{ persenKontrak(biayaSeumurProyek()) | number: "1.1-1" }}%
           {{ "projectReport.ofContract" | translate }}
@@ -123,7 +123,7 @@
         <div class="prp-label">
           {{ "projectReport.costPeriod" | translate }} {{ labelPeriode() }}
         </div>
-        <div class="prp-nilai">{{ biayaPeriode() | number: "1.0-0" }}</div>
+        <div class="prp-nilai">{{ biayaPeriode() | number: "1.2-2" }}</div>
         <div class="prp-ket" *ngIf="biayaSeumurProyek() > 0">
           {{ (biayaPeriode() / biayaSeumurProyek()) * 100 | number: "1.1-1" }}%
           {{ "projectReport.ofLifetimeCost" | translate }}
@@ -136,7 +136,7 @@
         *ngIf="!kontrakKosong()"
       >
         <div class="prp-label">{{ "projectReport.margin" | translate }}</div>
-        <div class="prp-nilai">{{ margin() | number: "1.0-0" }}</div>
+        <div class="prp-nilai">{{ margin() | number: "1.2-2" }}</div>
         <div class="prp-ket">
           {{ persenKontrak(margin()) | number: "1.1-1" }}%
           {{ "projectReport.ofContract" | translate }}
@@ -177,7 +177,7 @@
 
       <div class="prp-sel">
         <div class="prp-label">{{ "projectReport.billed" | translate }}</div>
-        <div class="prp-nilai">{{ tertagih() | number: "1.0-0" }}</div>
+        <div class="prp-nilai">{{ tertagih() | number: "1.2-2" }}</div>
         <!--
           DPP disebut di bawahnya, sama seperti pada nilai kontrak — supaya
           keduanya dapat dibaca dalam dasar yang sama.
@@ -186,7 +186,7 @@
           {{ "projectReport.billedHint" | translate }}
           <span *ngIf="tertagihDpp() !== tertagih()">
             &middot; {{ "projectReport.dppValue" | translate }}
-            {{ tertagihDpp() | number: "1.0-0" }}
+            {{ tertagihDpp() | number: "1.2-2" }}
           </span>
         </div>
       </div>
@@ -372,17 +372,17 @@
         <span>
           <i class="prp-kotak prp-kotak--biaya-kontrak"></i>
           {{ "projectReport.cost" | translate }}
-          <b>{{ biayaSeumurProyek() | number: "1.0-0" }}</b>
+          <b>{{ biayaSeumurProyek() | number: "1.2-2" }}</b>
         </span>
         <span *ngIf="margin() >= 0">
           <i class="prp-kotak prp-kotak--margin"></i>
           {{ "projectReport.margin" | translate }}
-          <b>{{ margin() | number: "1.0-0" }}</b>
+          <b>{{ margin() | number: "1.2-2" }}</b>
         </span>
         <span *ngIf="margin() < 0" class="prp-mbar-legenda--lewat">
           <i class="prp-kotak prp-kotak--lewat"></i>
           {{ "projectReport.overBudget" | translate }}
-          <b>{{ -margin() | number: "1.0-0" }}</b>
+          <b>{{ -margin() | number: "1.2-2" }}</b>
         </span>
       </div>
 
@@ -454,7 +454,7 @@
               {{ k.porsiKontrak | number: "1.0-0" }}% K
             </span>
           }
-          <span class="prp-kat__nilai">{{ k.nilai | number: "1.0-0" }}</span>
+          <span class="prp-kat__nilai">{{ k.nilai | number: "1.2-2" }}</span>
         </div>
 
         <div class="prp-rinci" *ngIf="kategoriTerbuka() === k.kode">
@@ -463,7 +463,7 @@
             <span class="prp-rinci__bar">
               <span [style.width.%]="k.nilai ? (s.nilai / k.nilai) * 100 : 0"></span>
             </span>
-            <span class="prp-rinci__nilai">{{ s.nilai | number: "1.0-0" }}</span>
+            <span class="prp-rinci__nilai">{{ s.nilai | number: "1.2-2" }}</span>
           </div>
         </div>
       </ng-container>
@@ -477,7 +477,7 @@
       <div class="prp-ringkas" *ngIf="mingguTerberat() as w">
         <span>{{ "projectReport.busiestWeek" | translate }}</span>
         <b>{{ w.label }}</b>
-        <span class="prp-ringkas__nilai">{{ w.biaya | number: "1.0-0" }}</span>
+        <span class="prp-ringkas__nilai">{{ w.biaya | number: "1.2-2" }}</span>
       </div>
 
       <!-- Batang biaya & tagihan berdampingan per minggu -->
@@ -498,7 +498,7 @@
             ></span>
           </span>
 
-          <span class="prp-arus__nilai">{{ w.biaya | number: "1.0-0" }}</span>
+          <span class="prp-arus__nilai">{{ w.biaya | number: "1.2-2" }}</span>
         </div>
       </div>
 
@@ -526,7 +526,7 @@
           <mat-icon>subdirectory_arrow_right</mat-icon>
           <span>
             {{ "projectReport.carriedOver" | translate }}
-            <b>{{ biayaDibawa() | number: "1.0-0" }}</b>
+            <b>{{ biayaDibawa() | number: "1.2-2" }}</b>
           </span>
         </p>
         <div class="prp-kum">
@@ -647,7 +647,7 @@
                 {{ "projectCashflow.totalIn" | translate }}
               </div>
               <div class="prp-nilai">
-                {{ totalKasMasuk() | number: "1.0-0" }}
+                {{ totalKasMasuk() | number: "1.2-2" }}
               </div>
             </div>
             <div class="prp-sel">
@@ -655,7 +655,7 @@
                 {{ "projectCashflow.totalOut" | translate }}
               </div>
               <div class="prp-nilai">
-                {{ totalKasKeluar() | number: "1.0-0" }}
+                {{ totalKasKeluar() | number: "1.2-2" }}
               </div>
             </div>
             <!--
@@ -670,7 +670,7 @@
                 {{ "projectCashflow.balance" | translate }}
               </div>
               <div class="prp-nilai">
-                {{ saldoKasAkhir() | number: "1.0-0" }}
+                {{ saldoKasAkhir() | number: "1.2-2" }}
               </div>
               <div class="prp-ket" *ngIf="bulanMulaiMinus()">
                 {{
@@ -891,7 +891,7 @@
               {{ "projectProgress.earned" | translate }}
             </span>
             <span class="prp-prog__wipnilai">
-              {{ nilaiDikerjakan() | number: "1.0-0" }}
+              {{ nilaiDikerjakan() | number: "1.2-2" }}
             </span>
             <span class="prp-prog__wipket">
               {{ "projectProgress.earnedHint" | translate }}
@@ -903,7 +903,7 @@
               {{ "projectReport.billed" | translate }}
             </span>
             <span class="prp-prog__wipnilai">
-              {{ tertagihDpp() | number: "1.0-0" }}
+              {{ tertagihDpp() | number: "1.2-2" }}
             </span>
             <span class="prp-prog__wipket">
               {{ "projectProgress.billedHint" | translate }}
@@ -919,7 +919,7 @@
             </span>
             <span class="prp-prog__wipnilai">
               {{ (selisihTagihan() ?? 0) > 0 ? "+" : ""
-              }}{{ selisihTagihan() | number: "1.0-0" }}
+              }}{{ selisihTagihan() | number: "1.2-2" }}
             </span>
             <span class="prp-prog__wipket">
               {{ "projectProgress.unbilledHint" | translate }}
@@ -952,7 +952,7 @@
                 {{ "projectProgress.forecastCost" | translate }}
               </span>
               <span class="prp-prog__wipnilai">
-                {{ proyeksiBiaya() | number: "1.0-0" }}
+                {{ proyeksiBiaya() | number: "1.2-2" }}
               </span>
               <span class="prp-prog__wipket">
                 {{ "projectProgress.forecastCostHint" | translate }}
@@ -967,7 +967,7 @@
                 {{ "projectProgress.forecastMargin" | translate }}
               </span>
               <span class="prp-prog__wipnilai">
-                {{ proyeksiMargin() | number: "1.0-0" }}
+                {{ proyeksiMargin() | number: "1.2-2" }}
                 <small>({{ proyeksiMarginPersen() | number: "1.0-1" }}%)</small>
               </span>
               <span class="prp-prog__wipket">

@@ -77,7 +77,7 @@ export class IncomeViewComponent {
             opponent_name: data.income.opponent.name,
             opponent_description: data.income.opponent.description,
             incomeType: data.income.incomeType,
-            amount: this.decimalPipe.transform(data.income.amount, '0.2-2'),
+            amount: this.decimalPipe.transform(data.income.amount, '1.2-2'),
           });
           this.isLoading = false;
         },

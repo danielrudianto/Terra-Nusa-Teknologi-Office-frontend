@@ -64,7 +64,7 @@
 
         <span class="rh-baris__nilai" [class.masuk]="r.planType === 'masuk'">
           {{ r.planType === "masuk" ? "+" : "−" }}
-          {{ r.amount | number: "1.0-0" }}
+          {{ r.amount | number: "1.2-2" }}
         </span>
 
         <button
@@ -114,19 +114,19 @@
       @if (totalMasuk) {
         <div class="rh-ringkas__baris">
           <span>{{ "rencana.rencanaMasuk" | translate }}</span>
-          <span class="masuk">+ {{ totalMasuk | number: "1.0-0" }}</span>
+          <span class="masuk">+ {{ totalMasuk | number: "1.2-2" }}</span>
         </div>
       }
       @if (totalKeluar) {
         <div class="rh-ringkas__baris">
           <span>{{ "rencana.rencanaKeluar" | translate }}</span>
-          <span>− {{ totalKeluar | number: "1.0-0" }}</span>
+          <span>− {{ totalKeluar | number: "1.2-2" }}</span>
         </div>
       }
       <div class="rh-ringkas__baris rh-ringkas__baris--utama">
         <span>{{ "rencana.selisih" | translate }}</span>
         <strong [class.masuk]="totalMasuk - totalKeluar >= 0">
-          {{ totalMasuk - totalKeluar | number: "1.0-0" }}
+          {{ totalMasuk - totalKeluar | number: "1.2-2" }}
         </strong>
       </div>
     </div>

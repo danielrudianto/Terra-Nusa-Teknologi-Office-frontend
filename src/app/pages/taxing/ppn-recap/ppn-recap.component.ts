@@ -153,7 +153,7 @@ export class PpnRecapComponent {
                 key: 'dpp',
                 width: 16,
                 align: 'right',
-                numFmt: '#,##0',
+                numFmt: '#,##0.00',
                 total: true,
               },
               {
@@ -161,7 +161,7 @@ export class PpnRecapComponent {
                 key: 'ppn',
                 width: 16,
                 align: 'right',
-                numFmt: '#,##0',
+                numFmt: '#,##0.00',
                 total: true,
               },
             ],

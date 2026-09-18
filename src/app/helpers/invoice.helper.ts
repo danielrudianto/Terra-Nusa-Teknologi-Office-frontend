@@ -8,6 +8,7 @@ import {
   documentFooter,
   documentHeader,
 } from './purchase-order-shared.helper';
+import { uangDokumen } from './uang.helper';
 
 pdfMake.vfs = pdfFonts.vfs;
 /**
@@ -100,9 +101,7 @@ function formatDate(value: Date | string): string {
 }
 
 function rupiah(value: number): string {
-  return (Number(value) || 0).toLocaleString('id-ID', {
-    maximumFractionDigits: 0,
-  });
+  return uangDokumen(value);
 }
 
 /**

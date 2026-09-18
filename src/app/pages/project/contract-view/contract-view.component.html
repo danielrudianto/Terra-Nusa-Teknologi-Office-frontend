@@ -21,18 +21,18 @@
     <div class="cv__nilai">
       <span class="cv__nilai-label">{{ "project.docTotal" | translate }}</span>
       <span class="cv__nilai-angka" [class.negatif]="nilai < 0">
-        {{ nilai | number: "1.0-0" }}
+        {{ nilai | number: "1.2-2" }}
       </span>
     </div>
 
     <div class="cv__rincian">
       <div class="cv__baris">
         <span>DPP</span>
-        <span>{{ k.dpp | number: "1.0-0" }}</span>
+        <span>{{ k.dpp | number: "1.2-2" }}</span>
       </div>
       <div class="cv__baris" *ngIf="k.ppn">
         <span>PPN {{ k.ppn }}%</span>
-        <span>{{ nilaiPpn | number: "1.0-0" }}</span>
+        <span>{{ nilaiPpn | number: "1.2-2" }}</span>
       </div>
       <!--
         PPh ditampilkan terpisah dan tidak ikut dijumlahkan: yang berkurang
@@ -43,7 +43,7 @@
           PPh {{ k.pphPercentage }}%
           <span class="cv__kode">{{ k.pphCode }}</span>
         </span>
-        <span>&minus;{{ nilaiPph | number: "1.0-0" }}</span>
+        <span>&minus;{{ nilaiPph | number: "1.2-2" }}</span>
       </div>
     </div>
 

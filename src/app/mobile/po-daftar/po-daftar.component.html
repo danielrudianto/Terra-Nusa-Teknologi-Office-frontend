@@ -55,7 +55,7 @@
           <div class="mpo-kepala__teks">
             <div class="mpo-baris1">
               <span class="mpo-nomor">{{ po.name }}</span>
-              <span class="mpo-nilai">{{ nilai(po) | number: "1.0-2" }}</span>
+              <span class="mpo-nilai">{{ nilai(po) | number: "1.2-2" }}</span>
             </div>
             <div class="mpo-baris2">
               <span class="mpo-nama">{{ po.supplierName || "—" }}</span>
@@ -113,11 +113,11 @@
         <dt>{{ "mobile.po.proyek" | translate }}</dt>
         <dd>{{ dipilih.projectName || "—" }}</dd>
         <dt>{{ "mobile.po.dpp" | translate }}</dt>
-        <dd>{{ dipilih.dpp | number: "1.0-2" }}</dd>
+        <dd>{{ dipilih.dpp | number: "1.2-2" }}</dd>
         <dt>{{ "mobile.po.ppn" | translate }}</dt>
         <dd>{{ dipilih.ppn || 0 }}%</dd>
         <dt>{{ "mobile.po.total" | translate }}</dt>
-        <dd class="mpo-rinci__total">{{ nilai(dipilih) | number: "1.0-2" }}</dd>
+        <dd class="mpo-rinci__total">{{ nilai(dipilih) | number: "1.2-2" }}</dd>
         @if (mode === "setujui") {
           <dt>{{ "mobile.po.diperiksa" | translate }}</dt>
           <dd>{{ dipilih.checkedByName || "—" }}</dd>
@@ -145,7 +145,7 @@
                 <li class="mpo-barang__baris">
                   <div class="mpo-barang__utama">
                     <span class="mpo-barang__nama">{{ b.judul }}</span>
-                    <span class="mpo-barang__nilai">{{ b.nilai | number: "1.0-2" }}</span>
+                    <span class="mpo-barang__nilai">{{ b.nilai | number: "1.2-2" }}</span>
                   </div>
                   <div class="mpo-barang__bawah">
                     <span class="mpo-barang__qty">{{ b.qty || "—" }}</span>

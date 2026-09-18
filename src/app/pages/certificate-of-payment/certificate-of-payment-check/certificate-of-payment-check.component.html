@@ -119,7 +119,7 @@
                 </div>
                 <div>
                   <dt>{{ "cop.hargaSatuan" | translate }}</dt>
-                  <dd>{{ b.price | number: "1.0-2" }}</dd>
+                  <dd>{{ b.price | number: "1.2-2" }}</dd>
                 </div>
                 <div class="cop-item__sisa">
                   <dt>{{ "cop.sisa" | translate }}</dt>
@@ -153,7 +153,7 @@
                    angka terlihat seketika, tanpa menyimpan lebih dulu. -->
               <div class="cop-item__jumlah">
                 <span>{{ "cop.jumlahBaris" | translate }}</span>
-                <strong>{{ jumlahBaris(b) | number: "1.0-2" }}</strong>
+                <strong>{{ jumlahBaris(b) | number: "1.2-2" }}</strong>
               </div>
 
               <mat-form-field appearance="outline" class="cop-ket-field">
@@ -180,7 +180,7 @@
 
       <div class="cop-total">
         <span>{{ "cop.nilaiKotor" | translate }}</span>
-        <strong>{{ kotor | number: "1.0-2" }}</strong>
+        <strong>{{ kotor | number: "1.2-2" }}</strong>
       </div>
     </section>
 
@@ -213,15 +213,15 @@
             <dl class="cv-pagu__angka">
               <div>
                 <dt>{{ "cop.pagu" | translate }}</dt>
-                <dd>{{ sy.dpPagu | number: "1.0-0" }}</dd>
+                <dd>{{ sy.dpPagu | number: "1.2-2" }}</dd>
               </div>
               <div>
                 <dt>{{ "cop.terpakai" | translate }}</dt>
-                <dd>{{ sy.dpTerpakai | number: "1.0-0" }}</dd>
+                <dd>{{ sy.dpTerpakai | number: "1.2-2" }}</dd>
               </div>
               <div class="cv-pagu__sisa">
                 <dt>{{ "cop.sisa" | translate }}</dt>
-                <dd>{{ sy.dpSisa | number: "1.0-0" }}</dd>
+                <dd>{{ sy.dpSisa | number: "1.2-2" }}</dd>
               </div>
             </dl>
           </div>
@@ -234,15 +234,15 @@
             <dl class="cv-pagu__angka">
               <div>
                 <dt>{{ "cop.pagu" | translate }}</dt>
-                <dd>{{ sy.retensiPagu | number: "1.0-0" }}</dd>
+                <dd>{{ sy.retensiPagu | number: "1.2-2" }}</dd>
               </div>
               <div>
                 <dt>{{ "cop.terpakai" | translate }}</dt>
-                <dd>{{ sy.retensiTerpakai | number: "1.0-0" }}</dd>
+                <dd>{{ sy.retensiTerpakai | number: "1.2-2" }}</dd>
               </div>
               <div class="cv-pagu__sisa">
                 <dt>{{ "cop.sisa" | translate }}</dt>
-                <dd>{{ sy.retensiSisa | number: "1.0-0" }}</dd>
+                <dd>{{ sy.retensiSisa | number: "1.2-2" }}</dd>
               </div>
             </dl>
           </div>
@@ -365,8 +365,8 @@
             @if (modeNilai[$index] === "persen") {
               <p class="cop-adj__hitung">
                 {{ persenBaris($index) | number: "1.0-2" }}% ×
-                {{ kotor | number: "1.0-2" }} =
-                <strong>{{ a.amount | number: "1.0-2" }}</strong>
+                {{ kotor | number: "1.2-2" }} =
+                <strong>{{ a.amount | number: "1.2-2" }}</strong>
               </p>
             }
           </div>
@@ -389,19 +389,19 @@
       <dl class="cv-ringkas">
         <div>
           <dt>{{ "cop.nilaiKotor" | translate }}</dt>
-          <dd>{{ kotor | number: "1.0-2" }}</dd>
+          <dd>{{ kotor | number: "1.2-2" }}</dd>
         </div>
         <div class="cv-ringkas--kurang">
           <dt>{{ "cop.totalPotongan" | translate }}</dt>
-          <dd>{{ potongan | number: "1.0-2" }}</dd>
+          <dd>{{ potongan | number: "1.2-2" }}</dd>
         </div>
         <div class="cv-ringkas--tambah">
           <dt>{{ "cop.totalTambahan" | translate }}</dt>
-          <dd>{{ tambahan | number: "1.0-2" }}</dd>
+          <dd>{{ tambahan | number: "1.2-2" }}</dd>
         </div>
         <div class="cv-ringkas__bersih">
           <dt>{{ "cop.nilaiBersih" | translate }}</dt>
-          <dd>{{ bersih | number: "1.0-2" }}</dd>
+          <dd>{{ bersih | number: "1.2-2" }}</dd>
         </div>
       </dl>
 

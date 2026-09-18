@@ -7,6 +7,7 @@ import {
 } from '../constants/letterhead.constant';
 // Alamat & email kantor tinggal di clause-templates, bukan di letterhead.
 import { OFFICE_CONTACT } from '../constants/clause-templates';
+import { uangDokumen } from './uang.helper';
 
 /**
  * Bagian dokumen PO yang dipakai bersama semua jenis PO (G, C, dst):
@@ -115,34 +116,27 @@ export function formatDate(value: Date | string): string {
 }
 
 export function rupiah(value: number): string {
-  return (Number(value) || 0).toLocaleString('id-ID', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
+  return uangDokumen(value);
 }
 
 /**
- * NOMINAL pada dokumen purchase order — selalu dua desimal.
+ * NOMINAL pada dokumen — selalu dua desimal.
  *
- * `rupiah()` membulatkan ke rupiah penuh. Itu tidak terlihat selama nilainya
- * memang bulat, dan berhenti tidak terlihat sejak PPN 11%: sebelas persen
- * dari angka yang bulat hampir tidak pernah bulat, sehingga PPN yang tercetak
- * selalu meleset dari perkaliannya sendiri. Yang menerima dokumennya
- * mengalikan DPP dengan sebelas persen, mendapat angka lain, dan menanyakan
- * mana yang benar.
+ * SEKARANG SAMA DENGAN `rupiah()`, dan itu maksudnya.
  *
- * Selalu DUA, bukan "dua bila ada". Kolom nominal yang sebagian barisnya
- * berdesimal dan sebagian tidak sulit dibandingkan sekilas — dan pada
- * dokumen yang ditandatangani, dibandingkan sekilas itulah yang terjadi.
+ * Keterangan lama di sini berbunyi: "berlaku untuk dokumen purchase order;
+ * faktur penjualan, rekap tender, dan unduhan laporan proyek masih memakai
+ * `rupiah()`" — yaitu pemformat yang membulatkan ke rupiah penuh. Kalimat itu
+ * mencatat sebuah ketidakseragaman yang memang ada, dan mencatatnya tidak
+ * membuatnya berhenti membingungkan orang: satu angka yang sama ditulis
+ * berbeda tergantung layar mana yang menampilkannya.
  *
- * Berlaku untuk dokumen purchase order. Faktur penjualan, rekap tender, dan
- * unduhan laporan proyek masih memakai `rupiah()`.
+ * Keduanya kini meneruskan ke `uangDokumen()`. Nama ini dipertahankan karena
+ * dipakai di banyak tempat, dan mengganti nama tidak mengubah apa pun yang
+ * terlihat di layar.
  */
 export function rupiahDokumen(value: unknown): string {
-  return (Number(value) || 0).toLocaleString('id-ID', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  return uangDokumen(value);
 }
 
 /**

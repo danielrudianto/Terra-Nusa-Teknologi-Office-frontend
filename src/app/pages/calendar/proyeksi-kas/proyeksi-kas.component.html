@@ -99,7 +99,7 @@
         -->
         <div class="pk-sel">
           <div class="pk-label">{{ "proyeksiKas.kasSekarang" | translate }}</div>
-          <div class="pk-nilai">{{ saldoSekarang() | number: "1.0-0" }}</div>
+          <div class="pk-nilai">{{ saldoSekarang() | number: "1.2-2" }}</div>
           <div class="pk-ket">
             {{ "proyeksiKas.jangkarKet" | translate: { tanggal: tanggalJangkar() } }}
           </div>
@@ -108,13 +108,13 @@
           <div class="pk-label">
             {{ "proyeksiKas.rencanaKeluar" | translate }}
           </div>
-          <div class="pk-nilai">{{ totalKeluar() | number: "1.0-0" }}</div>
+          <div class="pk-nilai">{{ totalKeluar() | number: "1.2-2" }}</div>
         </div>
         <div class="pk-sel">
           <div class="pk-label">
             {{ "proyeksiKas.rencanaMasuk" | translate }}
           </div>
-          <div class="pk-nilai">{{ totalMasuk() | number: "1.0-0" }}</div>
+          <div class="pk-nilai">{{ totalMasuk() | number: "1.2-2" }}</div>
         </div>
 
         <!--
@@ -132,7 +132,7 @@
         >
           <div class="pk-label">{{ "proyeksiKas.terendah" | translate }}</div>
           <div class="pk-nilai">
-            {{ titikTerendah()!.saldo | number: "1.0-0" }}
+            {{ titikTerendah()!.saldo | number: "1.2-2" }}
           </div>
           <div class="pk-ket">
             {{ "proyeksiKas.padaPekan" | translate }}

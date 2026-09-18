@@ -134,16 +134,22 @@ export class CashPositionComponent implements OnInit {
     /*
      * Nol negatif dinormalkan menjadi nol.
      *
-     * `Intl.NumberFormat` mencetak `-0` sebagai "-Rp 0", dan saldo yang
-     * dibulatkan dari pecahan negatif yang sangat kecil (mis. −0,3) juga
-     * keluar begitu. Di layar itu terbaca sebagai rekening bermasalah —
-     * merah, bertanda minus — padahal saldonya nol.
+     * `Intl.NumberFormat` mencetak `-0` sebagai "-Rp 0,00", dan saldo yang
+     * dibulatkan dari pecahan negatif yang sangat kecil juga keluar begitu.
+     * Di layar itu terbaca sebagai rekening bermasalah — merah, bertanda
+     * minus — padahal saldonya nol.
+     *
+     * AMBANGNYA IKUT DESIMALNYA. Dulu 0,5, karena angkanya dicetak tanpa
+     * desimal. Sejak dua desimal, ambang itu akan menelan saldo Rp 0,30 yang
+     * SUNGGUHAN — dicetak "Rp 0,00" padahal seharusnya "Rp 0,30". Yang
+     * dinormalkan hanya yang memang membulat menjadi nol pada dua desimal.
      */
-    const dibulatkan = Math.abs(nilai) < 0.5 ? 0 : nilai;
+    const dibulatkan = Math.abs(nilai) < 0.005 ? 0 : nilai;
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-      maximumFractionDigits: 0,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(dibulatkan);
   }
 
@@ -156,7 +162,7 @@ export class CashPositionComponent implements OnInit {
    * selalu berselisih di tepinya.
    */
   negatif(n: number): boolean {
-    return (n ?? 0) <= -0.5;
+    return (n ?? 0) <= -0.005;
   }
 
   /** Show only the last 4 digits of an account number */

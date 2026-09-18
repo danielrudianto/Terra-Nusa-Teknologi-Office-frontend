@@ -124,7 +124,12 @@ export class PurchaseReportProjectReportComponent implements OnInit {
           label: (ctx) =>
             `${ctx.dataset.label}: ${Number(ctx.parsed.y).toLocaleString(
               'id-ID',
-              { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 },
+              {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              },
             )}`,
         },
       },

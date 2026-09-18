@@ -177,7 +177,7 @@ export class CalendarDayViewComponent {
     const text = this.data.payments.map((x) => {
       return `${this.getProjectName(x)}${this.decimalPipe.transform(
         x.amount,
-        '0.2-2',
+        '1.2-2',
       )} ${this.getDocumentName(x)} ${this.getOpponentName(x)}`;
     });
 

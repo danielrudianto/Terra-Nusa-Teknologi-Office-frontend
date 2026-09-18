@@ -138,7 +138,7 @@
                 }
               </span>
               @if (bolehLihatNilai && i.amount !== undefined) {
-                <span class="mcp-item__nilai">{{ i.amount | number: "1.0-0" }}</span>
+                <span class="mcp-item__nilai">{{ i.amount | number: "1.2-2" }}</span>
               }
             </div>
             @if (i.remarks) {
@@ -151,7 +151,7 @@
       @if (bolehLihatNilai && total(dipilih) !== null) {
         <p class="mcp-total">
           {{ "cop.total" | translate }}
-          <strong>{{ total(dipilih) | number: "1.0-0" }}</strong>
+          <strong>{{ total(dipilih) | number: "1.2-2" }}</strong>
         </p>
       }
 
