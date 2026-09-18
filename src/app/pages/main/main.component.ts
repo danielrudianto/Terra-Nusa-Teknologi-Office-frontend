@@ -390,6 +390,16 @@ export class MainComponent {
           route: '/User',
         },
         {
+          /*
+           * Tidak ber-`minLevel`: penyaringnya membaca `data.permission`
+           * dari konfigurasi rute (`finance_status:read`), sehingga ambang
+           * levelnya hanya disebut sekali — di matriks izin server.
+           */
+          name: 'nav.posisiKeuangan',
+          icon: 'income.svg',
+          route: '/Laporan/Posisi-keuangan',
+        },
+        {
           // HANYA pemilik usaha (level 5) — lihat penyaring `sideNavItems`.
           name: 'nav.labaRugi',
           icon: 'income.svg',

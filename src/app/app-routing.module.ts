@@ -87,6 +87,29 @@ export const routes: Routes = [
       },
       {
         /*
+         * Posisi keuangan — divisi FAT, level 4 ke atas.
+         *
+         * Dijaga `permissionGuard` dengan `finance_status:read`, BUKAN
+         * `minLevel`: modulnya sudah ada di matriks izin dan dipetakan ke
+         * departemennya, jadi ambang levelnya cukup disebut SEKALI di sana.
+         * Menuliskannya lagi di sini membuat dua tempat yang harus sepakat.
+         *
+         * `data.permission` juga yang membuat entri menunya menyembunyikan
+         * diri sendiri — `sideNavItems` membacanya dari konfigurasi rute ini.
+         */
+        path: 'Laporan/Posisi-keuangan',
+        canActivate: [permissionGuard],
+        loadComponent: () =>
+          import(
+            './pages/report/posisi-keuangan/posisi-keuangan.component'
+          ).then((m) => m.PosisiKeuanganComponent),
+        data: {
+          title: 'Posisi Keuangan',
+          permission: 'finance_status:read',
+        },
+      },
+      {
+        /*
          * Laba rugi — HANYA pemilik usaha (level 5). Batasnya ditegakkan
          * server (403 di luar level 5); di sidenav pun entrinya hanya muncul
          * untuk level 5. Tidak dipasang `permissionGuard` karena penjagaannya

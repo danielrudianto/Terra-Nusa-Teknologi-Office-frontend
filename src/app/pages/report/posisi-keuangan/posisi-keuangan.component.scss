@@ -1,0 +1,381 @@
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+}
+
+.pkeu {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+/* ---------------- KPI ---------------- */
+
+.pkeu-kpi {
+  /* `auto-fit` + `minmax`, bukan jumlah kolom tetap.
+
+     Empat kolom tetap membuat kartu terakhir terpotong pada layar sempit, dan
+     angka rupiah TIDAK membungkus — ia meluber, karena tidak ada kesempatan
+     pemenggalan di dalam "12.345.678.901". Yang terlihat bukan baris kedua,
+     melainkan digit yang hilang di tepi kartu. */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, minmax(190px, 1fr)));
+  gap: 0.75rem;
+  margin: 0.75rem 0 0.6rem;
+}
+
+.pkeu-kartu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 0.85rem 1rem;
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 14px;
+  background: var(--surface, #fff);
+
+  &--buruk {
+    border-color: var(--bad-fg, #e5484d);
+    background: var(--bad-bg, #fff5f5);
+  }
+}
+.pkeu-kartu__cap {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted, #6b7280);
+}
+.pkeu-kartu__nilai {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  /* Angka panjang meluber, bukan membungkus — lihat keterangan di `.pkeu-kpi`.
+     `overflow-wrap: anywhere` memberinya kesempatan memenggal. */
+  overflow-wrap: anywhere;
+}
+.pkeu-kartu__ket {
+  font-size: 0.7rem;
+  color: var(--muted, #6b7280);
+  overflow-wrap: anywhere;
+}
+
+.pkeu-sub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.25rem;
+  margin-bottom: 1rem;
+  font-size: 0.78rem;
+  color: var(--muted, #6b7280);
+
+  strong {
+    color: var(--ink, #16181d);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ---------------- Banner ---------------- */
+
+/* Spanduk (ikon + blok teks), BUKAN `mat-hint`.
+
+   Keterangan di halaman ini panjang — kenapa piutang tidak ditambahkan, kenapa
+   pinjaman di luar rasio — dan pada ukuran hint kalimat sepanjang itu tidak
+   terbaca. */
+.pkeu-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0.75rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  border: 0.5px solid var(--brand-soft, #cdd7f7);
+  color: var(--brand-strong, #0f3fd0);
+  font-size: 0.78rem;
+  line-height: 1.45;
+
+  mat-icon {
+    flex: 0 0 auto;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+
+  strong {
+    font-weight: 700;
+  }
+
+  &--buruk {
+    background: var(--bad-bg, #fff5f5);
+    border-color: var(--bad-fg, #f3b0b2);
+    color: var(--bad-fg, #b4282c);
+  }
+
+  &--kecil {
+    font-size: 0.72rem;
+    padding: 0.5rem 0.75rem;
+    margin: 0.5rem 0;
+  }
+}
+
+.pkeu-galat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: var(--bad-bg, #fff5f5);
+  color: var(--bad-fg, #b4282c);
+  font-size: 0.8rem;
+}
+
+/* ---------------- Seksi ---------------- */
+
+.pkeu-seksi {
+  margin-top: 1.5rem;
+}
+.pkeu-seksi__judul {
+  margin: 0 0 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.pkeu-seksi__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.pkeu-pilih {
+  flex: 0 1 200px;
+  min-width: 160px;
+}
+:host ::ng-deep .pkeu-pilih .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* ---------------- Alur likuiditas ---------------- */
+
+.pkeu-alur {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.6rem;
+  padding: 1rem;
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 14px;
+  background: var(--surface, #fff);
+}
+.pkeu-alur__butir {
+  flex: 1 1 180px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+
+  &--hasil {
+    padding: 0.5rem 0.75rem;
+    border-radius: 10px;
+    background: var(--surface-2, #f6f8fb);
+  }
+  &--minus {
+    background: var(--bad-bg, #fff5f5);
+    color: var(--bad-fg, #b4282c);
+  }
+}
+.pkeu-alur__cap {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--muted, #6b7280);
+}
+.pkeu-alur__nilai {
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+
+  &--keluar {
+    color: var(--bad-fg, #b4282c);
+  }
+}
+.pkeu-alur__ket {
+  font-size: 0.7rem;
+  color: var(--muted, #6b7280);
+
+  &--buruk {
+    color: var(--bad-fg, #b4282c);
+    font-weight: 600;
+  }
+}
+.pkeu-alur__tanda {
+  align-self: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--muted, #6b7280);
+}
+
+/* ---------------- Ember ---------------- */
+
+.pkeu-ember {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 0.5rem;
+}
+.pkeu-ember__baris {
+  /* `minmax(0, 1fr)` pada bilahnya: tanpa itu, kolom nilai yang panjang
+     mendorong bilahnya sampai lebarnya negatif dan bilahnya hilang. */
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.76rem;
+}
+.pkeu-ember__cap {
+  color: var(--muted, #6b7280);
+}
+.pkeu-ember__bilah {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--surface-2, #eef1f6);
+  overflow: hidden;
+}
+.pkeu-ember__isi {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--brand, #154dec);
+
+  &--buruk {
+    background: var(--bad-fg, #e5484d);
+  }
+}
+.pkeu-ember__nilai {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------------- Tabel dokumen ---------------- */
+
+.pkeu-tabel {
+  margin-top: 0.75rem;
+  font-size: 0.74rem;
+}
+.pkeu-tabel__kepala,
+.pkeu-tabel__baris {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) 6rem 8rem;
+  gap: 0.5rem;
+  padding: 0.45rem 0.25rem;
+  align-items: center;
+}
+.pkeu-tabel__kepala {
+  font-weight: 700;
+  color: var(--muted, #6b7280);
+  border-bottom: 0.5px solid var(--border, #e3e6eb);
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+}
+.pkeu-tabel__baris {
+  border-bottom: 0.5px solid var(--border, #eef1f6);
+}
+.pkeu-tabel__nama,
+.pkeu-tabel__proyek {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pkeu-tabel__proyek {
+  color: var(--muted, #6b7280);
+}
+.pkeu-tabel .kanan {
+  text-align: right;
+}
+.pkeu-tabel .angka {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.pkeu-tabel .buruk {
+  color: var(--bad-fg, #b4282c);
+  font-weight: 700;
+}
+.pkeu-potong {
+  margin: 0.5rem 0 0;
+  font-size: 0.7rem;
+  color: var(--muted, #6b7280);
+}
+
+/* Kolom proyek dilipat pada layar sempit — nama dokumen dan angkanya yang
+   menentukan, proyeknya keterangan. */
+@media (max-width: 720px) {
+  .pkeu-tabel__kepala,
+  .pkeu-tabel__baris {
+    grid-template-columns: minmax(0, 1fr) 5rem 7rem;
+  }
+  .pkeu-tabel__proyek,
+  .pkeu-tabel__kepala span:nth-child(2) {
+    display: none;
+  }
+}
+
+/* ---------------- Grafik & disposisi ---------------- */
+
+.pkeu-kartu-grafik {
+  padding: 1rem;
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 14px;
+  background: var(--surface, #fff);
+}
+.pkeu-grafik {
+  position: relative;
+  height: 300px;
+}
+
+.pkeu-disposisi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, minmax(150px, 1fr)));
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+.pkeu-disposisi__butir {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  padding: 0.75rem 1rem;
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 14px;
+  background: var(--surface, #fff);
+}
+.pkeu-disposisi__cap {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--muted, #6b7280);
+}
+.pkeu-disposisi__nilai {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.pkeu-disposisi__ket {
+  font-size: 0.7rem;
+  color: var(--muted, #6b7280);
+  overflow-wrap: anywhere;
+}

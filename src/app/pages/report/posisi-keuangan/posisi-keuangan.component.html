@@ -1,0 +1,449 @@
+<div class="pkeu">
+  <app-header-title
+    [title]="'posisiKeuangan.judul' | translate"
+    [description]="'posisiKeuangan.subjudul' | translate"
+  ></app-header-title>
+
+  @if (memuat()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  @if (galat()) {
+    <div class="pkeu-galat">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ galat() }}</span>
+    </div>
+  }
+
+  @if (data(); as d) {
+    <!-- ================= 1. Baris KPI ================= -->
+    <div class="pkeu-kpi">
+      <div class="pkeu-kartu">
+        <span class="pkeu-kartu__cap">{{
+          "posisiKeuangan.kas" | translate
+        }}</span>
+        <span class="pkeu-kartu__nilai">{{ uang(d.kas?.total) }}</span>
+        <!--
+          Rekening yang dikecualikan disebut DI BAWAH angkanya, bukan
+          dihilangkan. Uangnya memang ada; yang tidak boleh cuma ikut dihitung
+          sebagai kas yang dapat dibelanjakan.
+        -->
+        @if (d.kasDikecualikan) {
+          <span class="pkeu-kartu__ket">
+            {{ "posisiKeuangan.kasDikecualikan" | translate }}
+            {{ uang(d.kasDikecualikan) }}
+          </span>
+        }
+      </div>
+
+      <div class="pkeu-kartu">
+        <span class="pkeu-kartu__cap">{{
+          "posisiKeuangan.piutang" | translate
+        }}</span>
+        <span class="pkeu-kartu__nilai">{{ uang(d.piutang?.total) }}</span>
+        <span class="pkeu-kartu__ket">
+          {{
+            "posisiKeuangan.dokumen"
+              | translate: { n: d.piutang?.jumlahDokumen || 0 }
+          }}
+        </span>
+      </div>
+
+      <div class="pkeu-kartu">
+        <span class="pkeu-kartu__cap">{{
+          "posisiKeuangan.utang" | translate
+        }}</span>
+        <span class="pkeu-kartu__nilai">{{ uang(d.utangUsaha?.total) }}</span>
+        <span class="pkeu-kartu__ket">
+          {{
+            "posisiKeuangan.dokumen"
+              | translate: { n: d.utangUsaha?.jumlahDokumen || 0 }
+          }}
+        </span>
+      </div>
+
+      <div class="pkeu-kartu" [class.pkeu-kartu--buruk]="rasioKurang()">
+        <span class="pkeu-kartu__cap">{{
+          "posisiKeuangan.quickRatio" | translate
+        }}</span>
+        <span class="pkeu-kartu__nilai">{{ rasio() }}</span>
+        <span class="pkeu-kartu__ket">{{ d.rumus }}</span>
+      </div>
+    </div>
+
+    <div class="pkeu-sub">
+      <span>
+        {{ "posisiKeuangan.modalKerja" | translate }}
+        <strong>{{ uang(d.modalKerjaBersih) }}</strong>
+      </span>
+      <span>
+        {{ "posisiKeuangan.pinjaman" | translate }}
+        <strong>{{ uang(d.pinjaman?.total) }}</strong>
+      </span>
+    </div>
+
+    <!--
+      PINJAMAN DI LUAR RASIO — disebutkan, bukan disembunyikan.
+
+      `loans` tidak menyimpan tenor maupun jadwal angsuran, sehingga porsi yang
+      jatuh tempo dalam setahun tidak dapat dipisahkan dari yang jangka
+      panjang. Menebak pemisahannya menghasilkan rasio yang tampak pasti
+      padahal dasarnya karangan. Konsekuensinya: bila ada angsuran yang segera
+      jatuh tempo, rasio di atas LEBIH BAIK daripada keadaan sebenarnya.
+    -->
+    @if (d.catatan?.pinjamanDiluarRasio) {
+      <div class="pkeu-banner">
+        <mat-icon>account_balance</mat-icon>
+        <div>
+          <strong>{{ "posisiKeuangan.pinjamanBannerJudul" | translate }}</strong>
+          <span>{{ "posisiKeuangan.pinjamanBanner" | translate }}</span>
+        </div>
+      </div>
+    }
+
+    <!-- ================= 2. Likuiditas 30 hari ================= -->
+    @if (d.likuiditas30; as l) {
+      <div class="pkeu-seksi">
+        <h2 class="pkeu-seksi__judul">
+          {{ "posisiKeuangan.likuiditasJudul" | translate }}
+        </h2>
+
+        <div class="pkeu-alur">
+          <div class="pkeu-alur__butir">
+            <span class="pkeu-alur__cap">{{
+              "posisiKeuangan.kasHariIni" | translate
+            }}</span>
+            <span class="pkeu-alur__nilai">{{ uang(l.kas) }}</span>
+          </div>
+
+          <span class="pkeu-alur__tanda">−</span>
+
+          <div class="pkeu-alur__butir">
+            <span class="pkeu-alur__cap">{{
+              "posisiKeuangan.kewajiban30" | translate
+            }}</span>
+            <span class="pkeu-alur__nilai pkeu-alur__nilai--keluar">{{
+              uang(l.kewajiban30)
+            }}</span>
+            @if (l.kewajibanLewat) {
+              <span class="pkeu-alur__ket pkeu-alur__ket--buruk">
+                {{ "posisiKeuangan.termasukLewat" | translate }}
+                {{ uang(l.kewajibanLewat) }}
+              </span>
+            }
+          </div>
+
+          <span class="pkeu-alur__tanda">=</span>
+
+          <div
+            class="pkeu-alur__butir pkeu-alur__butir--hasil"
+            [class.pkeu-alur__butir--minus]="l.setelahKewajiban < 0"
+          >
+            <span class="pkeu-alur__cap">{{
+              "posisiKeuangan.setelahKewajiban" | translate
+            }}</span>
+            <span class="pkeu-alur__nilai">{{ uang(l.setelahKewajiban) }}</span>
+          </div>
+        </div>
+
+        <!--
+          KENAPA PIUTANG TIDAK IKUT DITAMBAHKAN.
+
+          `sales_invoices` tidak menyimpan jatuh tempo, jadi tidak ada dasar
+          untuk mengatakan sebuah faktur akan tertagih dalam 30 hari.
+          Menambahkannya menghasilkan angka yang lebih besar daripada uang yang
+          benar-benar akan ada — dan itulah angka yang dipakai memutuskan
+          pembayaran.
+
+          Disebut sebagai BANNER, bukan hint: keterangan sepanjang ini tidak
+          terbaca pada ukuran hint.
+        -->
+        <div class="pkeu-banner">
+          <mat-icon>info</mat-icon>
+          <div>
+            <strong>{{
+              "posisiKeuangan.likuiditasBannerJudul" | translate
+            }}</strong>
+            <span>
+              {{ "posisiKeuangan.likuiditasBanner" | translate }}
+              @if (l.piutangTermuda) {
+                {{ "posisiKeuangan.piutangTermuda" | translate }}
+                {{ uang(l.piutangTermuda) }}.
+              }
+            </span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ================= 3. Rincian ================= -->
+    <div class="pkeu-seksi">
+      <h2 class="pkeu-seksi__judul">
+        {{ "posisiKeuangan.rincianJudul" | translate }}
+      </h2>
+
+      <mat-accordion multi>
+        <!-- ---- Piutang ---- -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{
+              "posisiKeuangan.umurPiutang" | translate
+            }}</mat-panel-title>
+            <mat-panel-description>{{
+              uang(d.piutang?.total)
+            }}</mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="pkeu-ember">
+            @for (e of emberPiutang(); track e.kunci) {
+              <div class="pkeu-ember__baris">
+                <span class="pkeu-ember__cap">{{ e.label | translate }}</span>
+                <span class="pkeu-ember__bilah">
+                  <span
+                    class="pkeu-ember__isi"
+                    [class.pkeu-ember__isi--buruk]="e.mendesak"
+                    [style.width.%]="lebar(emberPiutang(), e)"
+                  ></span>
+                </span>
+                <span class="pkeu-ember__nilai">{{ uang(e.nilai) }}</span>
+              </div>
+            }
+          </div>
+
+          <!--
+            Umur dihitung dari TANGGAL FAKTUR, bukan jatuh tempo — kolomnya
+            memang tidak ada. Disebut supaya tidak dikira tenggat yang
+            disepakati dengan klien.
+          -->
+          @if (d.catatan?.piutangDiumurkanDariTanggalFaktur) {
+            <div class="pkeu-banner pkeu-banner--kecil">
+              <mat-icon>schedule</mat-icon>
+              <div>
+                <span>{{ "posisiKeuangan.umurDariFaktur" | translate }}</span>
+              </div>
+            </div>
+          }
+
+          @if (d.piutang?.dokumen?.length) {
+            <div class="pkeu-tabel">
+              <div class="pkeu-tabel__kepala">
+                <span>{{ "posisiKeuangan.dokumenKol" | translate }}</span>
+                <span>{{ "posisiKeuangan.proyekKol" | translate }}</span>
+                <span class="kanan">{{
+                  "posisiKeuangan.umurKol" | translate
+                }}</span>
+                <span class="kanan">{{
+                  "posisiKeuangan.sisaKol" | translate
+                }}</span>
+              </div>
+              @for (r of d.piutang.dokumen; track r.id) {
+                <div class="pkeu-tabel__baris">
+                  <span class="pkeu-tabel__nama">{{ r.nama || "—" }}</span>
+                  <span class="pkeu-tabel__proyek">{{ r.proyek || "—" }}</span>
+                  <span class="kanan" [class.buruk]="r.kelompok === '90+'">
+                    {{
+                      "posisiKeuangan.hari" | translate: { n: r.umurHari }
+                    }}
+                  </span>
+                  <span class="kanan angka">{{ uang(r.sisa) }}</span>
+                </div>
+              }
+            </div>
+            @if (d.piutang.dokumenDipotong) {
+              <p class="pkeu-potong">
+                {{ "posisiKeuangan.dokumenDipotong" | translate }}
+              </p>
+            }
+          }
+        </mat-expansion-panel>
+
+        <!-- ---- Utang ---- -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{
+              "posisiKeuangan.tempoUtang" | translate
+            }}</mat-panel-title>
+            <mat-panel-description>{{
+              uang(d.utangUsaha?.total)
+            }}</mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="pkeu-ember">
+            @for (e of emberUtang(); track e.kunci) {
+              <div class="pkeu-ember__baris">
+                <span class="pkeu-ember__cap">{{ e.label | translate }}</span>
+                <span class="pkeu-ember__bilah">
+                  <span
+                    class="pkeu-ember__isi"
+                    [class.pkeu-ember__isi--buruk]="e.mendesak"
+                    [style.width.%]="lebar(emberUtang(), e)"
+                  ></span>
+                </span>
+                <span class="pkeu-ember__nilai">{{ uang(e.nilai) }}</span>
+              </div>
+            }
+          </div>
+
+          @if (d.utangUsaha?.dokumen?.length) {
+            <div class="pkeu-tabel">
+              <div class="pkeu-tabel__kepala">
+                <span>{{ "posisiKeuangan.dokumenKol" | translate }}</span>
+                <span>{{ "posisiKeuangan.proyekKol" | translate }}</span>
+                <span class="kanan">{{
+                  "posisiKeuangan.tempoKol" | translate
+                }}</span>
+                <span class="kanan">{{
+                  "posisiKeuangan.sisaKol" | translate
+                }}</span>
+              </div>
+              @for (r of d.utangUsaha.dokumen; track r.id) {
+                <div class="pkeu-tabel__baris">
+                  <span class="pkeu-tabel__nama">{{ r.nama || "—" }}</span>
+                  <span class="pkeu-tabel__proyek">{{ r.proyek || "—" }}</span>
+                  <!--
+                    Tanpa tenggat DITULIS "tanpa tenggat", bukan dikosongkan —
+                    dan ia diperlakukan paling mendesak, sama dengan
+                    pengemberannya, supaya urutan daftar dan angka embernya
+                    tidak bercerita dua hal yang berbeda.
+                  -->
+                  <span class="kanan" [class.buruk]="r.kelompok === 'lewat'">
+                    @if (r.sisaHari === null) {
+                      {{ "posisiKeuangan.tanpaTenggat" | translate }}
+                    } @else if (r.sisaHari < 0) {
+                      {{
+                        "posisiKeuangan.lewatHari"
+                          | translate: { n: -r.sisaHari }
+                      }}
+                    } @else {
+                      {{
+                        "posisiKeuangan.hari" | translate: { n: r.sisaHari }
+                      }}
+                    }
+                  </span>
+                  <span class="kanan angka">{{ uang(r.sisa) }}</span>
+                </div>
+              }
+            </div>
+            @if (d.utangUsaha.dokumenDipotong) {
+              <p class="pkeu-potong">
+                {{ "posisiKeuangan.dokumenDipotong" | translate }}
+              </p>
+            }
+          }
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  }
+
+  <!-- ================= 4. Akurasi rencana kas ================= -->
+  <div class="pkeu-seksi">
+    <div class="pkeu-seksi__bar">
+      <h2 class="pkeu-seksi__judul">
+        {{ "posisiKeuangan.akurasiJudul" | translate }}
+      </h2>
+      <mat-form-field appearance="outline" class="pkeu-pilih">
+        <mat-label>{{ "posisiKeuangan.periode" | translate }}</mat-label>
+        <mat-select
+          [value]="mundur()"
+          (valueChange)="gantiMundur($event)"
+        >
+          @for (m of pilihanMundur; track m) {
+            <mat-option [value]="m">{{
+              "posisiKeuangan.bulanTerakhir" | translate: { n: m + 1 }
+            }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    @if (memuatAkurasi()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+
+    @if (galatAkurasi()) {
+      <div class="pkeu-galat">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ galatAkurasi() }}</span>
+      </div>
+    }
+
+    @if (akurasi(); as a) {
+      <!--
+        AKURASI TIDAK DIJADIKAN SATU PERSENTASE.
+
+        `aktual` memuat seluruh kas yang bergerak, termasuk yang tidak pernah
+        direncanakan. Jadi `aktual / rencana` bukan akurasi: bulan yang
+        rencananya meleset jauh tetapi kebetulan ada pembayaran besar di luar
+        rencana akan tampak "100% akurat". Angka tunggal seperti itu terbaca
+        pasti justru karena tidak ada yang dapat memeriksanya.
+      -->
+      <div class="pkeu-banner">
+        <mat-icon>rule</mat-icon>
+        <div>
+          <strong>{{ "posisiKeuangan.akurasiBannerJudul" | translate }}</strong>
+          <span>{{ "posisiKeuangan.akurasiBanner" | translate }}</span>
+        </div>
+      </div>
+
+      <div class="pkeu-kartu-grafik">
+        <div class="pkeu-grafik">
+          <canvas
+            baseChart
+            type="bar"
+            [data]="grafik()"
+            [options]="opsi"
+          ></canvas>
+        </div>
+      </div>
+
+      <!-- ---- Disposisi ---- -->
+      <div class="pkeu-disposisi">
+        @for (s of ["terpakai", "rencana", "batal"]; track s) {
+          <div class="pkeu-disposisi__butir">
+            <span class="pkeu-disposisi__cap">{{
+              "posisiKeuangan.status." + s | translate
+            }}</span>
+            <span class="pkeu-disposisi__nilai">
+              @if (persen(s) === null) {
+                —
+              } @else {
+                {{ persen(s) }}%
+              }
+            </span>
+            <span class="pkeu-disposisi__ket">
+              {{
+                "posisiKeuangan.rencanaJumlah"
+                  | translate: { n: disposisi(s).jumlah }
+              }}
+              · {{ uang(disposisi(s).total) }}
+            </span>
+          </div>
+        }
+      </div>
+
+      <!--
+        RENCANA YANG MENGGANTUNG.
+
+        Tanggalnya sudah lewat, statusnya masih `rencana`: tidak pernah
+        ditandai terpakai, tidak pernah dibatalkan. Tidak ada galat apa pun —
+        ia hanya menggantung, dan setiap proyeksi kas yang memakainya
+        menghitung uang yang tidak akan bergerak ke mana pun.
+      -->
+      @if (a.menggantung?.jumlah) {
+        <div class="pkeu-banner pkeu-banner--buruk">
+          <mat-icon>pending_actions</mat-icon>
+          <div>
+            <strong>{{
+              "posisiKeuangan.menggantungJudul"
+                | translate: { n: a.menggantung.jumlah }
+            }}</strong>
+            <span>
+              {{ "posisiKeuangan.menggantung" | translate }}
+              {{ uang(a.menggantung.total) }}.
+            </span>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

@@ -36,6 +36,7 @@ CARA PAKAI
 """
 
 import hashlib
+import re
 import pathlib
 import subprocess
 import sys
@@ -55,8 +56,32 @@ def _jalankan(p: pathlib.Path) -> tuple[int, str]:
     return hasil.returncode, hasil.stdout + hasil.stderr
 
 
+#: Baris "<pemeriksa>: N berkas .scss diperiksa" — CACAHAN, bukan temuan.
+_BARIS_CACAH = re.compile(r"^\S+: \d+ .*diperiksa\.?$")
+
+
+def _normal(teks: str) -> str:
+    """
+    Buang baris yang hanya MENCACAH berapa berkas yang dipindai.
+
+    Sidik jari dulu dihitung atas keluaran utuh, termasuk baris seperti
+    "daftarcek: 266 berkas .scss diperiksa". Akibatnya MENAMBAH satu berkas
+    apa pun — komponen baru, halaman baru — membuat sidiknya berubah dan
+    gerbangnya merah, padahal temuannya sama persis dan tidak ada yang
+    memburuk.
+
+    Gerbang yang memerah karena pekerjaan yang benar akan dimatikan orang,
+    dan itu persis alasan garis dasar ini ada. Jadi yang dibandingkan
+    TEMUANNYA — termasuk baris "N temuan:", karena bertambahnya temuan memang
+    kemunduran yang harus menahan kiriman.
+    """
+    return "\n".join(
+        b for b in teks.split("\n") if not _BARIS_CACAH.match(b.strip())
+    )
+
+
 def _sidik(teks: str) -> str:
-    return hashlib.sha256(teks.encode("utf-8")).hexdigest()[:16]
+    return hashlib.sha256(_normal(teks).encode("utf-8")).hexdigest()[:16]
 
 
 def main() -> int:
