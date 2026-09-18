@@ -992,7 +992,9 @@ app-wysiwyg {
    punya lebar layak; kalau dipaksa 6 kolom sejajar semuanya jadi sempit. */
 .pod-wagerow {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1.3fr) minmax(0, 1fr) 36px;
+  /* komponen | volume | nominal | satuan | (hapus) */
+  grid-template-columns:
+    minmax(0, 1.8fr) minmax(0, 0.9fr) minmax(0, 1.2fr) minmax(0, 0.9fr) 36px;
   gap: 0 0.75rem;
   align-items: start;
   padding-bottom: 0.15rem;
@@ -1003,15 +1005,18 @@ app-wysiwyg {
     margin-bottom: 0;
   }
 }
-/* baris 1: komponen | nominal | satuan | (tombol hapus) */
+/* baris 1: komponen | volume | nominal | satuan | (tombol hapus) */
 .pod-wage__label {
   grid-column: 1;
 }
-.pod-wage__amount {
+.pod-wage__qty {
   grid-column: 2;
 }
-.pod-wage__unit {
+.pod-wage__amount {
   grid-column: 3;
+}
+.pod-wage__unit {
+  grid-column: 4;
 }
 /* baris 2: jadwal bayar | tanggal/hari bayar | cut-off */
 .pod-wage__sched {
@@ -1093,7 +1098,9 @@ app-wysiwyg {
   .pod-wage__label {
     grid-column: 1 / 3;
   }
-  .pod-wage__amount {
+  /* Volume dan satuan BERDAMPINGAN: keduanya satu kalimat — "2000 m'" —
+     dan dipisah baris, yang mengisinya harus mengingat satuannya. */
+  .pod-wage__qty {
     grid-column: 1;
     grid-row: 2;
   }
@@ -1101,17 +1108,23 @@ app-wysiwyg {
     grid-column: 2;
     grid-row: 2;
   }
-  .pod-wage__sched {
+  .pod-wage__amount {
     grid-column: 1 / 3;
     grid-row: 3;
   }
+  .pod-wage__sched {
+    grid-column: 1 / 3;
+    grid-row: 4;
+  }
+  /* Digeser satu baris: `__sched` kini di baris 4, dan dua kotak yang
+     bertumpuk di baris yang sama akan saling menimpa tanpa satu pun galat. */
   .pod-wage__day {
     grid-column: 1;
-    grid-row: 4;
+    grid-row: 5;
   }
   .pod-wage__cut {
     grid-column: 2;
-    grid-row: 4;
+    grid-row: 5;
   }
 }
 

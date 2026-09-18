@@ -108,7 +108,26 @@
       <div class="mbap-baris-daftar">
         @for (b of baris(); track b.purchaseOrderItemID) {
           <div class="mbap-baris" [class.lebih]="lebih(b)">
-            <span class="mbap-baris__nama">{{ b.task || "—" }}</span>
+            <span class="mbap-baris__nama">
+              {{ b.task || "—" }}
+              <!--
+                KOMPONEN upah, bila ada — DI DALAM nama, bukan baris petak
+                tersendiri.
+
+                Seluruh baris satu SPK D bernama sama, yaitu nama
+                pekerjaannya, sehingga tanpa ini layar menampilkan dua
+                "Operator Drilling Rig" dan yang mengisi volume harus menebak
+                mana gaji pokok dan mana lembur.
+
+                Petaknya memakai nomor baris yang ditulis tetap
+                (`grid-row: 2`, `grid-row: 3`), jadi menambah anak baru di
+                antaranya akan menumpuk sisa pagu dan pesan galat di petak
+                yang sama — dan hanya pada baris yang kebetulan berkomponen.
+              -->
+              @if (b.komponen) {
+                <span class="mbap-baris__komponen">{{ b.komponen }}</span>
+              }
+            </span>
             <!--
               SISA PAGU disebut di sebelah kotaknya, bukan sesudah ditolak.
 
@@ -117,8 +136,12 @@
               isian — dan angkanya ada di tangan sejak awal.
             -->
             <span class="mbap-baris__sisa">
-              {{ "mobile.bap.sisa" | translate }}
-              {{ b.sisa | number: "1.0-2" }} {{ b.unit }}
+              @if (b.tanpaPagu) {
+                {{ "mobile.bap.tanpaPagu" | translate }}
+              } @else {
+                {{ "mobile.bap.sisa" | translate }}
+                {{ b.sisa | number: "1.0-2" }} {{ b.unit }}
+              }
             </span>
             <input
               class="mbap-baris__isian"

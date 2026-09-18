@@ -261,7 +261,7 @@
             class="cop-item"
             [class.cop-item--terisi]="(nilai(b.purchaseOrderItemID) || 0) > 0"
             [class.cop-item--salah]="melebihi(b)"
-            [class.cop-item--habis]="sisaBoleh(b) <= 0"
+            [class.cop-item--habis]="!b.tanpaPagu && sisaBoleh(b) <= 0"
           >
             <!-- ---- KIRI: yang sudah tercantum ---- -->
             <div class="cop-item__sisi cop-item__sisi--kiri">
@@ -271,6 +271,14 @@
 
               <div class="cop-item__nama">
                 {{ b.task || "-" }}
+                <!--
+                  Komponen upah: seluruh baris satu SPK D memakai nama
+                  pekerjaan yang sama, sehingga tanpa ini dua baris tampil
+                  identik dan yang mengisi volume harus menebak.
+                -->
+                @if (b.komponen) {
+                  <span class="cop-item__ket">{{ b.komponen }}</span>
+                }
                 @if (b.keterangan) {
                   <span class="cop-item__ket">{{ b.keterangan }}</span>
                 }
@@ -289,7 +297,18 @@
                 </div>
                 <div class="cop-item__sisa">
                   <dt>{{ "cop.sisa" | translate }}</dt>
-                  <dd>{{ sisaBoleh(b) | number: "1.0-2" }} {{ b.unit }}</dd>
+                  <!--
+                    SPK harga satuan tidak menyepakati volume; angka sisanya
+                    nol, dan mencetaknya berarti menyebut plafon yang tidak
+                    ada.
+                  -->
+                  <dd>
+                    @if (b.tanpaPagu) {
+                      {{ "cop.tanpaPagu" | translate }}
+                    } @else {
+                      {{ sisaBoleh(b) | number: "1.0-2" }} {{ b.unit }}
+                    }
+                  </dd>
                 </div>
               </dl>
             </div>

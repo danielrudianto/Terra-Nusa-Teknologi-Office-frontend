@@ -34,8 +34,26 @@ export interface BarisPagu {
   pagu: number;
   /** Sudah disertifikasi CoP lain. */
   terpakai: number;
-  /** Yang masih boleh diisi. */
+  /**
+   * Yang masih boleh diisi.
+   *
+   * TIDAK BERLAKU bila `tanpaPagu` benar — di sana angkanya nol atau minus,
+   * dan membandingkannya akan menolak volume berapa pun.
+   */
   sisa: number;
+  /**
+   * Baris ini TIDAK berplafon: SPK D harga satuan yang tidak menyepakati
+   * volume. Setiap pembanding sisa harus memeriksanya lebih dahulu.
+   */
+  tanpaPagu?: boolean;
+  /**
+   * Komponen upah — gaji pokok, uang makan, lembur.
+   *
+   * Seluruh baris satu SPK D memakai `task` yang sama, yaitu nama
+   * pekerjaannya; tanpa ini layar menampilkan dua baris yang tidak dapat
+   * dibedakan satu sama lain.
+   */
+  komponen?: string | null;
   /** Hanya untuk level 2 ke atas. */
   price?: number;
 }

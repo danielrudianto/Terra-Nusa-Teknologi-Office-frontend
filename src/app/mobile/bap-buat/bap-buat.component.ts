@@ -194,6 +194,10 @@ export class BapBuatComponent implements OnInit {
 
   /** Volume melebihi sisa pagunya — ditandai di layar, ditolak server. */
   lebih(b: BarisPagu): boolean {
+    // SPK D harga satuan tidak berplafon: `sisa`-nya nol, dan tanpa
+    // pemeriksaan ini SETIAP volume yang diketik di lapangan ditandai merah
+    // lalu tombol simpannya mati — padahal servernya menerima.
+    if (b.tanpaPagu) return false;
     return this.angka(this.volume(b.purchaseOrderItemID)) > Number(b.sisa ?? 0);
   }
 

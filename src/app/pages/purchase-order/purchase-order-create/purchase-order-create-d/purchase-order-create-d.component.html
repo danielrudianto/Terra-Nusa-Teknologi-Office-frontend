@@ -176,6 +176,23 @@
                   </button>
                 </div>
 
+                <!--
+                  Keterangan volume diangkat menjadi BANNER, bukan `mat-hint`.
+
+                  Sebagai hint ia bercetak kecil di bawah satu kotak dan baru
+                  terbaca sesudah kotaknya ditekan — padahal ia menjawab
+                  pertanyaan yang muncul LEBIH DULU: "kolom ini wajib diisi
+                  atau tidak?". Jawabannya menentukan apakah SPK ini kelak
+                  dapat dibuatkan Certificate of Payment tanpa tertahan.
+                -->
+                <div class="pou-banner">
+                  <mat-icon>straighten</mat-icon>
+                  <div>
+                    <strong>{{ "poD.volumeBannerJudul" | translate }}</strong>
+                    <span>{{ "poD.volumeBanner" | translate }}</span>
+                  </div>
+                </div>
+
                 @for (w of wagesAt(i).controls; track w; let j = $index) {
                   <div class="pod-wagerow" [formGroup]="wageGroupAt(i, j)">
                     <mat-form-field
@@ -191,6 +208,34 @@
                         [placeholder]="
                           'poForm.wageLabelPlaceholder' | translate
                         "
+                      />
+                    </mat-form-field>
+
+                    <!--
+                      VOLUME kontrak baris ini.
+                      
+                      Kosong atau nol = tidak diplafon, untuk kontrak harga
+                      satuan yang volumenya belum disepakati di muka. Diisi =
+                      plafon, dan Certificate of Payment menolak volume yang
+                      melebihinya.
+                      
+                      Sebelum kolom ini ada, tiap baris dikirim bervolume 1 —
+                      angka penambal yang lalu dibaca CoP sebagai plafon,
+                      sehingga volume terlaksana berapa pun ditolak.
+                    -->
+                    <mat-form-field
+                      appearance="outline"
+                      class="pod-wage__qty"
+                    >
+                      <mat-label>{{
+                        "poD.volumeKontrak" | translate
+                      }}</mat-label>
+                      <input
+                        matInput
+                        formControlName="quantity"
+                        inputmode="decimal"
+                        thousandSeparator=" "
+                        mask="separator.2"
                       />
                     </mat-form-field>
 
@@ -214,7 +259,7 @@
                       <mat-label>{{ "poForm.wageUnit" | translate }}</mat-label>
                       <mat-select
                     formControlName="unit"
-                    (selectionChange)="onUnitChange(i)"
+                    (selectionChange)="onUnitChange(i, j)"
                   >
                         @for (u of wageUnits; track u) {
                           <mat-option [value]="u">{{ u }}</mat-option>
@@ -429,6 +474,40 @@
             ) | translate
           }}</span>
         </mat-form-field>
+
+        <!--
+          VOLUME lembur, hanya saat tarifnya sudah diisi.
+
+          Tanpa tarif, isian ini tidak menghasilkan baris apa pun
+          (`barisLembur()` mengembalikan daftar kosong), sehingga
+          menampilkannya hanya menambah isian yang tidak berakibat.
+        -->
+        @if (tarifLembur() > 0) {
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poD.volumeLembur" | translate }}</mat-label>
+            <input
+              matInput
+              type="number"
+              min="0"
+              step="any"
+              formControlName="overtimeVolume"
+            />
+            <span matSuffix>&nbsp;{{
+              (formGroup.get("overtimeUnit")?.value === "hari"
+                ? "poD.perHari"
+                : "poD.perJam"
+              ) | translate
+            }}</span>
+          </mat-form-field>
+
+          <div class="pod-span2 pou-banner">
+            <mat-icon>schedule</mat-icon>
+            <div>
+              <strong>{{ "poD.volumeLembur" | translate }}</strong>
+              <span>{{ "poD.volumeLemburBanner" | translate }}</span>
+            </div>
+          </div>
+        }
 
         <!--
           Tidak berlaku bagi staf lapangan: bekerja melewati pukul 20:00

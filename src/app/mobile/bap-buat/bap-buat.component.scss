@@ -220,6 +220,15 @@
   color: var(--ink, #16181d);
 }
 
+/* Komponen upah: anak dari `__nama`, dicetak pada barisnya sendiri. */
+.mbap-baris__komponen {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--muted, #6b7280);
+}
+
 .mbap-baris__sisa {
   grid-column: 1;
   grid-row: 2;

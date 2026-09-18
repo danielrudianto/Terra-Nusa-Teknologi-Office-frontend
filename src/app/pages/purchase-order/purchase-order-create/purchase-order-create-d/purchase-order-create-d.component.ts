@@ -48,6 +48,13 @@ import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/pur
 import { AdendumService } from '../../../../services/adendum.service';
 import { SupplierTerkunciComponent } from '../../../../components/supplier-terkunci/supplier-terkunci.component';
 
+/**
+ * Penanda baris lembur pada `remarks_2`.
+ *
+ * TIDAK diterjemahkan dan tidak pernah tampil di layar maupun dokumen.
+ */
+const PENANDA_LEMBUR = 'LEMBUR';
+
 @Component({
   selector: 'app-purchase-order-create-d',
   standalone: true,
@@ -81,15 +88,26 @@ export class PurchaseOrderCreateDComponent {
 
 
   /**
-   * Satuan berubah pada satu baris.
+   * Satuan berubah pada satu komponen upah.
    *
-   * Untuk satuan borongan (LS), volumenya dikunci pada 1. Nilainya memang
-   * selalu dihitung satu saat menjumlahkan, sehingga membiarkan kolomnya
-   * dapat diisi berarti menawarkan angka yang diabaikan diam-diam — dan yang
-   * mengisinya baru sadar setelah totalnya tidak sesuai harapan.
+   * Untuk satuan borongan (LS) volumenya dikunci pada 1: nilainya memang
+   * selalu dihitung satu, sehingga membiarkan kolomnya dapat diisi berarti
+   * menawarkan angka yang diabaikan diam-diam.
+   *
+   * INI DULU TIDAK PERNAH BEKERJA, dan tidak pernah ketahuan.
+   *
+   * Ia membaca `quantity` dan `unit` pada grup PEKERJA — yang isinya cuma
+   * `task` dan `wages`. Keduanya `null`, jadi seluruh isi fungsi ini
+   * menghasilkan `null?.setValue(...)`: tidak melempar, tidak mengunci apa
+   * pun, tidak meninggalkan jejak. Satu-satunya yang benar-benar berjalan
+   * `selaraskanKlausulShift()` di ujungnya — dan karena yang satu itu
+   * bekerja, tidak ada yang curiga sisanya tidak.
+   *
+   * Selama kolom volume belum ada, tidak menguncinya memang tidak berakibat
+   * apa-apa. Sejak kolomnya ada, ia berakibat.
    */
-  onUnitChange(i: number): void {
-    const g = this.getFormGroupAt(i);
+  onUnitChange(i: number, j: number): void {
+    const g = this.wageGroupAt(i, j);
     const qty = g.get('quantity');
     if (String(g.get('unit')?.value || '').toUpperCase() === 'LS') {
       qty?.setValue(1);
@@ -229,6 +247,20 @@ export class PurchaseOrderCreateDComponent {
     ]),
     overtimeRate: new FormControl(0, [Validators.min(0)]),
     /*
+     * VOLUME lembur yang disepakati. Nol = tanpa plafon.
+     *
+     * Lembur dulu HANYA klausul: `overtimeRate` dan `overtimeUnit` disimpan
+     * di `customData`, dan `customData` tidak pernah menjadi baris
+     * `purchase_order_items`. Akibatnya lembur tidak pernah muncul di daftar
+     * pagu Certificate of Payment sama sekali — padahal di lembar yang
+     * dipakai lapangan ia baris tersendiri (mis. "Lembur 200 jam.orang ×
+     * Rp50.000").
+     *
+     * Yang terjadi selama ini: lembur ditagih lewat pembuat faktur, di luar
+     * CoP. Satu SPK ditagih lewat dua jalur — persis yang sedang ditutup.
+     */
+    overtimeVolume: new FormControl(0, [Validators.min(0)]),
+    /*
      * Satuan upah lembur.
      *
      * Bawaannya `jam` — itu yang berlaku sebelum satuannya dapat dipilih,
@@ -323,6 +355,24 @@ export class PurchaseOrderCreateDComponent {
   private buildWage(): FormGroup {
     return this.formBuilder.group({
       label: ['Upah harian', Validators.required],
+      /*
+       * VOLUME KONTRAK baris ini.
+       *
+       * Sebelumnya tidak ada sama sekali, dan setiap baris dikirim dengan
+       * `quantity: 1` yang ditulis mati di kode — angka penambal supaya
+       * bentuk muatan lama (`task/quantity/price/unit`) tetap terpakai.
+       *
+       * Angka penambal itu tidak terlihat sebagai penambal di tempat lain.
+       * Sejak SPK tenaga kerja dilayani Certificate of Payment, ia dibaca
+       * sebagai PLAFON: layar pencatatan volume menampilkan "Volume SPK 1 m'"
+       * dan menolak volume berapa pun yang benar-benar terlaksana. Yang
+       * mengisinya tidak punya jalan maju, dan tidak ada galat yang
+       * menjelaskan kenapa.
+       *
+       * Nol berarti TIDAK DIPLAFON — dipakai untuk kontrak harga satuan yang
+       * volumenya memang belum disepakati di muka.
+       */
+      quantity: [0, [Validators.min(0)]],
       amount: [0, [Validators.required, Validators.min(0)]],
       unit: ['hari', Validators.required],
       // weekly      = tiap pekan pada hari X
@@ -440,7 +490,29 @@ export class PurchaseOrderCreateDComponent {
    * diisi, formulirnya tidak pernah sah dan tombol simpannya mati terus.
    */
   private muatPekerjaan(induk: any): void {
-    const items: any[] = Array.isArray(induk?.items) ? induk.items : [];
+    const semua: any[] = Array.isArray(induk?.items) ? induk.items : [];
+    if (!semua.length) return;
+
+    /*
+     * Baris LEMBUR dipisahkan lebih dulu.
+     *
+     * Ia memakai `task` yang sama dengan baris upah, jadi tanpa pemisahan ini
+     * ia ikut menjadi satu komponen upah tambahan setiap kali dokumennya
+     * dibuka untuk disunting — dan menyimpannya kembali akan menggandakannya
+     * lagi. Tidak ada galat; jumlah barisnya saja yang bertambah satu tiap
+     * kali, dan nilai SPK ikut naik bersamanya.
+     */
+    const items = semua.filter(
+      (x) => String(x?.remarks_2 ?? '') !== PENANDA_LEMBUR,
+    );
+    const lembur = semua.find(
+      (x) => String(x?.remarks_2 ?? '') === PENANDA_LEMBUR,
+    );
+    if (lembur) {
+      this.formGroup.patchValue({
+        overtimeVolume: Number(lembur.quantity) || 0,
+      });
+    }
     if (!items.length) return;
 
     /*
@@ -503,6 +575,15 @@ export class PurchaseOrderCreateDComponent {
         const jadwalAda = (k: string) => j[k] !== undefined && j[k] !== null;
         w.patchValue({
           label: j.label || x?.remarks_3 || 'Upah harian',
+          /*
+           * Dokumen LAMA bervolume 1 dibaca sebagai NOL — tanpa plafon.
+           *
+           * Satu adalah angka penambal yang ditulis mati, bukan kesepakatan.
+           * Membacanya apa adanya membuat dokumen lama yang dibuka untuk
+           * disunting tampak berplafon 1, dan menyimpannya kembali akan
+           * MENGUNCI angka penambal itu menjadi plafon sungguhan.
+           */
+          quantity: Number(x?.quantity) === 1 ? 0 : Number(x?.quantity) || 0,
           amount: Number(x?.price) || 0,
           unit: x?.unit || 'hari',
           ...(jadwalAda('scheduleType') ? { scheduleType: j.scheduleType } : {}),
@@ -518,6 +599,74 @@ export class PurchaseOrderCreateDComponent {
 
       larik.push(g);
     }
+  }
+
+  /**
+   * Baris item untuk LEMBUR — kosong bila tarifnya tidak diisi.
+   *
+   * Ditaruh PALING DEPAN, bukan di belakang: pada lembar berita acara ia
+   * dibaca berpasangan dengan upah pokoknya, dan baris yang terselip di
+   * ujung daftar mudah terlewat saat volumenya dicatat.
+   *
+   * `remarks_3` diisi "Lembur" karena itulah yang membedakannya dari baris
+   * upah lain — seluruhnya memakai `task` yang sama, yaitu nama pekerjaannya.
+   */
+  /**
+   * Tarif lembur yang sedang terisi — dipakai templat untuk memutuskan
+   * apakah isian volume lembur ditampilkan.
+   *
+   * SATU sumber dengan `barisLembur()`, sengaja. Bila templat memakai
+   * ambangnya sendiri, isian volume dapat tampil dan terisi pada tarif yang
+   * `barisLembur()` anggap kosong — volumenya diketik, dokumennya tersimpan,
+   * dan baris lemburnya tidak pernah ada. Itu kehilangan yang tidak
+   * menghasilkan galat apa pun.
+   */
+  tarifLembur(): number {
+    return Number(this.formGroup.get('overtimeRate')?.value) || 0;
+  }
+
+  private barisLembur(): any[] {
+    const tarif = this.tarifLembur();
+    if (tarif <= 0) return [];
+
+    const pekerja = this.worker?.getRawValue?.() ?? {};
+    return [
+      {
+        task: pekerja.task || '',
+        quantity: Number(this.formGroup.get('overtimeVolume')?.value) || 0,
+        price: tarif,
+        unit: this.formGroup.get('overtimeUnit')?.value || 'jam',
+        remarks_1: this.formGroup.get('supplierName')?.value,
+        /*
+         * PENANDA MESIN, bukan tulisan untuk dibaca orang.
+         *
+         * Dipakai saat dokumen dibuka kembali, untuk memisahkan baris ini
+         * dari baris upah biasa — keduanya memakai `task` yang sama.
+         *
+         * `remarks_3` TIDAK dipakai sebagai penanda meski ia yang berisi
+         * "Lembur": isinya label yang dibaca orang, dan kelak ia dapat
+         * diterjemahkan atau diketik sendiri. Penanda yang ikut berubah
+         * bahasa berhenti menjadi penanda, dan yang terjadi bukan galat —
+         * baris lemburnya sekadar muncul sebagai komponen upah tambahan
+         * setiap kali dokumennya disunting.
+         *
+         * `itemKind` juga tidak dipakai: daftarnya tertutup
+         * (`mobilisasi`/`demobilisasi`) dan nilai di luar itu DIBUANG server.
+         * Ia pun menentukan penggabungan baris anak ke induknya, dan lembur
+         * bukan anak baris mana pun.
+         */
+        remarks_2: PENANDA_LEMBUR,
+        remarks_3: this.translateSvc.instant('poD.lemburBaris'),
+        /*
+         * TANPA `schedule`.
+         *
+         * Lembur dibayar mengikuti jadwal upah pokoknya, bukan jadwalnya
+         * sendiri. Mengarang jadwal di sini akan memunculkan satu kalimat
+         * klausul tambahan yang tidak pernah disepakati siapa pun.
+         */
+        schedule: null,
+      },
+    ];
   }
 
   private buildWorker(): FormGroup {
@@ -539,10 +688,24 @@ export class PurchaseOrderCreateDComponent {
     return this.getFormGroupAt(0);
   }
 
+  /**
+   * Nilai satu komponen upah: VOLUME x TARIF.
+   *
+   * Volume nol berarti tidak diplafon, dan nilainya jatuh ke tarifnya saja —
+   * sama seperti sebelum kolom volume ada. Tanpa cadangan itu, seluruh SPK
+   * harga satuan bernilai nol, dan yang menandatanganinya melihat "Rp 0"
+   * pada dokumen yang mengikat.
+   */
+  nilaiUpah(w: any): number {
+    const vol = Number(w?.quantity) || 0;
+    const tarif = Number(w?.amount) || 0;
+    return vol > 0 ? vol * tarif : tarif;
+  }
+
   /** Total nominal seluruh komponen upah milik satu pekerja. */
   lineTotal(i: number): number {
     const wages = (this.wagesAt(i)?.getRawValue() as any[]) || [];
-    return wages.reduce((acc, w) => acc + (Number(w.amount) || 0), 0);
+    return wages.reduce((acc, w) => acc + this.nilaiUpah(w), 0);
   }
 
   get rawTotal(): number {
@@ -611,12 +774,31 @@ export class PurchaseOrderCreateDComponent {
       // manpower lines -> purchase_order_items
       // Satu baris item per komponen upah, supaya bentuk payload lama
       // (task/quantity/price/unit) tetap terpakai apa adanya.
-      items: this.t.controls.flatMap((c) => {
+      /*
+       * Baris upah, DITAMBAH satu baris lembur bila tarifnya diisi.
+       *
+       * Lembur dijadikan `purchase_order_item` supaya ia punya pagu dan dapat
+       * dicatat volumenya di berita acara — sebelumnya ia hanya klausul di
+       * `customData`, yang tidak pernah menjadi baris apa pun, sehingga
+       * satu-satunya jalan menagihnya lewat pembuat faktur di luar CoP.
+       */
+      items: this.barisLembur().concat(this.t.controls.flatMap((c) => {
         const x = c.getRawValue();
         const wages = (x.wages as any[]) || [];
         return wages.map((w) => ({
           task: x.task, // nama pekerjaan (tukang cor, mandor cor, dll)
-          quantity: 1,
+          /*
+           * Volume yang DIISI. Nol berarti tidak diplafon, dan dikirim apa
+           * adanya — bukan diubah menjadi 1.
+           *
+           * Satu pernah dipakai sebagai penambal di sini, dan penambal itu
+           * terbaca sebagai plafon oleh Certificate of Payment. Nol tidak
+           * dapat disalahartikan begitu: ia tidak mungkin menjadi plafon yang
+           * masuk akal, sehingga yang membacanya harus memutuskan artinya —
+           * dan `melayaniPagu()` di server memutuskannya satu kali, di satu
+           * tempat.
+           */
+          quantity: Number(w.quantity) || 0,
           price: Number(w.amount) || 0,
           unit: w.unit,
           // Pekerja = supplier yang dipilih, jadi identitasnya tidak
@@ -639,12 +821,17 @@ export class PurchaseOrderCreateDComponent {
                 : null,
           },
         }));
-      }),
+      })),
       customData: {
         // Hanya data sumber — poin perjanjian TIDAK disimpan sebagai teks.
         // Renderer merakitnya dari templateVersion + data di bawah ini.
         overtimeRate: Number(this.formGroup.get('overtimeRate')?.value) || 0,
         overtimeUnit: this.formGroup.get('overtimeUnit')?.value || 'jam',
+        // Tetap disimpan di sini JUGA, bukan hanya sebagai baris item:
+        // klausul kontraknya dirakit dari `customData`, dan memindahkannya
+        // akan mengubah teks SPK yang sudah tercetak dan ditandatangani.
+        overtimeVolume:
+          Number(this.formGroup.get('overtimeVolume')?.value) || 0,
         overtimeAfter: this.formGroup.get('overtimeAfter')?.value,
         workStart: this.formGroup.get('workStart')?.value,
         workEnd: this.formGroup.get('workEnd')?.value,

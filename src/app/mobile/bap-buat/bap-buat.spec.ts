@@ -135,6 +135,48 @@ describe('berita acara lapangan', () => {
     expect(c.bolehSimpan).toBeTrue();
   });
 
+  it('SPK harga satuan: volume berapa pun tidak ditandai melebihi', () => {
+    /*
+     * SPK D harga satuan tidak menyepakati volume, jadi `sisa`-nya NOL.
+     *
+     * Tanpa `tanpaPagu`, setiap angka yang diketik di lapangan lebih besar
+     * dari nol — seluruh baris merah, tombol simpan mati, dan tidak ada satu
+     * pun cara meneruskannya dari ponsel. Persis yang terjadi pada SPK
+     * 2.000 m' yang tidak dapat dibuatkan berita acara sama sekali.
+     *
+     * Servernya sendiri MENERIMA. Jadi yang menghalangi hanya layar ini.
+     */
+    const c = komponen();
+    const b = { ...baris(1, 0), tanpaPagu: true };
+    siap(c, [b]);
+    c.ubahVolume(1, '2000');
+
+    expect(c.lebih(c.baris()[0]))
+      .withContext('baris tanpa plafon ditandai melebihi — simpan mati')
+      .toBeFalse();
+    expect(c.bolehSimpan).toBeTrue();
+  });
+
+  it('baris berplafon di SPK yang sama TETAP dijaga', () => {
+    /*
+     * Satu SPK D dapat punya keduanya: upah tanpa plafon dan mobilisasi
+     * 2 kali. Penandanya per BARIS — bila terbaca per dokumen, membuka yang
+     * satu akan membuka yang lain diam-diam, dan volume lolos melampaui
+     * kontrak tanpa galat apa pun.
+     */
+    const c = komponen();
+    siap(c, [
+      { ...baris(1, 0), tanpaPagu: true },
+      baris(2, 2, 'Mobilisasi'),
+    ]);
+    c.ubahVolume(1, '2000');
+    c.ubahVolume(2, '3');
+
+    expect(c.lebih(c.baris()[0])).toBeFalse();
+    expect(c.lebih(c.baris()[1])).toBeTrue();
+    expect(c.bolehSimpan).toBeFalse();
+  });
+
   it('periode terbalik menutup simpan', () => {
     const c = komponen();
     siap(c, [baris(1, 2000)]);

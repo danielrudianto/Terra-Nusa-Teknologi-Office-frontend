@@ -351,7 +351,11 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
       const c = new FormControl<string | null>(
         awal === null || awal === undefined ? '' : String(awal),
       );
-      if (this.sisaBoleh(b) <= 0) c.disable({ emitEvent: false });
+      // Baris tanpa plafon TIDAK dimatikan: sisanya nol atau minus, dan
+      // aturan ini akan mengunci isiannya sebelum satu volume pun diketik.
+      if (!b.tanpaPagu && this.sisaBoleh(b) <= 0) {
+        c.disable({ emitEvent: false });
+      }
       c.valueChanges.subscribe((v) => this.terimaVolume(id, v));
       this.kontrol.set(id, c);
     });
@@ -462,6 +466,11 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
   }
 
   melebihi(b: BarisPagu): boolean {
+    // Tidak ada plafon, jadi tidak ada yang dapat dilampaui. Diperiksa
+    // dengan penanda yang SAMA dengan yang dipakai server; bila layar
+    // menghitung sendiri, ia akan menandai merah baris yang justru diterima
+    // saat disimpan — atau sebaliknya.
+    if (b.tanpaPagu) return false;
     const v = this.nilai(b.purchaseOrderItemID);
     return v !== null && v > this.sisaBoleh(b);
   }
