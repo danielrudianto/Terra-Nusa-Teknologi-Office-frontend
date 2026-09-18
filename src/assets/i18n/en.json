@@ -5027,6 +5027,7 @@
     "batal": "Cancel",
     "nav": {
       "beranda": "Home",
+      "bap": "Progress Report",
       "periksa": "Check",
       "po": "Purchase Order",
       "reimbursement": "Reimbursement",
@@ -5148,6 +5149,28 @@
     },
     "disalin": "Copied",
     "salin": "Copy",
+    "bap": {
+      "tahapJudul": "Stage 1 — record volume",
+      "tahapKet": "Only the work volume for this period is recorded here. Prices and deductions are filled in at the next stage, on desktop.",
+      "cariSpk": "Search SPK number or name",
+      "kurangHuruf": "Type at least 3 characters to search for an SPK.",
+      "tidakAda": "No matching SPK.",
+      "gantiSpk": "Change SPK",
+      "periodeAwal": "Period start",
+      "periodeAkhir": "Period end",
+      "periodeKet": "Fill in both start and end; the end cannot precede the start.",
+      "tanpaBaris": "This SPK has no work lines.",
+      "sisa": "Remaining",
+      "melebihiSisa": "Exceeds the remaining budget — it will be rejected on save.",
+      "simpan": "Save progress report",
+      "tersimpan": "Progress report saved."
+    },
+    "tidakBerhak": {
+      "judul": "Nothing here for you yet",
+      "ket": "This app handles approvals and deletions, which need a higher authority level. The full set of screens is on the desktop version.",
+      "keBeritaAcara": "Open Progress Report",
+      "keluar": "Sign out"
+    },
     "cop": {
       "judul": "CoP approval",
       "sub": "Certificates of payment awaiting your approval",
@@ -5405,6 +5428,9 @@
     "pilihSub": "Only approved certificates not yet billed.",
     "pilihKosong": "No certificate of payment is ready to bill.",
     "spkHanyaSpkJudul": "Approved documents billed in stages only",
+    "fakturSudahAdaJudul": "This SPK has already been billed through an invoice",
+    "fakturSudahAda": "There are {{n}} bill(s) against this SPK created through the manpower invoice maker. That path does not yet read the budget on this screen, so volume entered here does not reduce anything there.",
+    "fakturSudahAdaNilai": "Their value is Rp {{nilai}}.",
     "periodeJudul": "Work cut-off period",
     "periodeKet": "The date range of work certified on this certificate. BOTH dates are included — the next period must start the day after the end date here.",
     "pernyataanVolumeKet": "Once saved, these volumes consume the work-order allowance and become the basis for billing.",

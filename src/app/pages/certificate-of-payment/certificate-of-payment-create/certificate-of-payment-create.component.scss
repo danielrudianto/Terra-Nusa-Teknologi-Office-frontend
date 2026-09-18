@@ -400,3 +400,16 @@
   gap: 0.75rem;
   margin-bottom: 1rem;
 }
+
+/*
+ * Banner PERINGATAN — dibedakan warnanya dari banner keterangan.
+ *
+ * Empat banner biru di satu layar, lalu yang kelima juga biru padahal isinya
+ * "hati-hati, dokumen lain mungkin sudah terbit": yang kelima akan dibaca
+ * dengan kecepatan yang sama dengan empat sebelumnya, yaitu dilewati.
+ */
+.cop-banner--awas {
+  background: var(--warn-bg, #fdf0e3);
+  border-color: var(--warn-bg, #f3ddc0);
+  color: var(--warn-fg, #9a6a00);
+}

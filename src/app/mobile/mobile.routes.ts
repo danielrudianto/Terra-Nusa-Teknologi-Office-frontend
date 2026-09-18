@@ -35,6 +35,25 @@ export const MOBILE_ROUTES: Routes = [
       import('./masuk/masuk.component').then((m) => m.MasukComponent),
   },
   {
+    /*
+     * DI LUAR penjaga, dan itu bukan kelalaian.
+     *
+     * `penjaga-level` mengarahkan yang levelnya kurang ke sini. Rute ini
+     * dulu TIDAK ADA sama sekali: `/TidakBerhak` jatuh ke `**`, dialihkan
+     * ke `''`, penjaga jalan lagi, levelnya masih kurang — dan berulang
+     * tanpa henti. Tidak ada galat, tidak ada halaman; hanya layar putih
+     * yang berkedip.
+     *
+     * Memasangnya DI DALAM penjaga mengulang putaran yang sama dengan
+     * bentuk lain.
+     */
+    path: 'TidakBerhak',
+    loadComponent: () =>
+      import('./tidak-berhak/tidak-berhak.component').then(
+        (m) => m.TidakBerhakComponent,
+      ),
+  },
+  {
     path: '',
     /*
      * Dua penjaga, dan urutannya berarti.
@@ -83,6 +102,31 @@ export const MOBILE_ROUTES: Routes = [
         loadComponent: () =>
           import('./persetujuan-cop/persetujuan-cop.component').then(
             (m) => m.PersetujuanCopComponent,
+          ),
+      },
+      {
+        /*
+         * BERITA ACARA — pencatatan volume di lapangan.
+         *
+         * Satu-satunya layar di aplikasi ini yang MEMBUAT dokumen, dan
+         * satu-satunya yang terbuka di bawah level 3.
+         *
+         * Keduanya disengaja. Yang mencatat volume di lapangan adalah
+         * engineering level 1; menutupnya dengan ambang 3 berarti layar yang
+         * dibuat untuk lapangan tidak dapat dibuka oleh lapangan. Tahap
+         * berikutnya — CoP, tempat harga dan potongan diisi — tetap di
+         * desktop dan tetap level 2 ke atas, dan persetujuannya tidak
+         * disentuh sama sekali.
+         *
+         * Yang dicatat di sini HANYA VOLUME. Tidak ada satu pun angka rupiah
+         * yang dikirim server ke layar ini: `saring_nilai` di controller
+         * membuang seluruh kolom nilai untuk level yang belum berhak.
+         */
+        path: 'Berita-acara',
+        data: { levelMinimum: 1 },
+        loadComponent: () =>
+          import('./bap-buat/bap-buat.component').then(
+            (m) => m.BapBuatComponent,
           ),
       },
       {

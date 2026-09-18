@@ -98,6 +98,18 @@ export class KerangkaComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
+   * Tab Berita Acara untuk yang berwenang MEMBUAT CoP
+   * (`certificate_of_payment:create`) — bukan yang menyetujuinya.
+   *
+   * Keduanya berbeda orang: yang mencatat volume di lapangan engineering
+   * level 1, yang menyetujui level 4 ke atas. Memakai izin yang sama untuk
+   * keduanya menutup tabnya bagi yang justru dibuatkan layarnya.
+   */
+  get bisaBeritaAcara(): boolean {
+    return this.izin.can('certificate_of_payment', 'create');
+  }
+
+  /**
    * Keluar: token dibuang, lalu halaman dimuat ULANG.
    *
    * Bukan sekadar berpindah rute. Layanan izin menyimpan level dan divisi

@@ -201,6 +201,37 @@
       }
     </section>
 
+    <!--
+      PERINGATAN JALUR GANDA — banner, bukan hint.
+
+      SPK tenaga kerja dapat ditagih lewat DUA jalur: layar ini, dan pembuat
+      faktur tenaga kerja. Keduanya belum membaca pagu yang sama — yang
+      diketik di pembuat faktur empat baris baku, bukan baris SPK-nya —
+      sehingga dua dokumen dapat terbit atas progres yang satu.
+
+      Ini TAMBALAN, dan kalimatnya mengatakan begitu. Ia tidak menghalangi:
+      menagih bulan lalu lewat faktur dan bulan ini lewat CoP adalah keadaan
+      yang sah. Yang dicegahnya cuma satu hal — mengisi layar ini tanpa tahu
+      bahwa jalur lain sudah dipakai atas SPK yang sama.
+    -->
+    @if (tagihanFaktur(); as tf) {
+      <div class="cop-banner cop-banner--awas">
+        <mat-icon>report_problem</mat-icon>
+        <div>
+          <strong>{{ "cop.fakturSudahAdaJudul" | translate }}</strong>
+          <span>
+            {{ "cop.fakturSudahAda" | translate: { n: tf.jumlah } }}
+            @if (tf.nilai !== undefined && tf.nilai !== null) {
+              {{
+                "cop.fakturSudahAdaNilai"
+                  | translate: { nilai: (tf.nilai | number: "1.2-2") }
+              }}
+            }
+          </span>
+        </div>
+      </div>
+    }
+
     <!-- ===== 3. VOLUME ===== -->
     <section class="cop-kartu">
       <div class="cop-kartu__judul">{{ "cop.langkahVolume" | translate }}</div>

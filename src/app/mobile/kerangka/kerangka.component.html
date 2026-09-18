@@ -43,6 +43,12 @@
       <mat-icon>fact_check</mat-icon>
       <span>{{ "mobile.nav.po" | translate }}</span>
     </a>
+    @if (bisaBeritaAcara) {
+      <a routerLink="/Berita-acara" routerLinkActive="on">
+        <mat-icon>straighten</mat-icon>
+        <span>{{ "mobile.nav.bap" | translate }}</span>
+      </a>
+    }
     @if (bisaCop) {
       <a routerLink="/Certificate-of-payment" routerLinkActive="on">
         <mat-icon>verified</mat-icon>

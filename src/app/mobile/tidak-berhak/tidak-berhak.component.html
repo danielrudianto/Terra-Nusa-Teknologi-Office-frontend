@@ -1,0 +1,29 @@
+<div class="mtb">
+  <mat-icon class="mtb__ikon">lock</mat-icon>
+
+  <h1 class="mtb__judul">{{ "mobile.tidakBerhak.judul" | translate }}</h1>
+  <p class="mtb__ket">{{ "mobile.tidakBerhak.ket" | translate }}</p>
+
+  <!--
+    Jalan yang MASIH terbuka disebutkan, bukan disembunyikan.
+
+    Engineering lapangan sampai di layar ini justru karena levelnya di bawah
+    tiga — dan ia punya satu layar yang memang dibuat untuknya.
+  -->
+  @if (bisaBeritaAcara) {
+    <button
+      mat-flat-button
+      color="primary"
+      class="mtb__aksi"
+      type="button"
+      (click)="keBeritaAcara()"
+    >
+      <mat-icon>straighten</mat-icon>
+      {{ "mobile.tidakBerhak.keBeritaAcara" | translate }}
+    </button>
+  }
+
+  <button mat-stroked-button class="mtb__aksi" type="button" (click)="keluar()">
+    {{ "mobile.tidakBerhak.keluar" | translate }}
+  </button>
+</div>

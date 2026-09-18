@@ -1,0 +1,161 @@
+<div class="mbap">
+  <!--
+    Keterangan tahap, sebagai BANNER.
+
+    Yang membuka layar ini di lapangan perlu tahu dua hal sebelum mengetik
+    apa pun: yang dicatat cuma volume, dan harga diurus di tahap berikutnya.
+    Sebagai teks kecil di bawah kotak isian, keduanya baru terbaca sesudah
+    pertanyaannya muncul.
+  -->
+  <div class="mbap-banner">
+    <mat-icon>straighten</mat-icon>
+    <div>
+      <strong>{{ "mobile.bap.tahapJudul" | translate }}</strong>
+      <span>{{ "mobile.bap.tahapKet" | translate }}</span>
+    </div>
+  </div>
+
+  @if (!spk()) {
+    <!-- ===== pilih SPK ===== -->
+    <label class="mbap-cari">
+      <mat-icon>search</mat-icon>
+      <input
+        type="search"
+        autocomplete="off"
+        [formControl]="cari"
+        [placeholder]="'mobile.bap.cariSpk' | translate"
+      />
+    </label>
+
+    @if (kurangHuruf()) {
+      <p class="mbap-kosong">{{ "mobile.bap.kurangHuruf" | translate }}</p>
+    } @else if (mencari()) {
+      <div class="mbap-muat"><mat-spinner diameter="28"></mat-spinner></div>
+    } @else if (sudahMencari() && !daftar().length) {
+      <p class="mbap-kosong">{{ "mobile.bap.tidakAda" | translate }}</p>
+    } @else {
+      <div class="mbap-daftar">
+        @for (s of daftar(); track s.id) {
+          <button type="button" class="mbap-kartu" (click)="pilih(s)">
+            <span class="mbap-kartu__nomor">{{ s.name }}</span>
+            <span class="mbap-kartu__nama">{{ s.supplierName || "—" }}</span>
+            <span class="mbap-kartu__proyek">{{ s.projectName }}</span>
+          </button>
+        }
+      </div>
+    }
+  } @else {
+    <!-- ===== SPK terpilih ===== -->
+    <div class="mbap-terpilih">
+      <div class="mbap-terpilih__teks">
+        <span class="mbap-kartu__nomor">{{ spk()!.name }}</span>
+        <span class="mbap-kartu__nama">{{ spk()!.supplierName || "—" }}</span>
+      </div>
+      <button
+        type="button"
+        class="mbap-lepas"
+        [attr.aria-label]="'mobile.bap.gantiSpk' | translate"
+        (click)="lepas()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!--
+      PERINGATAN JALUR GANDA.
+
+      SPK tenaga kerja dapat ditagih lewat dua jalur, dan keduanya belum
+      membaca pagu yang sama. Ini tambalan; yang menyelesaikannya pembuat
+      faktur yang menagih terhadap baris SPK.
+    -->
+    @if (tagihanFaktur() > 0) {
+      <div class="mbap-banner mbap-banner--awas">
+        <mat-icon>report_problem</mat-icon>
+        <div>
+          <strong>{{ "cop.fakturSudahAdaJudul" | translate }}</strong>
+          <span>
+            {{ "cop.fakturSudahAda" | translate: { n: tagihanFaktur() } }}
+          </span>
+        </div>
+      </div>
+    }
+
+    <!-- ===== periode ===== -->
+    <div class="mbap-periode">
+      <label>
+        <span>{{ "mobile.bap.periodeAwal" | translate }}</span>
+        <input type="date" [formControl]="periodeAwal" />
+      </label>
+      <label>
+        <span>{{ "mobile.bap.periodeAkhir" | translate }}</span>
+        <input type="date" [formControl]="periodeAkhir" />
+      </label>
+    </div>
+
+    @if (!periodeSah) {
+      <p class="mbap-salah">
+        <mat-icon>info</mat-icon>
+        {{ "mobile.bap.periodeKet" | translate }}
+      </p>
+    }
+
+    <!-- ===== volume per baris ===== -->
+    @if (memuat()) {
+      <div class="mbap-muat"><mat-spinner diameter="28"></mat-spinner></div>
+    } @else if (!baris().length) {
+      <p class="mbap-kosong">{{ "mobile.bap.tanpaBaris" | translate }}</p>
+    } @else {
+      <div class="mbap-baris-daftar">
+        @for (b of baris(); track b.purchaseOrderItemID) {
+          <div class="mbap-baris" [class.lebih]="lebih(b)">
+            <span class="mbap-baris__nama">{{ b.task || "—" }}</span>
+            <!--
+              SISA PAGU disebut di sebelah kotaknya, bukan sesudah ditolak.
+
+              Volume yang melebihi sisa ditolak server. Mengetahuinya SETELAH
+              menekan simpan, di lapangan, berarti mengetik ulang seluruh
+              isian — dan angkanya ada di tangan sejak awal.
+            -->
+            <span class="mbap-baris__sisa">
+              {{ "mobile.bap.sisa" | translate }}
+              {{ b.sisa | number: "1.0-2" }} {{ b.unit }}
+            </span>
+            <input
+              class="mbap-baris__isian"
+              type="text"
+              inputmode="decimal"
+              autocomplete="off"
+              [value]="volume(b.purchaseOrderItemID)"
+              (input)="
+                ubahVolume(b.purchaseOrderItemID, $any($event.target).value)
+              "
+              [attr.aria-label]="b.task"
+              [placeholder]="'0'"
+            />
+            @if (lebih(b)) {
+              <span class="mbap-baris__salah">
+                {{ "mobile.bap.melebihiSisa" | translate }}
+              </span>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <button
+      mat-flat-button
+      color="primary"
+      class="mbap-simpan"
+      type="button"
+      [disabled]="!bolehSimpan"
+      (click)="simpan()"
+    >
+      @if (menyimpan()) {
+        <mat-spinner diameter="18"></mat-spinner>
+      } @else {
+        <mat-icon>save</mat-icon>
+      }
+      {{ "mobile.bap.simpan" | translate }}
+    </button>
+  }
+</div>

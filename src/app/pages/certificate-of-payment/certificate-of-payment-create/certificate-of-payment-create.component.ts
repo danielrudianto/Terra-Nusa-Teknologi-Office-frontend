@@ -137,6 +137,24 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
   readonly volumeAwal = signal<Record<number, number>>({});
   readonly catatanBaris = signal<Record<number, string>>({});
 
+  /**
+   * SPK ini sudah pernah ditagih lewat pembuat faktur tenaga kerja.
+   *
+   * TAMBALAN, dan layarnya mengatakan begitu.
+   *
+   * Pembuat faktur (halaman Invoice) menagih SPK yang sama tanpa menyentuh
+   * pagu di layar ini: yang diketik di sana EMPAT BARIS BAKU — Upah Harian,
+   * Lembur, Bonus, Insentif Bor — bukan baris SPK-nya, dan nomor SPK-nya
+   * teks bebas. Jadi volume di sini dan nominal di sana tidak saling tahu.
+   *
+   * Yang dapat dilakukan sekarang hanya MENGATAKANNYA. Bukan menolak:
+   * menagih bulan lalu lewat faktur dan bulan ini lewat CoP adalah keadaan
+   * yang sah, dan menolaknya akan mematikan jalur yang baru saja dibuka.
+   */
+  readonly tagihanFaktur = signal<{ jumlah: number; nilai?: number } | null>(
+    null,
+  );
+
   readonly tanggal = new FormControl<Date | null>(new Date());
   /*
    * Periode WAJIB — cerminan aturan server.
@@ -258,6 +276,7 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
   /** Lepas pilihan supaya SPK lain dapat dicari. */
   lepasSpk(): void {
     this.spkTerpilih.set(null);
+    this.tagihanFaktur.set(null);
     this.baris.set([]);
     this.kontrol.clear();
     this.isian.set({});
@@ -273,7 +292,28 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
     this.isian.set({});
     this.catatanBaris.set({});
     this.volumeAwal.set({});
+    this.tagihanFaktur.set(null);
     await this.muatPagu(spk.id);
+    await this.muatPeringatanFaktur(spk.id);
+  }
+
+  /**
+   * Peringatan jalur ganda; kegagalannya DITELAN dengan sengaja.
+   *
+   * Yang hilang saat ia gagal hanyalah keterangan. Menggagalkan pemilihan SPK
+   * karena peringatan tidak terbaca berarti sebuah tambalan menjatuhkan
+   * layar yang seharusnya ditambalnya.
+   */
+  private async muatPeringatanFaktur(spkId: number): Promise<void> {
+    try {
+      const hasil = (await firstValueFrom(
+        this.service.peringatanFaktur(spkId),
+      )) as { jumlah?: number; nilai?: number };
+      const jumlah = Number(hasil?.jumlah) || 0;
+      this.tagihanFaktur.set(jumlah > 0 ? { jumlah, nilai: hasil?.nilai } : null);
+    } catch {
+      this.tagihanFaktur.set(null);
+    }
   }
 
   private async muatPagu(spkId: number): Promise<void> {

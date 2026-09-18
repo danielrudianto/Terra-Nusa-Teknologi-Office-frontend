@@ -5027,6 +5027,7 @@
     "batal": "取消",
     "nav": {
       "beranda": "首页",
+      "bap": "进度单",
       "periksa": "审核",
       "po": "采购订单",
       "reimbursement": "报销",
@@ -5148,6 +5149,28 @@
     },
     "disalin": "已复制",
     "salin": "复制",
+    "bap": {
+      "tahapJudul": "第 1 阶段 — 记录工程量",
+      "tahapKet": "此处仅记录本期工程量。价格与扣款在下一阶段于桌面端填写。",
+      "cariSpk": "搜索 SPK 编号或名称",
+      "kurangHuruf": "请至少输入 3 个字符以搜索 SPK。",
+      "tidakAda": "没有匹配的 SPK。",
+      "gantiSpk": "更换 SPK",
+      "periodeAwal": "起始日期",
+      "periodeAkhir": "结束日期",
+      "periodeKet": "请填写起止日期；结束日期不得早于起始日期。",
+      "tanpaBaris": "此 SPK 没有工程条目。",
+      "sisa": "剩余",
+      "melebihiSisa": "超出剩余预算 — 保存时将被拒绝。",
+      "simpan": "保存进度单",
+      "tersimpan": "进度单已保存。"
+    },
+    "tidakBerhak": {
+      "judul": "这里暂时没有您可处理的内容",
+      "ket": "本应用处理审批与删除，需要更高的权限级别。完整功能请使用桌面版。",
+      "keBeritaAcara": "打开进度单",
+      "keluar": "退出登录"
+    },
     "cop": {
       "judul": "付款证书审批",
       "sub": "等待您审批的付款证书",
@@ -5405,6 +5428,9 @@
     "pilihSub": "仅显示已审批且尚未开票的证书。",
     "pilihKosong": "没有可开票的付款证书。",
     "spkHanyaSpkJudul": "仅限已审批且分期结算的单据",
+    "fakturSudahAdaJudul": "此 SPK 已通过发票开过账单",
+    "fakturSudahAda": "本 SPK 已有 {{n}} 笔通过人工发票生成器开出的账单。该渠道尚未读取本页的预算，因此在此录入的工程量不会抵减那边的金额。",
+    "fakturSudahAdaNilai": "金额为 Rp {{nilai}}。",
     "periodeJudul": "工程结算期间",
     "periodeKet": "本付款证书所认证工程的日期范围。起讫两天均计入——下一期间须从本期结束日的次日开始。",
     "pernyataanVolumeKet": "保存后，这些工程量将占用工作令额度并成为开票依据。",

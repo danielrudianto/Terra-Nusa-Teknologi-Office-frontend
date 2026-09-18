@@ -289,6 +289,24 @@ export class CertificateOfPaymentService {
     return this.api.get(`${CertificateOfPaymentService.JALUR}/spk`, params);
   }
 
+  /**
+   * Apakah SPK ini sudah pernah ditagih lewat pembuat faktur tenaga kerja.
+   *
+   * TAMBALAN, dan disebut begitu di layarnya juga. Pembuat faktur menagih SPK
+   * yang sama tanpa menyentuh pagu CoP — yang diketik di sana empat baris
+   * baku, bukan baris SPK-nya — sehingga selama keduanya belum membaca
+   * catatan yang sama, dua dokumen dapat terbit atas progres yang satu.
+   *
+   * PERMINTAAN TERSENDIRI, bukan bidang tambahan pada `pagu()`: gagalnya
+   * peringatan tidak boleh menjatuhkan layar pencatatan volume.
+   */
+  peringatanFaktur(purchaseOrderId: number) {
+    return this.api.get(
+      `${CertificateOfPaymentService.JALUR}/peringatan-faktur/${purchaseOrderId}`,
+      {},
+    );
+  }
+
   /** Baris pekerjaan SPK beserta sisa pagunya. */
   pagu(purchaseOrderId: number) {
     return this.api.get(

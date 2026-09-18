@@ -20,14 +20,47 @@
  */
 
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import {
+  ActivatedRouteSnapshot,
+  CanActivateFn,
+  Router,
+} from '@angular/router';
 
 import { PermissionService } from '../services/permission.service';
 
 /** Level terendah yang punya sesuatu untuk dikerjakan di sini. */
 export const LEVEL_MINIMUM_MOBILE = 3;
 
-export const levelGuard: CanActivateFn = async () => {
+/**
+ * Ambang yang berlaku bagi rute yang dituju.
+ *
+ * KENAPA ADA PENGECUALIAN SAMA SEKALI
+ *
+ * Ambang 3 benar selama aplikasi ini hanya menyetujui dan menghapus. Sejak
+ * ada layar PENCATATAN VOLUME, itu tidak lagi benar: yang mencatat volume di
+ * lapangan justru engineering level 1, dan menutupnya berarti layar yang
+ * dibuat untuk lapangan tidak dapat dibuka oleh lapangan.
+ *
+ * Pengecualiannya DINYATAKAN DI RUTENYA (`data: { levelMinimum: 1 }`), bukan
+ * sebagai daftar jalur di berkas ini. Rute berikutnya yang perlu dibuka cukup
+ * menambah satu baris di tempat ia didefinisikan, dan tidak ada daftar
+ * terpisah yang dapat tertinggal.
+ *
+ * Ini tetap BUKAN pengamanan. Yang menentukan tetap server: membuat CoP
+ * diperiksa ulang di sana dengan aturan yang sama seperti desktop.
+ */
+function ambangUntuk(rute: ActivatedRouteSnapshot | null): number {
+  let simpul = rute;
+  let ambang = LEVEL_MINIMUM_MOBILE;
+  while (simpul) {
+    const n = Number(simpul.data?.['levelMinimum']);
+    if (Number.isFinite(n) && n > 0) ambang = n;
+    simpul = simpul.firstChild;
+  }
+  return ambang;
+}
+
+export const levelGuard: CanActivateFn = async (rute) => {
   const izin = inject(PermissionService);
   const router = inject(Router);
 
@@ -48,7 +81,7 @@ export const levelGuard: CanActivateFn = async () => {
     return true;
   }
 
-  if (izin.level() >= LEVEL_MINIMUM_MOBILE) return true;
+  if (izin.level() >= ambangUntuk(rute)) return true;
 
   router.navigate(['/TidakBerhak']);
   return false;

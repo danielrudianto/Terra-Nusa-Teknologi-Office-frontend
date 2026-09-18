@@ -5027,6 +5027,7 @@
     "batal": "Batal",
     "nav": {
       "beranda": "Beranda",
+      "bap": "Berita Acara",
       "periksa": "Periksa",
       "po": "Purchase Order",
       "reimbursement": "Reimbursement",
@@ -5148,6 +5149,28 @@
     },
     "disalin": "Disalin",
     "salin": "Salin",
+    "bap": {
+      "tahapJudul": "Tahap 1 — catat volume",
+      "tahapKet": "Yang dicatat di sini hanya volume pekerjaan periode ini. Harga dan potongan diisi di tahap berikutnya, di desktop.",
+      "cariSpk": "Cari nomor atau nama SPK",
+      "kurangHuruf": "Ketik minimal 3 huruf untuk mencari SPK.",
+      "tidakAda": "Tidak ada SPK yang cocok.",
+      "gantiSpk": "Ganti SPK",
+      "periodeAwal": "Periode awal",
+      "periodeAkhir": "Periode akhir",
+      "periodeKet": "Isi periode awal dan akhir; akhir tidak boleh mendahului awal.",
+      "tanpaBaris": "SPK ini tidak punya baris pekerjaan.",
+      "sisa": "Sisa",
+      "melebihiSisa": "Melebihi sisa pagu — akan ditolak saat disimpan.",
+      "simpan": "Simpan berita acara",
+      "tersimpan": "Berita acara tersimpan."
+    },
+    "tidakBerhak": {
+      "judul": "Belum ada yang bisa dikerjakan di sini",
+      "ket": "Aplikasi ini berisi persetujuan dan penghapusan, yang memerlukan wewenang lebih tinggi. Layar selengkapnya ada di versi desktop.",
+      "keBeritaAcara": "Buka Berita Acara",
+      "keluar": "Keluar"
+    },
     "cop": {
       "judul": "Persetujuan CoP",
       "sub": "Certificate of payment yang menunggu persetujuan Anda",
@@ -5405,6 +5428,9 @@
     "pilihSub": "Hanya yang sudah disetujui dan belum ditagihkan.",
     "pilihKosong": "Tidak ada CoP yang siap ditagihkan.",
     "spkHanyaSpkJudul": "Hanya dokumen disetujui yang ditagih bertahap",
+    "fakturSudahAdaJudul": "SPK ini sudah pernah ditagih lewat faktur",
+    "fakturSudahAda": "Ada {{n}} tagihan atas SPK ini yang dibuat lewat pembuat faktur tenaga kerja. Jalur itu belum membaca pagu di layar ini, jadi volume di sini tidak mengurangi apa pun di sana.",
+    "fakturSudahAdaNilai": "Nilainya Rp {{nilai}}.",
     "periodeJudul": "Periode cut-off pekerjaan",
     "periodeKet": "Rentang tanggal pekerjaan yang disertifikasi pada CoP ini. Kedua tanggal IKUT DIHITUNG — periode berikutnya harus mulai sehari setelah tanggal akhir di sini.",
     "pernyataanVolumeKet": "Setelah tersimpan, volume ini memakai pagu SPK dan menjadi dasar penagihan.",
