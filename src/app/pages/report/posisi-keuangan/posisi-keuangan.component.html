@@ -83,6 +83,33 @@
     </div>
 
     <!--
+      KENAPA RASIONYA TURUN.
+
+      Penyebut quick ratio kini memuat beban, reimbursement, dan gaji yang
+      belum cair — bukan pembelian saja. Angkanya karena itu lebih rendah
+      daripada yang sempat dilihat orang. Tanpa menyebut selisihnya, siapa pun
+      yang mencatat angka minggu lalu akan mengira ada yang rusak, dan angka
+      yang dicurigai berhenti dipakai — lebih buruk daripada angka yang salah.
+    -->
+    @if (adaSelisih()) {
+      <div class="pkeu-banner">
+        <mat-icon>compare_arrows</mat-icon>
+        <div>
+          <strong>{{ "posisiKeuangan.selisihJudul" | translate }}</strong>
+          <span>
+            {{ "posisiKeuangan.selisihVersiLama" | translate }}
+            {{ uang(d.selisihVersiLama?.utangUsahaSaja) }} &rarr;
+            {{ uang(d.selisihVersiLama?.kewajibanLancarSekarang) }}
+            ({{ "posisiKeuangan.selisihTambahan" | translate }}
+            {{ uang(d.selisihVersiLama?.tambahan) }}).
+            {{ "posisiKeuangan.selisihRasio" | translate }}
+            {{ rasioLama() }} &rarr; {{ rasio() }}.
+          </span>
+        </div>
+      </div>
+    }
+
+    <!--
       PINJAMAN DI LUAR RASIO — disebutkan, bukan disembunyikan.
 
       `loans` tidak menyimpan tenor maupun jadwal angsuran, sehingga porsi yang
@@ -171,6 +198,122 @@
                 {{ uang(l.piutangTermuda) }}.
               }
             </span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ================= 2b. Neraca ringkas ================= -->
+    @if (d.neraca; as n) {
+      <div class="pkeu-seksi">
+        <h2 class="pkeu-seksi__judul">
+          {{ "posisiKeuangan.neracaJudul" | translate }}
+        </h2>
+
+        <div class="pkeu-neraca">
+          <div class="pkeu-neraca__kolom">
+            <span class="pkeu-neraca__cap">{{
+              "posisiKeuangan.aset" | translate
+            }}</span>
+            <div class="pkeu-neraca__baris">
+              <span>{{ "posisiKeuangan.kas" | translate }}</span>
+              <span class="angka">{{ uang(n.aset?.kas) }}</span>
+            </div>
+            <div class="pkeu-neraca__baris">
+              <span>{{ "posisiKeuangan.piutang" | translate }}</span>
+              <span class="angka">{{ uang(n.aset?.piutang) }}</span>
+            </div>
+            <div class="pkeu-neraca__baris">
+              <span>{{ "posisiKeuangan.asetTetap" | translate }}</span>
+              <span class="angka">{{ uang(n.aset?.asetTetap) }}</span>
+            </div>
+            <div class="pkeu-neraca__baris pkeu-neraca__baris--total">
+              <span>{{ "posisiKeuangan.total" | translate }}</span>
+              <span class="angka">{{ uang(n.aset?.total) }}</span>
+            </div>
+          </div>
+
+          <div class="pkeu-neraca__kolom">
+            <span class="pkeu-neraca__cap">{{
+              "posisiKeuangan.kewajiban" | translate
+            }}</span>
+            <div class="pkeu-neraca__baris">
+              <span>{{ "posisiKeuangan.utang" | translate }}</span>
+              <span class="angka">{{ uang(n.kewajiban?.utangUsaha) }}</span>
+            </div>
+            <div class="pkeu-neraca__baris">
+              <span>{{ "posisiKeuangan.kewajibanLain" | translate }}</span>
+              <span class="angka">{{ uang(n.kewajiban?.kewajibanLain) }}</span>
+            </div>
+            <div class="pkeu-neraca__baris">
+              <span>{{ "posisiKeuangan.pinjamanBaris" | translate }}</span>
+              <span class="angka">{{ uang(n.kewajiban?.pinjaman) }}</span>
+            </div>
+            <div class="pkeu-neraca__baris pkeu-neraca__baris--total">
+              <span>{{ "posisiKeuangan.total" | translate }}</span>
+              <span class="angka">{{ uang(n.kewajiban?.total) }}</span>
+            </div>
+          </div>
+
+          <div
+            class="pkeu-neraca__kolom pkeu-neraca__kolom--hasil"
+            [class.pkeu-neraca__kolom--minus]="ekuitasMinus()"
+          >
+            <span class="pkeu-neraca__cap">{{
+              "posisiKeuangan.ekuitas" | translate
+            }}</span>
+            <span class="pkeu-neraca__nilai">{{ uang(n.ekuitas) }}</span>
+            <div class="pkeu-neraca__baris">
+              <span>{{ "posisiKeuangan.dte" | translate }}</span>
+              <span class="angka">{{ dte() }}</span>
+            </div>
+            <!--
+              Pita acuan dicetak MENEMPEL pada angkanya, bukan disembunyikan
+              lalu keluar sebagai kata "sehat". Yang membaca perlu tahu
+              terhadap apa angka itu dibandingkan.
+            -->
+            <span class="pkeu-neraca__acuan">
+              {{
+                "posisiKeuangan.acuanDte"
+                  | translate
+                    : {
+                        bawah: acuanDte.bawah,
+                        atas: acuanDte.atas,
+                        sumber: acuanDte.sumber
+                      }
+              }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Rincian kewajiban selain pembelian. -->
+        <div class="pkeu-ember">
+          @for (k of rincianKewajibanLain(); track k.kunci) {
+            <div class="pkeu-ember__baris">
+              <span class="pkeu-ember__cap">{{ k.label | translate }}</span>
+              <span class="pkeu-ember__bilah">
+                <span
+                  class="pkeu-ember__isi"
+                  [style.width.%]="lebar(rincianKewajibanLain(), k)"
+                ></span>
+              </span>
+              <span class="pkeu-ember__nilai">{{ uang(k.total) }}</span>
+            </div>
+          }
+        </div>
+
+        <!--
+          CELAH NERACA — disebut satu per satu, bukan satu kalimat.
+
+          Perkiraan yang tidak menyebut celahnya akan dibaca sebagai angka
+          pembukuan, lalu dicocokkan dengan akuntan dan tidak pernah cocok.
+          Yang membaca perlu tahu persis apa yang TIDAK ada di dalamnya.
+        -->
+        <div class="pkeu-banner">
+          <mat-icon>rule</mat-icon>
+          <div>
+            <strong>{{ "posisiKeuangan.neracaCelahJudul" | translate }}</strong>
+            <span>{{ "posisiKeuangan.neracaCelah" | translate }}</span>
           </div>
         </div>
       </div>

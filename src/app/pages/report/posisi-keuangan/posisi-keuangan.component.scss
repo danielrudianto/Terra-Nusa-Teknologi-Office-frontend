@@ -379,3 +379,73 @@
   color: var(--muted, #6b7280);
   overflow-wrap: anywhere;
 }
+
+/* ---------------- Neraca ringkas ---------------- */
+
+.pkeu-neraca {
+  /* Tiga kolom yang menciut jadi satu di layar sempit. `minmax(0, ...)`
+     karena angka rupiah panjang tidak membungkus — ia meluber. */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, minmax(220px, 1fr)));
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.pkeu-neraca__kolom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  padding: 0.85rem 1rem;
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 14px;
+  background: var(--surface, #fff);
+
+  &--hasil {
+    background: var(--surface-2, #f6f8fb);
+  }
+  &--minus {
+    background: var(--bad-bg, #fff5f5);
+    border-color: var(--bad-fg, #f3b0b2);
+    color: var(--bad-fg, #b4282c);
+  }
+}
+.pkeu-neraca__cap {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--muted, #6b7280);
+  margin-bottom: 0.15rem;
+}
+.pkeu-neraca__baris {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.76rem;
+
+  .angka {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  &--total {
+    margin-top: 0.2rem;
+    padding-top: 0.35rem;
+    border-top: 0.5px solid var(--border, #e3e6eb);
+    font-weight: 700;
+  }
+}
+.pkeu-neraca__nilai {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+/* Pita acuan: sengaja kecil tetapi SELALU ada — angka tanpa pembandingnya
+   tidak dapat ditimbang siapa pun. */
+.pkeu-neraca__acuan {
+  font-size: 0.68rem;
+  color: var(--muted, #6b7280);
+  line-height: 1.35;
+}

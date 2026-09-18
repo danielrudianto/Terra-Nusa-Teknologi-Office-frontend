@@ -178,3 +178,72 @@ describe('label bulan', () => {
     expect(komponen().labelBulan('sampah')).toBe('sampah');
   });
 });
+
+
+describe('neraca ringkas & ekuitas', () => {
+  it('D/E pada ekuitas minus dicetak tanda pisah, bukan angka minus', () => {
+    /*
+     * `580 / -120` adalah -4,83: angka yang terbaca terukur, pada keadaan
+     * yang justru paling perlu dibicarakan orang. Server sudah mengirim
+     * `null`; layar tidak boleh mengarangnya kembali.
+     */
+    const c = komponen();
+    c.data.set({ neraca: { ekuitas: -120, debtToEquity: null } });
+
+    expect(c.dte()).toBe('—');
+    expect(c.ekuitasMinus()).toBeTrue();
+  });
+
+  it('D/E dicetak saat ekuitasnya positif', () => {
+    const c = komponen();
+    c.data.set({ neraca: { ekuitas: 1610, debtToEquity: 0.3416 } });
+
+    expect(c.dte()).toBe('0.34');
+    expect(c.ekuitasMinus()).toBeFalse();
+  });
+
+  it('spanduk selisih hanya tampil bila memang ada tambahannya', () => {
+    /*
+     * Keterangan yang selalu menyala berhenti dibaca orang. Pada perusahaan
+     * yang memang tidak punya beban/reimbursement/gaji tertunggak, tidak ada
+     * yang perlu dijelaskan.
+     */
+    const c = komponen();
+    c.data.set({ selisihVersiLama: { tambahan: 0 } });
+    expect(c.adaSelisih()).toBeFalse();
+
+    c.data.set({ selisihVersiLama: { tambahan: 30 } });
+    expect(c.adaSelisih()).toBeTrue();
+  });
+
+  it('quick ratio versi lama dicetak untuk dibandingkan', () => {
+    const c = komponen();
+    c.data.set({ selisihVersiLama: { quickRatioVersiLama: 3.2 } });
+    expect(c.rasioLama()).toBe('3.20');
+  });
+
+  it('tanpa utang lama, rasio lamanya tanda pisah — bukan 0,00', () => {
+    const c = komponen();
+    c.data.set({ selisihVersiLama: { quickRatioVersiLama: null } });
+    expect(c.rasioLama()).toBe('—');
+  });
+
+  it('rincian kewajiban lain selalu bertiga, walau jawabannya kosong', () => {
+    /*
+     * Baris yang HILANG terbaca sebagai "tidak ada jenisnya", bukan sebagai
+     * "nol" — dan gaji yang tidak muncul sama sekali persis kekeliruan yang
+     * sedang diperbaiki.
+     */
+    const c = komponen();
+    c.data.set({ kewajibanLain: { rincian: {} } });
+
+    const r = c.rincianKewajibanLain();
+    expect(r.length).toBe(3);
+    expect(r.map((x: any) => x.kunci)).toEqual([
+      'beban',
+      'reimbursement',
+      'gaji',
+    ]);
+    expect(r.every((x: any) => x.total === 0)).toBeTrue();
+  });
+});

@@ -286,6 +286,77 @@ export class PosisiKeuanganComponent {
     return `${nama[bulan - 1] ?? b} ${t}`;
   }
 
+  /**
+   * Debt to equity, atau tanda pisah bila ekuitasnya nol atau minus.
+   *
+   * Server mengirim `null` untuk keadaan itu — dan `null` di sini BUKAN nol.
+   * `580 / -120` adalah -4,83: angka yang terbaca terukur, pada keadaan yang
+   * justru paling perlu dibicarakan orang. Tanda pisah memaksa
+   * pertanyaannya diajukan.
+   */
+  dte(): string {
+    const v = this.data()?.neraca?.debtToEquity;
+    if (v === null || v === undefined) return '—';
+    return Number(v).toFixed(2);
+  }
+
+  /** Ekuitas minus — keadaan yang harus terlihat, bukan diperhalus. */
+  ekuitasMinus(): boolean {
+    return Number(this.data()?.neraca?.ekuitas ?? 0) < 0;
+  }
+
+  /**
+   * Acuan D/E untuk konstruksi.
+   *
+   * CFMA (Construction Financial Management Association), konstruksi Amerika,
+   * lintas jenis usaha: sehat 0,5–1,5; penjamin (surety) lebih menyukai di
+   * bawah 1,0.
+   *
+   * ORIENTASI, BUKAN VONIS. Ia tidak disusun dari subkontraktor MEP di
+   * Indonesia, dan pitanya dicetak menempel pada angkanya supaya yang
+   * membaca dapat menimbangnya sendiri — bukan disembunyikan lalu keluar
+   * sebagai kata "sehat".
+   */
+  readonly acuanDte = { bawah: 0.5, atas: 1.5, sumber: 'CFMA' };
+
+  /** Kewajiban lain, per jenis, untuk dirinci di layar. */
+  readonly rincianKewajibanLain = computed(() => {
+    const r = this.data()?.kewajibanLain?.rincian || {};
+    return [
+      { kunci: 'beban', label: 'posisiKeuangan.kwBeban', ...(r['beban'] || {}) },
+      {
+        kunci: 'reimbursement',
+        label: 'posisiKeuangan.kwReimbursement',
+        ...(r['reimbursement'] || {}),
+      },
+      { kunci: 'gaji', label: 'posisiKeuangan.kwGaji', ...(r['gaji'] || {}) },
+    ].map((x: any) => ({
+      ...x,
+      total: Number(x.total) || 0,
+      jumlahDokumen: Number(x.jumlahDokumen) || 0,
+    }));
+  });
+
+  /**
+   * Quick ratio versi LAMA — hanya untuk menjelaskan penurunannya.
+   *
+   * Angkanya turun dibanding yang sempat dilihat orang, karena penyebutnya
+   * kini memuat beban, reimbursement, dan gaji yang belum cair. Tanpa
+   * menyebut selisihnya, siapa pun yang mencatat angka minggu lalu akan
+   * mengira ada yang rusak — dan angka yang dicurigai berhenti dipakai, yang
+   * lebih buruk daripada angka yang salah.
+   */
+  rasioLama(): string {
+    const v = this.data()?.selisihVersiLama?.quickRatioVersiLama;
+    if (v === null || v === undefined) return '—';
+    return Number(v).toFixed(2);
+  }
+
+  /** Selisihnya memang ada — spanduk penjelasnya hanya tampil bila begitu. */
+  adaSelisih(): boolean {
+    return Number(this.data()?.selisihVersiLama?.tambahan ?? 0) > 0;
+  }
+
   /** Disposisi satu status; nol bila statusnya tidak muncul sama sekali. */
   disposisi(status: string): { jumlah: number; total: number } {
     const d = this.akurasi()?.disposisi?.[status];
