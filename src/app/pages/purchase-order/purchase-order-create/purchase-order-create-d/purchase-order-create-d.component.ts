@@ -823,6 +823,26 @@ export class PurchaseOrderCreateDComponent {
         }));
       })),
       customData: {
+        /*
+         * PENANDA: volume pada baris SPK ini DISEPAKATI, bukan penambal.
+         *
+         * Formulir SPK D dulu tidak punya kotak volume sama sekali dan
+         * mengirim `quantity: 1` pada setiap baris upah. Certificate of
+         * Payment membaca angka itu sebagai PLAFON, sehingga seluruh SPK D
+         * yang sudah terbit menolak berita acara bervolume sebenarnya —
+         * "Volume SPK 1 hari" pada pekerja yang sehari menyelesaikan 60
+         * meter.
+         *
+         * Penandanya ada pada DOKUMEN, bukan pada angkanya. Menebak "1
+         * berarti penambal" akan salah pada SPK baru: begitu kotaknya ada,
+         * seseorang boleh mengetik 1 dan memaksudkannya sungguh-sungguh, dan
+         * yang diketik akan berbeda dari yang ditegakkan — tanpa galat.
+         *
+         * Dokumen lama tidak memilikinya, jadi CoP memperlakukan seluruh
+         * barisnya sebagai harga satuan tanpa plafon. Tidak ada data yang
+         * perlu disentuh, dan tidak ada SPK yang perlu disunting ulang.
+         */
+        volumeDiisi: true,
         // Hanya data sumber — poin perjanjian TIDAK disimpan sebagai teks.
         // Renderer merakitnya dari templateVersion + data di bawah ini.
         overtimeRate: Number(this.formGroup.get('overtimeRate')?.value) || 0,
