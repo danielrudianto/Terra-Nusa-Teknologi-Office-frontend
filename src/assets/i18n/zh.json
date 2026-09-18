@@ -1900,6 +1900,7 @@
     "saldoDikecualikan": "未计入总额",
     "totalSemuaRekening": "全部账户合计",
     "dikecualikanKet": "有 {{n}} 个账户被标记为已排除，其余额不计入总余额。该标记在银行页面设置。",
+    "rekeningDihitung": "{{total}} 个账户中已计入 {{n}} 个",
     "reimbursements": "报销",
     "awaitingApproval": "待审批",
     "retry": "重试",
@@ -4566,7 +4567,11 @@
     "internalHint": "向集团内公司的采购。关闭后仅显示实际流出集团的资金。",
     "belumAdaKontrak": "尚无合同",
     "belumDitagih": "尚未开票",
-    "sertakanRetensi": "包含保固期项目"
+    "sertakanRetensi": "包含保固期项目",
+    "urutkan": "排序方式",
+    "balikArah": "反转顺序",
+    "persen": "毛利率 %",
+    "bukaLaporan": "打开项目报告"
   },
   "employeeView": {
     "menu": "查看完整资料",

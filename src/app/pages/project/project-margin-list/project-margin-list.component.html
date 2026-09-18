@@ -99,6 +99,208 @@
     <div class="pml-state pml-state--kosong">
       {{ "projectMargin.kosong" | translate }}
     </div>
+  } @else if (kompak) {
+    <!--
+      LAYAR SEMPIT — kartu, bukan tabel.
+
+      Tujuh kolom angka pada layar 390px berarti setiap baris harus digulir
+      menyamping untuk dibaca utuh, dan gulir menyamping membawa pergi kolom
+      nama proyeknya: yang terbaca tinggal deretan angka tanpa keterangan
+      milik siapa.
+
+      Bentuknya mengikuti panel buka-tutup yang SUDAH ada di aplikasi mobile
+      (`mpo-barang__kepala` di persetujuan PO), bukan `mat-expansion-panel`.
+      Komponen itu tidak dipakai di mana pun pada jalur mobile; memasukkannya
+      di sini berarti satu bentuk kedua untuk hal yang sama, beserta
+      tema, tinggi sentuh, dan animasinya sendiri.
+    -->
+    <div class="pml-kartu-urut">
+      <label class="pml-kartu-urut__label" for="pml-urut">
+        {{ "projectMargin.urutkan" | translate }}
+      </label>
+      <select
+        id="pml-urut"
+        class="pml-kartu-urut__select"
+        [value]="urut"
+        (change)="pilihUrut($any($event.target).value)"
+      >
+        @for (o of pilihanUrut; track o.nilai) {
+          <option [value]="o.nilai">{{ o.kunci | translate }}</option>
+        }
+      </select>
+      <button
+        type="button"
+        class="pml-kartu-urut__arah"
+        [attr.aria-label]="'projectMargin.balikArah' | translate"
+        [matTooltip]="'projectMargin.balikArah' | translate"
+        (click)="naik = !naik"
+      >
+        <mat-icon>{{ naik ? "arrow_upward" : "arrow_downward" }}</mat-icon>
+      </button>
+    </div>
+
+    <div class="pml-kartu-daftar">
+      @for (p of daftar; track p.id) {
+        <div class="pml-kartu" [class.buka]="panelTerbuka(p)">
+          <!--
+            Kepala kartunya MEMBUKA panel, tidak membuka laporan.
+
+            Di tabel, mengklik baris membuka laporan proyeknya. Di sini
+            sasaran yang sama harus melakukan dua hal, dan pada layar sentuh
+            tidak ada cara membedakan maksudnya. Jadi kepalanya satu
+            pekerjaan — membuka rincian — dan membuka laporan diberi tombolnya
+            sendiri di dalam panel, dengan tulisan yang menyebutkan tujuannya.
+          -->
+          <button
+            type="button"
+            class="pml-kartu__kepala"
+            (click)="ubahPanel(p)"
+            [attr.aria-expanded]="panelTerbuka(p)"
+          >
+            <span class="pml-kartu__judul">
+              <span class="pml-kartu__kode">
+                {{ p.code }}
+                @if (!p.isActive) {
+                  <span class="pml-tag">{{
+                    "projectMargin.selesai" | translate
+                  }}</span>
+                }
+              </span>
+              <span class="pml-kartu__nama">{{ p.name }}</span>
+              @if (tanpaKontrak(p) || belumTertagihSamaSekali(p)) {
+                <span class="pml-kartu__tanda">
+                  @if (tanpaKontrak(p)) {
+                    <span class="pml-tanda pml-tanda--kontrak">{{
+                      "projectMargin.belumAdaKontrak" | translate
+                    }}</span>
+                  }
+                  @if (belumTertagihSamaSekali(p)) {
+                    <span class="pml-tanda pml-tanda--tagih">{{
+                      "projectMargin.belumDitagih" | translate
+                    }}</span>
+                  }
+                </span>
+              }
+            </span>
+
+            <!--
+              Angka yang terlihat TANPA membuka: margin, dan persentasenya.
+
+              Itu yang dicari orang saat menggulir — sisanya baru diperlukan
+              ketika ada satu yang mencurigakan. Persentase sendirian tidak
+              cukup: ia "—" selama belum ada tagihan, dan kartu tanpa satu
+              angka pun tidak dapat diurutkan dengan mata.
+            -->
+            <span class="pml-kartu__angka">
+              <span
+                class="pml-kartu__margin"
+                [class.pml-rugi]="
+                  !belumTertagihSamaSekali(p) && margin(p) < 0
+                "
+              >
+                {{ margin(p) | number: "1.0-0" }}
+              </span>
+              <span class="pml-kartu__persen">
+                @if (persenTakTerhitung(p)) {
+                  <span class="pml-kosong">—</span>
+                } @else {
+                  <span [class.pml-rugi]="margin(p) < 0">
+                    {{ persen(p) | number: "1.1-1" }}%
+                  </span>
+                }
+              </span>
+            </span>
+
+            <mat-icon class="pml-kartu__panah" [class.buka]="panelTerbuka(p)"
+              >expand_more</mat-icon
+            >
+          </button>
+
+          @if (panelTerbuka(p)) {
+            <div class="pml-kartu__isi">
+              <div class="pml-kartu__baris">
+                <span>{{ "projectMargin.kontrak" | translate }}</span>
+                <span class="pml-kartu__nilai">{{
+                  p.kontrak | number: "1.0-0"
+                }}</span>
+              </div>
+              <div class="pml-kartu__baris">
+                <span>{{ "projectMargin.tertagih" | translate }}</span>
+                <span class="pml-kartu__nilai">{{
+                  tertagih(p) | number: "1.0-0"
+                }}</span>
+              </div>
+              <div class="pml-kartu__baris">
+                <span>{{ "projectMargin.belumTertagih" | translate }}</span>
+                <span class="pml-kartu__nilai pml-belum">{{
+                  belumTertagih(p) | number: "1.0-0"
+                }}</span>
+              </div>
+              <div class="pml-kartu__baris">
+                <span>{{ "projectMargin.biaya" | translate }}</span>
+                <span class="pml-kartu__nilai">{{
+                  biaya(p) | number: "1.0-0"
+                }}</span>
+              </div>
+
+              <button
+                type="button"
+                class="pml-kartu__buka"
+                (click)="buka(p)"
+              >
+                <mat-icon>insights</mat-icon>
+                {{ "projectMargin.bukaLaporan" | translate }}
+              </button>
+            </div>
+          }
+        </div>
+      }
+
+      <!--
+        Jumlah seluruh kartu yang sedang tampil.
+
+        Sama alasannya dengan `tfoot` pada tabelnya: angka yang tidak berubah
+        saat disaring membuat orang mengira penyaringnya tidak bekerja.
+      -->
+      <div class="pml-kartu-total">
+        <div class="pml-kartu-total__judul">
+          {{ "projectMargin.totalTampil" | translate }}
+          <span class="pml-kartu-total__jumlah">{{ daftar.length }}</span>
+        </div>
+        <div class="pml-kartu__baris">
+          <span>{{ "projectMargin.kontrak" | translate }}</span>
+          <span class="pml-kartu__nilai">{{
+            total.kontrak | number: "1.0-0"
+          }}</span>
+        </div>
+        <div class="pml-kartu__baris">
+          <span>{{ "projectMargin.tertagih" | translate }}</span>
+          <span class="pml-kartu__nilai">{{
+            total.tertagih | number: "1.0-0"
+          }}</span>
+        </div>
+        <div class="pml-kartu__baris">
+          <span>{{ "projectMargin.belumTertagih" | translate }}</span>
+          <span class="pml-kartu__nilai pml-belum">{{
+            total.belum | number: "1.0-0"
+          }}</span>
+        </div>
+        <div class="pml-kartu__baris">
+          <span>{{ "projectMargin.biaya" | translate }}</span>
+          <span class="pml-kartu__nilai">{{
+            total.biaya | number: "1.0-0"
+          }}</span>
+        </div>
+        <div class="pml-kartu__baris pml-kartu__baris--margin">
+          <span>{{ "projectMargin.margin" | translate }}</span>
+          <span
+            class="pml-kartu__nilai"
+            [class.pml-rugi]="total.margin < 0"
+            >{{ total.margin | number: "1.0-0" }}</span
+          >
+        </div>
+      </div>
+    </div>
   } @else {
     <div class="pml-tabel">
       <table>

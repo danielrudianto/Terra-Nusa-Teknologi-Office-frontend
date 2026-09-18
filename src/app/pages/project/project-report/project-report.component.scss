@@ -1288,3 +1288,152 @@
     text-align: right;
   }
 }
+
+/* ====================================================================== */
+/* PONSEL — tiga bagian yang tidak muat, dan kenapa                       */
+/*                                                                        */
+/* Diukur pada 390px, bukan dikira-kira:                                  */
+/*                                                                        */
+/*   .prp-kat  = kode 48 + nama 208 + persen 56 + porsi ~45 + nilai 144   */
+/*             + lima celah 64  =  565px SEBELUM bilahnya dapat satu      */
+/*             piksel pun. Bilahnya menyusut ke nol dan barisnya TETAP    */
+/*             melebihi layar.                                            */
+/*                                                                        */
+/*   .prp-rinci__baris = bilah 144 + nilai 136 + celah 25 + inden 61      */
+/*             = 366px, menyisakan 24px untuk nama pemasok.               */
+/*                                                                        */
+/*   .prp-kpi  = dua kolom ~175px, sementara `.prp-nilai` 1,35rem memuat  */
+/*             angka sembilan digit. Angkanya meluber keluar selnya.      */
+/*                                                                        */
+/* Ketiganya tidak menghasilkan galat apa pun — hanya tata letak yang     */
+/* meleset, yang cuma terlihat oleh yang membukanya di ponsel.            */
+/* ====================================================================== */
+
+@media (max-width: 640px) {
+  /* ---- ringkasan angka: satu lajur, bentuk baris ---- */
+  //
+  // Kartu bertumpuk ke bawah membuat lima sel menjadi lima blok tinggi, dan
+  // angka yang dicari berada di bawah lipatan. Bentuk baris — keterangan di
+  // kiri, angka di kanan — memuat kelimanya dalam satu layar, dan angkanya
+  // mendapat lebar penuh alih-alih setengah.
+  .prp-kpi {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .prp-sel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    column-gap: 0.75rem;
+    padding: 0.7rem 0.85rem;
+  }
+
+  .prp-sel .prp-label {
+    grid-column: 1;
+  }
+
+  .prp-sel .prp-nilai {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    margin: 0;
+    font-size: 1.05rem;
+    white-space: nowrap;
+  }
+
+  .prp-sel .prp-ket {
+    grid-column: 1;
+    margin-top: 0.15rem;
+  }
+
+  /* ---- rincian kategori: tiga baris pendek, bukan satu baris panjang ---- */
+  //
+  // Nama kategori yang panjang DIPOTONG, angkanya tidak. Nama yang terpotong
+  // masih dapat dikenali dari beberapa huruf pertamanya; nilai yang terpotong
+  // berubah artinya.
+  .prp-kat {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "kode nama  nilai"
+      "bar  bar   bar"
+      "pct  pct   kontrak";
+    align-items: center;
+    column-gap: 0.6rem;
+    row-gap: 0.3rem;
+    padding: 0.7rem 0;
+  }
+
+  .prp-kat__kode {
+    grid-area: kode;
+    flex: none;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .prp-kat__nama {
+    grid-area: nama;
+    flex: none;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .prp-kat__nilai {
+    grid-area: nilai;
+    flex: none;
+  }
+
+  .prp-kat__rel {
+    grid-area: bar;
+    flex: none;
+    width: 100%;
+  }
+
+  .prp-kat__pct {
+    grid-area: pct;
+    flex: none;
+    text-align: left;
+  }
+
+  .prp-kat__kontrak {
+    grid-area: kontrak;
+    justify-self: end;
+  }
+
+  /* ---- pemasok di dalam kategori ---- */
+  //
+  // Indennya dibuang. 3,8rem inden pada layar 390px adalah seperenam
+  // lebarnya, diambil dari kolom yang paling membutuhkannya.
+  .prp-rinci {
+    padding: 0.4rem 0 0.8rem;
+  }
+
+  .prp-rinci__baris {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 0.6rem;
+    row-gap: 0.25rem;
+  }
+
+  .prp-rinci__nama {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .prp-rinci__bar {
+    // Bilahnya turun ke baris kedua dan melebar penuh: di 9rem pada layar
+    // ini ia bersaing dengan nama pemasok, dan keduanya kalah.
+    grid-column: 1 / -1;
+    grid-row: 2;
+    flex: none;
+    width: 100%;
+  }
+
+  .prp-rinci__nilai {
+    flex: none;
+  }
+}

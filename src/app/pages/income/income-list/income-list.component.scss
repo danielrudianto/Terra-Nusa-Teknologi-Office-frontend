@@ -40,9 +40,24 @@ $hover: var(--hover, #f6f8ff);
 .il-range {
   width: 260px;
 }
+/*
+ * Lebarnya DIBATASI, sama seperti `.ex-search` di halaman Beban.
+ *
+ * Tanpa `max-width`, `flex: 1 1 320px` membuat kotak pencarian memakan
+ * seluruh sisa baris — dan karena halaman ini tidak punya chip penyaring di
+ * kirinya seperti Beban, sisa barisnya lebar sekali. Hasilnya dua halaman
+ * yang berpasangan (Pemasukan dan Beban) memakai bilah alat yang bentuknya
+ * berbeda, dan yang berpindah di antara keduanya membaca perbedaan itu
+ * sebagai salah satunya belum selesai dikerjakan.
+ *
+ * Angkanya disalin apa adanya dari `.ex-search`: 220px dasar, menyusut
+ * sampai 160px, berhenti melebar di 320px.
+ */
 .il-search {
-  flex: 1 1 320px;
-  min-width: 240px;
+  flex: 1 1 220px;
+  min-width: 160px;
+  max-width: 320px;
+  width: 100%;
 }
 .il-ignore {
   font-weight: 600;

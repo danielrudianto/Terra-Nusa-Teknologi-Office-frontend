@@ -809,7 +809,18 @@ export class ProjectReportComponent implements OnInit {
     maintainAspectRatio: false,
     interaction: { mode: 'index', intersect: false },
     plugins: {
-      legend: { position: 'bottom' },
+      /*
+       * Legenda dengan kotak KECIL dan bergaya titik.
+       *
+       * Bawaan Chart.js menggambar kotak selebar 40px per seri. Dua seri
+       * berarti 80px hanya untuk kotaknya, dan pada layar 390px legendanya
+       * membungkus menjadi dua baris — yang diambil dari tinggi grafik,
+       * bukan dari ruang kosong.
+       */
+      legend: {
+        position: 'bottom',
+        labels: { usePointStyle: true, boxWidth: 8, boxHeight: 8 },
+      },
       tooltip: {
         callbacks: {
           label: (ctx) =>
@@ -818,6 +829,22 @@ export class ProjectReportComponent implements OnInit {
       },
     },
     scales: {
+      x: {
+        /*
+         * Label tanggal TIDAK dimiringkan.
+         *
+         * Dengan rotasi, Chart.js memutar `12/09` sampai 90 derajat begitu
+         * ruangnya kurang — dan pada grafik setinggi 240px di ponsel, label
+         * tegak memakan hampir seperempat tingginya. Yang tersisa untuk
+         * kurvanya sendiri tinggal setengah.
+         *
+         * `maxRotation: 0` membuat Chart.js MELEWATI label yang tidak muat
+         * alih-alih memutarnya. Yang dibaca dari kurva S adalah bentuknya
+         * beserta beberapa tanggal jangkar, bukan setiap tanggal opname —
+         * daftar di bawah grafiknya yang memuat semuanya.
+         */
+        ticks: { maxRotation: 0, autoSkip: true },
+      },
       y: {
         // Sengaja dikunci 0-100 dan TIDAK menyesuaikan isinya.
         //
@@ -1314,7 +1341,12 @@ export class ProjectReportComponent implements OnInit {
     maintainAspectRatio: false,
     interaction: { mode: 'index', intersect: false },
     plugins: {
-      legend: { position: 'bottom' },
+      // Sama seperti kurva S: legenda bertitik kecil supaya tidak membungkus
+      // menjadi dua baris di layar sempit.
+      legend: {
+        position: 'bottom',
+        labels: { usePointStyle: true, boxWidth: 8, boxHeight: 8 },
+      },
       tooltip: {
         callbacks: {
           label: (ctx) =>
@@ -1323,6 +1355,10 @@ export class ProjectReportComponent implements OnInit {
       },
     },
     scales: {
+      x: {
+        // Alasannya sama dengan kurva S — lihat `opsiKurvaS`.
+        ticks: { maxRotation: 0, autoSkip: true },
+      },
       y: {
         /*
          * TIDAK dikunci mulai nol — kebalikan dari kurva S, dan disengaja.

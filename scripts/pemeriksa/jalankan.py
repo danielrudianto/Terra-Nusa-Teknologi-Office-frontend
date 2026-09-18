@@ -70,11 +70,28 @@ def main() -> int:
     baru: list[str] = []      # tadinya hijau, sekarang merah
     berubah: list[str] = []   # merah, dan temuannya bergeser
     merah: list[str] = []     # merah, sama persis seperti garis dasarnya
+    dilewati: list[str] = []  # tidak berjalan sama sekali
     hijau = 0
 
     for p in pemeriksa:
         kode, keluaran = _jalankan(p)
         berkas_dasar = DASAR / f"{p.stem}.txt"
+
+        # Pemeriksa yang MENYATAKAN dirinya dilewati.
+        #
+        # Sebagian pemeriksa butuh alat yang belum tentu ada di mesin yang
+        # menjalankannya — `lebarcek` perlu Playwright beserta perambannya.
+        # Yang seperti itu keluar dengan kode 0 supaya tidak menggagalkan
+        # kiriman atas dependensi yang memang tidak dipasang.
+        #
+        # Tetapi keluar 0 berarti ia terhitung HIJAU, dan hijau di sini berarti
+        # "sudah diperiksa, tidak ada temuan". Itu tidak benar: ia tidak
+        # memeriksa apa pun. Karena itu disebutkan tersendiri — pemeriksa yang
+        # diam-diam tidak berjalan lebih buruk daripada yang tidak ada, sebab
+        # yang membaca keluarannya menyangka hal itu sudah dijaga.
+        if kode == 0 and "DILEWATI" in keluaran.splitlines()[0]:
+            dilewati.append(p.stem)
+            continue
 
         if kode == 0:
             hijau += 1
@@ -106,7 +123,15 @@ def main() -> int:
             merah.append(p.stem)
 
     print(f"pemeriksa: {len(pemeriksa)}  |  hijau: {hijau}  |  "
-          f"merah (diketahui): {len(merah)}")
+          f"merah (diketahui): {len(merah)}"
+          + (f"  |  DILEWATI: {len(dilewati)}" if dilewati else ""))
+
+    if dilewati:
+        print()
+        print("  TIDAK BERJALAN — alatnya tidak tersedia di mesin ini, jadi")
+        print("  yang dijaganya TIDAK diperiksa sama sekali:")
+        for x in dilewati:
+            print(f"    - {x}")
 
     if merah and not rekam:
         print()

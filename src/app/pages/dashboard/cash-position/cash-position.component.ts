@@ -116,13 +116,47 @@ export class CashPositionComponent implements OnInit {
     });
   }
 
+  /**
+   * Rekening yang benar-benar MENDUKUNG `totalBalance`.
+   *
+   * Dipakai di kepala kartu. Sebelumnya di sana tertulis `accounts.length` —
+   * seluruh rekening yang dimuat — dan sesudah yang dikecualikan berhenti
+   * masuk total, angka itu menerangkan sesuatu yang bukan dirinya: "12
+   * rekening" tepat di atas total yang hanya berisi delapan.
+   */
+  get jumlahDihitung(): number {
+    return Math.max(0, this.accounts.length - this.excludedCount);
+  }
+
   /** Rp 1.234.567 (Indonesian grouping, no decimals) */
   formatIDR(n: number): string {
+    const nilai = n ?? 0;
+    /*
+     * Nol negatif dinormalkan menjadi nol.
+     *
+     * `Intl.NumberFormat` mencetak `-0` sebagai "-Rp 0", dan saldo yang
+     * dibulatkan dari pecahan negatif yang sangat kecil (mis. −0,3) juga
+     * keluar begitu. Di layar itu terbaca sebagai rekening bermasalah —
+     * merah, bertanda minus — padahal saldonya nol.
+     */
+    const dibulatkan = Math.abs(nilai) < 0.5 ? 0 : nilai;
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
       maximumFractionDigits: 0,
-    }).format(n ?? 0);
+    }).format(dibulatkan);
+  }
+
+  /**
+   * Merah HANYA bila angka yang TERCETAK memang negatif.
+   *
+   * `n < 0` dan `formatIDR(n)` dulu dapat berbeda pendapat: saldo −0,3
+   * dicetak "Rp 0" tetapi diwarnai merah, sehingga rekening bersaldo nol
+   * terbaca sebagai rekening bermasalah. Dua aturan untuk satu angka akan
+   * selalu berselisih di tepinya.
+   */
+  negatif(n: number): boolean {
+    return (n ?? 0) <= -0.5;
   }
 
   /** Show only the last 4 digits of an account number */

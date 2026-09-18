@@ -75,5 +75,21 @@ jobs:
       # temuan yang bertambah pada yang sudah merah.
       #
       # Keadaannya karena itu hanya dapat membaik.
+      # SATU pemeriksa DILEWATI di sini, dan itu disebutkan di keluarannya.
+      #
+      # `lebarcek` mengukur tata letak ponsel di peramban sungguhan lewat
+      # Playwright — satu-satunya cara mengetahui bahwa sebuah baris melebihi
+      # layar 390px tanpa ada orang yang membukanya di ponsel. Playwright
+      # bukan dependensi proyek ini: menambahkannya berarti setiap `npm ci`
+      # mengunduh peramban ratusan megabita.
+      #
+      # Supaya ia ikut menjaga di sini, tambahkan `playwright` sebagai
+      # devDependency lalu sisipkan langkah berikut sebelum yang di bawah:
+      #
+      #     - run: npx playwright install --with-deps chromium
+      #
+      # Selama itu belum dilakukan, `jalankan.py` menyebutkannya di bawah
+      # "TIDAK BERJALAN" — pemeriksa yang diam-diam tidak berjalan lebih buruk
+      # daripada yang tidak ada.
       - name: Pemeriksa
         run: python3 scripts/pemeriksa/jalankan.py

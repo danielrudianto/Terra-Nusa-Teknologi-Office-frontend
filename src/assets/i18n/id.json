@@ -1900,6 +1900,7 @@
     "saldoDikecualikan": "Dikecualikan dari total",
     "totalSemuaRekening": "Total seluruh rekening",
     "dikecualikanKet": "{{n}} rekening ditandai dikecualikan, jadi saldonya tidak ikut dihitung di Total Saldo. Tandanya diatur di halaman Bank.",
+    "rekeningDihitung": "{{n}} dari {{total}} rekening dihitung",
     "reimbursements": "Reimbursement",
     "awaitingApproval": "menunggu persetujuan",
     "retry": "Coba lagi",
@@ -4566,7 +4567,11 @@
     "internalHint": "Pembelian dari perusahaan dalam grup. Dimatikan bila ingin melihat uang yang benar-benar keluar dari grup.",
     "belumAdaKontrak": "belum ada kontrak",
     "belumDitagih": "belum ditagih",
-    "sertakanRetensi": "Termasuk tunggu retensi"
+    "sertakanRetensi": "Termasuk tunggu retensi",
+    "urutkan": "Urutkan",
+    "balikArah": "Balik urutan",
+    "persen": "Margin %",
+    "bukaLaporan": "Buka laporan proyek"
   },
   "employeeView": {
     "menu": "Lihat data lengkap",

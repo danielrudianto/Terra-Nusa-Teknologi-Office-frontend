@@ -69,15 +69,28 @@
   opacity: 0.7;
 }
 
-.tl-open {
-  /* Tombol ikon yang dikecilkan HARUS memusatkan isinya sendiri; tanpa ini
-     ikonnya turun ke bawah. Lihat `tombolikoncek.py`. */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  line-height: 0;
-  padding: 0;
-  color: var(--faint, #9aa0ab);
+
+
+/*
+ * Tanggal pada daftar tender.
+ *
+ * `tl-date` sudah dipakai kolom nomor sebagai gaya teks sekunder; kedua kolom
+ * tanggal memakainya agar ketiganya sejajar dan tidak bersaing dengan nama
+ * tender di sebelahnya.
+ */
+.tl-date {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * Batas penawaran yang SUDAH LEWAT sementara tendernya masih menunggu.
+ *
+ * Diberi warna, bukan ikon atau keping: kolomnya sempit, dan yang perlu
+ * disampaikan cuma "yang ini terlewat". Penanda yang lebih besar daripada
+ * itu akan menuntut penjelasan sendiri di layar yang sudah padat.
+ */
+.tl-date--lewat {
+  color: var(--bad-fg, #c0392b);
+  font-weight: 700;
 }

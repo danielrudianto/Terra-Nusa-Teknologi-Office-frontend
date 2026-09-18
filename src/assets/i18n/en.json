@@ -1900,6 +1900,7 @@
     "saldoDikecualikan": "Excluded from total",
     "totalSemuaRekening": "All accounts combined",
     "dikecualikanKet": "{{n}} account(s) are marked excluded, so their balance is left out of Total Balance. The flag is set on the Bank page.",
+    "rekeningDihitung": "{{n}} of {{total}} accounts counted",
     "reimbursements": "Reimbursements",
     "awaitingApproval": "awaiting approval",
     "retry": "Retry",
@@ -4566,7 +4567,11 @@
     "internalHint": "Purchases from companies within the group. Turn off to see only money leaving the group.",
     "belumAdaKontrak": "no contract yet",
     "belumDitagih": "not invoiced yet",
-    "sertakanRetensi": "Include retention period"
+    "sertakanRetensi": "Include retention period",
+    "urutkan": "Sort by",
+    "balikArah": "Reverse order",
+    "persen": "Margin %",
+    "bukaLaporan": "Open project report"
   },
   "employeeView": {
     "menu": "View full record",
