@@ -115,13 +115,23 @@ describe('Proyeksi kas', () => {
   // Label = tanggal saldonya berlaku
   // ------------------------------------------------------------------
 
-  it('titik pekanan bertanggal MINGGU, hari terakhir pekannya', () => {
-    const t = titikProyeksi([], 1000, HARI_INI, 3);
+  it('titiknya BERURUTAN PER HARI, mulai hari ini', () => {
+    /*
+     * Dulu per pekan, dan pekan menyembunyikan justru yang dicari: kas tidak
+     * habis "pada pekan ke-3", ia habis pada sebuah TANGGAL. Titik mingguan
+     * hanya menyimpan saldo hari Minggu, sehingga lembah di tengah pekan —
+     * bayar gaji Rabu, uang masuk Jumat — tidak pernah tergambar.
+     */
+    const t = titikProyeksi([], 1000, HARI_INI, 1);
     expect(t.map((x) => x.tanggal)).toEqual([
       HARI_INI,
+      '2026-09-16',
+      '2026-09-17',
+      '2026-09-18',
+      '2026-09-19',
       '2026-09-20',
-      '2026-09-27',
-      '2026-10-04',
+      '2026-09-21',
+      '2026-09-22',
     ]);
   });
 
@@ -132,31 +142,45 @@ describe('Proyeksi kas', () => {
       HARI_INI,
       2,
     );
-    // 20 Sep: kedua rencana sudah jatuh tempo pada atau sebelum tanggal itu.
-    expect(t[1].tanggal).toBe('2026-09-20');
-    expect(t[1].keluar).toBe(500);
-    expect(t[1].saldo).toBe(500);
+    // Per hari: masing-masing jatuh di harinya sendiri, dan saldonya
+    // kumulatif. 16 Sep titik ke-1, 20 Sep titik ke-5.
+    expect(t[1].tanggal).toBe('2026-09-16');
+    expect(t[1].keluar).toBe(300);
+    expect(t[1].saldo).toBe(700);
+
+    const duaPuluh = t.find((x) => x.tanggal === '2026-09-20')!;
+    expect(duaPuluh.keluar).toBe(200);
+    expect(duaPuluh.saldo)
+      .withContext('saldo satu titik harus memuat SELURUH rencana sampai tanggal itu')
+      .toBe(500);
   });
 
   it('rencana tepat pada hari batas masuk ke titik itu, bukan titik sesudahnya', () => {
     // Batas yang meleset satu hari memindahkan rencana ke pekan berikutnya,
     // dan pekan yang seharusnya minus terbaca aman.
     const t = titikProyeksi([R('2026-09-20', 400)], 1000, HARI_INI, 3);
-    expect(t[1].keluar).toBe(400);
-    expect(t[2].keluar).toBe(0);
+    const pas = t.find((x) => x.tanggal === '2026-09-20')!;
+    const sesudah = t.find((x) => x.tanggal === '2026-09-21')!;
+    expect(pas.keluar).toBe(400);
+    expect(sesudah.keluar).toBe(0);
+    expect(pas.saldo).toBe(600);
   });
 
-  it('hari ini TIDAK muncul dua kali saat hari ini jatuh Minggu', () => {
+  it('tidak ada tanggal yang muncul dua kali', () => {
     /*
-     * 20 September 2026 adalah Minggu. Tanpa penyaring, batasnya menjadi
+     * Dulu ini soal pekan: bila hari ini jatuh Minggu, batasnya menjadi
      * ['2026-09-20', '2026-09-20', ...] — dua titik bertanggal sama dengan
      * saldo berbeda, yang terbaca sebagai kekeliruan sistem.
+     *
+     * Per hari bentuknya tidak mungkin lagi, dan justru karena itu tetap
+     * diuji: yang menjaga aturan hanya bentuk kodenya, dan bentuk kode
+     * berubah.
      */
     const t = titikProyeksi([], 1000, '2026-09-20', 3);
     const tanggal = t.map((x) => x.tanggal);
     expect(new Set(tanggal).size).toBe(tanggal.length);
     expect(tanggal[0]).toBe('2026-09-20');
-    expect(tanggal[1]).toBe('2026-09-27');
+    expect(tanggal[1]).toBe('2026-09-21');
   });
 
   // ------------------------------------------------------------------
@@ -186,11 +210,11 @@ describe('Proyeksi kas', () => {
   // Bentuk garis
   // ------------------------------------------------------------------
 
-  it('pekan kosong TETAP digambar', () => {
+  it('HARI kosong TETAP digambar', () => {
     // Dilewati, kemiringan garis di antara dua titik berbohong tentang
     // berapa lama jarak waktunya.
     const t = titikProyeksi([], 1000, HARI_INI, 13);
-    expect(t.length).toBe(14); // jangkar + 13 pekan
+    expect(t.length).toBe(13 * 7 + 1); // jangkar + 91 hari
     expect(t.every((x) => x.saldo === 1000)).toBeTrue();
   });
 
@@ -201,7 +225,13 @@ describe('Proyeksi kas', () => {
       HARI_INI,
       3,
     );
-    expect(t.map((x) => x.saldo)).toEqual([1000, 700, 900, 900]);
+    // 15 Sep 1000 (jangkar) -> 16 Sep -300 -> 23 Sep +200, dan hari-hari
+    // di antaranya mempertahankan saldo terakhir.
+    expect(t[0].saldo).toBe(1000);
+    expect(t.find((x) => x.tanggal === '2026-09-16')!.saldo).toBe(700);
+    expect(t.find((x) => x.tanggal === '2026-09-22')!.saldo).toBe(700);
+    expect(t.find((x) => x.tanggal === '2026-09-23')!.saldo).toBe(900);
+    expect(t[t.length - 1].saldo).toBe(900);
   });
 
   it('rencana di luar jangkauan tidak menggeser saldo', () => {
@@ -248,12 +278,17 @@ describe('Proyeksi kas', () => {
   });
 
   it('melewati pergantian tahun tanpa melompat', () => {
-    const t = titikProyeksi([], 0, '2026-12-28', 3);
-    expect(t.map((x) => x.tanggal)).toEqual([
+    const t = titikProyeksi([], 0, '2026-12-28', 1);
+    // Tujuh hari pertama menyeberangi 31 Des tanpa satu hari pun terlewat.
+    expect(t.map((x) => x.tanggal).slice(0, 8)).toEqual([
       '2026-12-28',
+      '2026-12-29',
+      '2026-12-30',
+      '2026-12-31',
+      '2027-01-01',
+      '2027-01-02',
       '2027-01-03',
-      '2027-01-10',
-      '2027-01-17',
+      '2027-01-04',
     ]);
   });
 

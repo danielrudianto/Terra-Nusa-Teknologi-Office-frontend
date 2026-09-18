@@ -6,7 +6,6 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import {
   MAT_DIALOG_DATA,
@@ -25,10 +24,8 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
     ReactiveFormsModule,
     MatDialogModule,
     CommonModule,
-    MatButtonModule,
     MatIconModule,
     MatCheckboxModule,
-    FormsModule,
     DialogGeserDirective,
   ],
   templateUrl: './calendar-payment-reject.component.html',

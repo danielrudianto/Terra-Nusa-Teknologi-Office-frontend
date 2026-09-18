@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -15,6 +14,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-calendar-payment-confirm',
@@ -24,10 +24,9 @@ import {
     ReactiveFormsModule,
     MatDialogModule,
     CommonModule,
-    MatButtonModule,
     MatIconModule,
     MatCheckboxModule,
-    FormsModule,
+    DialogGeserDirective,
   ],
   templateUrl: './calendar-payment-confirm.component.html',
   styleUrl: './calendar-payment-confirm.component.scss',

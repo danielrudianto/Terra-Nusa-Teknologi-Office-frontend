@@ -98,7 +98,13 @@ function tambahPekan(tgl: string, n: number): string {
   return tambahHari(tgl, n * 7);
 }
 
-function labelPekan(tgl: string): string {
+/**
+ * `2026-09-18` -> `18 Sep`.
+ *
+ * Namanya `labelTitik`, bukan `labelPekan`: titiknya sudah per hari, dan nama
+ * yang menyebut pekan akan menyesatkan yang membacanya berikutnya.
+ */
+function labelTitik(tgl: string): string {
   const [, b, h] = tgl.split('-').map(Number);
   return `${h} ${NAMA_BULAN[b - 1]}`;
 }
@@ -163,17 +169,23 @@ export function titikProyeksi(
   if (!/^\d{4}-\d{2}-\d{2}$/.test(hariIni)) return [];
 
   /*
-   * Batas tiap titik. Titik 0 hari ini; sisanya Minggu tiap pekan.
+   * Batas tiap titik: SATU TITIK PER HARI, mulai hari ini.
    *
-   * Minggu pekan INI dilewati bila ia jatuh pada hari ini — kalau tidak, ada
-   * dua titik bertanggal sama dengan saldo berbeda, dan itu terbaca sebagai
-   * kekeliruan sistem.
+   * DULU PER PEKAN, dan pekan menyembunyikan justru yang dicari.
+   *
+   * Kas tidak habis "pada pekan ke-3"; ia habis pada sebuah TANGGAL, dan
+   * tanggal itulah yang menentukan kapan uang harus sudah masuk. Titik
+   * mingguan hanya menyimpan saldo hari Minggu, sehingga lembah di tengah
+   * pekan — bayar gaji Rabu, uang masuk Jumat — tidak pernah tergambar sama
+   * sekali. Garisnya mulus, angkanya masuk akal, dan hari paling berbahaya
+   * dalam tiga bulan itu tidak ada di grafiknya.
+   *
+   * `pekan` tetap menjadi satuan JANGKAUAN — 13 pekan, tiga bulan — supaya
+   * pemanggilnya tidak berubah arti. Yang berubah kerapatan titiknya.
    */
   const batas: string[] = [hariIni];
-  let m = mingguPekan(hariIni);
-  for (let i = 0; i < pekan; i++) {
-    if (m > hariIni) batas.push(m);
-    m = tambahPekan(m, 1);
+  for (let i = 1; i <= pekan * 7; i++) {
+    batas.push(tambahHari(hariIni, i));
   }
 
   const ember = new Map<string, { masuk: number; keluar: number }>();
@@ -224,7 +236,7 @@ export function titikProyeksi(
     saldo += e.masuk - e.keluar;
     return {
       tanggal: b,
-      label: labelPekan(b),
+      label: labelTitik(b),
       sekarang: i === 0,
       masuk: e.masuk,
       keluar: e.keluar,
@@ -510,7 +522,19 @@ export class ProyeksiKasComponent implements OnChanges {
           // dapat melampaui kedua ujungnya, jadi tidak ada nilai yang
           // digambar tetapi tidak pernah direncanakan.
           tension: 0,
-          pointRadius: 2,
+          /*
+           * TITIKNYA TIDAK DIGAMBAR, tetapi tetap dapat disentuh.
+           *
+           * Sejak per hari, ada 91 titik pada lebar yang sama. Bulatan 2px
+           * pada tiap titik menyatu menjadi pita tebal dan bentuk garisnya —
+           * satu-satunya yang dibaca dari grafik ini — tertutup olehnya.
+           *
+           * `pointHitRadius` dipertahankan supaya tooltip tetap menangkap
+           * tanggal terdekat; yang dibuang gambarnya, bukan sasarannya.
+           */
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHitRadius: 8,
         },
       ],
     };
@@ -529,6 +553,20 @@ export class ProyeksiKasComponent implements OnChanges {
       },
     },
     scales: {
+      x: {
+        /*
+         * Label tanggal TIDAK dimiringkan.
+         *
+         * Dengan 91 titik harian, Chart.js akan memutar labelnya sampai tegak
+         * begitu ruangnya kurang — dan label tegak memakan sepertiga tinggi
+         * grafiknya. `maxRotation: 0` membuatnya MELEWATI label yang tidak
+         * muat alih-alih memutarnya.
+         *
+         * Yang hilang cuma tulisannya, bukan titiknya: tooltip tetap menyebut
+         * tanggal persisnya, dan bentuk garislah yang dibaca dari sumbu ini.
+         */
+        ticks: { maxRotation: 0, autoSkip: true },
+      },
       y: {
         // TIDAK dikunci mulai nol — saldo yang menembus nol justru yang dicari.
         ticks: {

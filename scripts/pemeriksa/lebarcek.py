@@ -155,6 +155,32 @@ FIKSTUR = [
           </div>
         """,
     },
+    {
+        "nama": "dialog setujui pembayaran (kalender)",
+        "scss": "pages/calendar/calendar-payment-confirm/calendar-payment-confirm.component.scss",
+        "html": "pages/calendar/calendar-payment-confirm/calendar-payment-confirm.component.html",
+        "kelas": ["cpc-title", "cpc-prompt", "cpc-warning", "cpc-foot",
+                  "cpc-cancel", "cpc-confirm"],
+        "markup": """
+          <div class="cpc-foot">
+            <button class="cpc-cancel">Batal</button>
+            <button class="cpc-confirm">Setujui pembayaran</button>
+          </div>
+        """,
+    },
+    {
+        "nama": "dialog tolak pembayaran (kalender)",
+        "scss": "pages/calendar/calendar-payment-reject/calendar-payment-reject.component.scss",
+        "html": "pages/calendar/calendar-payment-reject/calendar-payment-reject.component.html",
+        "kelas": ["cpr-title", "cpr-prompt", "cpr-warning", "cpr-foot",
+                  "cpr-cancel", "cpr-reject"],
+        "markup": """
+          <div class="cpr-foot">
+            <button class="cpr-cancel">Batal</button>
+            <button class="cpr-reject">Tolak pembayaran</button>
+          </div>
+        """,
+    },
 ]
 
 SKRIP_UKUR = r"""
