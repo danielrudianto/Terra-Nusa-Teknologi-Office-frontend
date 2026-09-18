@@ -284,3 +284,64 @@ $negative: var(--bad-fg, #ca2929);
     background-position: 0 50%;
   }
 }
+
+/* ---- rekening yang dikecualikan ---- */
+
+// Tanda pada barisnya dibedakan dari "tanpa mutasi".
+//
+// Keduanya memakai `.cp-badge`, tetapi artinya berlawanan: "tanpa mutasi"
+// menyebut rekening yang tidak bergerak, sedangkan ini menyebut rekening yang
+// SENGAJA dikeluarkan dari perhitungan. Warna kuning yang sama untuk keduanya
+// membuat yang satu terbaca sebagai peringatan atas yang lain.
+.cp-badge--kecuali {
+  color: var(--brand-ink, #0f3fd0);
+  background: var(--brand-soft, #e7ecfb);
+}
+
+// Keterangan di bawah angka hero. Tetap terlihat saat rinciannya terlipat.
+.cp-kecuali__ket {
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: $muted;
+  margin-top: 0.35rem;
+  max-width: 46ch;
+}
+
+.cp-kecuali {
+  border-top: 1px solid $line;
+  margin-top: 0.25rem;
+  padding-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  &__baris {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+
+    &--total {
+      padding-top: 0.35rem;
+      border-top: 1px dashed $line;
+    }
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $muted;
+  }
+
+  &__nilai {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: $ink;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+
+    &.negative {
+      color: $negative;
+    }
+  }
+}

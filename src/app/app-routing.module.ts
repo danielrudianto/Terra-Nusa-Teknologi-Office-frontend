@@ -980,7 +980,25 @@ export const routes: Routes = [
           import('./pages/master/master.component').then(
             (m) => m.MasterComponent,
           ),
-        data: { title: 'Master Data', permission: 'master_item:read' , panduan: 'master-data' },
+        /*
+         * `transisiBersarang` — halaman ini MENGURUS TRANSISINYA SENDIRI.
+         *
+         * `master.component.html` memasang `appTransisiHalaman` pada outlet di
+         * dalamnya. Tanpa penanda ini, kerangka utama ikut menganimasikan
+         * seluruh halaman Master setiap kali anak rutenya berganti — dua
+         * animasi berlapis pada isi yang sama, dan satu perpindahan terbaca
+         * sebagai dua halaman yang dibalik berurutan.
+         *
+         * Penandanya membuat kunci transisi kerangka utama berhenti di
+         * `/Master`, sehingga Pemasok dan Karyawan menghasilkan kunci yang
+         * sama. Lihat `kunciTransisi()` di `main.component.ts`.
+         */
+        data: {
+          title: 'Master Data',
+          permission: 'master_item:read',
+          panduan: 'master-data',
+          transisiBersarang: true,
+        },
         children: [
           {
             path: '',

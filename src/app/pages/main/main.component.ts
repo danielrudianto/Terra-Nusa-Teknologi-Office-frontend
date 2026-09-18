@@ -16,6 +16,10 @@ import { VersiService } from 'src/app/services/versi.service';
 import { MatIconModule } from '@angular/material/icon';
 import { TransisiHalamanDirective } from '../../animations/transisi-halaman.directive';
 import { SettingsService } from '../../services/setting.service';
+import {
+  kunciTransisi,
+  SimpulRute,
+} from '../../animations/transisi-rute';
 
 @Component({
   selector: 'app-main',
@@ -166,6 +170,24 @@ export class MainComponent {
     );
   }
 
+  /**
+   * Kunci transisi kerangka utama, dipotong di batas layout bersarang.
+   *
+   * Data Master memasang transisinya SENDIRI pada outlet di dalamnya. Tanpa
+   * pemotongan ini, berpindah dari Pemasok ke Karyawan menyalakan keduanya —
+   * dua animasi berlapis pada isi yang sama, yang terbaca sebagai dua halaman
+   * yang dibalik berurutan.
+   *
+   * Aturannya di `animations/transisi-rute.ts`, bersama alasannya; ditaruh di
+   * sana supaya dapat diuji tanpa membangun seluruh kerangka ini.
+   */
+  private hitungKunciTransisi(): string {
+    return kunciTransisi(
+      this.route.root as unknown as SimpulRute,
+      this.router.url,
+    );
+  }
+
   ngOnInit(): void {
     this.versi.mulai();
     // Mode sidenav ditetapkan sebelum penanda dipasang, agar keadaan awal
@@ -210,7 +232,7 @@ export class MainComponent {
      * Karena itu urutannya dibalik: yang menyalakan transisi dipasang lebih
      * dulu, dan pembacaan judulnya dibuat tidak mungkin melempar.
      */
-    this.kunciRute.set(this.router.url);
+    this.kunciRute.set(this.hitungKunciTransisi());
     this.label = this.route.snapshot.firstChild?.data?.['title'] ?? this.label;
     this.router.events
       .pipe(
@@ -251,7 +273,7 @@ export class MainComponent {
          * satu pun perpindahan halaman yang menyalakan transisi lagi, dan
          * tidak ada apa pun di layar yang menunjukkannya.
          */
-        this.kunciRute.set(this.router.url);
+        this.kunciRute.set(this.hitungKunciTransisi());
         this.label = route?.snapshot?.data?.['title'] ?? '';
       });
   }

@@ -261,3 +261,75 @@ export function setelanTransisi(
 export function durasiHormatiGerak(bawaan = DURASI_TRANSISI): number {
   return gerakDikurangi() ? DURASI_HEMAT_GERAK : bawaan;
 }
+
+/**
+ * Bentuk minimal `ActivatedRoute` yang dibutuhkan `kunciTransisi`.
+ *
+ * Disebut sebagai bentuk, bukan tipe Angular, supaya fungsinya dapat diuji
+ * dengan objek biasa. Menguji lewat `RouterTestingHarness` berarti membangun
+ * `MainComponent` beserta seluruh layanannya — dan uji yang mahal disiapkan
+ * adalah uji yang tidak ditulis.
+ */
+export interface SimpulRute {
+  snapshot: {
+    url: Array<{ path: string }>;
+    data?: Record<string, unknown>;
+  };
+  firstChild: SimpulRute | null;
+}
+
+/** Penanda pada `data` rute yang mengurus transisinya sendiri. */
+export const DATA_BERSARANG = 'transisiBersarang';
+
+/**
+ * Kunci transisi kerangka utama, DIPOTONG di batas layout bersarang.
+ *
+ * MASALAHNYA
+ *
+ * Data Master memasang `appTransisiHalaman` pada outlet di dalamnya. Berpindah
+ * dari Pemasok ke Karyawan hanya mengganti anak rutenya, tetapi URL-nya
+ * berubah — jadi kerangka utama ikut menyala dan menganimasikan SELURUH
+ * halaman Master, menu samping keduanya dan semuanya, sementara outlet di
+ * dalamnya menganimasikan isinya lagi.
+ *
+ * Dua animasi berlapis pada isi yang sama: opasitasnya berkalian dan
+ * pergeserannya bertumpuk, sehingga satu perpindahan terbaca sebagai dua
+ * halaman yang dibalik berurutan. Tidak ada galat — tidak ada yang rusak,
+ * hanya terasa berat dan salah.
+ *
+ * `transisiLewatiPertama` pada layout bersarang menutup perpindahan PERTAMA
+ * saja, yaitu saat Data Master baru dibuka. Setiap perpindahan di dalamnya
+ * sesudah itu tetap berlapis.
+ *
+ * PEMOTONGANNYA
+ *
+ * Rute yang mengurus transisinya sendiri menyatakannya dengan
+ * `data: { transisiBersarang: true }`. Kunci kerangka utama berhenti di segmen
+ * rute itu, sehingga Pemasok dan Karyawan menghasilkan kunci yang SAMA —
+ * kerangka utama diam, dan yang bergerak hanya isinya.
+ *
+ * Dinyatakan di rutenya, bukan sebagai daftar jalur di sini: halaman bersarang
+ * berikutnya cukup menambah satu baris di tempat ia didefinisikan, dan tidak
+ * ada daftar terpisah yang dapat tertinggal.
+ *
+ * Di luar subpohon bersarang, `urlPenuh` dikembalikan apa adanya — termasuk
+ * parameter kueri. Itu perilaku yang sudah ada dan disengaja: menyaring daftar
+ * lewat parameter kueri mengganti isi halaman, dan animasinya yang menandai
+ * bahwa isinya memang berganti.
+ */
+export function kunciTransisi(akar: SimpulRute | null, urlPenuh: string): string {
+  const bagian: string[] = [];
+  let simpul = akar;
+
+  while (simpul) {
+    for (const segmen of simpul.snapshot?.url ?? []) {
+      if (segmen?.path) bagian.push(segmen.path);
+    }
+    if (simpul.snapshot?.data?.[DATA_BERSARANG]) {
+      return '/' + bagian.join('/');
+    }
+    simpul = simpul.firstChild;
+  }
+
+  return urlPenuh;
+}

@@ -180,11 +180,26 @@ def periksa():
     # --- 2. kuncinya berubah tiap halaman ---------------------------------
     if 'kunciRute' not in main:
         masalah.append('main.component.ts: `kunciRute` hilang')
-    elif not re.search(r'kunciRute\.set\(\s*this\.router\.url', main):
+    elif not re.search(r'kunciRute\.set\(\s*this\.hitungKunciTransisi\(\)', main):
         masalah.append(
-            'main.component.ts: `kunciRute` tidak diisi dari `router.url` — '
-            "beberapa rute ber-`path: ''`, jadi kunci dari `routeConfig.path` "
-            'tidak berubah di antara keduanya dan animasinya tidak menyala'
+            'main.component.ts: `kunciRute` tidak diisi dari '
+            '`hitungKunciTransisi()` — kuncinya harus dipotong di batas '
+            'layout bersarang, dan `router.url` mentah menyalakan animasi '
+            'kerangka utama untuk perpindahan yang terjadi di dalam Data '
+            'Master'
+        )
+
+    # Kuncinya tetap harus BERASAL dari URL, bukan dari `routeConfig.path`.
+    #
+    # Beberapa rute di aplikasi ini ber-`path: ''`, jadi kunci dari
+    # `routeConfig.path` tidak berubah di antara keduanya dan animasinya
+    # diam-diam tidak pernah jalan. Pemotongannya membuang EKOR url, bukan
+    # menggantinya dengan sumber lain.
+    if 'this.router.url' not in main:
+        masalah.append(
+            'main.component.ts: kunci transisi tidak lagi berasal dari '
+            "`router.url` — beberapa rute ber-`path: ''`, dan kunci dari "
+            '`routeConfig.path` tidak berubah di antara keduanya'
         )
 
     # --- 4. layout bersarang tidak memainkan animasi keduanya -------------
@@ -202,6 +217,58 @@ def periksa():
             'membuka Data Master akan memainkan DUA animasi sekaligus, '
             'opasitasnya berkalian, dan halamannya terasa berat'
         )
+    # Setiap layout bersarang WAJIB menyatakan dirinya di rutenya.
+    #
+    # `transisiLewatiPertama` hanya menutup perpindahan PERTAMA — saat layout
+    # itu baru dibuka. Perpindahan DI DALAMNYA sesudah itu tetap menyalakan
+    # kerangka utama, karena URL-nya berubah: dua animasi berlapis pada isi
+    # yang sama, yang terbaca sebagai dua halaman yang dibalik berurutan.
+    #
+    # Itu persis yang dilaporkan untuk Data Master, dan tidak ada satu pun uji
+    # maupun galat yang dapat menyebutkannya — yang terjadi hanya "terasa
+    # aneh". Penjaganya karena itu harus statis.
+    #
+    # Yang memasang layout beroutlet berikutnya tidak akan tahu aturan ini
+    # ada, jadi yang disapu SELURUH template, bukan Data Master saja.
+    rute_ts = _tanpa_komentar(
+        _baca(os.path.join(AKAR, 'src', 'app', 'app-routing.module.ts'))
+    )
+    for berkas in sorted(pathlib.Path(AKAR, 'src/app').rglob('*.html')):
+        if berkas == pathlib.Path(MAIN_HTML):
+            continue
+        isi = _tanpa_komentar(berkas.read_text(encoding='utf-8'))
+        if '[appTransisiHalaman]' not in isi:
+            continue
+
+        ts = berkas.with_suffix('.ts')
+        kelas = re.search(r'export class (\w+)', _baca(str(ts)) or '')
+        nama = kelas.group(1) if kelas else berkas.stem
+
+        # Rute yang memuat komponen ini harus membawa penandanya. Dicari
+        # dalam jendela di sekitar penyebutan kelasnya: `data` dapat ditulis
+        # sebelum maupun sesudah `loadComponent`.
+        pakai = [m.start() for m in re.finditer(re.escape(nama), rute_ts)]
+        bertanda = any(
+            'transisiBersarang' in rute_ts[max(0, i - 2000):i + 2000]
+            for i in pakai
+        )
+        if not pakai:
+            masalah.append(
+                f'{berkas.relative_to(pathlib.Path(AKAR, "src/app"))}: '
+                f'memakai `[appTransisiHalaman]` tetapi `{nama}` tidak '
+                f'ditemukan di app-routing.module.ts — pemeriksa ini tidak '
+                f'dapat memastikan `transisiBersarang` terpasang'
+            )
+        elif not bertanda:
+            masalah.append(
+                f'{berkas.relative_to(pathlib.Path(AKAR, "src/app"))}: '
+                f'layout bersarang tanpa `transisiBersarang: true` pada '
+                f'rutenya. Kerangka utama akan ikut menganimasikan seluruh '
+                f'layout ini setiap kali anak rutenya berganti — dua animasi '
+                f'berlapis pada isi yang sama, dan satu perpindahan terbaca '
+                f'sebagai dua halaman yang dibalik berurutan.'
+            )
+
     if 'TransisiHalamanDirective' not in master:
         masalah.append(
             'master.component.ts: tidak memakai `TransisiHalamanDirective` — '
