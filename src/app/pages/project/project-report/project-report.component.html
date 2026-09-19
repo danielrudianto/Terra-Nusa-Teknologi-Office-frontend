@@ -699,6 +699,32 @@
           </div>
 
           <!--
+            Satuan waktu.
+
+            Bawaannya HARIAN. Titik bulanan cuma punya satu nilai per bulan —
+            saldo akhir bulan — dan garis di antaranya tarikan lurus, bukan
+            pengukuran. Bulan yang kasnya sempat menembus nol di pertengahan
+            lalu tertolong termin di akhir bulan tergambar tidak pernah minus
+            sama sekali, pada grafik yang justru dibaca untuk mengetahui
+            sejak kapan proyek ini menalangi uang perusahaan.
+          -->
+          <div class="prp-tahun prp-satuan">
+            <span class="prp-tahun__label">
+              {{ "projectCashflow.unit" | translate }}
+            </span>
+            <div class="prp-tahun__pilihan">
+              <button
+                type="button"
+                *ngFor="let u of PILIHAN_SATUAN_KAS"
+                [class.on]="satuanKas() === u"
+                (click)="gantiSatuanKas(u)"
+              >
+                {{ "projectCashflow.unit." + u | translate }}
+              </button>
+            </div>
+          </div>
+
+          <!--
             Pemilih seri.
 
             Tiga garis sekaligus menjawab "kenapa"; satu garis menjawab

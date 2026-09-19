@@ -257,7 +257,7 @@
       "pendapatan": "Pendapatan"
     },
     "acuanCatatanJudul": "Dari mana angka acuannya?",
-    "acuanCatatan": "Pita acuan berasal dari CFMA (Construction Financial Management Association) \u2014 data konstruksi Amerika, lintas jenis usaha. Ia ORIENTASI, bukan vonis: tidak disusun dari subkontraktor MEP di Indonesia, dan tiap pita dapat disetel sendiri. Satu hal lagi yang perlu diingat: quick ratio di sini tidak memasukkan pinjaman pada penyebutnya, karena data pinjaman tidak menyimpan tenor \u2014 jadi bila ada angsuran yang segera jatuh tempo, angkanya lebih baik daripada keadaan sebenarnya.",
+    "acuanCatatan": "Pita acuan berasal dari CFMA (Construction Financial Management Association) — data konstruksi Amerika, lintas jenis usaha. Ia ORIENTASI, bukan vonis: tidak disusun dari kontraktor pondasi di Indonesia, apalagi dari pekerjaan tiang bor, dan tiap pita dapat disetel sendiri. Satu hal lagi yang perlu diingat: quick ratio di sini tidak memasukkan pinjaman pada penyebutnya, karena data pinjaman tidak menyimpan tenor — jadi bila ada angsuran yang segera jatuh tempo, angkanya lebih baik daripada keadaan sebenarnya.",
     "maks": "maks",
     "min": "min",
     "acuanSingkat": "Acuan",
@@ -1875,6 +1875,9 @@
   },
   "projectCashflow": {
     "show": "Tampilkan",
+    "unit": "Satuan",
+    "unit.hari": "Harian",
+    "unit.bulan": "Bulanan",
     "lastSeries": "Setidaknya satu garis harus tetap tampil.",
     "older": "Bulan sebelumnya",
     "newer": "Bulan berikutnya",

@@ -257,7 +257,7 @@
       "pendapatan": "\u6536\u5165"
     },
     "acuanCatatanJudul": "\u53c2\u8003\u6570\u5b57\u6765\u81ea\u54ea\u91cc\uff1f",
-    "acuanCatatan": "\u53c2\u8003\u533a\u95f4\u6765\u81ea CFMA\uff08\u7f8e\u56fd\u5efa\u7b51\u8d22\u52a1\u7ba1\u7406\u534f\u4f1a\uff09\u7684\u5efa\u7b51\u4e1a\u6570\u636e\u3002\u5b83\u662f\u53c2\u8003\uff0c\u4e0d\u662f\u7ed3\u8bba\uff1a\u5e76\u975e\u6765\u81ea\u5370\u5c3c MEP \u5206\u5305\u5546\uff0c\u4e14\u6bcf\u4e2a\u533a\u95f4\u90fd\u53ef\u81ea\u884c\u8bbe\u5b9a\u3002\u53e6\u9700\u6ce8\u610f\uff1a\u6b64\u5904\u901f\u52a8\u6bd4\u7387\u672a\u5c06\u501f\u6b3e\u8ba1\u5165\u5206\u6bcd\uff0c\u56e0\u501f\u6b3e\u8bb0\u5f55\u65e0\u671f\u9650 \u2014 \u82e5\u6709\u5373\u5c06\u5230\u671f\u7684\u8fd8\u6b3e\uff0c\u6570\u5b57\u4f1a\u4f18\u4e8e\u5b9e\u9645\u3002",
+    "acuanCatatan": "参考区间来自 CFMA（美国建筑财务管理协会）的建筑业数据。它是参考，不是结论：并非来自印尼的桩基承包商，更非来自钻孔灌注桩工程，且每个区间都可自行设定。另需注意：此处速动比率未将借款计入分母，因借款记录无期限 — 若有即将到期的还款，数字会优于实际。",
     "maks": "\u6700\u5927",
     "min": "\u6700\u5c0f",
     "acuanSingkat": "\u53c2\u8003",
@@ -1875,6 +1875,9 @@
   },
   "projectCashflow": {
     "show": "显示",
+    "unit": "粒度",
+    "unit.hari": "每日",
+    "unit.bulan": "每月",
     "lastSeries": "至少需保留一条曲线。",
     "older": "更早的月份",
     "newer": "更晚的月份",

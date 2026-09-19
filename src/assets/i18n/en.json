@@ -257,7 +257,7 @@
       "pendapatan": "Revenue"
     },
     "acuanCatatanJudul": "Where do the reference figures come from?",
-    "acuanCatatan": "Reference bands come from CFMA (Construction Financial Management Association) \u2014 US construction data, across trade types. They are ORIENTATION, not a verdict: they are not drawn from Indonesian MEP subcontractors, and each band can be set yourself. One more thing to keep in mind: the quick ratio here does not put loans in the denominator, because loan records hold no tenor \u2014 so if an instalment falls due soon, the figure is better than reality.",
+    "acuanCatatan": "Reference bands come from CFMA (Construction Financial Management Association) — US construction data, across trade types. They are ORIENTATION, not a verdict: they are not drawn from Indonesian foundation contractors, let alone bored pile work, and each band can be set yourself. One more thing to keep in mind: the quick ratio here does not put loans in the denominator, because loan records hold no tenor — so if an instalment falls due soon, the figure is better than reality.",
     "maks": "max",
     "min": "min",
     "acuanSingkat": "Reference",
@@ -1875,6 +1875,9 @@
   },
   "projectCashflow": {
     "show": "Show",
+    "unit": "Granularity",
+    "unit.hari": "Daily",
+    "unit.bulan": "Monthly",
     "lastSeries": "At least one line must stay visible.",
     "older": "Earlier months",
     "newer": "Later months",

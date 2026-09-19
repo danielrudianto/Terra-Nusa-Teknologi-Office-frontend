@@ -639,7 +639,7 @@ export class PosisiKeuanganComponent {
    * lintas jenis usaha: sehat 0,5–1,5; penjamin (surety) lebih menyukai di
    * bawah 1,0.
    *
-   * ORIENTASI, BUKAN VONIS. Ia tidak disusun dari subkontraktor MEP di
+   * ORIENTASI, BUKAN VONIS. Ia tidak disusun dari kontraktor pondasi di
    * Indonesia, dan pitanya dicetak menempel pada angkanya supaya yang
    * membaca dapat menimbangnya sendiri — bukan disembunyikan lalu keluar
    * sebagai kata "sehat".
