@@ -134,6 +134,22 @@ export class PosisiKeuanganComponent {
   /** Sudah pernah dibuka? Supaya membuka-tutup panel tidak memuat ulang. */
   private riwayatPernahDibuka = false;
 
+  /**
+   * Hasil riwayat per pilihan periode, disimpan selama halaman terbuka.
+   *
+   * Berpindah 12 bulan -> 6 bulan -> 12 bulan lagi adalah hal yang dilakukan
+   * orang saat membaca grafiknya, dan tanpa simpanan ini setiap perpindahan
+   * menghitung ulang seluruhnya dari dokumen. Perhitungan itu tidak murah
+   * bahkan sesudah dibereskan, dan yang dibayar ulang adalah jawaban yang
+   * sudah ada di tangan.
+   *
+   * Disimpan di MEMORI, bukan di peramban: angka keuangan perusahaan tidak
+   * ditinggalkan di penyimpanan lokal, dan ia harus ikut hilang begitu
+   * halamannya ditutup. Pita acuan yang diubah membuangnya — letak setiap
+   * titik dihitung ulang terhadap pita yang baru.
+   */
+  private simpanan = new Map<number, any>();
+
   constructor() {
     void this.muat();
     void this.muatAkurasi();
@@ -193,15 +209,25 @@ export class PosisiKeuanganComponent {
     void this.muatRiwayat();
   }
 
-  async muatRiwayat(): Promise<void> {
+  async muatRiwayat(paksa = false): Promise<void> {
+    const periode = this.mundurRiwayat();
+
+    const tersimpan = this.simpanan.get(periode);
+    if (tersimpan && !paksa) {
+      this.riwayat.set(tersimpan);
+      this.galatRiwayat.set('');
+      return;
+    }
+
     this.memuatRiwayat.set(true);
     this.galatRiwayat.set('');
     try {
       const res = await firstValueFrom(
-        this.api.get('finance-status/riwayat', {
-          mundur: this.mundurRiwayat(),
-        }),
+        this.api.get('finance-status/riwayat', { mundur: periode }),
       );
+      // Hanya jawaban yang BERHASIL yang disimpan. Menyimpan kegagalan
+      // berarti mencoba lagi tidak akan pernah menyentuh server.
+      this.simpanan.set(periode, res);
       this.riwayat.set(res);
     } catch (e) {
       this.riwayat.set(null);
@@ -771,7 +797,11 @@ export class PosisiKeuanganComponent {
          */
         if (!hasil?.ambangBerubah) return;
         void this.muat();
-        if (this.riwayat()) void this.muatRiwayat();
+        // Simpanan DIBUANG: letak tiap titik dihitung terhadap pita acuan,
+        // dan pitanya baru saja berubah. Memakai simpanan lama berarti
+        // grafiknya menggambar acuan baru di atas letak yang lama.
+        this.simpanan.clear();
+        if (this.riwayat()) void this.muatRiwayat(true);
       });
   }
 

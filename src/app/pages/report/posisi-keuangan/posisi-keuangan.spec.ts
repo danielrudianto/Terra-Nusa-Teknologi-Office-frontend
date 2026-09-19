@@ -799,3 +799,109 @@ describe('pita acuan yang diubah', () => {
     expect(riwayatDimuat).toBe(1);
   });
 });
+
+describe('riwayat: simpanan periode', () => {
+  /*
+   * Berpindah 12 bulan -> 6 bulan -> 12 bulan lagi adalah hal yang dilakukan
+   * orang saat membaca grafiknya. Tanpa simpanan, setiap perpindahan
+   * menghitung ulang seluruh riwayat dari dokumen — membayar ulang jawaban
+   * yang sudah ada di tangan.
+   */
+
+  function dengan(hit: { n: number }) {
+    return komponen((url: string) => {
+      if (url === 'finance-status/riwayat') {
+        hit.n += 1;
+        return { mundur: 12, rasio: ['quickRatio'], ambang: {}, titik: [] };
+      }
+      return {};
+    });
+  }
+
+  it('kembali ke periode yang sudah dimuat TIDAK memanggil server lagi', async () => {
+    const hit = { n: 0 };
+    const c = dengan(hit);
+    await c.muatRiwayat();
+    expect(hit.n).toBe(1);
+
+    c.gantiMundurRiwayat(6);
+    await Promise.resolve();
+    expect(hit.n).toBe(2);
+
+    c.gantiMundurRiwayat(12);
+    await Promise.resolve();
+    expect(hit.n)
+      .withContext('periode yang sudah ada di tangan dihitung ulang')
+      .toBe(2);
+  });
+
+  it('jawaban yang GAGAL tidak disimpan', async () => {
+    /*
+     * Menyimpan kegagalan berarti tombol coba-lagi tidak akan pernah
+     * menyentuh server: yang tersaji selamanya galat yang sama, dan tidak
+     * ada apa pun di layar yang menjelaskan kenapa mencoba lagi tidak
+     * mengubah apa-apa.
+     */
+    let gagal = true;
+    let n = 0;
+    const c = komponen((url: string) => {
+      if (url !== 'finance-status/riwayat') return {};
+      n += 1;
+      return gagal ? new Error('x') : { rasio: [], titik: [], ambang: {} };
+    });
+
+    await c.muatRiwayat();
+    expect(c.galatRiwayat()).toBeTruthy();
+    expect(c.riwayat()).toBeNull();
+
+    gagal = false;
+    await c.muatRiwayat();
+    expect(n)
+      .withContext('kegagalan tersimpan, jadi mencoba lagi tidak menyentuh server')
+      .toBe(2);
+    expect(c.riwayat()).toBeTruthy();
+    expect(c.galatRiwayat()).toBe('');
+
+    // Sekali lagi: yang BERHASIL barulah boleh tersimpan.
+    await c.muatRiwayat();
+    expect(n).toBe(2);
+  });
+
+  it('pita acuan yang diubah MEMBUANG simpanannya', async () => {
+    /*
+     * Letak tiap titik dihitung terhadap pita acuan. Memakai simpanan lama
+     * sesudah pitanya berubah berarti grafiknya menggambar acuan baru di
+     * atas letak yang lama — dua aturan berbeda pada satu gambar, dan tidak
+     * ada yang menandainya.
+     */
+    const hit = { n: 0 };
+    const c = dengan(hit);
+
+    // DUA periode dimuat lebih dulu, dan itu inti ujinya.
+    //
+    // Memuat ulang periode yang sedang dilihat saja tidak cukup: periode
+    // LAIN masih tersimpan dengan letak yang dihitung terhadap pita lama,
+    // dan ia akan tersaji apa adanya begitu orang berpindah ke sana. Tidak
+    // ada galat, tidak ada tanda — hanya satu grafik yang memakai aturan
+    // yang sudah tidak berlaku.
+    await c.muatRiwayat();
+    c.gantiMundurRiwayat(6);
+    await Promise.resolve();
+    expect(hit.n).toBe(2);
+
+    c['dialog'] = {
+      open: () => ({ afterClosed: () => of({ ambangBerubah: true }) }),
+    };
+    c.muat = async () => {};
+    c.bukaRasio({ kode: 'quickRatio', pita: {} });
+    await Promise.resolve();
+    expect(hit.n).toBe(3);
+
+    // Periode yang TIDAK sedang dilihat juga harus dihitung ulang.
+    c.gantiMundurRiwayat(12);
+    await Promise.resolve();
+    expect(hit.n)
+      .withContext('periode lain masih memakai letak dari pita yang lama')
+      .toBe(4);
+  });
+});
