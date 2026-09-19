@@ -1108,6 +1108,13 @@ export class ProjectReportComponent implements OnInit {
 
   gantiSatuanKas(s: SatuanKas): void {
     this.satuanKas.set(s);
+    // Lebar jendela dikembalikan ke otomatis.
+    //
+    // Chipnya menyatakan JUMLAH TITIK, dan satu titik berarti hal yang
+    // berbeda pada tiap satuan: "6" yang terbawa dari bulanan menjadi
+    // jendela enam HARI. Angkanya masih masuk akal, grafiknya masih
+    // tergambar, dan tidak ada apa pun yang menyebutkan sebabnya.
+    this.pilihanJendela.set('auto');
     // Jendela dikembalikan ke ujung kanan: lebar jendela dihitung dalam
     // SATUAN titik, jadi geseran 6 pada bulanan berarti 6 hari pada harian —
     // tampilannya melompat ke rentang yang tidak diminta siapa pun.
@@ -1153,7 +1160,19 @@ export class ProjectReportComponent implements OnInit {
   /** `'auto'` = menyesuaikan lebar layar. */
   readonly pilihanJendela = signal<number | 'auto'>('auto');
 
-  readonly PILIHAN_JENDELA: (number | 'auto')[] = ['auto', 6, 10, 18];
+  /**
+   * Pilihan lebar jendela — IKUT SATUANNYA.
+   *
+   * Angka di chip ini adalah JUMLAH TITIK, dan satu titik berarti hal yang
+   * berbeda pada tiap satuan. Dibiarkan tetap `[6, 10, 18]`, chip "6" pada
+   * satuan harian berarti jendela ENAM HARI: grafik yang hanya memuat
+   * seminggu, dengan kendali geser yang harus ditekan belasan kali untuk
+   * menyeberangi satu proyek. Tidak ada galat — hanya kendali yang terasa
+   * rusak, dan itulah yang dilaporkan.
+   */
+  readonly PILIHAN_JENDELA = computed<(number | 'auto')[]>(() =>
+    this.satuanKas() === 'hari' ? ['auto', 30, 60, 90] : ['auto', 6, 10, 18],
+  );
 
   /**
    * Titik ke sekian dari UJUNG KANAN; 0 berarti menampilkan yang terbaru.
@@ -1221,8 +1240,22 @@ export class ProjectReportComponent implements OnInit {
      * memuat rincian hariannya; sumbu-x menipiskan labelnya sendiri.
      */
     if (this.satuanKas() === 'hari') {
-      if (!w) return 90;
-      return Math.max(30, Math.min(180, Math.round(w / 8)));
+      /*
+       * ~22px per hari, bukan 8px.
+       *
+       * 8px memberi jendela seratus tujuh puluhan hari pada layar lebar —
+       * dan proyek yang panjangnya kurang dari itu jadi TIDAK PERNAH
+       * memunculkan kendali geser sama sekali, karena kendalinya hanya
+       * digambar ketika titiknya lebih banyak daripada yang muat. Yang
+       * dialami orang: grafik harian yang padat dan tidak dapat digeser ke
+       * mana pun.
+       *
+       * 22px memberi sekitar dua bulan pada layar lebar: bentuk garisnya
+       * masih terbaca, dan proyek yang lebih panjang dari itu — hampir
+       * semuanya — mendapatkan kendali gesernya.
+       */
+      if (!w) return 60;
+      return Math.max(30, Math.min(120, Math.round(w / 22)));
     }
 
     // Belum terukur (ResizeObserver belum menyala): 10, bukan 0 — jendela

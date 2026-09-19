@@ -131,6 +131,140 @@
       benar-benar dibuka.
     -->
     <mat-accordion multi class="pkeu-akordeon">
+      <!-- ================= 0. Kesimpulan ================= -->
+      <!--
+        PALING ATAS, dan terbuka secara bawaan.
+
+        Sebelas angka yang seluruhnya benar tetap tidak menjawab pertanyaan
+        yang membuat orang membuka halaman ini: dari sebelas itu, MANA yang
+        harus dikerjakan lebih dulu. Blok ini menjawab itu — dan menyebutkan
+        pula apa yang TIDAK dapat dilihatnya, supaya ia tidak dipercaya
+        melampaui batasnya.
+
+        Yang TIDAK ada di sini: satu skor atau lencana SEHAT. Kesebelas rasio
+        berbeda skala dan berbeda keandalan; dirata-rata menjadi satu angka,
+        seluruh peringatannya hilang dan yang tersisa kesan presisi yang
+        tidak punya dasar — dan orang berhenti membaca komponennya, padahal
+        komponennya satu-satunya yang dapat ditindaklanjuti.
+      -->
+      @if (kesimpulan(); as k) {
+      <mat-expansion-panel class="pkeu-panel" [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{
+            "posisiKeuangan.kesimpulanJudul" | translate
+          }}</mat-panel-title>
+          <mat-panel-description
+            [class.pkeu-panel__ket--buruk]="k.jumlahMendesak > 0"
+          >
+            {{
+              "posisiKeuangan.kesimpulanKet"
+                | translate: { n: k.jumlahMendesak, dari: k.jumlahDinilai }
+            }}
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <p class="pkeu-pokok">{{ pokok() }}</p>
+
+        <!-- ---- Yang paling mendesak ---- -->
+        @if (k.mendesak?.length) {
+          <h3 class="pkeu-subjudul">
+            {{ "posisiKeuangan.mendesakJudul" | translate }}
+          </h3>
+
+          <ol class="pkeu-mendesak">
+            @for (b of k.mendesak; track b.kode) {
+              <li class="pkeu-mendesak__butir">
+                <div class="pkeu-mendesak__kepala">
+                  <span class="pkeu-mendesak__nama">{{
+                    "posisiKeuangan.namaRasio." + b.kode | translate
+                  }}</span>
+                  <span class="pkeu-mendesak__nilai">{{
+                    nilaiButir(b)
+                  }}</span>
+                  <!--
+                    Seberapa jauh di luar acuan DISEBUT ANGKANYA.
+
+                    Urutan daftar ini hasil hitungan — jarak dikali bobot —
+                    dan yang membacanya berhak tahu kenapa satu butir berada
+                    di atas butir lain. Tanpa angka ini, urutannya harus
+                    dipercaya begitu saja.
+                  -->
+                  @if (lewatAcuan(b)) {
+                    <span class="pkeu-chip pkeu-chip--awas">{{
+                      "posisiKeuangan.lewatAcuan"
+                        | translate: { n: lewatAcuan(b) }
+                    }}</span>
+                  }
+                </div>
+                <p class="pkeu-mendesak__arti">{{ artiButir(b) }}</p>
+              </li>
+            }
+          </ol>
+
+          @if (sisaMendesak() > 0) {
+            <p class="pkeu-catatan__kecil">
+              {{
+                "posisiKeuangan.mendesakSisa"
+                  | translate: { n: sisaMendesak() }
+              }}
+            </p>
+          }
+        }
+
+        <!-- ---- Kombinasi ---- -->
+        <!--
+          Inilah yang tidak dapat dibaca dari petak satu per satu: marjin
+          yang aman bersama siklus modal kerja yang panjang, ROE tinggi
+          bersama utang tinggi. Digambar sebagai spanduk, bukan baris daftar
+          — keterangan sepanjang ini tidak terbaca pada ukuran yang lebih
+          kecil.
+        -->
+        @for (x of k.kombinasi; track x.kode) {
+          <div class="pkeu-banner pkeu-banner--awas">
+            <mat-icon>join_inner</mat-icon>
+            <div>
+              <strong>{{
+                "posisiKeuangan.kombinasiJudul." + x.kode | translate
+              }}</strong>
+              <span>{{ teksKombinasi(x) }}</span>
+            </div>
+          </div>
+        }
+
+        <!-- ---- Yang sudah aman ---- -->
+        @if (k.aman?.length) {
+          <details class="pkeu-catatan">
+            <summary>
+              {{
+                "posisiKeuangan.amanJudul" | translate: { n: k.aman.length }
+              }}
+            </summary>
+            <p>{{ namaAman().join(" · ") }}</p>
+          </details>
+        }
+
+        <!-- ---- Yang TIDAK terlihat ---- -->
+        <!--
+          SELALU DIGAMBAR, dan itu disengaja. Kesimpulan yang kadang menyebut
+          batasnya dan kadang tidak akan dibaca sebagai "kali ini tidak ada
+          batasnya".
+        -->
+        <div class="pkeu-banner">
+          <mat-icon>visibility_off</mat-icon>
+          <div>
+            <strong>{{
+              "posisiKeuangan.takTerlihatJudul" | translate
+            }}</strong>
+            <span>
+              @for (t of k.takTerlihat; track t) {
+                {{ "posisiKeuangan.takTerlihat." + t | translate }}
+              }
+            </span>
+          </div>
+        </div>
+      </mat-expansion-panel>
+      }
+
       <!-- ================= 2. Likuiditas 30 hari ================= -->
       @if (d.likuiditas30; as l) {
       <mat-expansion-panel class="pkeu-panel" [expanded]="true">

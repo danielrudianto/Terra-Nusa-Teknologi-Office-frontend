@@ -805,6 +805,106 @@ export class PosisiKeuanganComponent {
       });
   }
 
+  // ------------------------------------------------------------------
+  // Kesimpulan
+  // ------------------------------------------------------------------
+  //
+  // Seluruhnya disusun di SERVER dan datang sebagai KODE, bukan kalimat.
+  // Yang dikerjakan di sini hanya menerjemahkan dan mengurutkan tampilannya.
+  //
+  // Sengaja begitu: kalimat yang disusun di peramban hanya pernah benar
+  // dalam satu bahasa, dan gerbang levelnya — kalimat laba hanya untuk
+  // level 5 — harus di server, sebab yang disaring di peramban tetap
+  // terkirim ke sana dan tinggal dibuka di alat pengembang.
+
+  kesimpulan(): any | null {
+    return this.data()?.kesimpulan || null;
+  }
+
+  /** Kalimat pokoknya, sudah diterjemahkan beserta angkanya. */
+  pokok(): string {
+    const k = this.kesimpulan()?.pokok;
+    if (!k?.kode) return '';
+    const a = k.angka || {};
+    return this.translate.instant('posisiKeuangan.pokok.' + k.kode, {
+      ...a,
+      // Nama rasio ikut diterjemahkan supaya kalimatnya berbunyi wajar,
+      // bukan menyebut kode mentah seperti "quickRatio".
+      teratas: a.teratas
+        ? this.translate.instant('posisiKeuangan.namaRasio.' + a.teratas)
+        : '',
+      ekuitas: a.ekuitas !== undefined ? this.uang(a.ekuitas) : '',
+    });
+  }
+
+  /**
+   * Seberapa jauh sebuah butir berada di luar acuannya, sebagai persen.
+   *
+   * Disebutkan supaya urutannya dapat DIBANTAH: yang membaca daftar ini
+   * berhak tahu kenapa satu butir berada di atas butir lain, dan "lewat
+   * 200% dari batas" menjawabnya tanpa perlu membuka kode.
+   */
+  lewatAcuan(butir: any): string {
+    const j = Number(butir?.jarakDariPita);
+    if (!Number.isFinite(j) || j <= 0) return '';
+    return Math.round(j * 100) + '%';
+  }
+
+  /** Nilai butir mendesak, dicetak sesuai bentuk rasionya. */
+  nilaiButir(butir: any): string {
+    const n = Number(butir?.nilai);
+    if (!Number.isFinite(n)) return '—';
+    return this.cetak(n, BENTUK_RASIO[butir?.kode] || 'angka');
+  }
+
+  /** Kunci arti untuk butir mendesak — dipakai juga oleh dialognya. */
+  artiButir(butir: any): string {
+    const kunci =
+      'posisiKeuangan.arti.' + butir?.kode + '.' + (butir?.posisi || 'umum');
+    const t = this.translate.instant(kunci);
+    if (t && t !== kunci) return t;
+    const cadangan = 'posisiKeuangan.arti.' + butir?.kode + '.umum';
+    const c = this.translate.instant(cadangan);
+    return c && c !== cadangan ? c : '';
+  }
+
+  /** Satu temuan kombinasi, sudah diterjemahkan beserta angkanya. */
+  teksKombinasi(x: any): string {
+    const a = x?.angka || {};
+    const siap: Record<string, string> = {};
+    for (const [kode, nilai] of Object.entries(a)) {
+      const n = Number(nilai);
+      if (!Number.isFinite(n)) {
+        siap[kode] = '—';
+        continue;
+      }
+      // `pinjaman` rupiah; sisanya rasio dengan bentuknya masing-masing.
+      siap[kode] =
+        kode === 'pinjaman'
+          ? this.uang(n)
+          : this.cetak(n, BENTUK_RASIO[kode] || 'angka');
+    }
+    return this.translate.instant(
+      'posisiKeuangan.kombinasi.' + x?.kode,
+      siap,
+    );
+  }
+
+  /** Nama rasio yang sudah aman — untuk daftar yang diciutkan. */
+  namaAman(): string[] {
+    const aman: string[] = this.kesimpulan()?.aman || [];
+    return aman.map((k) =>
+      this.translate.instant('posisiKeuangan.namaRasio.' + k),
+    );
+  }
+
+  /** Berapa butir mendesak yang TIDAK ikut ditampilkan. */
+  sisaMendesak(): number {
+    const k = this.kesimpulan();
+    if (!k) return 0;
+    return Math.max(0, (k.jumlahMendesak || 0) - (k.mendesak?.length || 0));
+  }
+
   /** Penyusun satu rasio: pembilang, penyebut, dan rinciannya. */
   hitungan(kode: string): any | null {
     return this.data()?.hitungan?.[kode] || null;

@@ -803,7 +803,7 @@
             <div class="prp-tahun__pilihan">
               <button
                 type="button"
-                *ngFor="let p of PILIHAN_JENDELA"
+                *ngFor="let p of PILIHAN_JENDELA()"
                 [class.on]="pilihanJendela() === p"
                 (click)="pilihJendela(p)"
               >

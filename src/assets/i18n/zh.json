@@ -266,6 +266,43 @@
       "didalam": "\u5728\u53c2\u8003\u5185",
       "diatas": "\u9ad8\u4e8e\u53c2\u8003"
     },
+    "kesimpulanJudul": "综合解读",
+    "kesimpulanKet": "{{dari}} 项比率中有 {{n}} 项超出参考区间",
+    "mendesakJudul": "最紧迫的",
+    "mendesakSisa": "还有 {{n}} 项比率超出区间，见下方比率网格。上面三项按“超出幅度 × 该比率的影响程度”排序选出。",
+    "lewatAcuan": "超出区间 {{n}}",
+    "amanJudul": "{{n}} 项比率在区间内",
+    "takTerlihatJudul": "本解读看不到的部分",
+    "pokok": {
+      "ekuitasMinus": "负债已超过资产——权益 {{ekuitas}}。在此状态下，负债权益比与 ROE 均无意义，需要讨论的不是任何比率，而是如何补上这个缺口。",
+      "adaYangDiLuarAcuan": "有 {{jumlah}} 项比率超出参考区间。影响最大的是：{{teratas}}。",
+      "semuaDidalamTapiAdaCatatan": "所有比率都在区间内，但有 {{jumlah}} 处只有把比率成对阅读才会显现——见下方。",
+      "semuaDidalamAcuan": "全部 {{jumlah}} 项比率都在参考区间内。"
+    },
+    "kombinasiJudul": {
+      "untungDiKertas": "账面有利润，现金还没到",
+      "roeTerangkatUtang": "ROE 被负债抬高，并非全靠利润",
+      "kantorYangMemakan": "项目本身健康，是管理费在吞噬",
+      "satuKlienMenentukan": "一个客户决定公司的现金",
+      "piutangTuaTersamar": "陈年应收被新开发票掩盖",
+      "dibiayaiPemasok": "部分营运资金来自供应商",
+      "likuiditasBelumMemuatAngsuran": "速动比率尚未计入还款"
+    },
+    "kombinasi": {
+      "untungDiKertas": "净利率 {{marjinBersih}} 在区间内，但营运资金周期为 {{siklusModalKerja}} 天。利润是真实的，钱还没进账户；在此期间公司是在垫付自己的工程。盈利的项目照样可能中途断了现金。",
+      "roeTerangkatUtang": "ROE {{roe}} 看起来不错，但负债权益比为 {{debtToEquity}}。ROE 是用利润除以权益——权益被大额负债摊薄，数字就会上升，而利润一分未增。这个 ROE 有一部分来自负债，而非经营表现。",
+      "kantorYangMemakan": "毛利率 {{marjinKotor}} 在区间内，说明工程本身是健康的。超出区间的是管理费：占收入的 {{rasioOverhead}}。该查的是办公成本，而不是项目报价。",
+      "satuKlienMenentukan": "{{konsentrasiPiutang}} 的应收集中在一个客户身上，应收账款周转天数为 {{dso}} 天。一个客户延迟就会让公司现金停摆——速动比率看不到这一点，因为同样的欠款来自一个客户还是八个客户，算出来完全一样。",
+      "piutangTuaTersamar": "应收账款周转天数 {{dso}} 仍在区间内，但已有 {{piutangTua}} 的应收超过 90 天。DSO 是平均值：新开发票源源不断会把它拉低，而陈年欠款原地不动。平均值掩盖了这堆积压，并没有让它消失。",
+      "dibiayaiPemasok": "应付账款周转天数 {{dpo}} 超过应收的 {{dso}} 天，而速动比率低于区间。这不是选择而是处境：现金不足以按时付款，由供应商在承担。一旦他们不再耐心，这笔账会一次性到期。",
+      "likuiditasBelumMemuatAngsuran": "速动比率 {{quickRatio}} 的分母中未计入借款，因为借款记录没有期限信息。借款余额：{{pinjaman}}。若有还款即将到期，这个数字会优于实际情况。"
+    },
+    "takTerlihat": {
+      "pinjamanTanpaTenor": "一年内到期的借款比例——借款记录既无期限也无还款计划。",
+      "ekuitasDiturunkanBukanDicatat": "权益是由资产减负债推算的，而非取自账簿；客户预付款、未缴税款以及其他应收应付均未计入。",
+      "piutangTanpaJatuhTempo": "每张发票实际何时到期——销售发票没有到期日，因此账龄从发票日期起算。",
+      "marjinTidakIkutDinilai": "在此访问级别，利润率、管理费率与 ROE 不参与评估。"
+    },
     "namaRasio": {
       "quickRatio": "\u901f\u52a8\u6bd4\u7387",
       "debtToEquity": "\u4ea7\u6743\u6bd4\u7387",

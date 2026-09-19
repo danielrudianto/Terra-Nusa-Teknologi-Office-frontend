@@ -589,21 +589,68 @@ describe('ProjectReport — arus kas', () => {
 
     expect(c.satuanKas()).toBe('hari');
 
-    // 1590 / 8 = 199, dijepit ke 180.
+    // 1590 / 22 = 72: sekitar dua bulan pada layar lebar.
     j.set(1590);
-    expect(c.jendelaOtomatis()).toBe(180);
+    expect(c.jendelaOtomatis()).toBe(72);
 
     // Dijepit di kedua ujung: di bawah 30 hari bentuknya hilang, di atas
-    // 180 hari rinciannya tidak lagi terbaca.
+    // 120 hari rinciannya tidak lagi terbaca DAN kendali gesernya berhenti
+    // muncul untuk proyek yang lebih pendek dari itu.
     j.set(100);
     expect(c.jendelaOtomatis()).toBe(30);
     j.set(9999);
-    expect(c.jendelaOtomatis()).toBe(180);
+    expect(c.jendelaOtomatis()).toBe(120);
 
-    // Belum terukur: satu triwulan, bukan nol — jendela nol berarti grafik
+    // Belum terukur: dua bulan, bukan nol — jendela nol berarti grafik
     // kosong pada kedipan pertama.
     j.set(0);
-    expect(c.jendelaOtomatis()).toBe(90);
+    expect(c.jendelaOtomatis()).toBe(60);
+  });
+
+  it('proyek biasa HARUS mendapat kendali gesernya', () => {
+    /*
+     * INI YANG DILAPORKAN: grafik harian yang padat dan tidak dapat digeser
+     * ke mana pun.
+     *
+     * Kendali geser hanya digambar ketika titiknya LEBIH BANYAK daripada
+     * yang muat. Dengan jendela otomatis seratus tujuh puluhan hari, proyek
+     * empat bulan tidak pernah melampauinya — jadi kendalinya tidak pernah
+     * ada, dan yang tersisa grafik rapat yang tidak dapat ditelusuri.
+     */
+    const c = buat(ARUS).componentInstance;
+    const j = (c as any).lebarWadah;
+    j.set(1350);
+
+    // Proyek empat bulan (~120 hari) pada layar 1350px.
+    expect(c.jendelaOtomatis()).toBeLessThan(120);
+  });
+
+  it('chip lebar jendela IKUT satuannya', () => {
+    /*
+     * Angka di chip adalah JUMLAH TITIK, dan satu titik berarti hal yang
+     * berbeda pada tiap satuan. Chip "6" pada satuan harian berarti jendela
+     * enam HARI: grafik yang hanya memuat seminggu.
+     */
+    const c = buat(ARUS).componentInstance;
+    expect(c.PILIHAN_JENDELA()).toEqual(['auto', 30, 60, 90]);
+
+    c.gantiSatuanKas('bulan');
+    expect(c.PILIHAN_JENDELA()).toEqual(['auto', 6, 10, 18]);
+  });
+
+  it('berganti satuan mengembalikan lebar jendela ke otomatis', () => {
+    /*
+     * "6" yang terbawa dari bulanan menjadi jendela enam HARI. Angkanya
+     * masih masuk akal, grafiknya masih tergambar, dan tidak ada apa pun
+     * yang menyebutkan sebabnya.
+     */
+    const c = buat(ARUS).componentInstance;
+    c.gantiSatuanKas('bulan');
+    c.pilihJendela(6);
+    expect(c.pilihanJendela()).toBe(6);
+
+    c.gantiSatuanKas('hari');
+    expect(c.pilihanJendela()).toBe('auto');
   });
 
   it('tanpa pembayaran bukan galat', fakeAsync(() => {

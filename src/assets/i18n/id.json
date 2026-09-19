@@ -266,6 +266,43 @@
       "didalam": "Dalam acuan",
       "diatas": "Di atas acuan"
     },
+    "kesimpulanJudul": "Kesimpulan",
+    "kesimpulanKet": "{{n}} dari {{dari}} rasio di luar acuan",
+    "mendesakJudul": "Yang paling mendesak",
+    "mendesakSisa": "Masih ada {{n}} rasio lain di luar acuan — tercantum di petak rasio di bawah. Tiga yang di atas dipilih dari seberapa jauh ia di luar acuan dikali seberapa berakibat rasio itu.",
+    "lewatAcuan": "lewat {{n}} dari acuan",
+    "amanJudul": "{{n}} rasio sudah di dalam acuan",
+    "takTerlihatJudul": "Yang TIDAK terlihat oleh kesimpulan ini",
+    "pokok": {
+      "ekuitasMinus": "Kewajiban sudah melampaui aset — ekuitas {{ekuitas}}. Selama keadaannya begini, debt to equity dan ROE tidak bermakna, dan yang perlu dibicarakan bukan rasio mana pun melainkan bagaimana menutup selisihnya.",
+      "adaYangDiLuarAcuan": "{{jumlah}} rasio berada di luar acuan. Yang paling berakibat: {{teratas}}.",
+      "semuaDidalamTapiAdaCatatan": "Seluruh rasio berada di dalam acuan, tetapi ada {{jumlah}} hal yang baru terlihat kalau rasionya dibaca berpasangan — lihat di bawah.",
+      "semuaDidalamAcuan": "Seluruh {{jumlah}} rasio berada di dalam acuan."
+    },
+    "kombinasiJudul": {
+      "untungDiKertas": "Untung di kertas, belum di kas",
+      "roeTerangkatUtang": "ROE terangkat utang, bukan hanya laba",
+      "kantorYangMemakan": "Proyeknya sehat, kantornya yang memakan",
+      "satuKlienMenentukan": "Satu klien menentukan kas perusahaan",
+      "piutangTuaTersamar": "Piutang tua tersamar oleh faktur baru",
+      "dibiayaiPemasok": "Sebagian modal kerja datang dari pemasok",
+      "likuiditasBelumMemuatAngsuran": "Quick ratio belum memperhitungkan angsuran"
+    },
+    "kombinasi": {
+      "untungDiKertas": "Marjin bersih {{marjinBersih}} berada di dalam acuan, tetapi siklus modal kerjanya {{siklusModalKerja}} hari. Labanya nyata; uangnya belum ada di rekening, dan selama itu perusahaan menalangi pekerjaannya sendiri. Proyek yang untung tetap dapat kehabisan kas di tengah jalan.",
+      "roeTerangkatUtang": "ROE {{roe}} terlihat baik, tetapi debt to equity {{debtToEquity}}. ROE membagi laba dengan EKUITAS — ekuitas yang tipis karena utang besar menaikkan angkanya tanpa satu rupiah pun laba tambahan. Sebagian dari ROE ini datang dari utang, bukan dari kinerja.",
+      "kantorYangMemakan": "Marjin kotor {{marjinKotor}} berada di dalam acuan, jadi proyeknya sendiri sehat. Yang di luar acuan overhead-nya: {{rasioOverhead}} dari pendapatan. Yang perlu diperiksa biaya kantor, bukan harga proyeknya.",
+      "satuKlienMenentukan": "{{konsentrasiPiutang}} piutang menumpuk pada satu klien, dan umur tertagihnya {{dso}} hari. Satu klien yang terlambat membuat kas perusahaan berhenti — quick ratio tidak dapat melihat ini, karena piutang dua miliar pada satu klien dan pada delapan klien menghasilkan angka yang sama persis.",
+      "piutangTuaTersamar": "Umur tertagih {{dso}} hari masih di dalam acuan, tetapi {{piutangTua}} piutang sudah lewat 90 hari. DSO adalah RATA-RATA: faktur baru yang deras menariknya turun sementara yang tua tetap di tempatnya. Rata-ratanya menyembunyikan tumpukan itu, bukan meniadakannya.",
+      "dibiayaiPemasok": "Umur bayar {{dpo}} hari melampaui umur tertagih {{dso}} hari, sementara quick ratio di bawah acuan. Artinya bukan pilihan melainkan keadaan: kas tidak cukup untuk membayar tepat waktu, dan yang menanggung pemasok. Tagihan itu jatuh tempo sekaligus begitu mereka berhenti bersabar.",
+      "likuiditasBelumMemuatAngsuran": "Quick ratio {{quickRatio}} dihitung TANPA pinjaman di penyebutnya, karena data pinjaman tidak menyimpan tenor. Sisa pinjaman {{pinjaman}}. Bila ada angsuran yang segera jatuh tempo, angka ini lebih baik daripada keadaan sebenarnya."
+    },
+    "takTerlihat": {
+      "pinjamanTanpaTenor": "Porsi pinjaman yang jatuh tempo dalam setahun — data pinjaman tidak menyimpan tenor maupun jadwal angsuran.",
+      "ekuitasDiturunkanBukanDicatat": "Ekuitas diturunkan dari aset dikurangi kewajiban, bukan dibaca dari pembukuan; uang muka klien, utang pajak yang belum disetor, dan piutang atau utang lain-lain tidak masuk.",
+      "piutangTanpaJatuhTempo": "Kapan tiap faktur seharusnya tertagih — faktur penjualan tidak menyimpan tanggal jatuh tempo, sehingga umur piutang dihitung dari tanggal fakturnya.",
+      "marjinTidakIkutDinilai": "Marjin, overhead, dan ROE tidak ikut dinilai pada level akses ini."
+    },
     "namaRasio": {
       "quickRatio": "Quick ratio",
       "debtToEquity": "Debt to equity",

@@ -580,6 +580,28 @@
 }
 /* Keadaan disebut sebagai KATA, bukan diserahkan pada warna: warna saja
    tidak terbaca oleh yang kesulitan membedakannya, dan hilang saat dicetak. */
+/* VARIAN SPANDUK — sebelumnya dipakai di template TANPA pernah ada di sini.
+
+   `pkeu-banner--buruk` sudah tertulis di dua tempat dan tidak berpengaruh
+   apa pun: spanduk peringatan tergambar biru, sama persis dengan spanduk
+   keterangan biasa. Tidak ada galat, build bersih, dan yang membacanya
+   tidak punya alasan menduga ada yang seharusnya menonjol. */
+.pkeu-banner--buruk {
+  background: var(--bad-bg, #fdf1f1);
+  border-color: var(--bad-border, #f3c9c9);
+  color: var(--bad-fg, #b4282c);
+}
+.pkeu-banner--awas {
+  background: var(--warn-bg, #fdf6e7);
+  border-color: var(--warn-border, #f0dcae);
+  color: var(--warn-fg, #a85c04);
+}
+
+.pkeu-chip--awas {
+  border-color: var(--warn-fg, #d97706);
+  color: var(--warn-fg, #a85c04);
+}
+
 .pkeu-chip {
   display: inline-block;
   padding: 0.1rem 0.45rem;
@@ -742,4 +764,56 @@
     margin: 0.4rem 0 0;
     line-height: 1.5;
   }
+}
+
+/* ---------------- Kesimpulan ---------------- */
+
+.pkeu-pokok {
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.pkeu-subjudul {
+  margin: 1rem 0 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--muted, #6b7280);
+}
+.pkeu-mendesak {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.75rem;
+}
+.pkeu-mendesak__butir::marker {
+  font-weight: 700;
+  color: var(--muted, #6b7280);
+}
+.pkeu-mendesak__kepala {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.pkeu-mendesak__nama {
+  font-weight: 700;
+}
+.pkeu-mendesak__nilai {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+.pkeu-mendesak__arti {
+  margin: 0.25rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--muted, #6b7280);
+}
+.pkeu-catatan__kecil {
+  margin: 0.6rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
 }

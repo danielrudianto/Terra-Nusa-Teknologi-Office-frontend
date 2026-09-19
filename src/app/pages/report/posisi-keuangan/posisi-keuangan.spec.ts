@@ -33,7 +33,23 @@ function komponen(
       },
       {
         provide: TranslateService,
-        useValue: { instant: (k: string) => terjemahan[k] ?? k },
+        useValue: {
+          /*
+           * Tiruan ini IKUT MENYULAM `{{...}}`, sama seperti aslinya.
+           *
+           * Tanpa itu, seluruh uji tentang kalimat kesimpulan akan menguji
+           * tiruan yang mengembalikan templatenya apa adanya — dan lolos
+           * walaupun angka yang disulam salah skala. Yang justru dijaga di
+           * blok itu adalah skalanya.
+           */
+          instant: (k: string, param?: Record<string, unknown>) => {
+            const teks = terjemahan[k] ?? k;
+            if (!param) return teks;
+            return teks.replace(/\{\{\s*(\w+)\s*\}\}/g, (cocok, nama) =>
+              param[nama] === undefined ? cocok : String(param[nama]),
+            );
+          },
+        },
       },
       { provide: ServerMessageService, useValue: { terjemahkan: () => 'galat' } },
     ],
@@ -903,5 +919,143 @@ describe('riwayat: simpanan periode', () => {
     expect(hit.n)
       .withContext('periode lain masih memakai letak dari pita yang lama')
       .toBe(4);
+  });
+});
+
+describe('kesimpulan', () => {
+  /*
+   * Kesimpulan disusun di SERVER dan datang sebagai KODE. Yang dijaga di
+   * sini penerjemahannya — dan kekeliruan penerjemahan di blok ini tidak
+   * terlihat sebagai galat, melainkan sebagai kalimat yang menyebut kode
+   * mentah ("quickRatio") atau angka pada skala yang salah ("0,3%" untuk
+   * 30%) di layar yang dibaca untuk mengambil keputusan.
+   */
+
+  const KES = {
+    pokok: {
+      kode: 'adaYangDiLuarAcuan',
+      angka: { jumlah: 3, teratas: 'quickRatio' },
+    },
+    mendesak: [
+      {
+        kode: 'quickRatio',
+        nilai: 0.62,
+        posisi: 'dibawah',
+        jarakDariPita: 0.4364,
+        bobot: 1,
+        skor: 0.4364,
+      },
+      {
+        kode: 'piutangTua',
+        nilai: 0.3,
+        posisi: 'diatas',
+        jarakDariPita: 1.0,
+        bobot: 0.9,
+        skor: 0.9,
+      },
+    ],
+    jumlahMendesak: 5,
+    aman: ['dpo', 'marjinKotor'],
+    kombinasi: [
+      {
+        kode: 'satuKlienMenentukan',
+        angka: { konsentrasiPiutang: 0.7, dso: 130 },
+      },
+      {
+        kode: 'likuiditasBelumMemuatAngsuran',
+        angka: { quickRatio: 0.62, pinjaman: 2_000_000_000 },
+      },
+    ],
+    takTerlihat: ['pinjamanTanpaTenor', 'ekuitasDiturunkanBukanDicatat'],
+    jumlahDinilai: 11,
+  };
+
+  function dengan(terjemahan: Record<string, string> = {}) {
+    const c = komponen(() => ({}), terjemahan);
+    c.data.set({ kesimpulan: KES });
+    return c;
+  }
+
+  it('kalimat pokok menyebut NAMA rasio, bukan kodenya', () => {
+    /*
+     * "Yang paling berakibat: quickRatio" adalah kalimat yang dibaca
+     * pemilik usaha. Kodenya nama variabel, bukan nama yang dipakai orang.
+     */
+    const c = dengan({
+      'posisiKeuangan.pokok.adaYangDiLuarAcuan':
+        '{{jumlah}} rasio di luar acuan. Paling berakibat: {{teratas}}.',
+      'posisiKeuangan.namaRasio.quickRatio': 'Quick ratio',
+    });
+    expect(c.pokok()).toBe('3 rasio di luar acuan. Paling berakibat: Quick ratio.');
+  });
+
+  it('angka kombinasi dicetak sesuai BENTUK rasionya', () => {
+    /*
+     * Konsentrasi piutang disimpan sebagai pecahan (0,7) dan dibaca sebagai
+     * 70%. DSO dalam hari, dibulatkan. Pinjaman dalam rupiah. Ketiganya
+     * dalam SATU kalimat, dan satu saja yang salah skala membuat kalimatnya
+     * menyebut keadaan yang lain sama sekali.
+     */
+    const c = dengan({
+      'posisiKeuangan.kombinasi.satuKlienMenentukan':
+        '{{konsentrasiPiutang}} piutang pada satu klien, umur tertagih {{dso}} hari.',
+    });
+    expect(c.teksKombinasi(KES.kombinasi[0])).toBe(
+      '70.0% piutang pada satu klien, umur tertagih 130 hari.',
+    );
+  });
+
+  it('nilai rupiah di dalam kombinasi dicetak sebagai rupiah', () => {
+    const c = dengan({
+      'posisiKeuangan.kombinasi.likuiditasBelumMemuatAngsuran':
+        'Quick ratio {{quickRatio}}. Sisa pinjaman {{pinjaman}}.',
+    });
+    const teks = c.teksKombinasi(KES.kombinasi[1]);
+    expect(teks).toContain('0.62');
+    expect(teks).toContain('Rp 2.000.000.000,00');
+  });
+
+  it('nilai butir mendesak dicetak sesuai bentuknya', () => {
+    const c = dengan();
+    expect(c.nilaiButir(KES.mendesak[0])).toBe('0.62');
+    expect(c.nilaiButir(KES.mendesak[1])).toBe('30.0%');
+  });
+
+  it('seberapa jauh di luar acuan DISEBUT, supaya urutannya dapat dibantah', () => {
+    /*
+     * Urutan daftar ini hasil hitungan — jarak dikali bobot. Yang membacanya
+     * berhak tahu kenapa satu butir di atas butir lain; tanpa angka ini,
+     * urutannya harus dipercaya begitu saja.
+     */
+    const c = dengan();
+    expect(c.lewatAcuan(KES.mendesak[1])).toBe('100%');
+    expect(c.lewatAcuan({ jarakDariPita: 0 })).toBe('');
+    expect(c.lewatAcuan(undefined)).toBe('');
+  });
+
+  it('sisa yang tidak ditampilkan DIHITUNG, bukan disembunyikan', () => {
+    /*
+     * Tiga butir teratas tanpa menyebut ada berapa sisanya akan terbaca
+     * sebagai "cuma ini yang di luar acuan".
+     */
+    const c = dengan();
+    expect(c.sisaMendesak()).toBe(3);
+  });
+
+  it('nama rasio yang sudah aman ikut diterjemahkan', () => {
+    const c = dengan({
+      'posisiKeuangan.namaRasio.dpo': 'Umur bayar (DPO)',
+      'posisiKeuangan.namaRasio.marjinKotor': 'Marjin kotor',
+    });
+    expect(c.namaAman()).toEqual(['Umur bayar (DPO)', 'Marjin kotor']);
+  });
+
+  it('tanpa kesimpulan, blok ini tidak mengarang apa pun', () => {
+    const c = komponen();
+    c.data.set({});
+    expect(c.kesimpulan()).toBeNull();
+    expect(c.pokok()).toBe('');
+    expect(c.sisaMendesak()).toBe(0);
+    expect(c.namaAman()).toEqual([]);
   });
 });
