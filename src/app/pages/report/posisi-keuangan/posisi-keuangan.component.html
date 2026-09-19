@@ -130,6 +130,13 @@
       sisanya tertutup — termasuk riwayat, yang tidak ikut dimuat sampai
       benar-benar dibuka.
     -->
+    <!--
+      HANYA PETAK RASIO YANG TERBUKA SAAT HALAMAN DIBUKA.
+
+      Empat panel terbuka sekaligus berarti halaman yang harus digulir
+      panjang sebelum sampai ke hal yang paling sering dicari — dan yang
+      paling sering dicari petak rasionya. Sisanya dibuka ketika ditanyakan.
+    -->
     <mat-accordion multi class="pkeu-akordeon">
       <!-- ================= 0. Kesimpulan ================= -->
       <!--
@@ -148,7 +155,7 @@
         komponennya satu-satunya yang dapat ditindaklanjuti.
       -->
       @if (kesimpulan(); as k) {
-      <mat-expansion-panel class="pkeu-panel" [expanded]="true">
+      <mat-expansion-panel class="pkeu-panel">
         <mat-expansion-panel-header>
           <mat-panel-title>{{
             "posisiKeuangan.kesimpulanJudul" | translate
@@ -267,7 +274,7 @@
 
       <!-- ================= 2. Likuiditas 30 hari ================= -->
       @if (d.likuiditas30; as l) {
-      <mat-expansion-panel class="pkeu-panel" [expanded]="true">
+      <mat-expansion-panel class="pkeu-panel">
         <mat-expansion-panel-header>
           <mat-panel-title>{{
             "posisiKeuangan.likuiditasJudul" | translate
@@ -348,7 +355,7 @@
 
       <!-- ================= 2b. Neraca ringkas ================= -->
       @if (d.neraca; as n) {
-      <mat-expansion-panel class="pkeu-panel" [expanded]="true">
+      <mat-expansion-panel class="pkeu-panel">
         <mat-expansion-panel-header>
           <mat-panel-title>{{
             "posisiKeuangan.neracaJudul" | translate

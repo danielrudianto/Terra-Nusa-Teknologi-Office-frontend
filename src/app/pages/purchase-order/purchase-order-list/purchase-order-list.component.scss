@@ -290,6 +290,14 @@ $hover: var(--hover, #f6f8ff);
     background: var(--ok-bg, #e6f6ec);
     color: var(--ok-fg, #1a7f45);
   }
+  /* SUDAH DIPERIKSA — warnanya di ANTARA draf dan disetujui.
+     Dokumen ini sudah melewati satu tahap tetapi belum mengikat, dan
+     warnanya harus menyatakan itu: bukan kuning "belum disentuh", bukan
+     pula biru "sudah terbit". */
+  &.is-checked {
+    background: var(--info-bg, #e8f1fd);
+    color: var(--info-fg, #1a5fb4);
+  }
   &.is-cancelled {
     background: var(--bad-bg, #fdecec);
     color: var(--bad-fg, #b3322f);

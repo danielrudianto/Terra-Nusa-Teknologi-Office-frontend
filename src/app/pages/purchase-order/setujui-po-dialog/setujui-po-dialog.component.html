@@ -1,0 +1,100 @@
+<h1 mat-dialog-title class="spo-title" appDialogGeser>
+  {{ "purchaseOrder.setujuiJudul" | translate }}
+</h1>
+
+<mat-dialog-content>
+  <!--
+    ANGKANYA DIDAHULUKAN, bukan kalimat "yakin?".
+
+    Pertanyaan "yakin?" dijawab "ya" oleh refleks. Yang membuat orang
+    berhenti sejenak adalah melihat nomor, pemasok, dan nilai yang akan
+    mengikat — dan itulah satu-satunya kesempatan SPK yang salah pemasok
+    atau salah proyek untuk ketahuan sebelum terbit.
+  -->
+  <dl class="spo-rinci">
+    <dt>{{ "purchaseOrder.setujuiNomor" | translate }}</dt>
+    <dd class="spo-mono">{{ data.nomor }}</dd>
+
+    <dt>{{ "purchaseOrder.setujuiJenis" | translate }}</dt>
+    <dd>{{ data.jenis }}</dd>
+
+    <dt>{{ "purchaseOrder.setujuiPemasok" | translate }}</dt>
+    <dd>{{ data.pemasok }}</dd>
+
+    <dt>{{ "purchaseOrder.setujuiProyek" | translate }}</dt>
+    <dd>{{ data.proyek }}</dd>
+
+    <dt>{{ "purchaseOrder.setujuiTanggal" | translate }}</dt>
+    <dd>{{ data.tanggal | date: "d MMMM y" }}</dd>
+
+    <dt>{{ "purchaseOrder.setujuiDiperiksa" | translate }}</dt>
+    <dd>{{ data.diperiksaOleh }}</dd>
+  </dl>
+
+  <div class="spo-nilai">
+    <span class="spo-nilai__cap">{{
+      "purchaseOrder.setujuiNilai" | translate
+    }}</span>
+    <span class="spo-nilai__angka">{{ uang(data.total) }}</span>
+  </div>
+
+  <!--
+    ADENDUM disebut tersendiri.
+
+    Yang disetujui adalah SELISIH, bukan nilai pekerjaan yang berlaku.
+    Dibaca sebagai nilai total, angkanya terbaca jauh lebih kecil daripada
+    yang sebenarnya diikat — atau sebaliknya, ditagih dua kali oleh vendor.
+  -->
+  @if (data.adendum) {
+    <div class="spo-warning spo-warning--awas">
+      <mat-icon>difference</mat-icon>
+      <p>
+        <strong>{{ "purchaseOrder.setujuiAdendumJudul" | translate }}</strong>
+        {{ "purchaseOrder.setujuiAdendum" | translate }}
+      </p>
+    </div>
+  }
+
+  <div class="spo-warning">
+    <mat-icon>warning</mat-icon>
+    <p>
+      <strong>{{ "purchaseOrder.setujuiPerhatian" | translate }}</strong>
+      {{ "purchaseOrder.setujuiPeringatan" | translate }}
+    </p>
+  </div>
+
+  <!--
+    Yang benar-benar ingin membaca dokumennya tidak boleh disuruh menutup
+    dialog ini dulu — kalau begitu, yang dipilih orang adalah tidak membaca.
+  -->
+  <button type="button" class="spo-lihat" (click)="bukaDokumen()">
+    <mat-icon>picture_as_pdf</mat-icon>
+    {{ "purchaseOrder.setujuiBukaDokumen" | translate }}
+  </button>
+
+  <mat-checkbox [formControl]="sudahBaca" class="spo-agree" color="primary">{{
+    "purchaseOrder.setujuiSudahBaca" | translate
+  }}</mat-checkbox>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="spo-foot">
+  <button type="button" class="spo-cancel" mat-dialog-close>
+    {{ "common.cancel" | translate }}
+  </button>
+  <!--
+    Tombolnya DIMATIKAN sampai kotaknya dicentang, bukan disembunyikan.
+
+    Kebalikan dari tombol izin di tempat lain, dan sebabnya berbeda: di sini
+    tindakannya memang boleh dilakukan orang ini — yang ditahan hanya
+    kecepatannya. Tombol yang hilang akan terbaca sebagai "saya tidak
+    berhak", dan itu keterangan yang salah.
+  -->
+  <button
+    type="button"
+    class="spo-confirm"
+    [disabled]="!sudahBaca.value"
+    (click)="setujui()"
+  >
+    {{ "purchaseOrder.setujuiTombol" | translate }}
+  </button>
+</mat-dialog-actions>

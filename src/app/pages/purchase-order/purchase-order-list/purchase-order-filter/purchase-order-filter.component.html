@@ -18,8 +18,24 @@
     <mat-label>{{ "purchaseOrder.filterStatus" | translate }}</mat-label>
     <mat-select [(ngModel)]="status">
       <mat-option value="">{{ "common.semua" | translate }}</mat-option>
+      <!--
+        TIGA pilihan, saling lepas dan menutupi semuanya.
+
+        "Draf" kini berarti belum diperiksa SAJA. Sebelumnya ia memuat dua
+        hal sekaligus — yang belum disentuh siapa pun dan yang tinggal
+        menunggu persetujuan — sehingga menyaring "Draf" tidak pernah
+        menjawab "mana yang menunggu saya".
+
+        Yang harus dijaga di sini: ketiganya tidak boleh menyisakan celah.
+        Dokumen yang tidak cocok dengan satu pun pilihan akan menjadi
+        dokumen yang tidak pernah tampil, dan hilangnya tidak menghasilkan
+        galat apa pun.
+      -->
       <mat-option value="draft">{{
         "purchaseOrder.statusDraf" | translate
+      }}</mat-option>
+      <mat-option value="checked">{{
+        "purchaseOrder.statusDiperiksa" | translate
       }}</mat-option>
       <mat-option value="approved">{{
         "purchaseOrder.statusDisetujui" | translate

@@ -106,6 +106,25 @@ ngx-extended-pdf-viewer {
 .pop-spacer {
   flex: 1 1 auto;
 }
+/*
+ * `line-height: 1` — dan inilah yang membuat ikon sejajar dengan tulisannya.
+ *
+ * Dengan `line-height: normal` (bawaannya), kotak baris teks lebih TINGGI
+ * daripada hurufnya sendiri: 15px untuk font 13,3px. Sisa ruangnya tidak
+ * dibagi rata — yang di bawah lebih banyak, tempat ekor huruf seperti "g"
+ * dan "y". `align-items: center` lalu menengahkan KOTAK itu, bukan
+ * hurufnya, sehingga tulisannya duduk sedikit lebih tinggi daripada ikon di
+ * sebelahnya yang kotaknya memang pas dengan gambarnya.
+ *
+ * Selisihnya cuma satu-dua piksel dan tidak pernah menghasilkan galat apa
+ * pun — ia hanya terlihat, dan terus terlihat, pada tombol yang ditekan
+ * orang setiap hari.
+ *
+ * Diperbaiki dengan menyamakan kotak baris dengan isinya di KEDUA sisi,
+ * bukan dengan menggeser ikonnya beberapa piksel: geseran tetap harus
+ * disetel ulang setiap kali ukuran font atau ikonnya berubah, dan yang lupa
+ * menyetelnya tidak akan tahu kenapa.
+ */
 .pop-batal,
 .pop-simpan {
   display: inline-flex;
@@ -117,6 +136,7 @@ ngx-extended-pdf-viewer {
   font-family: "Montserrat", sans-serif;
   font-size: 0.83rem;
   font-weight: 600;
+  line-height: 1;
   cursor: pointer;
 }
 .pop-batal {
@@ -133,6 +153,16 @@ ngx-extended-pdf-viewer {
   width: 18px;
   height: 18px;
   font-size: 18px;
+  /* Kotak barisnya disamakan dengan tingginya. Tanpa ini, glif ikon
+     ditengahkan pada kotak 24px bawaan Material di dalam elemen 18px, dan
+     hasilnya bergeser ke atas. */
+  line-height: 18px;
+  flex: 0 0 auto;
+  /* Material memberi margin kiri/kanan pada ikon di dalam tombolnya sendiri
+     (`--mat-button-text-icon-spacing`). Tombol ini bukan mat-button, tetapi
+     aturan itu ikut terbawa bila kelasnya kelak berubah — dan jaraknya
+     sudah diurus `gap`. */
+  margin: 0;
 }
 .pop-simpan:disabled {
   opacity: 0.45;

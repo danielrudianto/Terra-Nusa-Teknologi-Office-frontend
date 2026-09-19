@@ -64,6 +64,7 @@ import { PermissionService } from '../../../services/permission.service';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { PurchaseOrderRekapComponent } from '../purchase-order-rekap/purchase-order-rekap.component';
 import { PurchaseOrderFilterComponent } from './purchase-order-filter/purchase-order-filter.component';
+import { SetujuiPoDialogComponent } from '../setujui-po-dialog/setujui-po-dialog.component';
 
 @Component({
   selector: 'app-purchase-order-list',
@@ -98,6 +99,20 @@ export class PurchaseOrderListComponent {
   displayStatus(po: any): string {
     if (po?.isDelete) return 'deleted';
     if (po?.isApproved) return 'approved';
+    /*
+     * SUDAH DIPERIKSA adalah statusnya sendiri, bukan draf berlencana.
+     *
+     * Sebelumnya baris seperti ini menampilkan dua hal berdampingan:
+     * lencana kuning "Draf" dan lencana kedua "Diperiksa". Keduanya benar,
+     * tetapi dibaca bersama keduanya bertentangan — dokumen yang sudah
+     * diperiksa bukan lagi draf yang belum disentuh siapa pun, dan yang
+     * membuka daftar tidak dapat membedakan mana yang menunggu dirinya
+     * tanpa membaca lencana kedua pada setiap baris.
+     *
+     * Statusnya di server TIDAK berubah: `isChecked` tetap penanda
+     * tersendiri, dan yang disusun di sini hanya cara membacanya.
+     */
+    if (po?.isChecked && !po?.isApproved) return 'checked';
     return po?.status || 'draft';
   }
 
@@ -108,6 +123,8 @@ export class PurchaseOrderListComponent {
         return 'status.approved';
       case 'cancelled':
         return 'status.cancelled';
+      case 'checked':
+        return 'purchaseOrder.statusDiperiksa';
       case 'pending':
         return 'status.pending';
       case 'published':
@@ -1926,8 +1943,56 @@ export class PurchaseOrderListComponent {
       });
   }
 
+  /**
+   * Menyetujui SPK — lewat dialog yang menunjukkan ANGKANYA lebih dulu.
+   *
+   * Sebelumnya satu klik di dalam menu titik tiga, tanpa satu pun angka
+   * terlihat pada saat memutuskan. Dan menu itu berganti menampilkan
+   * "Setujui" tepat di tempat "Periksa" barusan ditekan — dua tindakan
+   * berbeda di bawah kursor yang sama.
+   *
+   * Menyetujui adalah satu-satunya tindakan di daftar ini yang MENGIKAT
+   * perusahaan kepada pihak luar, dan ia tidak dapat dicabut lewat layar
+   * ini: yang sudah disetujui hanya dapat dibatalkan, bukan dikembalikan
+   * menjadi draf.
+   *
+   * Dialognya bukan sekadar "yakin?" — pertanyaan itu dijawab "ya" oleh
+   * refleks. Yang ditampilkan nomor, pemasok, proyek, dan nilai yang akan
+   * mengikat, supaya SPK yang salah pemasok atau salah proyek punya satu
+   * kesempatan untuk ketahuan sebelum terbit.
+   */
   approve(po: any) {
-    this.ubahStatus(po, 'approved', 'notify.approveSuccess');
+    this.dialog
+      .open(SetujuiPoDialogComponent, {
+        width: '520px',
+        maxWidth: '95vw',
+        autoFocus: false,
+        data: {
+          nomor: po?.name || '—',
+          jenis: this.typeLabel(po?.purchaseType),
+          pemasok: this.supplierLabel(po),
+          proyek: po?.projectName || '—',
+          tanggal: po?.date ?? null,
+          total: this.total(po),
+          diperiksaOleh: po?.checkedByName || '—',
+          // Adendum memuat SELISIH, bukan nilai yang berlaku. Dibaca sebagai
+          // nilai total, angkanya menyesatkan ke dua arah sekaligus.
+          adendum: !!po?.parentPurchaseOrderID,
+        },
+      })
+      .afterClosed()
+      .subscribe((hasil: any) => {
+        if (hasil?.aksi === 'buka') {
+          // Membuka dokumen BUKAN menyetujui. Dibedakan sebagai hasil
+          // tersendiri supaya keduanya tidak dapat tertukar — keduanya
+          // menutup dialog yang sama.
+          this.reprint(po);
+          return;
+        }
+        if (hasil?.aksi === 'setujui') {
+          this.ubahStatus(po, 'approved', 'notify.approveSuccess');
+        }
+      });
   }
 
   reject(po: any) {
