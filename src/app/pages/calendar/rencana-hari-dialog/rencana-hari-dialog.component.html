@@ -91,7 +91,18 @@
               <mat-icon>block</mat-icon>
               <span>{{ "rencana.batalkan" | translate }}</span>
             </button>
-            <button mat-menu-item type="button" (click)="hapus(r)">
+            <!--
+              `payment_plan:delete` ditetapkan level 2. Tanpa gerbang ini
+              tombolnya tampil bagi semua orang lalu ditolak server pada
+              ketukan terakhir — dan yang membacanya menyimpulkan sistemnya
+              rusak, bukan bahwa ia memang tidak berhak.
+            -->
+            <button
+              *appCan="'payment_plan:delete'"
+              mat-menu-item
+              type="button"
+              (click)="hapus(r)"
+            >
               <mat-icon>delete_outline</mat-icon>
               <span>{{ "common.delete" | translate }}</span>
             </button>

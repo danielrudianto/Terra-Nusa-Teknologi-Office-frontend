@@ -76,6 +76,101 @@
       }
     </div>
   }
+
+  <!-- ---- Ubah pita acuan ---- -->
+  @if (bolehUbah()) {
+    <h3 class="rd-subjudul">
+      {{ "posisiKeuangan.ubahAcuanJudul" | translate }}
+    </h3>
+
+    @if (!mengubah()) {
+      <p class="rd-acuanKet">{{ "posisiKeuangan.ubahAcuanKet" | translate }}</p>
+      <button mat-stroked-button type="button" (click)="mulaiUbah()">
+        <mat-icon>tune</mat-icon>
+        {{ "posisiKeuangan.ubahAcuan" | translate }}
+      </button>
+    } @else {
+      <!--
+        SATUANNYA DICETAK DI SEBELAH KOTAKNYA.
+
+        Pita rasio persen disimpan sebagai pecahan (0,15) tetapi dibaca orang
+        sebagai 15%. Kotak tanpa satuan membuat yang mengisinya menebak mana
+        yang diminta — dan menebak salah tidak menghasilkan galat apa pun,
+        hanya pita yang meleset seratus kali lipat.
+      -->
+      <div class="rd-ubah">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "posisiKeuangan.batasBawah" | translate }}</mat-label>
+          <input
+            matInput
+            type="number"
+            [(ngModel)]="isianBawah"
+            [disabled]="menyimpan()"
+          />
+          @if (satuan()) {
+            <span matTextSuffix>{{ satuan() }}</span>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "posisiKeuangan.batasAtas" | translate }}</mat-label>
+          <input
+            matInput
+            type="number"
+            [(ngModel)]="isianAtas"
+            [disabled]="menyimpan()"
+          />
+          @if (satuan()) {
+            <span matTextSuffix>{{ satuan() }}</span>
+          }
+        </mat-form-field>
+      </div>
+
+      <p class="rd-acuanKet">{{ "posisiKeuangan.batasKosong" | translate }}</p>
+
+      @if (pitaTerbalik()) {
+        <div class="rd-galat">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ "posisiKeuangan.pitaTerbalik" | translate }}</span>
+        </div>
+      }
+
+      @if (galatSimpan()) {
+        <div class="rd-galat">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ galatSimpan() }}</span>
+        </div>
+      }
+
+      <div class="rd-ubahAksi">
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          [disabled]="menyimpan() || pitaTerbalik()"
+          (click)="simpan()"
+        >
+          {{ "common.save" | translate }}
+        </button>
+        <button
+          mat-button
+          type="button"
+          [disabled]="menyimpan()"
+          (click)="kembalikanBawaan()"
+        >
+          {{ "posisiKeuangan.kembalikanBawaan" | translate }}
+        </button>
+        <button
+          mat-button
+          type="button"
+          [disabled]="menyimpan()"
+          (click)="batalUbah()"
+        >
+          {{ "common.cancel" | translate }}
+        </button>
+      </div>
+    }
+  }
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">

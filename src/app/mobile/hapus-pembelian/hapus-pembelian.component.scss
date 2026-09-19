@@ -25,3 +25,23 @@
 }
 
 @include m.hormati_gerak('mhp');
+
+/* Keadaan "tidak berhak" — bentuknya sama dengan keadaan kosong lain di
+   layar ini, supaya terbaca sebagai keterangan, bukan sebagai galat. */
+.mhp-takBoleh {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 2.5rem 1.25rem;
+  text-align: center;
+  color: var(--muted, #6b7280);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.mhp-takBoleh mat-icon {
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+  opacity: 0.5;
+}

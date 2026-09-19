@@ -744,8 +744,35 @@ export class PosisiKeuanganComponent {
         // tempat yang harus sepakat soal kunci mana yang dipakai.
         arti: this.arti(r),
         hitungan: this.hitungan(r.kode),
+        // Bentuk cetaknya ikut, karena kotak isian pita harus memakai
+        // SKALA yang sama dengan yang dibaca orang: pita persen disimpan
+        // sebagai pecahan (0,15) dan dibaca sebagai 15%.
+        bentuk: BENTUK_RASIO[r.kode] || 'angka',
+        // Pita dalam bentuk SIMPANANNYA, bukan teksnya: `pitaTeks` sudah
+        // diformat ("maks 15,0%") dan tidak dapat dibaca balik menjadi
+        // angka tanpa menebak.
+        pita: r.pita ? { bawah: r.pita.bawah, atas: r.pita.atas } : null,
       },
-    });
+    })
+      .afterClosed()
+      .subscribe((hasil: any) => {
+        /*
+         * PITA YANG BERUBAH MENGUBAH SELURUH HALAMAN, bukan satu petak.
+         *
+         * Letak "di dalam / di bawah / di atas acuan" dihitung di SERVER
+         * untuk kesebelas rasio sekaligus. Menyegarkan petak yang barusan
+         * diubah saja akan membiarkan yang lain menyebut letak yang sudah
+         * tidak berlaku — dan tidak ada apa pun di layar yang menandainya.
+         *
+         * Riwayat ikut dimuat ulang HANYA bila sudah pernah dibuka: ia
+         * menggambar pita acuan sebagai garis, jadi garisnya akan tertinggal
+         * di tempat lama. Yang belum pernah dibuka tidak perlu dibangunkan
+         * — sembilan puluh enam kueri untuk panel yang tertutup.
+         */
+        if (!hasil?.ambangBerubah) return;
+        void this.muat();
+        if (this.riwayat()) void this.muatRiwayat();
+      });
   }
 
   /** Penyusun satu rasio: pembilang, penyebut, dan rinciannya. */

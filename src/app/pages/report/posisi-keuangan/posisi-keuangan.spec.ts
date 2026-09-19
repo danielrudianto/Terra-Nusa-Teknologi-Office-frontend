@@ -441,7 +441,12 @@ describe('hitungan yang dapat dicek', () => {
     });
     isi(c);
     let dikirim: any = null;
-    c['dialog'] = { open: (_k: any, opsi: any) => (dikirim = opsi.data) };
+    c['dialog'] = {
+      open: (_k: any, opsi: any) => {
+        dikirim = opsi.data;
+        return { afterClosed: () => of(undefined) };
+      },
+    };
 
     const r = c.daftarRasio().find((x: any) => x.kode === 'rasioOverhead');
     c.bukaRasio(r);
@@ -728,5 +733,69 @@ describe('kas riwayat yang tidak terbaca', () => {
     await c.muatRiwayat();
     expect(c.adaKasTidakTerbaca()).toBeFalse();
     expect(c.jumlahKasTidakTerbaca()).toBe(0);
+  });
+});
+
+describe('pita acuan yang diubah', () => {
+  /*
+   * Pita menentukan letak "di dalam / di bawah / di atas acuan" untuk
+   * KESEBELAS rasio, dan letak itu dihitung di server. Menutup dialog tanpa
+   * memuat ulang berarti sepuluh petak lain tetap menyebut letak yang
+   * dihitung dengan pita lama — tanpa satu pun tanda di layar.
+   */
+
+  function komponenDialog(hasilTutup: any) {
+    const c = komponen();
+    c['dialog'] = {
+      open: () => ({ afterClosed: () => of(hasilTutup) }),
+    };
+    return c;
+  }
+
+  it('memuat ulang halaman sesudah pita diubah', async () => {
+    const c = komponenDialog({ ambangBerubah: true });
+    let muatUlang = 0;
+    c.muat = async () => {
+      muatUlang += 1;
+    };
+    c.bukaRasio({ kode: 'quickRatio', pita: {} });
+    expect(muatUlang).toBe(1);
+  });
+
+  it('TIDAK memuat ulang bila dialognya hanya ditutup', () => {
+    /*
+     * Membuka lalu menutup dialog adalah hal yang dilakukan orang belasan
+     * kali saat membaca halaman ini. Memuat ulang setiap kali berarti
+     * halamannya berkedip terus-menerus tanpa ada yang berubah.
+     */
+    const c = komponenDialog(undefined);
+    let muatUlang = 0;
+    c.muat = async () => {
+      muatUlang += 1;
+    };
+    c.bukaRasio({ kode: 'quickRatio', pita: {} });
+    expect(muatUlang).toBe(0);
+  });
+
+  it('riwayat ikut dimuat ulang HANYA bila sudah pernah dibuka', () => {
+    /*
+     * Grafik riwayat menggambar pita acuan sebagai garis; pita yang berubah
+     * meninggalkan garisnya di tempat lama. Tetapi panel yang belum pernah
+     * dibuka tidak perlu dibangunkan — itu sembilan puluh enam kueri untuk
+     * layar yang tertutup.
+     */
+    const c = komponenDialog({ ambangBerubah: true });
+    c.muat = async () => {};
+    let riwayatDimuat = 0;
+    c.muatRiwayat = async () => {
+      riwayatDimuat += 1;
+    };
+
+    c.bukaRasio({ kode: 'quickRatio', pita: {} });
+    expect(riwayatDimuat).toBe(0);
+
+    c.riwayat.set({ titik: [], rasio: [] });
+    c.bukaRasio({ kode: 'quickRatio', pita: {} });
+    expect(riwayatDimuat).toBe(1);
   });
 });

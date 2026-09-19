@@ -20,6 +20,7 @@ import {
   cariKategori,
 } from 'src/app/services/payment-plan.service';
 import { RencanaDialogComponent } from '../rencana-dialog/rencana-dialog.component';
+import { CanDirective } from 'src/app/directives/can.directive';
 
 @Component({
   selector: 'app-rencana-hari-dialog',
@@ -32,6 +33,7 @@ import { RencanaDialogComponent } from '../rencana-dialog/rencana-dialog.compone
     MatMenuModule,
     TranslateModule,
     DialogGeserDirective,
+    CanDirective,
   ],
   templateUrl: './rencana-hari-dialog.component.html',
   styleUrl: './rencana-hari-dialog.component.scss',

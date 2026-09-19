@@ -107,3 +107,44 @@
     white-space: nowrap;
   }
 }
+
+/* ---------------- Ubah pita acuan ---------------- */
+
+.rd-acuanKet {
+  margin: 0 0 0.6rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+}
+.rd-ubah {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+:host ::ng-deep .rd-ubah .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+.rd-ubahAksi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+.rd-galat {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  background: var(--bad-bg, #fdf1f1);
+  color: var(--bad-fg, #b4282c);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+.rd-galat mat-icon {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}

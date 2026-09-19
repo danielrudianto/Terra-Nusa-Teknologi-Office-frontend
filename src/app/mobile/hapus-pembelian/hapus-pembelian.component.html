@@ -1,6 +1,21 @@
 <h1 class="mhp-judul">{{ "mobile.pembelian.judul" | translate }}</h1>
 <p class="mhp-sub">{{ "mobile.pembelian.sub" | translate }}</p>
 
+<!--
+  TIDAK BERHAK: dikatakan, dan isinya tidak digambar sama sekali.
+
+  Sebelumnya layar ini tampil utuh bagi siapa pun yang membuka tautannya —
+  pencarian, daftar, sampai tombol merahnya — lalu server menolak pada
+  ketukan terakhir. Yang dialami orang: bekerja sampai selesai, baru
+  diberi tahu bahwa ia memang tidak boleh.
+-->
+@if (!bolehHapus()) {
+  <div class="mhp-takBoleh">
+    <mat-icon>lock</mat-icon>
+    <div>{{ "mobile.pembelian.takBoleh" | translate }}</div>
+  </div>
+} @else {
+
 <mat-form-field appearance="outline" class="mhp-cari">
   <mat-label>{{ "mobile.pembelian.cari" | translate }}</mat-label>
   <input matInput [formControl]="pencarian" />
@@ -93,4 +108,5 @@
       </div>
     </div>
   </div>
+}
 }
