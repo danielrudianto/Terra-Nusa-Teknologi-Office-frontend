@@ -193,16 +193,47 @@ export class PosisiKeuanganComponent {
   });
 
   /**
-   * Lebar batang, sebagai persen terhadap ember TERBESAR.
+   * Lebar batang, sebagai persen terhadap nilai TERBESAR di daftarnya.
    *
    * Dibagi terhadap yang terbesar, bukan terhadap totalnya: yang dicari mana
-   * yang menonjol, dan pembagian terhadap total membuat seluruh batang menjadi
-   * sangat pendek begitu embernya banyak.
+   * yang menonjol, dan pembagian terhadap total membuat seluruh batang
+   * menjadi sangat pendek begitu daftarnya panjang.
+   *
+   * MENERIMA ANGKA, BUKAN OBJEK — dan itu perbaikan, bukan selera.
+   *
+   * Versi sebelumnya menerima objek lalu membaca `x.nilai`. Daftar kewajiban
+   * menyimpan nilainya pada `total`, bukan `nilai`, sehingga `x.nilai`
+   * `undefined`, `Math.abs(undefined)` menjadi NaN, dan `Math.max` atas NaN
+   * juga NaN. Penjaga `puncak <= 0` TIDAK menangkapnya: setiap perbandingan
+   * dengan NaN bernilai salah. Yang keluar `width: NaN%` — CSS yang tidak
+   * sah, diabaikan peramban, dan SELURUH batang tergambar penuh.
+   *
+   * Tiga baris bernilai 3 juta, 64 juta, dan 101 juta karena itu tampil sama
+   * panjang. Tidak ada galat di layar maupun konsol.
+   *
+   * Ujinya pun sempat lolos — ia memanggil fungsi ini dengan bentuk objek
+   * yang benar, yaitu bentuk yang tidak pernah dipakai kode aslinya.
+   * Menerima angka menutup seluruh kelas kekeliruan itu: tidak ada nama
+   * bidang yang dapat meleset.
    */
-  lebar(daftar: Ember[], e: Ember): number {
-    const puncak = Math.max(...daftar.map((x) => Math.abs(x.nilai)), 0);
-    if (puncak <= 0) return 0;
-    return Math.round((Math.abs(e.nilai) / puncak) * 100);
+  /** Nilai-nilai ember, untuk dijadikan pembanding lebar batangnya. */
+  nilaiEmber(daftar: Ember[]): number[] {
+    return daftar.map((x) => x.nilai);
+  }
+
+  /** Nilai kewajiban lain; bidangnya `total`, BUKAN `nilai` — itu sumber bugnya. */
+  nilaiKewajibanLain(): number[] {
+    return this.rincianKewajibanLain().map((x: any) => x.total);
+  }
+
+  lebar(nilai: unknown, semua: unknown[]): number {
+    const n = Math.abs(Number(nilai));
+    const angka = semua
+      .map((x) => Math.abs(Number(x)))
+      .filter((x) => Number.isFinite(x));
+    const puncak = angka.length ? Math.max(...angka) : 0;
+    if (!Number.isFinite(n) || puncak <= 0) return 0;
+    return Math.round((n / puncak) * 100);
   }
 
   // ------------------------------------------------------------------
@@ -355,6 +386,117 @@ export class PosisiKeuanganComponent {
   /** Selisihnya memang ada — spanduk penjelasnya hanya tampil bila begitu. */
   adaSelisih(): boolean {
     return Number(this.data()?.selisihVersiLama?.tambahan ?? 0) > 0;
+  }
+
+  /**
+   * Daftar rasio siap gambar: angka, letaknya terhadap pita, dan ARTINYA.
+   *
+   * Versi sebelumnya hanya mencetak angka beserta pitanya sebagai tulisan
+   * kecil, dengan alasan tidak mau memvonis. Akibatnya layar berhenti
+   * menjawab pertanyaan yang membuat orang membukanya: "2,03 itu bagus atau
+   * tidak?" Peringatannya lebih panjang dan lebih menonjol daripada
+   * jawabannya.
+   *
+   * Yang diperbaiki BUKAN dengan mencetak kata SEHAT pada perusahaannya —
+   * label seperti itu membuat orang berhenti bertanya. Yang ditambahkan:
+   * di mana angkanya berdiri, apa ARTINYA berada di situ, dan APA
+   * RISIKONYA. Ketiganya tentang angkanya, bukan tentang perusahaannya.
+   */
+  readonly daftarRasio = computed(() => {
+    const d = this.data();
+    if (!d) return [];
+
+    const nilai: Record<string, any> = {
+      quickRatio: d.quickRatio,
+      debtToEquity: d.neraca?.debtToEquity,
+      dso: d.rasio?.dso,
+      dpo: d.rasio?.dpo,
+      siklusModalKerja: d.rasio?.siklusModalKerja,
+      piutangTua: d.rasio?.piutangTua,
+      konsentrasiPiutang: d.rasio?.konsentrasiPiutang,
+      marjinKotor: d.rasio?.marjinKotor,
+      marjinBersih: d.rasio?.marjinBersih,
+      rasioOverhead: d.rasio?.rasioOverhead,
+      roe: d.rasio?.roe,
+    };
+
+    /** Bagaimana tiap rasio dicetak: angka biasa, hari, atau persen. */
+    const bentuk: Record<string, 'angka' | 'hari' | 'persen'> = {
+      quickRatio: 'angka',
+      debtToEquity: 'angka',
+      dso: 'hari',
+      dpo: 'hari',
+      siklusModalKerja: 'hari',
+      piutangTua: 'persen',
+      konsentrasiPiutang: 'persen',
+      marjinKotor: 'persen',
+      marjinBersih: 'persen',
+      rasioOverhead: 'persen',
+      roe: 'persen',
+    };
+
+    return Object.keys(nilai)
+      .filter((k) => nilai[k] !== null && nilai[k] !== undefined)
+      .map((kode) => {
+        const pita = d.ambang?.[kode] || {};
+        const nilaiPenilaian = d.penilaian?.[kode] || {};
+        return {
+          kode,
+          nilai: Number(nilai[kode]),
+          teks: this.cetak(Number(nilai[kode]), bentuk[kode]),
+          bentuk: bentuk[kode],
+          posisi: nilaiPenilaian.posisi as string | null,
+          baik: nilaiPenilaian.baik as boolean | null,
+          pita,
+          pitaTeks: this.pitaTeks(pita, bentuk[kode]),
+          /*
+           * Kunci arti disusun dari kode + letaknya. Yang belum punya
+           * terjemahan jatuh ke keterangan umum rasio itu, BUKAN ke teks
+           * kosong — baris tanpa penjelasan mengembalikan persoalan yang
+           * sedang diperbaiki.
+           */
+          kunciArti: `posisiKeuangan.arti.${kode}.${
+            nilaiPenilaian.posisi || 'umum'
+          }`,
+          kunciArtiCadangan: `posisiKeuangan.arti.${kode}.umum`,
+        };
+      });
+  });
+
+  /** Angka rasio sesuai bentuknya. */
+  cetak(n: number, bentuk: 'angka' | 'hari' | 'persen'): string {
+    if (bentuk === 'persen') {
+      return (n * 100).toFixed(1) + '%';
+    }
+    if (bentuk === 'hari') {
+      return Math.round(n).toLocaleString('id-ID');
+    }
+    return n.toFixed(2);
+  }
+
+  /** "0,5–1,5" / "maks 95" / "min 15,0%" — sisi yang kosong tidak dicetak. */
+  pitaTeks(pita: any, bentuk: 'angka' | 'hari' | 'persen'): string {
+    const b = pita?.bawah;
+    const a = pita?.atas;
+    const f = (x: number) => this.cetak(Number(x), bentuk);
+    if (b !== null && b !== undefined && a !== null && a !== undefined) {
+      return `${f(b)}–${f(a)}`;
+    }
+    if (a !== null && a !== undefined) {
+      return this.translate.instant('posisiKeuangan.maks') + ' ' + f(a);
+    }
+    if (b !== null && b !== undefined) {
+      return this.translate.instant('posisiKeuangan.min') + ' ' + f(b);
+    }
+    return '—';
+  }
+
+  /** Terjemahan arti, dengan cadangan bila letaknya belum punya teks. */
+  arti(r: any): string {
+    const utama = this.translate.instant(r.kunciArti);
+    if (utama && utama !== r.kunciArti) return utama;
+    const cadangan = this.translate.instant(r.kunciArtiCadangan);
+    return cadangan && cadangan !== r.kunciArtiCadangan ? cadangan : '';
   }
 
   /** Disposisi satu status; nol bila statusnya tidak muncul sama sekali. */

@@ -268,21 +268,14 @@
               <span class="angka">{{ dte() }}</span>
             </div>
             <!--
-              Pita acuan dicetak MENEMPEL pada angkanya, bukan disembunyikan
-              lalu keluar sebagai kata "sehat". Yang membaca perlu tahu
-              terhadap apa angka itu dibandingkan.
+              Letaknya disebut di sini; ARTI dan RISIKONYA ada di seksi
+              "Rasio & artinya" di bawah, sekali, tidak diulang.
             -->
-            <span class="pkeu-neraca__acuan">
-              {{
-                "posisiKeuangan.acuanDte"
-                  | translate
-                    : {
-                        bawah: acuanDte.bawah,
-                        atas: acuanDte.atas,
-                        sumber: acuanDte.sumber
-                      }
-              }}
-            </span>
+            @if (d.penilaian?.debtToEquity?.posisi; as letak) {
+              <span class="pkeu-chip">{{
+                "posisiKeuangan.posisi." + letak | translate
+              }}</span>
+            }
           </div>
         </div>
 
@@ -294,7 +287,9 @@
               <span class="pkeu-ember__bilah">
                 <span
                   class="pkeu-ember__isi"
-                  [style.width.%]="lebar(rincianKewajibanLain(), k)"
+                  [style.width.%]="
+                    lebar(k.total, nilaiKewajibanLain())
+                  "
                 ></span>
               </span>
               <span class="pkeu-ember__nilai">{{ uang(k.total) }}</span>
@@ -316,6 +311,80 @@
             <span>{{ "posisiKeuangan.neracaCelah" | translate }}</span>
           </div>
         </div>
+      </div>
+    }
+
+    <!-- ============ 2c. Rasio & artinya ============ -->
+    @if (daftarRasio().length) {
+      <div class="pkeu-seksi">
+        <h2 class="pkeu-seksi__judul">
+          {{ "posisiKeuangan.rasioJudul" | translate }}
+        </h2>
+
+        <div class="pkeu-rasio">
+          @for (r of daftarRasio(); track r.kode) {
+            <div
+              class="pkeu-rasio__butir"
+              [class.pkeu-rasio__butir--baik]="r.baik === true"
+              [class.pkeu-rasio__butir--awas]="r.baik === false"
+            >
+              <div class="pkeu-rasio__kepala">
+                <span class="pkeu-rasio__nama">{{
+                  "posisiKeuangan.namaRasio." + r.kode | translate
+                }}</span>
+                <span class="pkeu-rasio__nilai">{{ r.teks }}</span>
+              </div>
+
+              <div class="pkeu-rasio__bar">
+                <!--
+                  LETAKNYA disebut sebagai kata, bukan diserahkan pada warna.
+
+                  Warna saja tidak terbaca oleh yang kesulitan membedakannya,
+                  dan tidak tercetak pada lembar hitam putih.
+                -->
+                @if (r.posisi) {
+                  <span class="pkeu-chip">{{
+                    "posisiKeuangan.posisi." + r.posisi | translate
+                  }}</span>
+                }
+                <span class="pkeu-rasio__acuan">
+                  {{ "posisiKeuangan.acuanSingkat" | translate }}
+                  {{ r.pitaTeks }}
+                  @if (r.pita?.acuan) {
+                    ({{ r.pita.acuan }})
+                  }
+                </span>
+              </div>
+
+              <!--
+                ARTI DAN RISIKONYA — inilah yang membuat angkanya berguna.
+
+                Sebelumnya di sini hanya ada angka beserta pitanya sebagai
+                tulisan kecil, dengan alasan tidak mau memvonis. Akibatnya
+                layar berhenti menjawab pertanyaan yang membuat orang
+                membukanya: "2,03 itu bagus atau tidak?"
+
+                Yang ditambahkan BUKAN label SEHAT pada perusahaannya — label
+                seperti itu membuat orang berhenti bertanya. Yang ditambahkan
+                apa artinya berada di situ, dan apa risikonya.
+              -->
+              <p class="pkeu-rasio__arti">{{ arti(r) }}</p>
+            </div>
+          }
+        </div>
+
+        <!--
+          Peringatan acuan DIPINDAH ke bawah dan diciutkan.
+
+          Ia sebelumnya tercetak menempel pada setiap angka, lebih panjang
+          dan lebih menonjol daripada jawabannya sendiri — sehingga yang
+          paling terbaca di layar adalah alasan untuk tidak mempercayainya.
+          Ia tetap harus ada, tetapi sekali dan di bawah.
+        -->
+        <details class="pkeu-catatan">
+          <summary>{{ "posisiKeuangan.acuanCatatanJudul" | translate }}</summary>
+          <p>{{ "posisiKeuangan.acuanCatatan" | translate }}</p>
+        </details>
       </div>
     }
 
@@ -345,7 +414,7 @@
                   <span
                     class="pkeu-ember__isi"
                     [class.pkeu-ember__isi--buruk]="e.mendesak"
-                    [style.width.%]="lebar(emberPiutang(), e)"
+                    [style.width.%]="lebar(e.nilai, nilaiEmber(emberPiutang()))"
                   ></span>
                 </span>
                 <span class="pkeu-ember__nilai">{{ uang(e.nilai) }}</span>
@@ -419,7 +488,7 @@
                   <span
                     class="pkeu-ember__isi"
                     [class.pkeu-ember__isi--buruk]="e.mendesak"
-                    [style.width.%]="lebar(emberUtang(), e)"
+                    [style.width.%]="lebar(e.nilai, nilaiEmber(emberUtang()))"
                   ></span>
                 </span>
                 <span class="pkeu-ember__nilai">{{ uang(e.nilai) }}</span>

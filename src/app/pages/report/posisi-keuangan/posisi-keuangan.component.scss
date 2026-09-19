@@ -449,3 +449,101 @@
   color: var(--muted, #6b7280);
   line-height: 1.35;
 }
+
+/* ---------------- Rasio & artinya ---------------- */
+
+.pkeu-rasio {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, minmax(280px, 1fr)));
+  gap: 0.75rem;
+}
+.pkeu-rasio__butir {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: 0.85rem 1rem;
+  border: 0.5px solid var(--border, #e3e6eb);
+  /* Pita di tepi kiri: keadaan terbaca sebelum angkanya dibaca, dan ia tetap
+     ada saat warnanya tidak terbedakan. */
+  border-left: 3px solid var(--border, #e3e6eb);
+  border-radius: 14px;
+  background: var(--surface, #fff);
+
+  &--baik {
+    border-left-color: var(--good-fg, #30a46c);
+  }
+  &--awas {
+    border-left-color: var(--warn-fg, #d97706);
+  }
+}
+.pkeu-rasio__kepala {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.pkeu-rasio__nama {
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.pkeu-rasio__nilai {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.pkeu-rasio__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+/* Keadaan disebut sebagai KATA, bukan diserahkan pada warna: warna saja
+   tidak terbaca oleh yang kesulitan membedakannya, dan hilang saat dicetak. */
+.pkeu-chip {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #f6f8fb);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.pkeu-rasio__butir--baik .pkeu-chip {
+  border-color: var(--good-fg, #30a46c);
+  color: var(--good-fg, #1a7f4b);
+}
+.pkeu-rasio__butir--awas .pkeu-chip {
+  border-color: var(--warn-fg, #d97706);
+  color: var(--warn-fg, #a85c04);
+}
+.pkeu-rasio__acuan {
+  font-size: 0.68rem;
+  color: var(--muted, #6b7280);
+}
+.pkeu-rasio__arti {
+  margin: 0.15rem 0 0;
+  font-size: 0.74rem;
+  line-height: 1.5;
+  color: var(--ink, #16181d);
+}
+
+/* Peringatan acuan: SEKALI, di bawah, terlipat. Ia sebelumnya tercetak
+   menempel pada tiap angka dan lebih menonjol daripada jawabannya. */
+.pkeu-catatan {
+  margin-top: 0.75rem;
+  font-size: 0.72rem;
+  color: var(--muted, #6b7280);
+
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+  }
+  p {
+    margin: 0.4rem 0 0;
+    line-height: 1.5;
+  }
+}

@@ -111,29 +111,66 @@ describe('disposisi rencana', () => {
 });
 
 describe('bilah ember', () => {
-  it('diukur terhadap ember TERBESAR, bukan terhadap totalnya', () => {
+  it('diukur terhadap nilai TERBESAR, bukan terhadap totalnya', () => {
     /*
      * Dibagi terhadap total, seluruh bilah menjadi sangat pendek begitu
-     * embernya banyak — dan yang dicari di sini justru mana yang menonjol.
+     * daftarnya panjang — dan yang dicari di sini justru mana yang menonjol.
      */
     const c = komponen();
-    const daftar = [
-      { kunci: 'a', label: '', nilai: 100 },
-      { kunci: 'b', label: '', nilai: 50 },
-    ];
-    expect(c.lebar(daftar, daftar[0])).toBe(100);
-    expect(c.lebar(daftar, daftar[1])).toBe(50);
+    expect(c.lebar(100, [100, 50])).toBe(100);
+    expect(c.lebar(50, [100, 50])).toBe(50);
   });
 
   it('seluruhnya nol tidak menghasilkan NaN', () => {
+    const c = komponen();
+    expect(c.lebar(0, [0])).toBe(0);
+  });
+
+  it('nilai yang BUKAN angka menjadi nol, bukan NaN', () => {
     /*
-     * `0 / 0` adalah NaN, dan `[style.width.%]="NaN"` membuat Angular
-     * menuliskan "NaN%" ke atribut gaya — bilahnya lalu selebar apa pun yang
-     * diputuskan peramban, tanpa satu pun galat.
+     * INI BUG YANG SUDAH TERJADI DI LAYAR.
+     *
+     * Versi sebelumnya menerima objek lalu membaca `x.nilai`. Daftar
+     * kewajiban menyimpan nilainya pada `total`, sehingga `x.nilai`
+     * `undefined` -> NaN -> `Math.max` atas NaN juga NaN. Penjaga
+     * `puncak <= 0` tidak menangkapnya: setiap perbandingan dengan NaN
+     * bernilai salah. Yang keluar `width: NaN%`, CSS tidak sah, diabaikan
+     * peramban, dan SELURUH batang tergambar penuh — tiga baris bernilai
+     * 3 juta, 64 juta, dan 101 juta tampil sama panjang.
      */
     const c = komponen();
-    const daftar = [{ kunci: 'a', label: '', nilai: 0 }];
-    expect(c.lebar(daftar, daftar[0])).toBe(0);
+    expect(c.lebar(undefined, [undefined, undefined])).toBe(0);
+    expect(c.lebar(50, [undefined, 100])).toBe(50);
+  });
+
+  it('lewat JALUR ASLINYA: kewajiban lain tergambar proporsional', () => {
+    /*
+     * Uji sebelumnya memanggil `lebar()` dengan bentuk objek yang BENAR —
+     * yaitu bentuk yang tidak pernah dipakai templatnya. Ia lolos, dan
+     * bugnya tetap sampai ke layar.
+     *
+     * Yang ini memakai jalan yang sama persis dengan templat: nilai dari
+     * `rincianKewajibanLain()`, pembanding dari `nilaiKewajibanLain()`.
+     */
+    const c = komponen();
+    c.data.set({
+      kewajibanLain: {
+        rincian: {
+          beban: { total: 3_340_000, jumlahDokumen: 1 },
+          reimbursement: { total: 63_881_441, jumlahDokumen: 4 },
+          gaji: { total: 101_310_811, jumlahDokumen: 9 },
+        },
+      },
+    });
+
+    const daftar = c.rincianKewajibanLain();
+    const semua = c.nilaiKewajibanLain();
+    const lebar = daftar.map((k: any) => c.lebar(k.total, semua));
+
+    expect(lebar[2]).toBe(100);
+    expect(lebar[1]).toBe(63);
+    expect(lebar[0]).toBe(3);
+    expect(lebar.every((x: number) => Number.isFinite(x))).toBeTrue();
   });
 });
 
@@ -245,5 +282,92 @@ describe('neraca ringkas & ekuitas', () => {
       'gaji',
     ]);
     expect(r.every((x: any) => x.total === 0)).toBeTrue();
+  });
+});
+
+
+describe('rasio: angka, letak, dan ARTINYA', () => {
+  /*
+   * Layar sempat berhenti menjawab pertanyaan yang membuat orang membukanya.
+   * "2,03" berdiri telanjang; pitanya dicetak lebih redup daripada
+   * peringatan di sebelahnya, dan tidak ada satu kata pun tentang apa
+   * artinya berada di situ.
+   */
+
+  function isi(c: any) {
+    c.data.set({
+      quickRatio: 0.9,
+      neraca: { ekuitas: 2_725_535_316, debtToEquity: 2.03 },
+      rasio: { dso: 130, marjinKotor: 0.22 },
+      ambang: {
+        quickRatio: { bawah: 1.1, atas: 1.5, arah: 'pita', acuan: 'CFMA' },
+        debtToEquity: { bawah: 0.5, atas: 1.5, arah: 'naikBuruk', acuan: 'CFMA' },
+        dso: { bawah: null, atas: 95, arah: 'naikBuruk', acuan: 'CFMA' },
+        marjinKotor: { bawah: 0.15, atas: null, arah: 'naikBaik', acuan: 'CFMA' },
+      },
+      penilaian: {
+        quickRatio: { posisi: 'dibawah', baik: false },
+        debtToEquity: { posisi: 'diatas', baik: false },
+        dso: { posisi: 'diatas', baik: false },
+        marjinKotor: { posisi: 'didalam', baik: true },
+      },
+    });
+  }
+
+  it('tiap rasio membawa letak DAN kunci artinya', () => {
+    const c = komponen();
+    isi(c);
+    const dte = c.daftarRasio().find((r: any) => r.kode === 'debtToEquity');
+
+    expect(dte.teks).toBe('2.03');
+    expect(dte.posisi).toBe('diatas');
+    expect(dte.baik).toBeFalse();
+    expect(dte.kunciArti).toBe('posisiKeuangan.arti.debtToEquity.diatas');
+  });
+
+  it('marjin di dalam acuan ditandai BAIK, bukan sekadar "di luar/di dalam"', () => {
+    /*
+     * Arah tiap rasio berbeda: marjin tinggi kabar baik, DSO tinggi kabar
+     * buruk. Satu tanda untuk keduanya berarti layar memberi peringatan yang
+     * sama pada dua keadaan yang berlawanan.
+     */
+    const c = komponen();
+    isi(c);
+    const m = c.daftarRasio().find((r: any) => r.kode === 'marjinKotor');
+    expect(m.baik).toBeTrue();
+    expect(m.teks).toBe('22.0%');
+  });
+
+  it('rasio yang nilainya belum ada TIDAK digambar sama sekali', () => {
+    /*
+     * Kotak bertanda pisah memberi tahu ada angka yang disembunyikan, dan
+     * itu pertanyaan yang berulang. Marjin pada level 4 memang tidak
+     * dikirim server — bloknya hilang, bukan kosong.
+     */
+    const c = komponen();
+    isi(c);
+    const kode = c.daftarRasio().map((r: any) => r.kode);
+
+    expect(kode).not.toContain('marjinBersih');
+    expect(kode).not.toContain('roe');
+  });
+
+  it('hari dicetak bulat, rasio dua desimal, bagian sebagai persen', () => {
+    const c = komponen();
+    expect(c.cetak(130.4, 'hari')).toBe('130');
+    expect(c.cetak(2.034, 'angka')).toBe('2.03');
+    expect(c.cetak(0.223, 'persen')).toBe('22.3%');
+  });
+
+  it('pita yang satu sisinya kosong dicetak "maks"/"min", bukan rentang', () => {
+    /*
+     * DSO tidak punya batas bawah yang bermakna. Mencetak "0–95" mengarang
+     * batas yang tidak pernah ada.
+     */
+    const c = komponen();
+    expect(c.pitaTeks({ bawah: null, atas: 95 }, 'hari')).toContain('95');
+    expect(c.pitaTeks({ bawah: null, atas: 95 }, 'hari')).not.toContain('–');
+    expect(c.pitaTeks({ bawah: 0.5, atas: 1.5 }, 'angka')).toBe('0.50–1.50');
+    expect(c.pitaTeks({}, 'angka')).toBe('—');
   });
 });

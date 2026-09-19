@@ -210,6 +210,90 @@
   },
   "posisiKeuangan": {
     "judul": "Financial Position",
+    "rasioJudul": "Ratios and what they mean",
+    "acuanCatatanJudul": "Where do the reference figures come from?",
+    "acuanCatatan": "Reference bands come from CFMA (Construction Financial Management Association) \u2014 US construction data, across trade types. They are ORIENTATION, not a verdict: they are not drawn from Indonesian MEP subcontractors, and each band can be set yourself. One more thing to keep in mind: the quick ratio here does not put loans in the denominator, because loan records hold no tenor \u2014 so if an instalment falls due soon, the figure is better than reality.",
+    "maks": "max",
+    "min": "min",
+    "acuanSingkat": "Reference",
+    "posisi": {
+      "dibawah": "Below reference",
+      "didalam": "Within reference",
+      "diatas": "Above reference"
+    },
+    "namaRasio": {
+      "quickRatio": "Quick ratio",
+      "debtToEquity": "Debt to equity",
+      "dso": "Days sales outstanding",
+      "dpo": "Days payable outstanding",
+      "siklusModalKerja": "Working capital cycle",
+      "piutangTua": "Receivables past 90 days",
+      "konsentrasiPiutang": "Receivable concentration",
+      "marjinKotor": "Gross margin",
+      "marjinBersih": "Net margin",
+      "rasioOverhead": "Overhead ratio",
+      "roe": "Return on equity"
+    },
+    "arti": {
+      "quickRatio": {
+        "dibawah": "Cash and receivables do NOT cover what is due. Risk: one client pays late and supplier payments slip with it \u2014 and slipped suppliers usually raise prices or ask for advances on the next order.",
+        "didalam": "Cash and receivables cover obligations without piling up.",
+        "diatas": "Cash sits far above obligations. The risk is not default but idle money \u2014 capital not used to take work or press purchase prices.",
+        "umum": "Cash plus receivables against what must be paid."
+      },
+      "debtToEquity": {
+        "dibawah": "Debt is small against own capital. Safe \u2014 but it may mean financing is not being used to take on larger work.",
+        "didalam": "Debt and own capital are balanced by construction convention.",
+        "diatas": "Debt is LARGER than own capital \u2014 most work is funded by debt, not capital. Risk: instalments and supplier bills run on even when client terms slip, so one late project presses cash directly. Sureties generally withhold bonds above 1.0, so tenders requiring a performance bond may close off.",
+        "umum": "All liabilities against own capital."
+      },
+      "dso": {
+        "didalam": "Collection age is within construction convention \u2014 the industry average is about 72 days.",
+        "diatas": "Money sits with clients longer than the industry norm. Risk: the company funds the work from its own cash, and the longer it sits the more cash must be on hand for the same volume of work.",
+        "umum": "How many days an invoice takes to become money in the bank."
+      },
+      "dpo": {
+        "umum": "How many days the company takes to pay suppliers. Too short means paying faster than being paid \u2014 own cash carries the gap. Too long damages supplier relations and usually returns as higher prices."
+      },
+      "siklusModalKerja": {
+        "didalam": "The gap between collection and payment age is reasonable.",
+        "diatas": "This many days the company funds its own work before the money returns. Risk: the more work taken on, the more cash must be ready up front \u2014 growth enlarges the cash need rather than easing it.",
+        "umum": "Collection age minus payment age: how many days the company's own cash carries the work."
+      },
+      "piutangTua": {
+        "didalam": "The ageing share of receivables is contained.",
+        "diatas": "Share of receivables past 90 days. Risk: the older an invoice, the smaller the chance of full collection, and part of it may never return \u2014 while it still counts as an asset on the balance sheet.",
+        "umum": "Share of receivables older than 90 days."
+      },
+      "konsentrasiPiutang": {
+        "didalam": "Receivables are spread across several clients.",
+        "diatas": "Most receivables sit with ONE client. Risk: a single late or troubled client is enough to stop company cash \u2014 and liquidity ratios do not show this at all, because spread and concentrated receivables produce exactly the same number.",
+        "umum": "Share of receivables held by the single largest client."
+      },
+      "marjinKotor": {
+        "dibawah": "Gross margin is below specialty subcontractor convention. Risk: overhead and unforeseen costs eat an already thin remainder, so one project that misses is enough to turn the year to a loss.",
+        "didalam": "Gross margin is within specialty subcontractor convention.",
+        "diatas": "Gross margin is above convention \u2014 room to absorb unforeseen costs.",
+        "umum": "Revenue less direct project cost, over revenue."
+      },
+      "marjinBersih": {
+        "dibawah": "What remains after all expenses is very thin. Risk: a small delay, a penalty, or one unexpected bill is enough to turn it negative.",
+        "didalam": "What remains after all expenses is within industry convention.",
+        "diatas": "What remains after all expenses is above industry convention.",
+        "umum": "What remains after all expenses, over revenue."
+      },
+      "rasioOverhead": {
+        "didalam": "Fixed cost against revenue is within convention.",
+        "diatas": "Fixed cost takes a large share of revenue. Risk: when revenue falls, this cost does NOT fall with it \u2014 that is what turns a quiet month into a loss, not the projects.",
+        "umum": "Operating expenses against revenue."
+      },
+      "roe": {
+        "dibawah": "Own capital returns less than the reference. The risk is not insolvency but opportunity: capital tied up works more slowly than its alternatives.",
+        "didalam": "Own capital returns within industry convention.",
+        "diatas": "Own capital returns above industry convention.",
+        "umum": "Profit against own capital."
+      }
+    },
     "neracaJudul": "Condensed balance sheet",
     "aset": "Assets",
     "kewajiban": "Liabilities",
