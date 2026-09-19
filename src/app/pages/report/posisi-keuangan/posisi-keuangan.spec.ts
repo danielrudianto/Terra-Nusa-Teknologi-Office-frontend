@@ -371,3 +371,89 @@ describe('rasio: angka, letak, dan ARTINYA', () => {
     expect(c.pitaTeks({}, 'angka')).toBe('—');
   });
 });
+
+
+describe('hitungan yang dapat dicek', () => {
+  /*
+   * "Overhead 18,5%" tidak berguna sampai terlihat 18,5% DARI APA, dan
+   * isinya apa saja. Rasio yang tidak dapat ditelusuri ke komponennya hanya
+   * dapat dipercaya — dan yang dipercaya tanpa dapat dicek akan ditanyakan
+   * berulang kali.
+   */
+
+  function isi(c: any) {
+    c.data.set({
+      rasio: { rasioOverhead: 0.185 },
+      ambang: { rasioOverhead: { bawah: null, atas: 0.15, arah: 'naikBuruk' } },
+      penilaian: { rasioOverhead: { posisi: 'diatas', baik: false } },
+      hitungan: {
+        rasioOverhead: {
+          pembilang: {
+            label: 'bebanUsaha',
+            nilai: 185_000_000,
+            rincian: [
+              { kategori: 'gaji', label: 'Gaji', nilai: 120_000_000 },
+              { kategori: 'sewa', label: 'Sewa kantor', nilai: 65_000_000 },
+            ],
+          },
+          penyebut: { label: 'pendapatan', nilai: 1_000_000_000 },
+        },
+      },
+    });
+  }
+
+  it('pembilang, penyebut, dan rinciannya terbaca', () => {
+    const c = komponen();
+    isi(c);
+    const h = c.hitungan('rasioOverhead');
+
+    expect(h.pembilang.nilai).toBe(185_000_000);
+    expect(h.penyebut.nilai).toBe(1_000_000_000);
+    expect(c.rincian(h.pembilang).length).toBe(2);
+  });
+
+  it('sisi tanpa rincian mengembalikan daftar KOSONG, bukan meledak', () => {
+    /*
+     * Tidak semua rasio dirinci. `undefined.map` akan menjatuhkan seluruh
+     * halaman — dan halaman yang mati jauh lebih buruk daripada satu baris
+     * rincian yang tidak ada.
+     */
+    const c = komponen();
+    isi(c);
+    expect(c.rincian(c.hitungan('rasioOverhead').penyebut)).toEqual([]);
+    expect(c.rincian(undefined)).toEqual([]);
+    expect(c.rincian({ rincian: 'bukan array' })).toEqual([]);
+  });
+
+  it('hitungan tertutup secara bawaan, dan membuka hanya barisnya sendiri', () => {
+    const c = komponen();
+    isi(c);
+
+    expect(c.terbuka('rasioOverhead')).toBeFalse();
+    c.bukaHitungan('rasioOverhead');
+    expect(c.terbuka('rasioOverhead')).toBeTrue();
+    expect(c.terbuka('dso')).toBeFalse();
+
+    c.bukaHitungan('rasioOverhead');
+    expect(c.terbuka('rasioOverhead')).toBeFalse();
+  });
+
+  it('rasio tanpa hitungan tidak menampilkan tombolnya', () => {
+    const c = komponen();
+    c.data.set({ rasio: { dso: 100 }, hitungan: {} });
+    expect(c.hitungan('dso')).toBeNull();
+  });
+
+  it('komponen tanpa terjemahan memakai labelnya, bukan kunci mentah', () => {
+    /*
+     * Kategori beban datang dari data, bukan dari daftar tetap. Yang belum
+     * punya terjemahan akan tercetak sebagai "posisiKeuangan.komponen.sewa"
+     * di layar yang dibaca stakeholder.
+     */
+    const c = komponen();
+    expect(c.labelKomponen({ kategori: 'entah', label: 'Sewa kantor' })).toBe(
+      'Sewa kantor',
+    );
+    expect(c.labelKomponen({})).toBe('—');
+  });
+});

@@ -321,54 +321,116 @@
           {{ "posisiKeuangan.rasioJudul" | translate }}
         </h2>
 
-        <div class="pkeu-rasio">
+        <!--
+          GRID BERKOLOM, bukan tumpukan kartu.
+
+          Sebagai kartu bertumpuk, angkanya tidak sejajar dan mata harus
+          menelusuri tiap kartu satu per satu untuk membandingkannya. Berkolom,
+          seluruh nilai berbaris di sumbu yang sama dan yang menonjol terlihat
+          tanpa dibaca.
+        -->
+        <div class="pkeu-tabelrasio">
+          <div class="pkeu-tabelrasio__kepala">
+            <span>{{ "posisiKeuangan.kolRasio" | translate }}</span>
+            <span class="kanan">{{ "posisiKeuangan.kolNilai" | translate }}</span>
+            <span>{{ "posisiKeuangan.kolLetak" | translate }}</span>
+            <span>{{ "posisiKeuangan.kolAcuan" | translate }}</span>
+            <span>{{ "posisiKeuangan.kolArti" | translate }}</span>
+          </div>
+
           @for (r of daftarRasio(); track r.kode) {
             <div
-              class="pkeu-rasio__butir"
-              [class.pkeu-rasio__butir--baik]="r.baik === true"
-              [class.pkeu-rasio__butir--awas]="r.baik === false"
+              class="pkeu-tabelrasio__baris"
+              [class.pkeu-tabelrasio__baris--baik]="r.baik === true"
+              [class.pkeu-tabelrasio__baris--awas]="r.baik === false"
             >
-              <div class="pkeu-rasio__kepala">
-                <span class="pkeu-rasio__nama">{{
-                  "posisiKeuangan.namaRasio." + r.kode | translate
-                }}</span>
-                <span class="pkeu-rasio__nilai">{{ r.teks }}</span>
-              </div>
+              <span class="pkeu-tabelrasio__nama">
+                {{ "posisiKeuangan.namaRasio." + r.kode | translate }}
+                @if (hitungan(r.kode)) {
+                  <!--
+                    Tombol hitungan ADA DI BARISNYA, bukan di satu tempat
+                    terpisah: yang bertanya "18,5% dari apa" sedang menatap
+                    baris itu, bukan sedang mencari menu.
+                  -->
+                  <button
+                    type="button"
+                    class="pkeu-tautan"
+                    (click)="bukaHitungan(r.kode)"
+                  >
+                    {{
+                      (terbuka(r.kode)
+                        ? "posisiKeuangan.tutupHitungan"
+                        : "posisiKeuangan.lihatHitungan"
+                      ) | translate
+                    }}
+                  </button>
+                }
+              </span>
 
-              <div class="pkeu-rasio__bar">
-                <!--
-                  LETAKNYA disebut sebagai kata, bukan diserahkan pada warna.
+              <span class="pkeu-tabelrasio__nilai kanan">{{ r.teks }}</span>
 
-                  Warna saja tidak terbaca oleh yang kesulitan membedakannya,
-                  dan tidak tercetak pada lembar hitam putih.
-                -->
+              <span>
                 @if (r.posisi) {
                   <span class="pkeu-chip">{{
                     "posisiKeuangan.posisi." + r.posisi | translate
                   }}</span>
                 }
-                <span class="pkeu-rasio__acuan">
-                  {{ "posisiKeuangan.acuanSingkat" | translate }}
-                  {{ r.pitaTeks }}
-                  @if (r.pita?.acuan) {
-                    ({{ r.pita.acuan }})
+              </span>
+
+              <span class="pkeu-tabelrasio__acuan">
+                {{ r.pitaTeks }}
+                @if (r.pita?.acuan) {
+                  <em>({{ r.pita.acuan }})</em>
+                }
+              </span>
+
+              <span class="pkeu-tabelrasio__arti">{{ arti(r) }}</span>
+
+              <!-- ---- Hitungannya ---- -->
+              @if (terbuka(r.kode) && hitungan(r.kode); as h) {
+                <div class="pkeu-hitung">
+                  <div class="pkeu-hitung__sisi">
+                    <span class="pkeu-hitung__cap">{{
+                      "posisiKeuangan.pembilang" | translate
+                    }}</span>
+                    <span class="pkeu-hitung__nilai">{{
+                      uang(h.pembilang?.nilai)
+                    }}</span>
+                    @for (x of rincian(h.pembilang); track $index) {
+                      <div class="pkeu-hitung__baris">
+                        <span>{{ labelKomponen(x) }}</span>
+                        <span class="angka">{{ uang(x.nilai) }}</span>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="pkeu-hitung__sisi">
+                    <span class="pkeu-hitung__cap">{{
+                      "posisiKeuangan.penyebut" | translate
+                    }}</span>
+                    <span class="pkeu-hitung__nilai">{{
+                      uang(h.penyebut?.nilai)
+                    }}</span>
+                    @for (x of rincian(h.penyebut); track $index) {
+                      <div class="pkeu-hitung__baris">
+                        <span>{{ labelKomponen(x) }}</span>
+                        <span class="angka">{{ uang(x.nilai) }}</span>
+                      </div>
+                    }
+                  </div>
+
+                  @if (h.pengali) {
+                    <div class="pkeu-hitung__sisi">
+                      <span class="pkeu-hitung__cap">{{
+                        "posisiKeuangan.pengali" | translate
+                      }}</span>
+                      <span class="pkeu-hitung__nilai">{{
+                        h.pengali.nilai
+                      }}</span>
+                    </div>
                   }
-                </span>
-              </div>
-
-              <!--
-                ARTI DAN RISIKONYA — inilah yang membuat angkanya berguna.
-
-                Sebelumnya di sini hanya ada angka beserta pitanya sebagai
-                tulisan kecil, dengan alasan tidak mau memvonis. Akibatnya
-                layar berhenti menjawab pertanyaan yang membuat orang
-                membukanya: "2,03 itu bagus atau tidak?"
-
-                Yang ditambahkan BUKAN label SEHAT pada perusahaannya — label
-                seperti itu membuat orang berhenti bertanya. Yang ditambahkan
-                apa artinya berada di situ, dan apa risikonya.
-              -->
-              <p class="pkeu-rasio__arti">{{ arti(r) }}</p>
+                </div>
+              }
             </div>
           }
         </div>

@@ -547,3 +547,164 @@
     line-height: 1.5;
   }
 }
+
+/* ---------------- Rasio: grid berkolom ---------------- */
+
+/* Kolom tetap untuk angka, sisa ruang untuk teks. Sebagai kartu bertumpuk,
+   nilainya tidak sejajar dan mata harus menelusuri tiap kartu untuk
+   membandingkannya; berkolom, seluruh nilai berbaris di sumbu yang sama. */
+.pkeu-tabelrasio {
+  display: flex;
+  flex-direction: column;
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 14px;
+  background: var(--surface, #fff);
+  overflow: hidden;
+}
+
+.pkeu-tabelrasio__kepala,
+.pkeu-tabelrasio__baris {
+  display: grid;
+  /* `minmax(0, …)` pada kolom teks: tanpa itu isi panjang mendorong kolom
+     angka keluar petaknya dan barisnya berhenti sejajar. */
+  grid-template-columns:
+    minmax(0, 1.35fr) 5.5rem 7.5rem 8rem minmax(0, 2.4fr);
+  gap: 0.5rem 0.9rem;
+  align-items: baseline;
+  padding: 0.6rem 1rem;
+}
+
+.pkeu-tabelrasio__kepala {
+  border-bottom: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #f6f8fb);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted, #6b7280);
+}
+
+.pkeu-tabelrasio__baris {
+  border-bottom: 0.5px solid var(--border, #eef1f6);
+  /* Pita keadaan di tepi kiri — terbaca sebelum angkanya dibaca, dan tetap
+     ada saat warnanya tidak terbedakan atau lembarnya dicetak. */
+  border-left: 3px solid transparent;
+  font-size: 0.76rem;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+  &--baik {
+    border-left-color: var(--good-fg, #30a46c);
+  }
+  &--awas {
+    border-left-color: var(--warn-fg, #d97706);
+  }
+}
+
+.pkeu-tabelrasio__nama {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  font-weight: 600;
+}
+.pkeu-tabelrasio__nilai {
+  font-size: 1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.pkeu-tabelrasio .kanan {
+  text-align: right;
+}
+.pkeu-tabelrasio__acuan {
+  font-size: 0.7rem;
+  color: var(--muted, #6b7280);
+  font-variant-numeric: tabular-nums;
+
+  em {
+    font-style: normal;
+    opacity: 0.8;
+  }
+}
+.pkeu-tabelrasio__arti {
+  min-width: 0;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--ink, #16181d);
+}
+
+.pkeu-tautan {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--brand, #154dec);
+  font: inherit;
+  font-size: 0.66rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ---- Hitungan: pembilang / penyebut ---- */
+
+.pkeu-hitung {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, minmax(200px, 1fr)));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  background: var(--surface-2, #f6f8fb);
+}
+.pkeu-hitung__sisi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.pkeu-hitung__cap {
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--muted, #6b7280);
+}
+.pkeu-hitung__nilai {
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.pkeu-hitung__baris {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.7rem;
+  color: var(--muted, #6b7280);
+
+  .angka {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+}
+
+/* Di bawah 900px kolomnya dilipat: lima kolom pada layar sempit membuat
+   angka rupiah meluber, dan ia MELUBER — tidak membungkus, karena tidak ada
+   kesempatan pemenggalan di dalam "12.345.678.901". */
+@media (max-width: 900px) {
+  .pkeu-tabelrasio__kepala {
+    display: none;
+  }
+  .pkeu-tabelrasio__baris {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 0.25rem;
+  }
+  .pkeu-tabelrasio__acuan,
+  .pkeu-tabelrasio__arti {
+    grid-column: 1 / -1;
+  }
+}

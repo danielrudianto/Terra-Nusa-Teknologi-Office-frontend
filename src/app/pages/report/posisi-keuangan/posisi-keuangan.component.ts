@@ -463,6 +463,43 @@ export class PosisiKeuanganComponent {
       });
   });
 
+  /** Baris hitungan mana yang sedang dibuka. */
+  readonly hitunganTerbuka = signal<Record<string, boolean>>({});
+
+  bukaHitungan(kode: string): void {
+    this.hitunganTerbuka.update((s) => ({ ...s, [kode]: !s[kode] }));
+  }
+
+  terbuka(kode: string): boolean {
+    return !!this.hitunganTerbuka()[kode];
+  }
+
+  /**
+   * Penyusun satu rasio: pembilang, penyebut, dan rinciannya.
+   *
+   * Rasio yang tidak dapat ditelusuri ke komponennya adalah rasio yang hanya
+   * dapat DIPERCAYA — dan yang dipercaya tanpa dapat dicek akan ditanyakan
+   * berulang kali, sampai yang menjawab membuka laporan lain untuk
+   * membuktikannya. "Overhead 18,5%" tidak berguna sampai terlihat 18,5%
+   * dari apa, dan isinya apa saja.
+   */
+  hitungan(kode: string): any | null {
+    return this.data()?.hitungan?.[kode] || null;
+  }
+
+  /** Rincian penyusun; daftar kosong bila memang tidak dirinci. */
+  rincian(sisi: any): any[] {
+    return Array.isArray(sisi?.rincian) ? sisi.rincian : [];
+  }
+
+  /** Label komponen: terjemahan bila ada, apa adanya bila tidak. */
+  labelKomponen(x: any): string {
+    const kunci = 'posisiKeuangan.komponen.' + (x?.kategori ?? '');
+    const t = this.translate.instant(kunci);
+    if (t && t !== kunci) return t;
+    return x?.label || x?.kategori || '—';
+  }
+
   /** Angka rasio sesuai bentuknya. */
   cetak(n: number, bentuk: 'angka' | 'hari' | 'persen'): string {
     if (bentuk === 'persen') {
