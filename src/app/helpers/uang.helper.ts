@@ -47,7 +47,19 @@ export function uangDokumen(nilai: unknown): string {
   });
 }
 
-/** `Rp 1.234.567,89`. */
+/**
+ * `Rp 1.234.567,89` — dengan spasi TAK-PUTUS antara "Rp" dan angkanya.
+ *
+ * Spasi biasa membuat peramban boleh memutus barisnya persis di situ, dan
+ * pada kolom sempit yang terjadi adalah "Rp" sendirian di satu baris dan
+ * "132.090.000,00" di baris berikutnya. Tabel yang separuh barisnya setinggi
+ * dua baris jadi sulit dipindai, dan "Rp" yang menggantung sendiri sempat
+ * terbaca sebagai kolom yang kosong.
+ *
+ * Diperbaiki DI SINI, bukan dengan `white-space: nowrap` di tiap tabel:
+ * yang di CSS harus diingat ulang setiap kali ada tabel baru, dan yang
+ * terlupa tidak menghasilkan galat apa pun.
+ */
 export function uangDokumenRp(nilai: unknown): string {
-  return `Rp ${uangDokumen(nilai)}`;
+  return `Rp\u00a0${uangDokumen(nilai)}`;
 }

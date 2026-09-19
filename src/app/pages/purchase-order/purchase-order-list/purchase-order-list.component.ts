@@ -959,6 +959,27 @@ export class PurchaseOrderListComponent {
               output);
           } else {
             return printPurchaseOrderA({
+              /*
+               * MUATAN BERSAMA DISEBAR LEBIH DULU, lalu ditimpa yang khas dokumen
+               * ini.
+               *
+               * Bidangnya dulu ditulis tangan satu per satu di sini, dan
+               * `approvedByName` serta `approvedByPosition` TERTINGGAL — sehingga
+               * dokumen yang SUDAH disetujui tetap tercetak "Sign Here" dengan nama
+               * kosong, sementara jenis lain mencetaknya lengkap.
+               *
+               * Tidak ada galat apa pun: `signerLines` memang menggambar penunjuk
+               * itu ketika namanya kosong, dan kosong adalah keadaan yang BENAR
+               * bagi dokumen yang belum disetujui. Jadi yang keluar dari pencetak
+               * tampak sah sepenuhnya — hanya tidak menyebut siapa yang
+               * mengesahkannya, pada lembar yang justru diedarkan untuk
+               * ditandatangani.
+               *
+               * Kekeliruan yang sama pernah diperbaiki untuk SPK pekerjaan (PO-H)
+               * dengan cara ini; tiga titik cetak lain tertinggal, dan tertinggalnya
+               * baru ketahuan dari dokumen yang sudah beredar.
+               */
+              ...printData,
               isApproved,
               status,
               isAdendum,
@@ -1225,6 +1246,27 @@ export class PurchaseOrderListComponent {
           };
 
           return printPurchaseOrder641({
+            /*
+             * MUATAN BERSAMA DISEBAR LEBIH DULU, lalu ditimpa yang khas dokumen
+             * ini.
+             *
+             * Bidangnya dulu ditulis tangan satu per satu di sini, dan
+             * `approvedByName` serta `approvedByPosition` TERTINGGAL — sehingga
+             * dokumen yang SUDAH disetujui tetap tercetak "Sign Here" dengan nama
+             * kosong, sementara jenis lain mencetaknya lengkap.
+             *
+             * Tidak ada galat apa pun: `signerLines` memang menggambar penunjuk
+             * itu ketika namanya kosong, dan kosong adalah keadaan yang BENAR
+             * bagi dokumen yang belum disetujui. Jadi yang keluar dari pencetak
+             * tampak sah sepenuhnya — hanya tidak menyebut siapa yang
+             * mengesahkannya, pada lembar yang justru diedarkan untuk
+             * ditandatangani.
+             *
+             * Kekeliruan yang sama pernah diperbaiki untuk SPK pekerjaan (PO-H)
+             * dengan cara ini; tiga titik cetak lain tertinggal, dan tertinggalnya
+             * baru ketahuan dari dokumen yang sudah beredar.
+             */
+            ...printData,
               isApproved,
               status,
               isAdendum,
@@ -1326,6 +1368,27 @@ export class PurchaseOrderListComponent {
           // Termasuk yang diterbitkan sebagai tipe A — bentuk dokumennya
           // mengikuti formulir asalnya, bukan kode jenisnya.
           return printPurchaseOrderB({
+            /*
+             * MUATAN BERSAMA DISEBAR LEBIH DULU, lalu ditimpa yang khas dokumen
+             * ini.
+             *
+             * Bidangnya dulu ditulis tangan satu per satu di sini, dan
+             * `approvedByName` serta `approvedByPosition` TERTINGGAL — sehingga
+             * dokumen yang SUDAH disetujui tetap tercetak "Sign Here" dengan nama
+             * kosong, sementara jenis lain mencetaknya lengkap.
+             *
+             * Tidak ada galat apa pun: `signerLines` memang menggambar penunjuk
+             * itu ketika namanya kosong, dan kosong adalah keadaan yang BENAR
+             * bagi dokumen yang belum disetujui. Jadi yang keluar dari pencetak
+             * tampak sah sepenuhnya — hanya tidak menyebut siapa yang
+             * mengesahkannya, pada lembar yang justru diedarkan untuk
+             * ditandatangani.
+             *
+             * Kekeliruan yang sama pernah diperbaiki untuk SPK pekerjaan (PO-H)
+             * dengan cara ini; tiga titik cetak lain tertinggal, dan tertinggalnya
+             * baru ketahuan dari dokumen yang sudah beredar.
+             */
+            ...printData,
               isApproved,
               status,
               isAdendum,

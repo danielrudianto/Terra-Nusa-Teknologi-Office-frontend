@@ -12,11 +12,13 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { purchaseTypeLabel } from 'src/app/constants/purchase-type-label.constant';
 import { AuditTrailComponent } from '../../../../components/audit-trail/audit-trail.component';
 import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
+import { CanDirective } from 'src/app/directives/can.directive';
 
 @Component({
   selector: 'app-master-item-view',
   standalone: true,
   imports: [
+    CanDirective,
     AuditTrailComponent,
     CommonModule,
     MatDialogModule,

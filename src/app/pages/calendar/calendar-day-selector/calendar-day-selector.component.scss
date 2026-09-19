@@ -49,6 +49,13 @@
 .ds-sub {
   font-size: 0.78rem;
   color: var(--muted, #6b7280);
+  display: block;
+}
+/* Tanggalnya yang dicari mata, bukan keterangan modulnya — jadi ia yang
+   ditebalkan, dan keterangannya turun sebaris di bawahnya. */
+.ds-sub--tanggal {
+  font-weight: 700;
+  color: var(--ink, #16181d);
 }
 .ds-daychip {
   font-size: 0.78rem;

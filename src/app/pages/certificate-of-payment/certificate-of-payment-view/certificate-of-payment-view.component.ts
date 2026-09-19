@@ -35,6 +35,7 @@ import {
 } from 'src/app/services/certificate-of-payment.service';
 import { PermissionService } from 'src/app/services/permission.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import { CanDirective } from 'src/app/directives/can.directive';
 
 /**
  * Layar baca Certificate of Payment — sekaligus tempat memeriksa & menyetujui.
@@ -48,6 +49,7 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
   selector: 'app-certificate-of-payment-view',
   standalone: true,
   imports: [
+    CanDirective,
     CommonModule,
     MatTableModule,
     MatDialogModule,

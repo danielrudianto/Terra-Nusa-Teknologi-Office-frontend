@@ -236,7 +236,8 @@
             <!-- Menyunting hanya SELAMA BAP belum disetujui: setelah itu
                  volumenya sudah menjadi progres yang diakui sah. -->
             @if (!c.isBapApproved) {
-              <button mat-menu-item (click)="ubah(c)">
+              <button
+      *appCan="'certificate_of_payment:update'" mat-menu-item (click)="ubah(c)">
                 <mat-icon>edit</mat-icon>
                 <span>{{ "common.edit" | translate }}</span>
               </button>
@@ -279,7 +280,8 @@
                 <span>{{ "cop.setujui" | translate }}</span>
               </button>
             }
-            <button mat-menu-item (click)="hapus(c)">
+            <button
+      *appCan="'certificate_of_payment:delete'" mat-menu-item (click)="hapus(c)">
               <mat-icon>delete</mat-icon>
               <span>{{ "common.delete" | translate }}</span>
             </button>

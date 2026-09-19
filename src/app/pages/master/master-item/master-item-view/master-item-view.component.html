@@ -77,7 +77,8 @@
     <button type="button" class="miv-close" (click)="onClose()">
       {{ "masterItemView.close" | translate }}
     </button>
-    <button type="button" class="miv-edit" (click)="onEdit()">
+    <button
+      *appCan="'master_item:update'" type="button" class="miv-edit" (click)="onEdit()">
       <mat-icon>edit</mat-icon>
       {{ "masterItemView.edit" | translate }}
     </button>

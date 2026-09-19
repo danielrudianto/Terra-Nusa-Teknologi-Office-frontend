@@ -556,7 +556,8 @@
 
       <!-- Volume masih boleh disunting SELAMA BAP belum disetujui. -->
       @if (!c.isBapApproved) {
-        <button mat-stroked-button (click)="ubah()">
+        <button
+      *appCan="'certificate_of_payment:update'" mat-stroked-button (click)="ubah()">
           <mat-icon>edit</mat-icon>
           {{ "common.edit" | translate }}
         </button>

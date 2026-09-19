@@ -9,6 +9,7 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -20,6 +21,7 @@ import { firstValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
+import { RasioDialogComponent } from './rasio-dialog/rasio-dialog.component';
 import { pastikanChart, rupiah } from 'src/app/helpers/chart-dasar.helper';
 import { uangDokumen } from 'src/app/helpers/uang.helper';
 
@@ -35,6 +37,28 @@ import { uangDokumen } from 'src/app/helpers/uang.helper';
  * konsol, dan build tetap bersih.
  */
 pastikanChart();
+
+/**
+ * Bagaimana tiap rasio dicetak: angka biasa, hari, atau persen.
+ *
+ * DI TINGKAT MODUL, bukan di dalam `daftarRasio()`. Petak rasio dan grafik
+ * riwayat menggambar angka yang SAMA; bila masing-masing memegang petanya
+ * sendiri, satu tambahan rasio di satu tempat membuat yang lain mencetak
+ * "0,15" di sebelah "15,0%" untuk rasio yang sama, pada halaman yang sama.
+ */
+export const BENTUK_RASIO: Record<string, 'angka' | 'hari' | 'persen'> = {
+  quickRatio: 'angka',
+  debtToEquity: 'angka',
+  dso: 'hari',
+  dpo: 'hari',
+  siklusModalKerja: 'hari',
+  piutangTua: 'persen',
+  konsentrasiPiutang: 'persen',
+  marjinKotor: 'persen',
+  marjinBersih: 'persen',
+  rasioOverhead: 'persen',
+  roe: 'persen',
+};
 
 /** Satu baris ember umur/tempo yang digambar sebagai batang. */
 interface Ember {
@@ -54,6 +78,7 @@ interface Ember {
     MatIconModule,
     MatProgressBarModule,
     MatExpansionModule,
+    MatDialogModule,
     MatFormFieldModule,
     MatSelectModule,
     MatTooltipModule,
@@ -66,6 +91,7 @@ interface Ember {
 })
 export class PosisiKeuanganComponent {
   private readonly api = inject(ApiService);
+  private readonly dialog = inject(MatDialog);
   private readonly translate = inject(TranslateService);
   private readonly pesanServer = inject(ServerMessageService);
 
@@ -88,6 +114,25 @@ export class PosisiKeuanganComponent {
   readonly mundur = signal(5);
 
   readonly pilihanMundur = [2, 5, 11];
+
+  /*
+   * RIWAYAT RASIO — jalan keluar KETIGA, dan dimuat paling belakangan.
+   *
+   * Satu titik riwayat adalah delapan kueri; bawaannya dua belas titik.
+   * Memuatnya bersama halaman berarti setiap orang yang cuma ingin melihat
+   * saldo kas ikut membayar sembilan puluh enam kueri. Karena itu ia baru
+   * berangkat ketika panelnya DIBUKA, dan hanya sekali.
+   */
+  readonly riwayat = signal<any | null>(null);
+  readonly memuatRiwayat = signal(false);
+  readonly galatRiwayat = signal('');
+  readonly mundurRiwayat = signal(12);
+  readonly rasioRiwayat = signal('quickRatio');
+
+  readonly pilihanMundurRiwayat = [6, 12];
+
+  /** Sudah pernah dibuka? Supaya membuka-tutup panel tidak memuat ulang. */
+  private riwayatPernahDibuka = false;
 
   constructor() {
     void this.muat();
@@ -135,12 +180,57 @@ export class PosisiKeuanganComponent {
     void this.muatAkurasi();
   }
 
+  /**
+   * Dipanggil saat panel riwayat dibuka.
+   *
+   * Dijaga agar hanya memuat SEKALI: `(opened)` menyala setiap kali panelnya
+   * dibuka, dan tanpa penjaga ini setiap buka-tutup melepas sembilan puluh
+   * enam kueri lagi.
+   */
+  bukaRiwayat(): void {
+    if (this.riwayatPernahDibuka) return;
+    this.riwayatPernahDibuka = true;
+    void this.muatRiwayat();
+  }
+
+  async muatRiwayat(): Promise<void> {
+    this.memuatRiwayat.set(true);
+    this.galatRiwayat.set('');
+    try {
+      const res = await firstValueFrom(
+        this.api.get('finance-status/riwayat', {
+          mundur: this.mundurRiwayat(),
+        }),
+      );
+      this.riwayat.set(res);
+    } catch (e) {
+      this.riwayat.set(null);
+      this.galatRiwayat.set(this.pesanServer.terjemahkan(e));
+    } finally {
+      this.memuatRiwayat.set(false);
+    }
+  }
+
+  gantiMundurRiwayat(nilai: number): void {
+    this.mundurRiwayat.set(Number(nilai) || 12);
+    void this.muatRiwayat();
+  }
+
+  gantiRasioRiwayat(kode: string): void {
+    // TIDAK memuat ulang: seluruh rasio sudah ada pada setiap titik, jadi
+    // berganti rasio cuma berganti bidang yang digambar. Memanggil server
+    // lagi di sini berarti sembilan puluh enam kueri untuk data yang sudah
+    // ada di tangan.
+    this.rasioRiwayat.set(String(kode || 'quickRatio'));
+  }
+
   // ------------------------------------------------------------------
   // Angka
   // ------------------------------------------------------------------
 
   uang(n: unknown): string {
-    return 'Rp ' + uangDokumen(n);
+    // Spasi TAK-PUTUS: lihat `uangDokumenRp` untuk alasannya.
+    return 'Rp\u00a0' + uangDokumen(n);
   }
 
   /**
@@ -154,12 +244,6 @@ export class PosisiKeuanganComponent {
     const q = this.data()?.quickRatio;
     if (q === null || q === undefined) return '—';
     return Number(q).toFixed(2);
-  }
-
-  /** Rasio di bawah 1 berarti kewajiban lancar melampaui yang mencairkannya. */
-  rasioKurang(): boolean {
-    const q = this.data()?.quickRatio;
-    return q !== null && q !== undefined && Number(q) < 1;
   }
 
   readonly emberPiutang = computed<Ember[]>(() => {
@@ -276,6 +360,192 @@ export class PosisiKeuanganComponent {
       ],
     };
   });
+
+  // ------------------------------------------------------------------
+  // Grafik riwayat rasio
+  // ------------------------------------------------------------------
+
+  /** Bentuk cetak rasio yang sedang dilihat. */
+  private bentukRiwayat(): 'angka' | 'hari' | 'persen' {
+    return BENTUK_RASIO[this.rasioRiwayat()] || 'angka';
+  }
+
+  /**
+   * Nilai satu titik untuk rasio yang sedang dilihat, SUDAH diskalakan.
+   *
+   * Rasio berbentuk persen disimpan sebagai pecahan (0,15) dan dicetak
+   * sebagai 15,0%. Grafiknya harus memakai skala yang sama dengan
+   * sumbunya, jadi penskalaan dilakukan SEKALI di sini — bukan di sumbu,
+   * bukan di tooltip, bukan di tabel. Tiga tempat berarti tiga peluang
+   * untuk berselisih, dan yang berselisih di sini membuat garis dan
+   * angkanya menyebut dua hal berbeda.
+   */
+  private angkaRiwayat(t: any): number | null {
+    const v = t?.[this.rasioRiwayat()];
+    if (v === null || v === undefined) return null;
+    const n = Number(v);
+    if (!Number.isFinite(n)) return null;
+    return this.bentukRiwayat() === 'persen' ? n * 100 : n;
+  }
+
+  /**
+   * Rupiah, atau tanda pisah bila nilainya TIDAK ADA.
+   *
+   * `uang(null)` mencetak "Rp 0,00", dan nol di kolom kas berarti rekening
+   * kosong — pernyataan yang sama sekali berbeda dari "saldo bulan itu tidak
+   * dapat dibaca". Keduanya harus dapat dibedakan di tabel yang sama.
+   */
+  uangAtau(n: unknown): string {
+    return n === null || n === undefined ? '—' : this.uang(n);
+  }
+
+  /** Ada titik yang saldo kasnya gagal disusun ulang? */
+  adaKasTidakTerbaca(): boolean {
+    const titik: any[] = this.riwayat()?.titik || [];
+    return titik.some((t) => !!t?.kasTidakTerbaca);
+  }
+
+  /** Berapa bulan yang kasnya tidak terbaca — disebut angkanya. */
+  jumlahKasTidakTerbaca(): number {
+    const titik: any[] = this.riwayat()?.titik || [];
+    return titik.filter((t) => !!t?.kasTidakTerbaca).length;
+  }
+
+  /** Nilai satu titik, sebagai teks — untuk tabel angka di bawah grafik. */
+  nilaiRiwayat(t: any): string {
+    const v = t?.[this.rasioRiwayat()];
+    if (v === null || v === undefined) {
+      /*
+       * `—`, BUKAN nol.
+       *
+       * Titik kosong berarti rasionya tidak terdefinisi pada bulan itu:
+       * tanpa kewajiban lancar, quick ratio tak terhingga; tanpa pendapatan,
+       * DSO tidak ada. Mencetak "0" pada keadaan itu membacanya persis
+       * terbalik — keadaan terbaik ditulis sebagai yang terburuk.
+       */
+      return '—';
+    }
+    return this.cetak(Number(v), this.bentukRiwayat());
+  }
+
+  /** Satu sisi pita acuan, pada skala yang sama dengan garisnya. */
+  private ambangRiwayat(sisi: 'bawah' | 'atas'): number | null {
+    const pita = this.riwayat()?.ambang?.[this.rasioRiwayat()];
+    const v = pita?.[sisi];
+    if (v === null || v === undefined) return null;
+    const n = Number(v);
+    if (!Number.isFinite(n)) return null;
+    return this.bentukRiwayat() === 'persen' ? n * 100 : n;
+  }
+
+  readonly grafikRiwayat = computed<ChartData<'line'>>(() => {
+    const titik: any[] = this.riwayat()?.titik || [];
+    const label = titik.map((t) => this.labelTanggal(t.tanggal));
+
+    const set: any[] = [
+      {
+        label: this.translate.instant(
+          'posisiKeuangan.namaRasio.' + this.rasioRiwayat(),
+        ),
+        data: titik.map((t) => this.angkaRiwayat(t)),
+        borderColor: 'rgba(37, 99, 235, 1)',
+        backgroundColor: 'rgba(37, 99, 235, 0.12)',
+        borderWidth: 2,
+        tension: 0.25,
+        fill: true,
+        pointRadius: 3,
+        /*
+         * `spanGaps: false` — bulan yang rasionya tidak terdefinisi
+         * ditinggalkan PUTUS, bukan disambung.
+         *
+         * Disambung, garisnya menarik satu garis lurus melintasi bulan yang
+         * datanya tidak ada, dan yang melihatnya membaca interpolasi itu
+         * sebagai pengukuran.
+         */
+        spanGaps: false,
+      },
+    ];
+
+    /*
+     * Pita acuan digambar sebagai GARIS, bukan hanya disebut di teks.
+     *
+     * Angka rasio tanpa acuannya tidak dapat dinilai siapa pun yang bukan
+     * orang keuangan — dan halaman ini justru dibuat untuk mereka.
+     */
+    const bawah = this.ambangRiwayat('bawah');
+    const atas = this.ambangRiwayat('atas');
+    if (bawah !== null) {
+      set.push({
+        label: this.translate.instant('posisiKeuangan.batasBawah'),
+        data: label.map(() => bawah),
+        borderColor: 'rgba(148, 163, 184, 0.9)',
+        borderDash: [6, 4],
+        borderWidth: 1,
+        pointRadius: 0,
+        fill: false,
+      });
+    }
+    if (atas !== null) {
+      set.push({
+        label: this.translate.instant('posisiKeuangan.batasAtas'),
+        data: label.map(() => atas),
+        borderColor: 'rgba(148, 163, 184, 0.9)',
+        borderDash: [2, 3],
+        borderWidth: 1,
+        pointRadius: 0,
+        fill: false,
+      });
+    }
+
+    return { labels: label, datasets: set };
+  });
+
+  readonly opsiRiwayat = computed<ChartConfiguration<'line'>['options']>(() => {
+    const bentuk = this.bentukRiwayat();
+    const cetakSumbu = (v: number) => {
+      if (bentuk === 'persen') return v.toFixed(0) + '%';
+      if (bentuk === 'hari') return Math.round(v).toLocaleString('id-ID');
+      return v.toFixed(2);
+    };
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12 } },
+        tooltip: {
+          callbacks: {
+            label: (ctx: any) =>
+              `${ctx.dataset.label}: ${cetakSumbu(Number(ctx.parsed.y))}`,
+          },
+        },
+      },
+      scales: {
+        x: { ticks: { maxRotation: 0, autoSkip: true } },
+        y: {
+          /*
+           * TIDAK dipaksa mulai dari nol.
+           *
+           * Quick ratio bergerak antara 0,9 dan 1,2; dipaksa dari nol,
+           * seluruh pergerakannya menjadi satu garis mendatar di sepertiga
+           * atas kanvas — dan perubahan yang justru dicari orang menjadi
+           * tidak terlihat. Yang dibandingkan di sini bukan besaran uang,
+           * melainkan posisinya terhadap pita acuan, dan pitanya ikut
+           * digambar.
+           */
+          beginAtZero: false,
+          ticks: { callback: (v: any) => cetakSumbu(Number(v)) },
+        },
+      },
+    };
+  });
+
+  /** "Agu 2026" dari "2026-08-31". */
+  labelTanggal(iso: string): string {
+    const bagian = String(iso || '').split('-');
+    if (bagian.length < 2) return String(iso || '');
+    return this.labelBulan(`${bagian[0]}-${bagian[1]}`);
+  }
 
   readonly opsi: ChartConfiguration<'bar'>['options'] = {
     responsive: true,
@@ -420,20 +690,7 @@ export class PosisiKeuanganComponent {
       roe: d.rasio?.roe,
     };
 
-    /** Bagaimana tiap rasio dicetak: angka biasa, hari, atau persen. */
-    const bentuk: Record<string, 'angka' | 'hari' | 'persen'> = {
-      quickRatio: 'angka',
-      debtToEquity: 'angka',
-      dso: 'hari',
-      dpo: 'hari',
-      siklusModalKerja: 'hari',
-      piutangTua: 'persen',
-      konsentrasiPiutang: 'persen',
-      marjinKotor: 'persen',
-      marjinBersih: 'persen',
-      rasioOverhead: 'persen',
-      roe: 'persen',
-    };
+    const bentuk = BENTUK_RASIO;
 
     return Object.keys(nilai)
       .filter((k) => nilai[k] !== null && nilai[k] !== undefined)
@@ -463,41 +720,37 @@ export class PosisiKeuanganComponent {
       });
   });
 
-  /** Baris hitungan mana yang sedang dibuka. */
-  readonly hitunganTerbuka = signal<Record<string, boolean>>({});
-
-  bukaHitungan(kode: string): void {
-    this.hitunganTerbuka.update((s) => ({ ...s, [kode]: !s[kode] }));
-  }
-
-  terbuka(kode: string): boolean {
-    return !!this.hitunganTerbuka()[kode];
-  }
-
   /**
-   * Penyusun satu rasio: pembilang, penyebut, dan rinciannya.
+   * Buka rincian satu rasio sebagai DIALOG.
    *
-   * Rasio yang tidak dapat ditelusuri ke komponennya adalah rasio yang hanya
-   * dapat DIPERCAYA — dan yang dipercaya tanpa dapat dicek akan ditanyakan
-   * berulang kali, sampai yang menjawab membuka laporan lain untuk
-   * membuktikannya. "Overhead 18,5%" tidak berguna sampai terlihat 18,5%
-   * dari apa, dan isinya apa saja.
+   * Artinya, risikonya, dan hitungannya dipindah ke sini — di petaknya hanya
+   * angka dan letaknya. Sebelas paragraf arti yang tergelar sekaligus
+   * menenggelamkan hal yang justru dicari orang: membandingkan angkanya.
    */
+  bukaRasio(r: any): void {
+    this.dialog.open(RasioDialogComponent, {
+      width: '640px',
+      maxWidth: '95vw',
+      autoFocus: false,
+      data: {
+        kode: r.kode,
+        teks: r.teks,
+        posisi: r.posisi,
+        baik: r.baik,
+        pitaTeks: r.pitaTeks,
+        acuan: r.pita?.acuan ?? null,
+        // Diselesaikan DI SINI, bukan di dialognya: cadangan kunci arti
+        // sudah ada di `arti()`, dan menyalinnya ke dialog berarti dua
+        // tempat yang harus sepakat soal kunci mana yang dipakai.
+        arti: this.arti(r),
+        hitungan: this.hitungan(r.kode),
+      },
+    });
+  }
+
+  /** Penyusun satu rasio: pembilang, penyebut, dan rinciannya. */
   hitungan(kode: string): any | null {
     return this.data()?.hitungan?.[kode] || null;
-  }
-
-  /** Rincian penyusun; daftar kosong bila memang tidak dirinci. */
-  rincian(sisi: any): any[] {
-    return Array.isArray(sisi?.rincian) ? sisi.rincian : [];
-  }
-
-  /** Label komponen: terjemahan bila ada, apa adanya bila tidak. */
-  labelKomponen(x: any): string {
-    const kunci = 'posisiKeuangan.komponen.' + (x?.kategori ?? '');
-    const t = this.translate.instant(kunci);
-    if (t && t !== kunci) return t;
-    return x?.label || x?.kategori || '—';
   }
 
   /** Angka rasio sesuai bentuknya. */

@@ -27,11 +27,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { CanDirective } from 'src/app/directives/can.directive';
 
 @Component({
   selector: 'app-payment-view',
   providers: [provideNgxMask()],
   imports: [
+    CanDirective,
     AuditTrailComponent,
     MatDialogModule,
     FormsModule,

@@ -69,7 +69,24 @@ describe('uangDokumen', () => {
 
 describe('uangDokumenRp', () => {
   it('menambahkan awalan, tanpa mengubah angkanya', () => {
-    expect(uangDokumenRp(1_000_000)).toBe('Rp 1.000.000,00');
-    expect(uangDokumenRp(null)).toBe('Rp 0,00');
+    expect(uangDokumenRp(1_000_000)).toBe('Rp\u00a01.000.000,00');
+    expect(uangDokumenRp(null)).toBe('Rp\u00a00,00');
+  });
+
+  it('memakai spasi TAK-PUTUS, bukan spasi biasa', () => {
+    /*
+     * Dengan spasi biasa, peramban boleh memutus barisnya persis di antara
+     * "Rp" dan angkanya. Pada kolom sempit — daftar dokumen utang dan
+     * piutang — yang terlihat adalah "Rp" menggantung sendirian di satu
+     * baris dan "132.090.000,00" di baris berikutnya. Tidak ada galat, dan
+     * "Rp" yang sendirian sempat terbaca sebagai kolom yang kosong.
+     *
+     * Diuji tersendiri, bukan hanya lewat perbandingan di atas: kalau
+     * seseorang kelak "merapikan" kembali menjadi spasi biasa, uji di atas
+     * akan ikut disesuaikan tanpa ada yang menyadari apa yang hilang.
+     */
+    const teks = uangDokumenRp(1_000_000);
+    expect(teks.includes('\u00a0')).toBeTrue();
+    expect(teks.includes('Rp ')).toBeFalse();
   });
 });

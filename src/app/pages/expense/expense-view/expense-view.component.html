@@ -177,7 +177,8 @@
       }}
     </button>
     <span class="ev-spacer"></span>
-    <button mat-button (click)="ubah()">
+    <button
+      *appCan="'expenses:update'" mat-button (click)="ubah()">
       <mat-icon>edit</mat-icon>&nbsp;{{ "common.edit" | translate }}
     </button>
     <!--

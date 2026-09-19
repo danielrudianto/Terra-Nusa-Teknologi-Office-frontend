@@ -2,6 +2,14 @@
   <div mat-dialog-title class="ds-head" appDialogGeser>
     <div class="ds-head__text">
       <h2 class="ds-title">{{ "calendarDay.title" | translate }}</h2>
+      <!--
+        TANGGALNYA disebut, bukan hanya judul modulnya.
+
+        Dialog ini menutupi kalender yang memanggilnya, jadi sesudah terbuka
+        tidak ada lagi di layar yang menyebut hari mana yang sedang dilihat —
+        padahal yang diputuskan di sini menyetujui atau menolak pembayaran.
+      -->
+      <span class="ds-sub ds-sub--tanggal">{{ tanggalTeks() }}</span>
       <span class="ds-sub">{{ "calendarDay.subtitle" | translate }}</span>
     </div>
     <span class="ds-daychip" *ngIf="!isLoading">

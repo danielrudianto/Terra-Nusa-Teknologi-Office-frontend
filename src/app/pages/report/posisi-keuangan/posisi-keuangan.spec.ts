@@ -14,7 +14,10 @@ import { PosisiKeuanganComponent } from './posisi-keuangan.component';
 import { ApiService } from 'src/app/services/api.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 
-function komponen(jawab: (url: string) => any = () => ({})): any {
+function komponen(
+  jawab: (url: string) => any = () => ({}),
+  terjemahan: Record<string, string> = {},
+): any {
   TestBed.configureTestingModule({
     providers: [
       {
@@ -28,7 +31,10 @@ function komponen(jawab: (url: string) => any = () => ({})): any {
           },
         },
       },
-      { provide: TranslateService, useValue: { instant: (k: string) => k } },
+      {
+        provide: TranslateService,
+        useValue: { instant: (k: string) => terjemahan[k] ?? k },
+      },
       { provide: ServerMessageService, useValue: { terjemahkan: () => 'galat' } },
     ],
   });
@@ -40,6 +46,13 @@ function komponen(jawab: (url: string) => any = () => ({})): any {
 afterEach(() => TestBed.resetTestingModule());
 
 describe('quick ratio', () => {
+  /*
+   * KARTU QUICK RATIO DI BARIS ATAS SUDAH DIBUANG — angkanya kembar dengan
+   * petak rasio di bawahnya, dan dua tempat yang menyebut angka yang sama
+   * adalah dua tempat yang suatu saat menyebutnya berbeda.
+   *
+   * `rasio()` tetap dipakai: spanduk selisih versi lama mencetaknya.
+   */
   it('TANPA utang usaha dicetak tanda pisah, bukan 0,00', () => {
     /*
      * Server mengirim `null` ketika tidak ada utang usaha sama sekali —
@@ -53,22 +66,12 @@ describe('quick ratio', () => {
     c.data.set({ quickRatio: null });
 
     expect(c.rasio()).toBe('—');
-    expect(c.rasioKurang())
-      .withContext('kartunya diwarnai merah padahal tidak ada utang sama sekali')
-      .toBeFalse();
   });
 
-  it('rasio di bawah 1 ditandai', () => {
+  it('angka rasio dicetak dua desimal', () => {
     const c = komponen();
     c.data.set({ quickRatio: 0.82 });
     expect(c.rasio()).toBe('0.82');
-    expect(c.rasioKurang()).toBeTrue();
-  });
-
-  it('rasio tepat 1 TIDAK ditandai', () => {
-    const c = komponen();
-    c.data.set({ quickRatio: 1 });
-    expect(c.rasioKurang()).toBeFalse();
   });
 });
 
@@ -409,33 +412,7 @@ describe('hitungan yang dapat dicek', () => {
 
     expect(h.pembilang.nilai).toBe(185_000_000);
     expect(h.penyebut.nilai).toBe(1_000_000_000);
-    expect(c.rincian(h.pembilang).length).toBe(2);
-  });
-
-  it('sisi tanpa rincian mengembalikan daftar KOSONG, bukan meledak', () => {
-    /*
-     * Tidak semua rasio dirinci. `undefined.map` akan menjatuhkan seluruh
-     * halaman — dan halaman yang mati jauh lebih buruk daripada satu baris
-     * rincian yang tidak ada.
-     */
-    const c = komponen();
-    isi(c);
-    expect(c.rincian(c.hitungan('rasioOverhead').penyebut)).toEqual([]);
-    expect(c.rincian(undefined)).toEqual([]);
-    expect(c.rincian({ rincian: 'bukan array' })).toEqual([]);
-  });
-
-  it('hitungan tertutup secara bawaan, dan membuka hanya barisnya sendiri', () => {
-    const c = komponen();
-    isi(c);
-
-    expect(c.terbuka('rasioOverhead')).toBeFalse();
-    c.bukaHitungan('rasioOverhead');
-    expect(c.terbuka('rasioOverhead')).toBeTrue();
-    expect(c.terbuka('dso')).toBeFalse();
-
-    c.bukaHitungan('rasioOverhead');
-    expect(c.terbuka('rasioOverhead')).toBeFalse();
+    expect(h.pembilang.rincian.length).toBe(2);
   });
 
   it('rasio tanpa hitungan tidak menampilkan tombolnya', () => {
@@ -444,16 +421,312 @@ describe('hitungan yang dapat dicek', () => {
     expect(c.hitungan('dso')).toBeNull();
   });
 
-  it('komponen tanpa terjemahan memakai labelnya, bukan kunci mentah', () => {
+  /*
+   * `rincian()`, `labelKomponen()`, dan buka-tutup panel hitungan PINDAH ke
+   * `RasioDialogComponent` bersama isinya; ujinya ikut pindah ke
+   * `rasio-dialog.spec.ts`. Ditinggalkan di sini, ia akan menguji metode yang
+   * sudah tidak ada dan gagal pada baris yang tidak menyebut sebabnya.
+   */
+
+  it('dialog dibuka membawa arti DAN hitungan rasio yang diklik', () => {
     /*
-     * Kategori beban datang dari data, bukan dari daftar tetap. Yang belum
-     * punya terjemahan akan tercetak sebagai "posisiKeuangan.komponen.sewa"
-     * di layar yang dibaca stakeholder.
+     * Petaknya hanya tombol; seluruh penjelasan ada di dialog. Kalau yang
+     * dikirim ke dialog tidak lengkap, yang terbuka adalah kotak berisi
+     * angka tanpa arti — persis keadaan yang petak ini dibuat untuk
+     * memperbaikinya.
      */
-    const c = komponen();
-    expect(c.labelKomponen({ kategori: 'entah', label: 'Sewa kantor' })).toBe(
-      'Sewa kantor',
+    const c = komponen(() => ({}), {
+      'posisiKeuangan.arti.rasioOverhead.diatas':
+        'Overhead melampaui acuan: biaya kantor memakan marjin proyek.',
+    });
+    isi(c);
+    let dikirim: any = null;
+    c['dialog'] = { open: (_k: any, opsi: any) => (dikirim = opsi.data) };
+
+    const r = c.daftarRasio().find((x: any) => x.kode === 'rasioOverhead');
+    c.bukaRasio(r);
+
+    expect(dikirim.kode).toBe('rasioOverhead');
+    expect(dikirim.arti).toBe(
+      'Overhead melampaui acuan: biaya kantor memakan marjin proyek.',
     );
-    expect(c.labelKomponen({})).toBe('—');
+    expect(dikirim.hitungan.pembilang.nilai).toBe(185_000_000);
+  });
+});
+
+describe('riwayat rasio', () => {
+  /*
+   * Grafik riwayat punya dua kekeliruan yang tidak menghasilkan galat.
+   *
+   * 1. TITIK KOSONG DIGAMBAR SEBAGAI NOL. Bulan tanpa kewajiban lancar tidak
+   *    punya quick ratio — keadaan TERBAIK. Sebagai nol ia tergambar sebagai
+   *    jurang di grafik, yaitu keadaan terburuk, dan tidak ada yang tampak
+   *    salah.
+   *
+   * 2. PERSEN DISKALAKAN DUA KALI, ATAU TIDAK SAMA SEKALI. Rasio berbentuk
+   *    pecahan (0,15) dicetak 15,0%. Bila garisnya memakai pecahan sementara
+   *    sumbunya menambahkan "%", yang terbaca adalah "0%" untuk 15%.
+   */
+
+  const RW = {
+    mundur: 3,
+    rasio: ['quickRatio', 'piutangTua'],
+    ambang: {
+      quickRatio: { bawah: 1.1, atas: 1.5 },
+      piutangTua: { bawah: null, atas: 0.15 },
+    },
+    titik: [
+      {
+        tanggal: '2026-07-31',
+        quickRatio: 1.24,
+        piutangTua: 0.08,
+        kas: 100,
+        piutang: 60,
+        utangUsaha: 50,
+        ekuitas: 110,
+      },
+      {
+        tanggal: '2026-08-31',
+        quickRatio: null,
+        piutangTua: 0.22,
+        kas: 120,
+        piutang: 40,
+        utangUsaha: 0,
+        ekuitas: 160,
+      },
+      {
+        tanggal: '2026-09-19',
+        quickRatio: 1.01,
+        piutangTua: 0.3,
+        kas: 90,
+        piutang: 70,
+        utangUsaha: 80,
+        ekuitas: 80,
+      },
+    ],
+  };
+
+  function dengan(hitungPanggilan?: { n: number }) {
+    return komponen((url: string) => {
+      if (url === 'finance-status/riwayat') {
+        if (hitungPanggilan) hitungPanggilan.n += 1;
+        return RW;
+      }
+      return {};
+    });
+  }
+
+  it('TIDAK dimuat sampai panelnya dibuka', async () => {
+    const hit = { n: 0 };
+    const c = dengan(hit);
+    await Promise.resolve();
+
+    expect(hit.n)
+      .withContext('riwayat ikut berangkat saat halaman dibuka')
+      .toBe(0);
+    expect(c.riwayat()).toBeNull();
+  });
+
+  it('dibuka berkali-kali hanya memuat SEKALI', async () => {
+    /*
+     * Satu titik riwayat adalah delapan kueri, bawaannya dua belas titik.
+     * Tanpa penjaga, setiap buka-tutup panel melepas sembilan puluh enam
+     * kueri lagi — dan tidak ada yang terlihat selain halaman yang melambat.
+     */
+    const hit = { n: 0 };
+    const c = dengan(hit);
+    c.bukaRiwayat();
+    await Promise.resolve();
+    c.bukaRiwayat();
+    c.bukaRiwayat();
+    await Promise.resolve();
+
+    expect(hit.n).toBe(1);
+  });
+
+  it('bulan yang rasionya TIDAK ADA tetap kosong, bukan nol', async () => {
+    const c = dengan();
+    await c.muatRiwayat();
+
+    const data = c.grafikRiwayat().datasets[0].data;
+    expect(data[0]).toBeCloseTo(1.24, 5);
+    expect(data[1])
+      .withContext('bulan tanpa kewajiban lancar tergambar sebagai jurang')
+      .toBeNull();
+    expect(data[2]).toBeCloseTo(1.01, 5);
+    expect(c.grafikRiwayat().datasets[0].spanGaps).toBeFalse();
+  });
+
+  it('rasio berbentuk persen diskalakan SEKALI, dan sama di grafik & tabel', async () => {
+    const c = dengan();
+    await c.muatRiwayat();
+    c.gantiRasioRiwayat('piutangTua');
+
+    expect(c.grafikRiwayat().datasets[0].data[0]).toBeCloseTo(8, 5);
+    expect(c.nilaiRiwayat(RW.titik[0])).toBe('8.0%');
+  });
+
+  it('pita acuan digambar pada SKALA YANG SAMA dengan garisnya', async () => {
+    /*
+     * Pita disimpan sebagai pecahan, sama seperti nilainya. Kalau garisnya
+     * diskalakan ke persen sementara pitanya tidak, garis 30% akan tampak
+     * jauh DI ATAS batas 0,15 yang tergambar menempel di sumbu nol —
+     * kesimpulannya benar karena kebetulan, dan akan terbalik pada rasio
+     * yang arahnya lain.
+     */
+    const c = dengan();
+    await c.muatRiwayat();
+    c.gantiRasioRiwayat('piutangTua');
+
+    const garisBatas = c
+      .grafikRiwayat()
+      .datasets.filter((d: any) => d.pointRadius === 0);
+    expect(garisBatas.length).toBe(1);
+    expect(garisBatas[0].data[0]).toBeCloseTo(15, 5);
+  });
+
+  it('sisi pita yang kosong TIDAK digambar', async () => {
+    const c = dengan();
+    await c.muatRiwayat();
+    c.gantiRasioRiwayat('piutangTua');
+    expect(c.grafikRiwayat().datasets.length).toBe(2);
+
+    c.gantiRasioRiwayat('quickRatio');
+    expect(c.grafikRiwayat().datasets.length).toBe(3);
+  });
+
+  it('berganti rasio TIDAK memanggil server lagi', async () => {
+    /*
+     * Seluruh rasio sudah ada pada setiap titik. Memanggil server lagi di
+     * sini berarti sembilan puluh enam kueri untuk data yang sudah di tangan.
+     */
+    const hit = { n: 0 };
+    const c = dengan(hit);
+    await c.muatRiwayat();
+    c.gantiRasioRiwayat('piutangTua');
+    c.gantiRasioRiwayat('quickRatio');
+    await Promise.resolve();
+
+    expect(hit.n).toBe(1);
+  });
+
+  it('titik kosong dicetak tanda pisah di tabel, bukan 0,00', async () => {
+    const c = dengan();
+    await c.muatRiwayat();
+    expect(c.nilaiRiwayat(RW.titik[1])).toBe('—');
+  });
+
+  it('sumbu TIDAK dipaksa mulai dari nol', async () => {
+    /*
+     * Quick ratio bergerak antara 0,9 dan 1,2. Dipaksa dari nol, seluruh
+     * pergerakannya menjadi garis mendatar — dan perubahan yang justru dicari
+     * orang menjadi tidak terlihat.
+     */
+    const c = dengan();
+    await c.muatRiwayat();
+    expect(c.opsiRiwayat().scales.y.beginAtZero).toBeFalse();
+  });
+
+  it('sumbu-x menyebut BULANNYA, bukan tanggal mentah', async () => {
+    const c = dengan();
+    await c.muatRiwayat();
+    expect(c.grafikRiwayat().labels[0]).toBe('Jul 2026');
+    expect(c.grafikRiwayat().labels[2]).toBe('Sep 2026');
+  });
+
+  it('kegagalan riwayat TIDAK menjatuhkan angka kas di halaman', async () => {
+    const c = komponen((url: string) => {
+      if (url === 'finance-status/riwayat') return new Error('gagal');
+      return { kas: { total: 500 }, quickRatio: 1.2 };
+    });
+    await c.muat();
+    await c.muatRiwayat();
+
+    expect(c.riwayat()).toBeNull();
+    expect(c.galatRiwayat()).toBeTruthy();
+    expect(c.data().kas.total).toBe(500);
+    expect(c.galat()).toBe('');
+  });
+});
+
+describe('kas riwayat yang tidak terbaca', () => {
+  /*
+   * Saldo bulan lampau disusun ulang dari view `mutation`. Bila penyusunan
+   * itu gagal, server mengirim nol beserta penanda — dan halaman ini HARUS
+   * membedakan keduanya. Nol yang berarti "tidak terbaca" dan nol yang
+   * berarti "rekeningnya kosong" tergambar sama persis.
+   */
+
+  const RW_GAGAL = {
+    mundur: 2,
+    rasio: ['quickRatio'],
+    ambang: { quickRatio: { bawah: 1.1, atas: 1.5 } },
+    titik: [
+      {
+        tanggal: '2026-08-31',
+        kasTidakTerbaca: true,
+        quickRatio: null,
+        debtToEquity: null,
+        kas: null,
+        piutang: 40,
+        utangUsaha: 10,
+        ekuitas: null,
+      },
+      {
+        tanggal: '2026-09-19',
+        kasTidakTerbaca: false,
+        quickRatio: 1.01,
+        debtToEquity: 1.96,
+        kas: 0,
+        piutang: 70,
+        utangUsaha: 80,
+        ekuitas: 80,
+      },
+    ],
+  };
+
+  function dengan(rw: any) {
+    return komponen((url: string) =>
+      url === 'finance-status/riwayat' ? rw : {},
+    );
+  }
+
+  it('nilai yang TIDAK ADA dicetak tanda pisah, bukan Rp 0,00', async () => {
+    const c = dengan(RW_GAGAL);
+    await c.muatRiwayat();
+    expect(c.uangAtau(null)).toBe('—');
+    expect(c.uangAtau(undefined)).toBe('—');
+  });
+
+  it('nol yang MEMANG nol tetap dicetak Rp 0,00', async () => {
+    /*
+     * Sisi sebaliknya, dan sama pentingnya: rekening yang benar-benar
+     * kosong harus terbaca kosong, bukan disembunyikan sebagai "tidak ada
+     * data".
+     */
+    const c = dengan(RW_GAGAL);
+    await c.muatRiwayat();
+    expect(c.uangAtau(0)).toContain('0,00');
+  });
+
+  it('bulan yang saldonya tidak terbaca DIHITUNG dan disebut', async () => {
+    const c = dengan(RW_GAGAL);
+    await c.muatRiwayat();
+    expect(c.adaKasTidakTerbaca()).toBeTrue();
+    expect(c.jumlahKasTidakTerbaca()).toBe(1);
+  });
+
+  it('tanpa satu pun kegagalan, spanduknya TIDAK tampil', async () => {
+    /*
+     * Peringatan yang selalu ada berhenti dibaca — dan yang berhenti dibaca
+     * tidak memperingatkan apa pun ketika keadaannya benar-benar terjadi.
+     */
+    const c = dengan({
+      ...RW_GAGAL,
+      titik: RW_GAGAL.titik.map((t) => ({ ...t, kasTidakTerbaca: false })),
+    });
+    await c.muatRiwayat();
+    expect(c.adaKasTidakTerbaca()).toBeFalse();
+    expect(c.jumlahKasTidakTerbaca()).toBe(0);
   });
 });

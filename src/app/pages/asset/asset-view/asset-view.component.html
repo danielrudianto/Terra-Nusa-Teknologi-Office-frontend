@@ -101,7 +101,8 @@
       <mat-icon>receipt_long</mat-icon>
       {{ "assetView.viewPurchaseOrder" | translate }}
     </button>
-    <button type="button" class="av-edit" (click)="onEdit()">
+    <button
+      *appCan="'asset:update'" type="button" class="av-edit" (click)="onEdit()">
       <mat-icon>edit</mat-icon>
       {{ "assetView.edit" | translate }}
     </button>

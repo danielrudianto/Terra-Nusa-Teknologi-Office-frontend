@@ -21,7 +21,16 @@
      pemenggalan di dalam "12.345.678.901". Yang terlihat bukan baris kedua,
      melainkan digit yang hilang di tepi kartu. */
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(0, minmax(190px, 1fr)));
+/* minmax() BERSARANG ADALAH CSS YANG TIDAK SAH, dan peramban membuang
+   seluruh deklarasinya — bukan hanya bagian yang salah.
+
+   `minmax(0, minmax(190px, 1fr))` tidak pernah terpasang: argumen kedua
+   minmax() harus berupa <track-breadth>, dan minmax() bukan salah satunya.
+   Akibatnya `grid-template-columns` kosong, grid jatuh ke SATU kolom, dan
+   setiap petak melebar penuh satu baris. Tidak ada galat di konsol, build
+   tetap bersih, dan yang terlihat hanyalah tata letak yang "tidak mau jadi
+   grid". */
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 0.75rem;
   margin: 0.75rem 0 0.6rem;
 }
@@ -141,14 +150,75 @@
 
 /* ---------------- Seksi ---------------- */
 
-.pkeu-seksi {
+/* `.pkeu-seksi` dan `.pkeu-seksi__judul` DIHAPUS bersama blok yang selalu
+   terbuka; seluruh seksi kini panel akordeon. Aturan yatim yang ditinggalkan
+   tidak menghasilkan galat — ia hanya menumpuk sampai tak ada lagi yang
+   berani membuangnya. */
+
+.pkeu-akordeon {
+  display: block;
   margin-top: 1.5rem;
 }
-.pkeu-seksi__judul {
-  margin: 0 0 0.6rem;
-  font-size: 0.95rem;
+.pkeu-panel {
+  margin-bottom: 0.6rem;
+  border-radius: 10px;
+  /* Material menaruh bayangan bertingkat pada panel; di halaman sepanjang
+     ini hasilnya berat. Satu garis tepi cukup, dan sama dengan kartu di
+     atasnya. */
+  box-shadow: none !important;
+  border: 0.5px solid var(--border, #e3e6eb);
+}
+:host ::ng-deep .pkeu-panel .mat-expansion-panel-header {
   font-weight: 700;
 }
+/* Ringkasan di kepala panel: angka kuncinya terlihat TANPA membukanya.
+   Panel tertutup yang tidak menyebut apa pun harus dibuka satu per satu
+   hanya untuk tahu isinya mana yang dicari. */
+:host ::ng-deep .pkeu-panel .mat-expansion-panel-header-description {
+  justify-content: flex-end;
+  margin-right: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--muted, #6b7280);
+  flex-grow: 1;
+}
+:host ::ng-deep .pkeu-panel .pkeu-panel__ket--buruk {
+  color: var(--bad-fg, #b4282c);
+}
+
+/* Tabel angka di bawah grafik riwayat. */
+.pkeu-riwayat-tabel {
+  overflow-x: auto;
+}
+.pkeu-riwayat-tabel table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+.pkeu-riwayat-tabel th,
+.pkeu-riwayat-tabel td {
+  padding: 0.35rem 0.5rem;
+  border-bottom: 0.5px solid var(--border, #eef1f6);
+  white-space: nowrap;
+}
+.pkeu-riwayat-tabel th {
+  text-align: left;
+  color: var(--muted, #6b7280);
+  text-transform: uppercase;
+  font-size: 0.66rem;
+  letter-spacing: 0.02em;
+}
+/* Baris yang saldonya tidak terbaca DITANDAI, bukan hanya dikosongkan:
+   sel kosong tanpa penanda terbaca sebagai bulan yang tidak ada datanya. */
+.pkeu-riwayat-tabel__ragu td {
+  background: var(--bad-bg, #fdf1f1);
+  color: var(--bad-fg, #b4282c);
+}
+.pkeu-riwayat-tabel td:not(:first-child) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
 .pkeu-seksi__bar {
   display: flex;
   flex-wrap: wrap;
@@ -277,7 +347,10 @@
 .pkeu-tabel__kepala,
 .pkeu-tabel__baris {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) 6rem 8rem;
+  /* Kolom tempo & sisa dilebarkan: "lewat 1657 hari" dan
+     "Rp 132.090.000,00" tidak muat pada 6rem/8rem, dan yang terjadi bukan
+     terpotong melainkan dipatahkan menjadi dua baris. */
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) 7.5rem 10.5rem;
   gap: 0.5rem;
   padding: 0.45rem 0.25rem;
   align-items: center;
@@ -305,6 +378,10 @@
 }
 .pkeu-tabel .kanan {
   text-align: right;
+  /* Sabuk pengaman kedua sesudah spasi tak-putus di `uangDokumenRp`:
+     keterangan tempo ("lewat 1657 hari") bukan angka rupiah dan tidak
+     terbantu olehnya. */
+  white-space: nowrap;
 }
 .pkeu-tabel .angka {
   font-variant-numeric: tabular-nums;
@@ -325,7 +402,7 @@
 @media (max-width: 720px) {
   .pkeu-tabel__kepala,
   .pkeu-tabel__baris {
-    grid-template-columns: minmax(0, 1fr) 5rem 7rem;
+    grid-template-columns: minmax(0, 1fr) 6.5rem 9.5rem;
   }
   .pkeu-tabel__proyek,
   .pkeu-tabel__kepala span:nth-child(2) {
@@ -348,7 +425,7 @@
 
 .pkeu-disposisi {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(0, minmax(150px, 1fr)));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 0.75rem;
   margin-top: 0.75rem;
 }
@@ -386,7 +463,9 @@
   /* Tiga kolom yang menciut jadi satu di layar sempit. `minmax(0, ...)`
      karena angka rupiah panjang tidak membungkus — ia meluber. */
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(0, minmax(220px, 1fr)));
+  /* 220px: pada lebar isi ~1050px menghasilkan EMPAT kolom — sebelas
+     rasio menjadi tiga baris, dan seluruhnya muat dalam satu layar. */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 0.75rem;
   margin-bottom: 0.75rem;
 }
@@ -454,7 +533,7 @@
 
 .pkeu-rasio {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(0, minmax(280px, 1fr)));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 0.75rem;
 }
 .pkeu-rasio__butir {
@@ -548,51 +627,39 @@
   }
 }
 
-/* ---------------- Rasio: grid berkolom ---------------- */
+/* ---------------- Rasio: petak ---------------- */
 
-/* Kolom tetap untuk angka, sisa ruang untuk teks. Sebagai kartu bertumpuk,
-   nilainya tidak sejajar dan mata harus menelusuri tiap kartu untuk
-   membandingkannya; berkolom, seluruh nilai berbaris di sumbu yang sama. */
-.pkeu-tabelrasio {
+/* Empat kolom pada layar lebar, menciut sendiri ke bawahnya. `auto-fit` +
+   `minmax` dipakai alih-alih jumlah kolom tetap: empat kolom tetap membuat
+   petak terakhir terpotong di layar sempit, dan angka rupiah MELUBER di
+   sana — ia tidak membungkus, karena tidak ada kesempatan pemenggalan di
+   dalam "12.345.678.901". */
+.pkeu-petak {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.pkeu-petak__butir {
   display: flex;
   flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: 0.85rem 1rem;
   border: 0.5px solid var(--border, #e3e6eb);
-  border-radius: 14px;
-  background: var(--surface, #fff);
-  overflow: hidden;
-}
-
-.pkeu-tabelrasio__kepala,
-.pkeu-tabelrasio__baris {
-  display: grid;
-  /* `minmax(0, …)` pada kolom teks: tanpa itu isi panjang mendorong kolom
-     angka keluar petaknya dan barisnya berhenti sejajar. */
-  grid-template-columns:
-    minmax(0, 1.35fr) 5.5rem 7.5rem 8rem minmax(0, 2.4fr);
-  gap: 0.5rem 0.9rem;
-  align-items: baseline;
-  padding: 0.6rem 1rem;
-}
-
-.pkeu-tabelrasio__kepala {
-  border-bottom: 0.5px solid var(--border, #e3e6eb);
-  background: var(--surface-2, #f6f8fb);
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--muted, #6b7280);
-}
-
-.pkeu-tabelrasio__baris {
-  border-bottom: 0.5px solid var(--border, #eef1f6);
   /* Pita keadaan di tepi kiri — terbaca sebelum angkanya dibaca, dan tetap
      ada saat warnanya tidak terbedakan atau lembarnya dicetak. */
-  border-left: 3px solid transparent;
-  font-size: 0.76rem;
+  border-left: 3px solid var(--border, #e3e6eb);
+  border-radius: 14px;
+  background: var(--surface, #fff);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 
-  &:last-child {
-    border-bottom: 0;
+  &:hover,
+  &:focus-visible {
+    border-color: var(--brand, #154dec);
+    outline: none;
   }
   &--baik {
     border-left-color: var(--good-fg, #30a46c);
@@ -602,109 +669,77 @@
   }
 }
 
-.pkeu-tabelrasio__nama {
+.pkeu-petak__kepala {
   display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+.pkeu-petak__nama {
   min-width: 0;
+  font-size: 0.74rem;
   font-weight: 600;
+  color: var(--muted, #4b5563);
 }
-.pkeu-tabelrasio__nilai {
-  font-size: 1rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+/* Penanda "dapat dibuka". Tanpa ini artinya ada tetapi tidak ada yang tahu
+   ia ada di sana. */
+.pkeu-petak__help {
+  flex: 0 0 auto;
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: var(--muted, #9aa3b2);
 }
-.pkeu-tabelrasio .kanan {
-  text-align: right;
-}
-.pkeu-tabelrasio__acuan {
-  font-size: 0.7rem;
-  color: var(--muted, #6b7280);
-  font-variant-numeric: tabular-nums;
-
-  em {
-    font-style: normal;
-    opacity: 0.8;
-  }
-}
-.pkeu-tabelrasio__arti {
-  min-width: 0;
-  font-size: 0.72rem;
-  line-height: 1.5;
-  color: var(--ink, #16181d);
-}
-
-.pkeu-tautan {
-  align-self: flex-start;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--brand, #154dec);
-  font: inherit;
-  font-size: 0.66rem;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-/* ---- Hitungan: pembilang / penyebut ---- */
-
-.pkeu-hitung {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(0, minmax(200px, 1fr)));
-  gap: 0.75rem;
-  margin-top: 0.5rem;
-  padding: 0.75rem 0.9rem;
-  border-radius: 10px;
-  background: var(--surface-2, #f6f8fb);
-}
-.pkeu-hitung__sisi {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-width: 0;
-}
-.pkeu-hitung__cap {
-  font-size: 0.64rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: var(--muted, #6b7280);
-}
-.pkeu-hitung__nilai {
-  font-size: 0.9rem;
+.pkeu-petak__nilai {
+  font-size: 1.35rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
-.pkeu-hitung__baris {
+.pkeu-petak__kaki {
   display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-  font-size: 0.7rem;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+.pkeu-petak__acuan {
+  font-size: 0.66rem;
   color: var(--muted, #6b7280);
-
-  .angka {
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
+  font-variant-numeric: tabular-nums;
 }
 
-/* Di bawah 900px kolomnya dilipat: lima kolom pada layar sempit membuat
-   angka rupiah meluber, dan ia MELUBER — tidak membungkus, karena tidak ada
-   kesempatan pemenggalan di dalam "12.345.678.901". */
-@media (max-width: 900px) {
-  .pkeu-tabelrasio__kepala {
-    display: none;
+/* Keadaan disebut sebagai KATA, bukan diserahkan pada warna. */
+.pkeu-chip {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #f6f8fb);
+  font-size: 0.64rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.pkeu-petak__butir--baik .pkeu-chip {
+  border-color: var(--good-fg, #30a46c);
+  color: var(--good-fg, #1a7f4b);
+}
+.pkeu-petak__butir--awas .pkeu-chip {
+  border-color: var(--warn-fg, #d97706);
+  color: var(--warn-fg, #a85c04);
+}
+
+/* Peringatan acuan: SEKALI, di bawah, terlipat. */
+.pkeu-catatan {
+  margin-top: 0.75rem;
+  font-size: 0.72rem;
+  color: var(--muted, #6b7280);
+
+  summary {
+    cursor: pointer;
+    font-weight: 600;
   }
-  .pkeu-tabelrasio__baris {
-    grid-template-columns: minmax(0, 1fr) auto;
-    row-gap: 0.25rem;
-  }
-  .pkeu-tabelrasio__acuan,
-  .pkeu-tabelrasio__arti {
-    grid-column: 1 / -1;
+  p {
+    margin: 0.4rem 0 0;
+    line-height: 1.5;
   }
 }

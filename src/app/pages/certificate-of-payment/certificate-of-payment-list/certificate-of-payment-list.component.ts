@@ -34,6 +34,7 @@ import {
 } from 'src/app/services/certificate-of-payment.service';
 import { PermissionService } from 'src/app/services/permission.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import { CanDirective } from 'src/app/directives/can.directive';
 
 /**
  * Daftar Certificate of Payment.
@@ -47,6 +48,7 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
   selector: 'app-certificate-of-payment-list',
   standalone: true,
   imports: [
+    CanDirective,
     CommonModule,
     ReactiveFormsModule,
     MatTableModule,

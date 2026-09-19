@@ -10,11 +10,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { CanDirective } from 'src/app/directives/can.directive';
 
 @Component({
   selector: 'app-asset-view',
   standalone: true,
   imports: [
+    CanDirective,
     AuditTrailComponent,
     CommonModule,
     MatDialogModule,
