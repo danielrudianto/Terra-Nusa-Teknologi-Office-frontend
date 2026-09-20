@@ -114,7 +114,7 @@
             </mat-form-field>
 
             <span class="inv-item__amount">
-              Rp {{ lineTotal($index) | number: "1.0-0" }}
+              Rp {{ lineTotal($index) | number: "1.2-2" }}
             </span>
           </div>
         }
@@ -123,7 +123,7 @@
       <div class="inv-total">
         <span>{{ "invoiceGen.total" | translate }}</span>
         <span class="inv-total__value">
-          Rp {{ grandTotal | number: "1.0-0" }}
+          Rp {{ grandTotal | number: "1.2-2" }}
         </span>
       </div>
     </div>
@@ -208,15 +208,15 @@
         <div class="inv-summary">
           <div class="inv-summary__row">
             <span>{{ "invoiceGen.dpp" | translate }}</span>
-            <span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+            <span>Rp {{ grandTotal | number: "1.2-2" }}</span>
           </div>
           <div class="inv-summary__row inv-summary__row--neg">
             <span>{{ "invoiceGen.pphCut" | translate }}</span>
-            <span>− Rp {{ pphValue | number: "1.0-0" }}</span>
+            <span>− Rp {{ pphValue | number: "1.2-2" }}</span>
           </div>
           <div class="inv-summary__row inv-summary__row--total">
             <span>{{ "invoiceGen.netTotal" | translate }}</span>
-            <span>Rp {{ netTotal | number: "1.0-0" }}</span>
+            <span>Rp {{ netTotal | number: "1.2-2" }}</span>
           </div>
         </div>
       }

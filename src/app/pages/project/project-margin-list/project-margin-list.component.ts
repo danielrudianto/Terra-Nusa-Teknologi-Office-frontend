@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, HostListener, Input, OnInit, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -112,9 +112,98 @@ export class ProjectMarginListComponent implements OnInit {
   urut: Urut = 'persen';
   naik = false;
 
+  /**
+   * Di bawah ini tabelnya diganti KARTU, bukan digulir menyamping.
+   *
+   * KENAPA TABELNYA TIDAK CUKUP DIBIKIN BISA DIGULIR
+   *
+   * Tujuh kolom angka pada layar 390px berarti setiap baris harus digulir
+   * menyamping untuk dibaca utuh — dan gulir menyamping menghilangkan kolom
+   * nama proyeknya, sehingga yang terbaca adalah deretan angka tanpa
+   * keterangan milik siapa. Yang dicari orang di ponsel ("proyek mana yang
+   * marginnya jelek") justru butuh keduanya sekaligus.
+   *
+   * Ambangnya sama dengan `AMBANG_SEMPIT` di `main.component.ts` — di titik
+   * itu sidenav berubah MENUTUPI isi halaman, jadi lebar yang tersisa untuk
+   * tabel memang berkurang mendadak. Dua ambang yang "mirip" akan berbeda
+   * dalam sebulan dan bedanya hanya terasa pada satu ukuran layar yang tidak
+   * dimiliki siapa pun yang mengujinya.
+   */
+  private readonly AMBANG_KARTU = 900;
+
+  /** Layarnya sempit; daftar digambar sebagai kartu. */
+  kompak = false;
+
+  /** Kode proyek yang panelnya sedang terbuka; satu pada satu waktu. */
+  terbuka: string | null = null;
+
   ngOnInit(): void {
+    this.ukurLayar();
     this.muat();
     this.cari.valueChanges.pipe(debounceTime(250)).subscribe();
+  }
+
+  @HostListener('window:resize')
+  ukurLayar(): void {
+    /*
+     * Penjagaan `typeof window` — dan terus terang soal jangkauannya.
+     *
+     * Aplikasi ini tidak dirender di sisi server, dan `main.component.ts`
+     * membaca `window.innerWidth` tanpa penjagaan apa pun. Jadi baris ini
+     * TIDAK sedang menutup kegagalan yang nyata hari ini; ia hanya menjaga
+     * agar yang gagal lebih dulu bukan daftar proyek, yang memanggilnya di
+     * `ngOnInit`.
+     *
+     * Tidak ada ujinya: `window` tidak dapat dihapus di dalam peramban, dan
+     * uji yang berpura-pura melakukannya hanya melaporkan hijau untuk hal
+     * yang tidak pernah dicobanya.
+     */
+    if (typeof window === 'undefined') return;
+    this.kompak = window.innerWidth < this.AMBANG_KARTU;
+  }
+
+  /**
+   * Buka/tutup panel rincian sebuah kartu.
+   *
+   * SATU pada satu waktu. Membiarkan semuanya terbuka mengembalikan persoalan
+   * yang sedang dipecahkan: halaman yang panjangnya berlipat dan harus
+   * digulir lama untuk sampai ke proyek berikutnya.
+   */
+  ubahPanel(p: BarisMargin): void {
+    this.terbuka = this.terbuka === p.code ? null : p.code;
+  }
+
+  panelTerbuka(p: BarisMargin): boolean {
+    return this.terbuka === p.code;
+  }
+
+  /** Pilihan pengurutan untuk layar sempit, tempat kepala kolom tidak ada. */
+  readonly pilihanUrut: Array<{ nilai: Urut; kunci: string }> = [
+    { nilai: 'persen', kunci: 'projectMargin.persen' },
+    { nilai: 'margin', kunci: 'projectMargin.margin' },
+    { nilai: 'kontrak', kunci: 'projectMargin.kontrak' },
+    { nilai: 'tertagih', kunci: 'projectMargin.tertagih' },
+    { nilai: 'belum', kunci: 'projectMargin.belumTertagih' },
+    { nilai: 'biaya', kunci: 'projectMargin.biaya' },
+    { nilai: 'code', kunci: 'projectMargin.proyek' },
+  ];
+
+  /**
+   * Mengubah kolom urut TANPA menyentuh arahnya.
+   *
+   * BUKAN `gantiUrut`, dan bedanya terasa.
+   *
+   * `gantiUrut` menyetel `naik = false` setiap kali kolomnya berbeda —
+   * perilaku yang benar untuk kepala tabel yang diklik, karena satu klik di
+   * sana memang berarti "urutkan menurut ini, dari yang terbesar".
+   *
+   * Di layar sempit, arah urutan punya tombolnya SENDIRI di sebelah pemilih.
+   * Dengan `gantiUrut`, menaikkan arah lalu mengganti kolomnya akan
+   * mengembalikan arah itu ke semula tanpa diminta — tombol yang baru saja
+   * ditekan berubah sendiri, dan yang melihatnya akan menekannya lagi.
+   */
+  pilihUrut(nilai: string): void {
+    this.urut = nilai as Urut;
   }
 
   /**

@@ -1,0 +1,3 @@
+CSS yang ditolak peramban: 1
+
+  src/app/components/equipment-selector/equipment-selector.component.scss (+1 berkas lain): `line-clamp: 2` ditolak peramban — seluruh deklarasinya dibuang tanpa galat, jadi aturannya tidak pernah berlaku sama sekali

@@ -211,6 +211,9 @@ describe('ProjectReport — arus kas', () => {
     const f = buat(ARUS);
     f.componentInstance.muat('R501');
     tick();
+    // Satuan disebut EKSPLISIT: bawaan layarnya kini harian, dan uji ini
+    // memang tentang pengemberan bulanan.
+    f.componentInstance.gantiSatuanKas('bulan');
 
     const t = f.componentInstance.titikArusKas();
     expect(t.map((x) => x.bulan)).toEqual(['2026-01', '2026-02', '2026-03']);
@@ -226,8 +229,40 @@ describe('ProjectReport — arus kas', () => {
     const f = buat(ARUS);
     f.componentInstance.muat('R501');
     tick();
+    f.componentInstance.gantiSatuanKas('bulan');
 
     expect(f.componentInstance.bulanMulaiMinus()).toBe('Jan 26');
+  }));
+
+  it('pada satuan HARIAN, menembus nolnya disebut sampai TANGGALNYA', fakeAsync(() => {
+    /*
+     * Inilah yang dibeli dengan satuan harian: bukan sekadar "Januari",
+     * melainkan hari mana. Pada satuan bulanan, kas yang sempat minus di
+     * pertengahan bulan lalu tertolong termin di akhir bulan tidak pernah
+     * muncul sama sekali.
+     */
+    const f = buat(ARUS);
+    f.componentInstance.muat('R501');
+    tick();
+
+    expect(f.componentInstance.satuanKas()).toBe('hari');
+    expect(f.componentInstance.bulanMulaiMinus()).toBe('10 Jan 26');
+  }));
+
+  it('berganti satuan mengembalikan jendela ke ujung kanan', fakeAsync(() => {
+    /*
+     * Lebar jendela dihitung dalam SATUAN TITIK. Geseran 6 pada bulanan
+     * berarti 6 hari pada harian — tampilannya melompat ke rentang yang
+     * tidak diminta siapa pun, dan tidak ada yang menandainya.
+     */
+    const f = buat(ARUS);
+    f.componentInstance.muat('R501');
+    tick();
+    f.componentInstance.gantiSatuanKas('bulan');
+    f.componentInstance.geserKas.set(2);
+
+    f.componentInstance.gantiSatuanKas('hari');
+    expect(f.componentInstance.geserKas()).toBe(0);
   }));
 
   it('403 menyembunyikan tabnya, bukan menampilkan galat', fakeAsync(() => {
@@ -282,6 +317,10 @@ describe('ProjectReport — arus kas', () => {
       const f = buat(ARUS);
       f.componentInstance.muat('R501');
       tick();
+      // Uji ini tentang JENDELA, dan jendelanya dulu disusun atas ember
+      // bulanan. Satuannya disebut eksplisit supaya yang diuji tetap hal
+      // yang sama sesudah bawaan layarnya menjadi harian.
+      f.componentInstance.gantiSatuanKas('bulan');
 
       expect(f.componentInstance.dataArusKas().datasets.length).toBe(3);
 
@@ -300,6 +339,10 @@ describe('ProjectReport — arus kas', () => {
       const f = buat(ARUS);
       f.componentInstance.muat('R501');
       tick();
+      // Uji ini tentang JENDELA, dan jendelanya dulu disusun atas ember
+      // bulanan. Satuannya disebut eksplisit supaya yang diuji tetap hal
+      // yang sama sesudah bawaan layarnya menjadi harian.
+      f.componentInstance.gantiSatuanKas('bulan');
 
       f.componentInstance.toggleSeriKas('masuk');
       f.componentInstance.toggleSeriKas('keluar');
@@ -317,6 +360,10 @@ describe('ProjectReport — arus kas', () => {
       const f = buat(ARUS);
       f.componentInstance.muat('R501');
       tick();
+      // Uji ini tentang JENDELA, dan jendelanya dulu disusun atas ember
+      // bulanan. Satuannya disebut eksplisit supaya yang diuji tetap hal
+      // yang sama sesudah bawaan layarnya menjadi harian.
+      f.componentInstance.gantiSatuanKas('bulan');
 
       const ds: any[] = f.componentInstance.dataArusKas().datasets as any[];
       const urut: any[] = ['masuk', 'keluar', 'saldo'];
@@ -349,6 +396,10 @@ describe('ProjectReport — arus kas', () => {
       const f = buat(PANJANG);
       f.componentInstance.muat('R501');
       tick();
+      // Uji ini tentang JENDELA, dan jendelanya dulu disusun atas ember
+      // bulanan. Satuannya disebut eksplisit supaya yang diuji tetap hal
+      // yang sama sesudah bawaan layarnya menjadi harian.
+      f.componentInstance.gantiSatuanKas('bulan');
 
       const semua = f.componentInstance.titikArusKas();
       const tampil = f.componentInstance.titikTampil();
@@ -368,6 +419,10 @@ describe('ProjectReport — arus kas', () => {
       const f = buat(PANJANG);
       f.componentInstance.muat('R501');
       tick();
+      // Uji ini tentang JENDELA, dan jendelanya dulu disusun atas ember
+      // bulanan. Satuannya disebut eksplisit supaya yang diuji tetap hal
+      // yang sama sesudah bawaan layarnya menjadi harian.
+      f.componentInstance.gantiSatuanKas('bulan');
 
       const tampil = f.componentInstance.titikTampil();
       const pertama = tampil[0];
@@ -382,6 +437,10 @@ describe('ProjectReport — arus kas', () => {
       const f = buat(PANJANG);
       f.componentInstance.muat('R501');
       tick();
+      // Uji ini tentang JENDELA, dan jendelanya dulu disusun atas ember
+      // bulanan. Satuannya disebut eksplisit supaya yang diuji tetap hal
+      // yang sama sesudah bawaan layarnya menjadi harian.
+      f.componentInstance.gantiSatuanKas('bulan');
 
       const awal = f.componentInstance.titikTampil().map((x) => x.bulan);
       f.componentInstance.geserKeBelakang();
@@ -395,6 +454,10 @@ describe('ProjectReport — arus kas', () => {
       const f = buat(PANJANG);
       f.componentInstance.muat('R501');
       tick();
+      // Uji ini tentang JENDELA, dan jendelanya dulu disusun atas ember
+      // bulanan. Satuannya disebut eksplisit supaya yang diuji tetap hal
+      // yang sama sesudah bawaan layarnya menjadi harian.
+      f.componentInstance.gantiSatuanKas('bulan');
 
       for (let i = 0; i < 20; i++) f.componentInstance.geserKeBelakang();
 
@@ -411,6 +474,10 @@ describe('ProjectReport — arus kas', () => {
       const f = buat(PANJANG);
       f.componentInstance.muat('R501');
       tick();
+      // Uji ini tentang JENDELA, dan jendelanya dulu disusun atas ember
+      // bulanan. Satuannya disebut eksplisit supaya yang diuji tetap hal
+      // yang sama sesudah bawaan layarnya menjadi harian.
+      f.componentInstance.gantiSatuanKas('bulan');
 
       f.componentInstance.geserKeBelakang();
       expect(f.componentInstance.bisaMaju()).toBeTrue();
@@ -428,6 +495,7 @@ describe('ProjectReport — arus kas', () => {
       const f = buat(ARUS); // hanya 3 bulan
       f.componentInstance.muat('R501');
       tick();
+      f.componentInstance.gantiSatuanKas('bulan');
 
       expect(f.componentInstance.jendelaDipakai()).toBeFalse();
       expect(f.componentInstance.titikTampil().length).toBe(3);
@@ -440,6 +508,10 @@ describe('ProjectReport — arus kas', () => {
       const f = buat(PANJANG);
       f.componentInstance.muat('R501');
       tick();
+      // Uji ini tentang JENDELA, dan jendelanya dulu disusun atas ember
+      // bulanan. Satuannya disebut eksplisit supaya yang diuji tetap hal
+      // yang sama sesudah bawaan layarnya menjadi harian.
+      f.componentInstance.gantiSatuanKas('bulan');
 
       f.componentInstance.geserKas.set(999);
       expect(f.componentInstance.titikTampil().length).toBe(
@@ -485,6 +557,7 @@ describe('ProjectReport — arus kas', () => {
 
   it('jendela otomatis ~10 titik pada layar lebar', () => {
     const c = buat(ARUS).componentInstance;
+    c.gantiSatuanKas('bulan');
     const j = (c as any).lebarWadah;
 
     j.set(1590); // 1920x1200: layar dikurangi menu samping dan padding
@@ -504,6 +577,82 @@ describe('ProjectReport — arus kas', () => {
     expect(c.jendelaOtomatis()).toBe(10);
   });
 
+  it('jendela otomatis HARIAN memakai ukuran sendiri', () => {
+    /*
+     * 160px per titik disusun untuk LABEL BULAN yang harus terbaca satu per
+     * satu. Pada harian tidak ada yang membaca label tiap hari — yang dibaca
+     * bentuk garisnya, dan bentuk baru muncul kalau titiknya cukup banyak.
+     * Sepuluh hari bukan grafik, itu sepuluh batang berjajar.
+     */
+    const c = buat(ARUS).componentInstance;
+    const j = (c as any).lebarWadah;
+
+    expect(c.satuanKas()).toBe('hari');
+
+    // 1590 / 22 = 72: sekitar dua bulan pada layar lebar.
+    j.set(1590);
+    expect(c.jendelaOtomatis()).toBe(72);
+
+    // Dijepit di kedua ujung: di bawah 30 hari bentuknya hilang, di atas
+    // 120 hari rinciannya tidak lagi terbaca DAN kendali gesernya berhenti
+    // muncul untuk proyek yang lebih pendek dari itu.
+    j.set(100);
+    expect(c.jendelaOtomatis()).toBe(30);
+    j.set(9999);
+    expect(c.jendelaOtomatis()).toBe(120);
+
+    // Belum terukur: dua bulan, bukan nol — jendela nol berarti grafik
+    // kosong pada kedipan pertama.
+    j.set(0);
+    expect(c.jendelaOtomatis()).toBe(60);
+  });
+
+  it('proyek biasa HARUS mendapat kendali gesernya', () => {
+    /*
+     * INI YANG DILAPORKAN: grafik harian yang padat dan tidak dapat digeser
+     * ke mana pun.
+     *
+     * Kendali geser hanya digambar ketika titiknya LEBIH BANYAK daripada
+     * yang muat. Dengan jendela otomatis seratus tujuh puluhan hari, proyek
+     * empat bulan tidak pernah melampauinya — jadi kendalinya tidak pernah
+     * ada, dan yang tersisa grafik rapat yang tidak dapat ditelusuri.
+     */
+    const c = buat(ARUS).componentInstance;
+    const j = (c as any).lebarWadah;
+    j.set(1350);
+
+    // Proyek empat bulan (~120 hari) pada layar 1350px.
+    expect(c.jendelaOtomatis()).toBeLessThan(120);
+  });
+
+  it('chip lebar jendela IKUT satuannya', () => {
+    /*
+     * Angka di chip adalah JUMLAH TITIK, dan satu titik berarti hal yang
+     * berbeda pada tiap satuan. Chip "6" pada satuan harian berarti jendela
+     * enam HARI: grafik yang hanya memuat seminggu.
+     */
+    const c = buat(ARUS).componentInstance;
+    expect(c.PILIHAN_JENDELA()).toEqual(['auto', 30, 60, 90]);
+
+    c.gantiSatuanKas('bulan');
+    expect(c.PILIHAN_JENDELA()).toEqual(['auto', 6, 10, 18]);
+  });
+
+  it('berganti satuan mengembalikan lebar jendela ke otomatis', () => {
+    /*
+     * "6" yang terbawa dari bulanan menjadi jendela enam HARI. Angkanya
+     * masih masuk akal, grafiknya masih tergambar, dan tidak ada apa pun
+     * yang menyebutkan sebabnya.
+     */
+    const c = buat(ARUS).componentInstance;
+    c.gantiSatuanKas('bulan');
+    c.pilihJendela(6);
+    expect(c.pilihanJendela()).toBe(6);
+
+    c.gantiSatuanKas('hari');
+    expect(c.pilihanJendela()).toBe('auto');
+  });
+
   it('tanpa pembayaran bukan galat', fakeAsync(() => {
     // Proyek yang baru berjalan punya kas keluar tanpa kas masuk; yang
     // berjalan dengan uang muka punya kebalikannya. Keduanya normal.
@@ -515,4 +664,161 @@ describe('ProjectReport — arus kas', () => {
     expect(f.componentInstance.arusKasTerkunci()).toBeFalse();
     expect(f.componentInstance.galat()).toBeFalsy();
   }));
+});
+
+describe('titikKas() harian', () => {
+  /*
+   * KENAPA HARIAN DITAMBAHKAN.
+   *
+   * Titik bulanan hanya punya SATU nilai per bulan: saldo pada akhir bulan.
+   * Garis di antara dua titik itu tarikan lurus — bukan pengukuran — dan
+   * tarikan itu MENUTUPI apa yang terjadi di dalam bulannya.
+   *
+   * Yang tertutup persis hal yang paling perlu terlihat: bulan yang kasnya
+   * sempat menembus nol di pertengahan lalu tertolong termin di akhir bulan
+   * tergambar tidak pernah minus sama sekali. Tidak ada galat, tidak ada
+   * tanda — grafiknya hanya lebih optimistik daripada kenyataannya.
+   */
+
+  it('INTI SOALNYA: minus di tengah bulan tak terlihat pada satuan bulanan', () => {
+    // Keluar dulu Rp 800 pada tanggal 5, masuk Rp 900 pada tanggal 28.
+    // Akhir bulan saldonya +100 — tetapi selama 23 hari ia minus 800.
+    const keluar = [{ date: '2026-03-05', amount: 800 }];
+    const masuk = [{ date: '2026-03-28', amount: 900 }];
+
+    const bulanan = titikKas(masuk, keluar, 0, 'bulan');
+    expect(bulanan.length).toBe(1);
+    expect(bulanan[0].saldo).toBe(100);
+    expect(bulanan.some((x) => x.saldo < 0))
+      .withContext('satuan bulanan seharusnya memang tidak melihatnya')
+      .toBeFalse();
+
+    const harian = titikKas(masuk, keluar, 0, 'hari');
+    const minus = harian.filter((x) => x.saldo < 0);
+    expect(minus.length)
+      .withContext('satuan harian tidak melihat bulan yang sempat minus')
+      .toBe(23);
+    expect(minus[0].saldo).toBe(-800);
+    expect(harian[harian.length - 1].saldo).toBe(100);
+  });
+
+  it('hari tanpa pembayaran diisi nol, saldonya BERTAHAN datar', () => {
+    /*
+     * Kalau hari kosong dilewati, dua pembayaran berjarak sebulan menjadi
+     * dua titik bersebelahan — dan kemiringan garis di antaranya berbohong:
+     * sebulan tanpa gerakan terbaca sebagai penurunan yang landai.
+     */
+    const t = titikKas(
+      [{ date: '2026-01-01', amount: 100 }],
+      [{ date: '2026-01-05', amount: 30 }],
+      0,
+      'hari',
+    );
+    expect(t.length).toBe(5);
+    expect(t.map((x) => x.saldo)).toEqual([100, 100, 100, 100, 70]);
+    expect(t[1].masuk).toBe(0);
+    expect(t[1].keluar).toBe(0);
+  });
+
+  it('saldo awal terbawa ke hari pertama', () => {
+    const t = titikKas([], [{ date: '2026-02-10', amount: 40 }], -500, 'hari');
+    expect(t[0].saldo).toBe(-540);
+  });
+
+  it('melewati pergantian bulan DAN tahun tanpa melompat', () => {
+    /*
+     * Penambahan hari memakai `Date.UTC`, bukan `new Date(y, m, d)`: yang
+     * kedua memakai zona waktu lokal, dan melewati pergantian musim panas
+     * akan melompati atau menggandakan satu hari — pada deret kumulatif,
+     * satu hari yang hilang menggeser seluruh sisanya.
+     */
+    const t = titikKas(
+      [{ date: '2025-12-30', amount: 10 }],
+      [{ date: '2026-01-02', amount: 4 }],
+      0,
+      'hari',
+    );
+    expect(t.map((x) => x.bulan)).toEqual([
+      '2025-12-30',
+      '2025-12-31',
+      '2026-01-01',
+      '2026-01-02',
+    ]);
+    expect(t[t.length - 1].saldo).toBe(6);
+  });
+
+  it('tahun kabisat: 29 Februari tidak dilewati', () => {
+    const t = titikKas(
+      [{ date: '2028-02-28', amount: 10 }],
+      [{ date: '2028-03-01', amount: 3 }],
+      0,
+      'hari',
+    );
+    expect(t.map((x) => x.bulan)).toEqual([
+      '2028-02-28',
+      '2028-02-29',
+      '2028-03-01',
+    ]);
+  });
+
+  it('tanggal DIPOTONG SEBAGAI TEKS, bukan diurai jadi Date', () => {
+    /*
+     * `new Date("2026-09-01")` adalah tengah malam UTC, dan di WIB (UTC+7)
+     * ia tetap 1 September — tetapi pembayaran yang datang dengan jam
+     * (`"2026-09-01T00:00:00Z"`) pernah mundur sehari lewat jalur lain.
+     * Memotong teksnya menutup seluruh kelas kekeliruan itu.
+     */
+    const t = titikKas(
+      [{ date: '2026-09-01T00:00:00.000Z', amount: 50 }],
+      [],
+      0,
+      'hari',
+    );
+    expect(t.length).toBe(1);
+    expect(t[0].bulan).toBe('2026-09-01');
+  });
+
+  it('tanggal rusak dilewati, bukan menjatuhkan grafiknya', () => {
+    const t = titikKas(
+      [
+        { date: 'entah', amount: 99 },
+        { date: null, amount: 99 },
+        { date: '2026-05-04', amount: 10 },
+      ],
+      [],
+      0,
+      'hari',
+    );
+    expect(t.length).toBe(1);
+    expect(t[0].saldo).toBe(10);
+  });
+
+  it('rentang yang tidak masuk akal DIBATASI, bukan membekukan peramban', () => {
+    /*
+     * Satu tanggal rusak yang lolos penyaringan — misalnya tahun 1900 —
+     * akan menghasilkan puluhan ribu titik. Yang terjadi bukan grafik yang
+     * salah melainkan tab yang berhenti merespons, dan tidak ada galat apa
+     * pun yang menyebut sebabnya.
+     */
+    const t = titikKas(
+      [{ date: '1900-01-01', amount: 1 }],
+      [{ date: '2026-01-01', amount: 1 }],
+      0,
+      'hari',
+    );
+    expect(t.length).toBeLessThanOrEqual(3660);
+  });
+
+  it('bawaan fungsinya tetap BULANAN', () => {
+    /*
+     * Layar memilih harian; fungsi ini tidak. Pemanggil yang tidak menyebut
+     * satuannya tidak boleh tiba-tiba menerima tujuh ratus titik.
+     */
+    const t = titikKas(
+      [{ date: '2026-01-03', amount: 10 }],
+      [{ date: '2026-01-20', amount: 4 }],
+    );
+    expect(t.length).toBe(1);
+    expect(t[0].bulan).toBe('2026-01');
+  });
 });

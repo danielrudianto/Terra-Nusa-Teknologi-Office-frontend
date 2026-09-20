@@ -113,7 +113,7 @@
     <div class="prv-sel">
       <div class="prv-label">{{ "project.contractValue" | translate }}</div>
       <div class="prv-nilai">
-        {{ totalKontrak | number: "1.0-0" }}
+        {{ totalKontrak | number: "1.2-2" }}
       </div>
       <div class="prv-ket">
         {{ contracts.length }} {{ "project.contractDocs" | translate }}
@@ -269,19 +269,19 @@
       <div class="prv-hitung">
         <div>
           <span>{{ "project.docPpnValue" | translate }}</span>
-          <span>{{ nilaiPpn | number: "1.0-0" }}</span>
+          <span>{{ nilaiPpn | number: "1.2-2" }}</span>
         </div>
         <div class="prv-hitung__utama">
           <span>{{ "project.docTotal" | translate }}</span>
-          <span>{{ nilaiDokumen | number: "1.0-0" }}</span>
+          <span>{{ nilaiDokumen | number: "1.2-2" }}</span>
         </div>
         <div *ngIf="nilaiPph > 0">
           <span>{{ "project.docPphValue" | translate }}</span>
-          <span>&minus;{{ nilaiPph | number: "1.0-0" }}</span>
+          <span>&minus;{{ nilaiPph | number: "1.2-2" }}</span>
         </div>
         <div *ngIf="nilaiPph > 0">
           <span>{{ "project.docReceived" | translate }}</span>
-          <span>{{ nilaiDiterima | number: "1.0-0" }}</span>
+          <span>{{ nilaiDiterima | number: "1.2-2" }}</span>
         </div>
       </div>
 
@@ -327,21 +327,21 @@
         <div class="prv-nomor">{{ k.documentNumber }}</div>
         <div class="prv-tanggal">
           {{ k.date }}
-          &middot; DPP {{ k.dpp | number: "1.0-0" }}
+          &middot; DPP {{ k.dpp | number: "1.2-2" }}
           <span *ngIf="k.ppn"> &middot; PPN {{ k.ppn }}%</span>
           <span *ngIf="k.pphCode"> &middot; {{ k.pphCode }}</span>
           <span *ngIf="k.description"> &middot; {{ k.description }}</span>
         </div>
       </div>
       <span class="prv-baris__nilai" [class.negatif]="nilaiKontrak(k) < 0">
-        {{ nilaiKontrak(k) | number: "1.0-0" }}
+        {{ nilaiKontrak(k) | number: "1.2-2" }}
       </span>
       <mat-icon class="prv-baris__chev">chevron_right</mat-icon>
     </div>
 
     <div class="prv-total" *ngIf="contracts.length > 0">
       <span>{{ "project.contractTotal" | translate }}</span>
-      <span class="prv-total__nilai">{{ totalKontrak | number: "1.0-0" }}</span>
+      <span class="prv-total__nilai">{{ totalKontrak | number: "1.2-2" }}</span>
     </div>
   </div>
 

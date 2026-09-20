@@ -231,7 +231,7 @@
             </span>
           </th>
           <td mat-cell *matCellDef="let po" class="pol-r">
-            <span class="pol-amount">Rp {{ total(po) | number: "1.0-2" }}</span>
+            <span class="pol-amount">Rp {{ total(po) | number: "1.2-2" }}</span>
           </td>
         </ng-container>
 
@@ -259,19 +259,15 @@
               statusKey(displayStatus(po)) | translate
             }}</span>
             <!--
-              Penanda sudah diperiksa, hanya pada dokumen yang belum terbit.
+              LENCANA KEDUA DIBUANG.
 
-              Setelah disetujui ia tidak menambah keterangan apa pun —
-              persetujuan sudah mensyaratkan pemeriksaan — dan dua lencana
-              berdampingan pada tiap baris membuat kolomnya penuh tanpa
-              menjawab satu pun pertanyaan.
+              Dokumen yang sudah diperiksa dulu tampil sebagai "Draf" plus
+              lencana "Diperiksa" di sebelahnya. Keduanya benar, tetapi
+              dibaca bersama keduanya bertentangan — dan yang membuka daftar
+              harus memeriksa lencana kedua pada setiap baris untuk tahu mana
+              yang menunggu dirinya. Sekarang "Diperiksa" adalah statusnya
+              sendiri; lihat `displayStatus`.
             -->
-            @if (sudahDiperiksa(po) && !sudahSelesai(po)) {
-              <span class="pol-diperiksa">
-                <mat-icon>fact_check</mat-icon>
-                {{ "purchaseOrder.sudahDiperiksa" | translate }}
-              </span>
-            }
           </td>
         </ng-container>
 

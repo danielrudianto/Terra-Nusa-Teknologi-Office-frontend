@@ -141,7 +141,7 @@
         <mat-form-field appearance="outline" class="exc-span2">
           <mat-label>{{ "expenseForm.purchaseType" | translate }}</mat-label>
           <mat-select formControlName="purchaseType">
-            <mat-optgroup label="Office Expenses">
+            <mat-optgroup [label]="'grupPilihan.officeExpenses' | translate">
               <mat-option value="5.1.1">{{
                 "expense.assetPurchase" | translate
               }}</mat-option>
@@ -166,7 +166,7 @@
               <mat-option value="5.1.12">{{
                 "expense.software" | translate
               }}</mat-option>
-              <mat-optgroup label="Tax">
+              <mat-optgroup [label]="'grupPilihan.tax' | translate">
                 <mat-option value="5.1.8.1">PPN</mat-option>
                 <mat-option value="5.1.8.2">{{
                   "expense.pphPasal23Dan4" | translate
@@ -202,7 +202,7 @@
               <mat-option value="5.1.11">{{
                 "expense.roundingUp" | translate
               }}</mat-option>
-              <mat-optgroup label="Marketing">
+              <mat-optgroup [label]="'grupPilihan.marketing' | translate">
                 <mat-option value="6.3.1">{{
                   "expense.advertising" | translate
                 }}</mat-option>
@@ -213,7 +213,7 @@
                   "expense.socialMedia" | translate
                 }}</mat-option>
               </mat-optgroup>
-              <mat-optgroup label="Legal">
+              <mat-optgroup [label]="'grupPilihan.legal' | translate">
                 <mat-option value="6.4.1">{{
                   "expense.legalDocumentAktaSbu" | translate
                 }}</mat-option>
@@ -221,7 +221,7 @@
                   "expense.insurancesMarineCarTplSurety" | translate
                 }}</mat-option>
               </mat-optgroup>
-              <mat-optgroup label="Human Resources">
+              <mat-optgroup [label]="'grupPilihan.humanResources' | translate">
                 <mat-option value="6.5.1">{{
                   "expense.recruitment" | translate
                 }}</mat-option>
@@ -239,7 +239,7 @@
                 }}</mat-option>
               </mat-optgroup>
             </mat-optgroup>
-            <mat-optgroup label="Project Expenses">
+            <mat-optgroup [label]="'grupPilihan.projectExpenses' | translate">
               <mat-option value="A">{{
                 "expense.transportation" | translate
               }}</mat-option>

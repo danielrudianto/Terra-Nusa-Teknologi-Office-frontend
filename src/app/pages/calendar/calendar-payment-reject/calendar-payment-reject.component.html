@@ -1,32 +1,58 @@
-<h1 mat-dialog-title appDialogGeser>{{ "calendarPayment.rejectTitle" | translate }}</h1>
+<!--
+  Bentuknya DISAMAKAN dengan dialog persetujuan.
+
+  Keduanya dipanggil dari tempat yang sama — bilah aksi di pemilih hari —
+  atas kumpulan pembayaran yang sama, dan isinya sebentuk: satu kalimat,
+  satu kotak peringatan, satu centang persetujuan. Sebelum ini yang satu
+  sudah dirapikan dan yang ini tertinggal, sehingga dua dialog kembar
+  terbuka dengan rupa yang sama sekali berbeda.
+-->
+<h1 mat-dialog-title class="cpr-title" appDialogGeser>
+  {{ "calendarPayment.rejectTitle" | translate }}
+</h1>
+
 <mat-dialog-content>
-  <p>
+  <p class="cpr-prompt">
     {{
       "calendarPayment.rejectPrompt"
         | translate: { count: data.payments.length }
     }}
   </p>
-  <div class="banner__warning">
+
+  <div class="cpr-warning">
     <mat-icon>warning</mat-icon>
-    <p class="mb-0">
-      <span>{{ "calendarPayment.attention" | translate }} </span>&nbsp;{{
-        "calendarPayment.warningReject" | translate
-      }}
+    <p>
+      <strong>{{ "calendarPayment.attention" | translate }}</strong>
+      {{ "calendarPayment.warningReject" | translate }}
     </p>
   </div>
 
-  <mat-checkbox [formControl]="agreeControl" class="mt-2" color="primary">{{
-    "calendarPayment.agree" | translate
-  }}</mat-checkbox>
+  <mat-checkbox
+    [formControl]="agreeControl"
+    class="cpr-agree"
+    color="primary"
+    >{{ "calendarPayment.agree" | translate }}</mat-checkbox
+  >
 </mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-stroked-button style="letter-spacing: 0" mat-dialog-close>
+
+<mat-dialog-actions align="end" class="cpr-foot">
+  <button type="button" class="cpr-cancel" mat-dialog-close>
     {{ "calendarPayment.cancel" | translate }}
   </button>
+  <!--
+    Tombol utamanya MERAH, bukan biru.
+
+    Di dialog persetujuan, biru berarti "izinkan uang keluar". Memakai biru
+    di sini membuat warna yang sama berarti dua hal yang berlawanan pada dua
+    dialog yang dibuka dari tombol bersebelahan — dan yang menekannya cepat
+    membaca warnanya, bukan tulisannya.
+
+    Sebelumnya KEDUANYA `mat-stroked-button`, sehingga "Batal" dan "Tolak"
+    tidak dapat dibedakan sama sekali.
+  -->
   <button
-    mat-stroked-button
-    style="letter-spacing: 0"
-    color="primary"
+    type="button"
+    class="cpr-reject"
     (click)="onConfirm()"
     [disabled]="agreeControl.invalid"
   >

@@ -230,8 +230,8 @@ export class PosisiPpnComponent {
       { header: 'No. Invoice', key: 'dokumen', width: 24 },
       { header: 'No. Faktur Pajak', key: 'faktur', width: 26 },
       { header: 'Proyek', key: 'proyek', width: 22 },
-      { header: 'DPP', key: 'dpp', width: 16, align: 'right', numFmt: '#,##0', total: true },
-      { header: 'PPN', key: 'ppn', width: 16, align: 'right', numFmt: '#,##0', total: true },
+      { header: 'DPP', key: 'dpp', width: 16, align: 'right', numFmt: '#,##0.00', total: true },
+      { header: 'PPN', key: 'ppn', width: 16, align: 'right', numFmt: '#,##0.00', total: true },
     ];
 
     const barisMasukan = (rows: any[]) =>
@@ -254,8 +254,8 @@ export class PosisiPpnComponent {
       { header: 'Supplier', key: 'pihak', width: 30 },
       { header: 'NPWP', key: 'npwp', width: 22 },
       { header: 'No. Faktur Pajak', key: 'faktur', width: 26 },
-      { header: 'DPP', key: 'dpp', width: 16, align: 'right', numFmt: '#,##0', total: true },
-      { header: 'PPN', key: 'ppn', width: 16, align: 'right', numFmt: '#,##0', total: true },
+      { header: 'DPP', key: 'dpp', width: 16, align: 'right', numFmt: '#,##0.00', total: true },
+      { header: 'PPN', key: 'ppn', width: 16, align: 'right', numFmt: '#,##0.00', total: true },
     ];
 
     downloadRecapExcel(

@@ -87,6 +87,30 @@ export class CalendarDaySelectorComponent {
    * dibuka, sehingga ia tidak dapat memperbaiki dirinya sendiri.
    */
   adaPerubahan = false;
+
+  /**
+   * Tanggal yang sedang dibuka, dieja lengkap: "Sabtu, 19 September 2026".
+   *
+   * Dialog ini dibuka dengan mengeklik satu kotak di kalender, lalu menutupi
+   * kalendernya. Begitu tertutup, satu-satunya petunjuk hari mana yang sedang
+   * dilihat adalah ingatan — dan yang diputuskan di sini adalah menyetujui
+   * atau menolak pembayaran. Menyetujui pembayaran untuk hari yang salah
+   * tidak menghasilkan galat apa pun.
+   *
+   * `data.month` berbasis NOL (dari kalender), sedangkan `Date` juga berbasis
+   * nol — jadi tidak ada penyesuaian di sini. Penyesuaian +1 hanya dilakukan
+   * saat menyusun teks "YYYY-MM-DD" untuk server.
+   */
+  tanggalTeks(): string {
+    const t = new Date(this.data.year, this.data.month, this.data.date);
+    if (Number.isNaN(t.getTime())) return '';
+    return t.toLocaleDateString('id-ID', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  }
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: {
@@ -408,8 +432,8 @@ export class CalendarDaySelectorComponent {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(amount);
   }
 

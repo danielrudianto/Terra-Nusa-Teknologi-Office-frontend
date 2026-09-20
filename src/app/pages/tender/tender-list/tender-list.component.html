@@ -104,6 +104,28 @@
           </td>
         </ng-container>
 
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef (click)="urutkan('date')">
+            <span class="tl-th">
+              {{ "tender.tanggal" | translate }}
+              <mat-icon *ngIf="sortBy === 'date' && sortByDirection === 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon *ngIf="sortBy === 'date' && sortByDirection === 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy !== 'date'" class="tl-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
+          </th>
+          <td mat-cell *matCellDef="let t">
+            <span class="tl-date">{{
+              t.date ? (t.date | date: "dd MMM yyyy") : "—"
+            }}</span>
+          </td>
+        </ng-container>
+
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef (click)="urutkan('name')">
             <span class="tl-th">
@@ -205,6 +227,35 @@
           </td>
         </ng-container>
 
+        <ng-container matColumnDef="dueDate">
+          <th mat-header-cell *matHeaderCellDef (click)="urutkan('dueDate')">
+            <span class="tl-th">
+              {{ "tender.batasPenawaran" | translate }}
+              <mat-icon *ngIf="sortBy === 'dueDate' && sortByDirection === 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon *ngIf="sortBy === 'dueDate' && sortByDirection === 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy !== 'dueDate'" class="tl-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
+          </th>
+          <td mat-cell *matCellDef="let t">
+            <!--
+              Batas yang SUDAH LEWAT sementara tendernya masih menunggu
+              ditandai — itu satu-satunya alasan kolom ini ada. Tender yang
+              sudah selesai atau batal tidak ditandai: melewati batas adalah
+              hal yang biasa di sana, dan penanda yang menyala di sebagian
+              besar baris berhenti dibaca.
+            -->
+            <span class="tl-date" [class.tl-date--lewat]="lewatBatas(t)">
+              {{ t.dueDate ? (t.dueDate | date: "dd MMM yyyy") : "—" }}
+            </span>
+          </td>
+        </ng-container>
+
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef (click)="urutkan('status')">
             <span class="tl-th">
@@ -231,25 +282,6 @@
               <span class="tl-chip__dot"></span>
               {{ "tender.status" + (t.status | titlecase) | translate }}
             </span>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="action">
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            [attr.aria-label]="'common.actions' | translate"
-          ></th>
-          <td mat-cell *matCellDef="let t">
-            <button
-              mat-icon-button
-              class="tl-open"
-              type="button"
-              (click)="buka(t.id)"
-              [attr.aria-label]="'tender.buka' | translate"
-            >
-              <mat-icon>chevron_right</mat-icon>
-            </button>
           </td>
         </ng-container>
 

@@ -264,7 +264,7 @@ export class PosisiPphComponent {
           { header: 'Jabatan', key: 'jabatan', width: 24 },
           { header: 'Departemen', key: 'departemen', width: 20 },
           { header: 'Kategori Pajak', key: 'kategori', width: 16 },
-          { header: 'PPh 21', key: 'pph', width: 16, align: 'right', numFmt: '#,##0', total: true },
+          { header: 'PPh 21', key: 'pph', width: 16, align: 'right', numFmt: '#,##0.00', total: true },
         ],
       },
       {
@@ -281,9 +281,9 @@ export class PosisiPphComponent {
           { header: 'No. Invoice', key: 'invoiceName', width: 24 },
           { header: 'Kode PPh', key: 'pphCode', width: 14 },
           { header: 'Objek Pajak', key: 'pphTaxObject', width: 34 },
-          { header: 'DPP', key: 'dpp', width: 16, align: 'right', numFmt: '#,##0', total: true },
+          { header: 'DPP', key: 'dpp', width: 16, align: 'right', numFmt: '#,##0.00', total: true },
           { header: '%', key: 'pphPercentage', width: 8, align: 'right' },
-          { header: 'PPh', key: 'pph', width: 16, align: 'right', numFmt: '#,##0', total: true },
+          { header: 'PPh', key: 'pph', width: 16, align: 'right', numFmt: '#,##0.00', total: true },
         ],
       },
     ]);

@@ -68,7 +68,7 @@
             <span *ngSwitchDefault>{{ "taxing.ppnNihil" | translate }}</span>
           </ng-container>
         </span>
-        <span class="pp-verdict__value">Rp {{ selisihAbs | number: "1.0-0" }}</span>
+        <span class="pp-verdict__value">Rp {{ selisihAbs | number: "1.2-2" }}</span>
         <span class="pp-verdict__note" *ngIf="posisi.status === 'lebih_bayar'">
           {{ "taxing.ppnLebihBayarNote" | translate }}
         </span>
@@ -88,28 +88,28 @@
       <!-- breakdown -->
       <div class="pp-row">
         <span class="pp-row__key">{{ "taxing.ppnKeluaran" | translate }}</span>
-        <span class="pp-row__val">Rp {{ posisi.keluaran.total | number: "1.0-0" }}</span>
+        <span class="pp-row__val">Rp {{ posisi.keluaran.total | number: "1.2-2" }}</span>
       </div>
       <div class="pp-row">
         <span class="pp-row__key">{{ "taxing.ppnMasukanKredit" | translate }}</span>
-        <span class="pp-row__val pp-row__val--minus">− Rp {{ posisi.masukanKreditable.total | number: "1.0-0" }}</span>
+        <span class="pp-row__val pp-row__val--minus">− Rp {{ posisi.masukanKreditable.total | number: "1.2-2" }}</span>
       </div>
       <!-- Pecahan masukan: dari beban (untuk dicocokkan) -->
       <div class="pp-row pp-row--sub" *ngIf="posisi.masukanKreditable.total > 0">
         <span class="pp-row__key">{{ "taxing.ppnMasukanBeban" | translate }}</span>
-        <span class="pp-row__val">Rp {{ posisi.masukanBeban | number: "1.0-0" }}</span>
+        <span class="pp-row__val">Rp {{ posisi.masukanBeban | number: "1.2-2" }}</span>
       </div>
       <div class="pp-row" *ngIf="posisi.kompensasiMasukLalu > 0">
         <span class="pp-row__key">{{ "taxing.ppnSubtotalBulan" | translate }}</span>
-        <span class="pp-row__val">Rp {{ posisi.selisihBulanIni | number: "1.0-0" }}</span>
+        <span class="pp-row__val">Rp {{ posisi.selisihBulanIni | number: "1.2-2" }}</span>
       </div>
       <div class="pp-row" *ngIf="posisi.kompensasiMasukLalu > 0">
         <span class="pp-row__key">{{ "taxing.ppnKompensasi" | translate }}</span>
-        <span class="pp-row__val pp-row__val--minus">− Rp {{ posisi.kompensasiMasukLalu | number: "1.0-0" }}</span>
+        <span class="pp-row__val pp-row__val--minus">− Rp {{ posisi.kompensasiMasukLalu | number: "1.2-2" }}</span>
       </div>
       <div class="pp-row pp-row--sum">
         <span class="pp-row__key">{{ "taxing.ppnSelisih" | translate }}</span>
-        <span class="pp-row__val">Rp {{ posisi.selisih | number: "1.0-0" }}</span>
+        <span class="pp-row__val">Rp {{ posisi.selisih | number: "1.2-2" }}</span>
       </div>
 
       <!--
@@ -133,14 +133,14 @@
         <div class="pp-setor__text">
           <strong>
             {{ "taxing.ppnSudahDisetor" | translate }}:
-            Rp {{ posisi.setoran.total | number: "1.0-0" }}
+            Rp {{ posisi.setoran.total | number: "1.2-2" }}
           </strong>
 
           <!-- Dokumennya, agar dapat ditelusuri kembali. -->
           <span class="pp-setor__baris" *ngFor="let s of posisi.setoran.rows">
             {{ s.date | date: "dd MMM yyyy" }} ·
             {{ s.invoiceName || s.receiptName || s.opponentName || "—" }} ·
-            Rp {{ s.dpp || 0 | number: "1.0-0" }}
+            Rp {{ s.dpp || 0 | number: "1.2-2" }}
             <span class="pp-setor__belum" *ngIf="!s.isPaid">
               {{ "taxing.ppnSetoranBelumDibayar" | translate }}
             </span>
@@ -152,11 +152,11 @@
             </ng-container>
             <ng-container *ngSwitchCase="'kurang'">
               {{ "taxing.ppnSisaKurangBayar" | translate }}:
-              Rp {{ sisaSetoranAbs | number: "1.0-0" }}
+              Rp {{ sisaSetoranAbs | number: "1.2-2" }}
             </ng-container>
             <ng-container *ngSwitchCase="'lebih'">
               {{ "taxing.ppnSetoranLebih" | translate }}:
-              Rp {{ sisaSetoranAbs | number: "1.0-0" }}
+              Rp {{ sisaSetoranAbs | number: "1.2-2" }}
             </ng-container>
           </span>
         </div>
@@ -171,11 +171,11 @@
           <path d="M12 9v4M12 17h.01" />
         </svg>
         <div class="pp-warn__text">
-          <strong>{{ "taxing.ppnTanpaFaktur" | translate }}: Rp {{ posisi.masukanTanpaFaktur.total | number: "1.0-0" }}</strong>
+          <strong>{{ "taxing.ppnTanpaFaktur" | translate }}: Rp {{ posisi.masukanTanpaFaktur.total | number: "1.2-2" }}</strong>
           <span>{{ "taxing.ppnTanpaFakturNote" | translate }}</span>
           <span class="pp-warn__proj">
             {{ "taxing.ppnBilaLengkap" | translate }}:
-            Rp {{ posisi.selisihBilaLengkap | number: "1.0-0" }}
+            Rp {{ posisi.selisihBilaLengkap | number: "1.2-2" }}
           </span>
 
           <!--

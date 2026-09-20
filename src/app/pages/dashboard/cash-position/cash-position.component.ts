@@ -11,11 +11,19 @@ interface CashAccount {
   balance: number;
   lastMutationDate: string | null;
   hasActivity: boolean;
+  /** Ditandai dikecualikan di halaman Bank — saldonya tidak masuk total. */
+  excludeFromCalendar?: boolean;
 }
 
 interface CashPositionResponse {
   accounts: CashAccount[];
+  /** TANPA rekening yang dikecualikan. */
   totalBalance: number;
+  /** Jumlah saldo rekening yang dikecualikan, dilaporkan terpisah. */
+  excludedBalance?: number;
+  excludedCount?: number;
+  /** `totalBalance` + `excludedBalance`. */
+  grandTotalBalance?: number;
   accountCount: number;
   generatedAt: string;
 }
@@ -47,6 +55,23 @@ export class CashPositionComponent implements OnInit {
   }
   accounts: CashAccount[] = [];
   totalBalance = 0;
+
+  /*
+   * Saldo yang DIKECUALIKAN, dipisah dari total — bukan dibuang.
+   *
+   * Rekening yang ditandai `excludeFromCalendar` (mis. deposit jaminan) tidak
+   * boleh ikut dihitung sebagai kas yang dapat dipakai; itu yang membuat
+   * angka Total Saldo di beranda dulu lebih besar daripada uang yang benar
+   * dapat dibelanjakan.
+   *
+   * Tetapi uangnya tetap ada, jadi ia tetap dicetak — sebagai baris
+   * tersendiri, dengan penjumlahannya yang dapat dicocokkan. Angka yang
+   * dihilangkan sama sekali adalah angka yang tidak pernah dicocokkan lagi.
+   */
+  excludedBalance = 0;
+  excludedCount = 0;
+  grandTotalBalance = 0;
+
   generatedAt = '';
   isLoading = false;
   errorMsg = '';
@@ -68,6 +93,19 @@ export class CashPositionComponent implements OnInit {
         const data = res as CashPositionResponse;
         this.accounts = data.accounts ?? [];
         this.totalBalance = data.totalBalance ?? 0;
+        this.excludedBalance = data.excludedBalance ?? 0;
+        this.excludedCount = data.excludedCount ?? 0;
+        /*
+         * Cadangannya `totalBalance`, bukan nol.
+         *
+         * Backend yang belum diperbarui tidak mengirim `grandTotalBalance`
+         * sama sekali. Nol di sana berarti beranda mencetak "Total seluruh
+         * rekening: Rp 0" di bawah total yang benar — salah, dan terlihat
+         * seperti data yang hilang. Dengan cadangan ini, versi lama hanya
+         * kehilangan barisnya (`excludedCount` nol), tidak mencetak angka
+         * yang keliru.
+         */
+        this.grandTotalBalance = data.grandTotalBalance ?? this.totalBalance;
         this.generatedAt = data.generatedAt ?? '';
         this.isLoading = false;
       },
@@ -78,13 +116,53 @@ export class CashPositionComponent implements OnInit {
     });
   }
 
+  /**
+   * Rekening yang benar-benar MENDUKUNG `totalBalance`.
+   *
+   * Dipakai di kepala kartu. Sebelumnya di sana tertulis `accounts.length` —
+   * seluruh rekening yang dimuat — dan sesudah yang dikecualikan berhenti
+   * masuk total, angka itu menerangkan sesuatu yang bukan dirinya: "12
+   * rekening" tepat di atas total yang hanya berisi delapan.
+   */
+  get jumlahDihitung(): number {
+    return Math.max(0, this.accounts.length - this.excludedCount);
+  }
+
   /** Rp 1.234.567 (Indonesian grouping, no decimals) */
   formatIDR(n: number): string {
+    const nilai = n ?? 0;
+    /*
+     * Nol negatif dinormalkan menjadi nol.
+     *
+     * `Intl.NumberFormat` mencetak `-0` sebagai "-Rp 0,00", dan saldo yang
+     * dibulatkan dari pecahan negatif yang sangat kecil juga keluar begitu.
+     * Di layar itu terbaca sebagai rekening bermasalah — merah, bertanda
+     * minus — padahal saldonya nol.
+     *
+     * AMBANGNYA IKUT DESIMALNYA. Dulu 0,5, karena angkanya dicetak tanpa
+     * desimal. Sejak dua desimal, ambang itu akan menelan saldo Rp 0,30 yang
+     * SUNGGUHAN — dicetak "Rp 0,00" padahal seharusnya "Rp 0,30". Yang
+     * dinormalkan hanya yang memang membulat menjadi nol pada dua desimal.
+     */
+    const dibulatkan = Math.abs(nilai) < 0.005 ? 0 : nilai;
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-      maximumFractionDigits: 0,
-    }).format(n ?? 0);
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(dibulatkan);
+  }
+
+  /**
+   * Merah HANYA bila angka yang TERCETAK memang negatif.
+   *
+   * `n < 0` dan `formatIDR(n)` dulu dapat berbeda pendapat: saldo −0,3
+   * dicetak "Rp 0" tetapi diwarnai merah, sehingga rekening bersaldo nol
+   * terbaca sebagai rekening bermasalah. Dua aturan untuk satu angka akan
+   * selalu berselisih di tepinya.
+   */
+  negatif(n: number): boolean {
+    return (n ?? 0) <= -0.005;
   }
 
   /** Show only the last 4 digits of an account number */

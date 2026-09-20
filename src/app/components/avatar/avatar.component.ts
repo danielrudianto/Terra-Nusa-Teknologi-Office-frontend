@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectorRef,
   Component,
   Input,
   OnChanges,
@@ -78,9 +79,30 @@ import {
   ],
 })
 export class AvatarComponent implements OnChanges, OnDestroy {
+  /**
+   * `cdr` diperlukan karena komponen ini kerap dipasang DI DALAM tampilan
+   * OnPush — layar view CoP salah satunya, dan di sanalah persoalannya
+   * terlihat.
+   *
+   * Avatar datang lewat `subscribe`, BELAKANGAN. Pada induk OnPush,
+   * `this.svg` yang disetel di dalam callback itu tidak menandai siapa pun
+   * kotor, sehingga tampilannya tidak pernah diperiksa ulang dan inisialnya
+   * bertahan sampai halaman itu dibuka lagi.
+   *
+   * Yang membuatnya sulit dikenali: PEMBUKAAN KEDUA benar. Saat itu
+   * jawabannya sudah di cache, `BehaviorSubject` memancarkannya SERENTAK di
+   * dalam `ngOnChanges` — di tengah putaran deteksi yang memang sedang
+   * berjalan — jadi `svg` sudah terisi sebelum tampilannya digambar. Orang
+   * yang sama karena itu tampil berinisial sekali, lalu berwajah, dan tidak
+   * ada galat di mana pun.
+   *
+   * `audit-trail` sudah mendapat pelajaran yang sama persis (lihat
+   * keterangan `cdr` di sana); komponen ini terlewat.
+   */
   constructor(
     private avatarService: AvatarService,
     private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   /** Look the avatar up by user. */
@@ -153,11 +175,20 @@ export class AvatarComponent implements OnChanges, OnDestroy {
   private render(config: KeadaanAvatar | Partial<AvatarConfig> | null): void {
     if (!config) {
       this.svg = null;
-      return;
+    } else {
+      // Built from our own constants only — no user supplied markup ever
+      // reaches this string, so bypassing the sanitiser here is safe.
+      this.svg = this.sanitizer.bypassSecurityTrustHtml(buildAvatarSvg(config));
     }
-    // Built from our own constants only — no user supplied markup ever reaches
-    // this string, so bypassing the sanitiser here is safe.
-    this.svg = this.sanitizer.bypassSecurityTrustHtml(buildAvatarSvg(config));
+    /*
+     * DIPANGGIL PADA KEDUA CABANG, termasuk saat hasilnya `null`.
+     *
+     * `render(null)` berarti "ternyata memang tidak ada avatarnya" — dan
+     * itu pun perubahan yang harus sampai ke layar bila sebelumnya sempat
+     * ada wajah di sana (mis. sesudah avatarnya dihapus lalu daftar yang
+     * sama digambar ulang).
+     */
+    this.cdr.markForCheck();
   }
 
   ngOnDestroy(): void {

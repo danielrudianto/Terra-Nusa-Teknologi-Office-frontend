@@ -98,15 +98,65 @@ export class TenderListComponent implements OnInit {
    */
   saring: string = 'draft,berjalan';
 
+  /*
+   * Kolom `action` DIBUANG.
+   *
+   * Isinya hanya satu tombol panah yang memanggil `buka(t.id)` — dan seluruh
+   * BARISNYA sudah memanggil hal yang sama lewat `(click)` di `matRowDef`.
+   * Jadi ia satu kolom penuh yang tidak menambah satu pun kemampuan, sambil
+   * memakan lebar yang dibutuhkan kolom tanggal di sebelahnya.
+   *
+   * `dueDate` ditaruh tepat SEBELUM status, bukan di sebelah `date`. Yang
+   * dicari orang saat membuka daftar ini adalah "mana yang perlu dikerjakan",
+   * dan itu dijawab oleh batas penawaran bersama keadaannya — dua angka yang
+   * dibaca bersamaan sebaiknya bersebelahan.
+   */
   readonly kolom = [
     'number',
+    'date',
     'name',
     'projectName',
     'tenderType',
     'quoteCount',
+    'dueDate',
     'status',
-    'action',
   ];
+
+  /**
+   * Batas penawaran sudah LEWAT sementara tendernya masih menunggu.
+   *
+   * Hanya ditandai pada `draft` dan `berjalan`. Tender yang sudah `selesai`
+   * atau `batal` melewati batasnya adalah hal yang biasa — menandainya merah
+   * membuat sebagian besar daftar menyala tanpa ada yang perlu dikerjakan,
+   * dan penanda yang selalu menyala berhenti dibaca.
+   */
+  lewatBatas(t: any): boolean {
+    const batas = this.keTanggal(t?.dueDate);
+    if (!batas) return false;
+    if (t?.status !== 'draft' && t?.status !== 'berjalan') return false;
+
+    const hariIni = new Date();
+    hariIni.setHours(0, 0, 0, 0);
+    return batas.getTime() < hariIni.getTime();
+  }
+
+  /**
+   * `2026-09-12` -> `Date` LOKAL.
+   *
+   * Diurai sebagai teks, bukan lewat `new Date('2026-09-12')`. Bentuk itu
+   * adalah tengah malam UTC; di zona di sebelah barat UTC ia mundur menjadi
+   * 11 September, sehingga batas yang jatuh HARI INI sudah dilaporkan lewat.
+   * Kekeliruan yang sama sudah dua kali muncul di sistem ini.
+   */
+  private keTanggal(nilai: unknown): Date | null {
+    if (!nilai) return null;
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(nilai));
+    if (m) {
+      return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    }
+    const d = new Date(nilai as any);
+    return isNaN(d.getTime()) ? null : d;
+  }
 
   /**
    * Warna keping keadaan.

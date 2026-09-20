@@ -261,3 +261,257 @@
   background: var(--surface-2, #eef1f6);
   color: var(--muted, #6b7280);
 }
+
+/* ====================================================================== */
+/* LAYAR SEMPIT — kartu buka-tutup, menggantikan tabel                    */
+/*                                                                        */
+/* Bentuknya sengaja meniru panel yang SUDAH ada di aplikasi mobile       */
+/* (`mpo-barang__kepala` di persetujuan PO): tinggi sentuh 48px, kepala   */
+/* berlatar `--surface-2`, panah yang berputar saat terbuka. Bentuk kedua */
+/* untuk pekerjaan yang sama adalah bentuk yang akan berbeda dalam        */
+/* sebulan.                                                               */
+/* ====================================================================== */
+
+.pml-kartu-urut {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pml-kartu-urut__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted, #6b7280);
+  white-space: nowrap;
+}
+
+.pml-kartu-urut__select {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 40px;
+  padding: 0 0.7rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 12px;
+  background: var(--surface, #fff);
+  color: var(--ink, #16181d);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.pml-kartu-urut__arah {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 12px;
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  cursor: pointer;
+
+  .mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+.pml-kartu-daftar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.pml-kartu {
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 16px;
+  background: var(--surface, #fff);
+  overflow: hidden;
+
+  &.buka {
+    border-color: var(--brand, #154dec);
+  }
+}
+
+.pml-kartu__kepala {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  // 48px: sasaran sentuh terkecil yang masih dapat ditekan dengan benar
+  // sambil berjalan. Sama dengan panel di persetujuan PO.
+  min-height: 48px;
+  padding: 0.75rem 0.85rem;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  color: var(--ink, #16181d);
+  cursor: pointer;
+}
+
+.pml-kartu__judul {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.pml-kartu__kode {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--brand, #154dec);
+}
+
+.pml-kartu__nama {
+  font-size: 0.76rem;
+  color: var(--muted, #6b7280);
+  // Nama proyek di sini bisa panjang; dipotong agar kepalanya tetap satu
+  // tinggi dan daftar kartunya tetap dapat dipindai dengan mata.
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pml-kartu__tanda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.2rem;
+
+  // Penandanya sudah punya jarak sendiri dari tata letak ini.
+  .pml-tanda {
+    margin-left: 0;
+  }
+}
+
+.pml-kartu__angka {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.05rem;
+}
+
+.pml-kartu__margin {
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--ink, #16181d);
+}
+
+.pml-kartu__persen {
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted, #6b7280);
+}
+
+.pml-kartu__panah {
+  flex: none;
+  color: var(--faint, #cfd4dc);
+  transition: transform 0.18s ease;
+
+  &.buka {
+    transform: rotate(180deg);
+  }
+}
+
+.pml-kartu__isi {
+  border-top: 1px solid var(--line, #f1f3f7);
+  padding: 0.5rem 0.85rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.pml-kartu__baris {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.35rem 0;
+  font-size: 0.8rem;
+  color: var(--muted, #6b7280);
+}
+
+.pml-kartu__nilai {
+  flex: none;
+  font-size: 0.84rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--ink, #16181d);
+}
+
+.pml-kartu__buka {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 0.5rem;
+  border: 1px solid var(--brand, #154dec);
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand-ink, #0f3fd0);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.83rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  .mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+.pml-kartu-total {
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 16px;
+  background: var(--surface-2, #f9fafc);
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.pml-kartu-total__judul {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted, #6b7280);
+  margin-bottom: 0.2rem;
+}
+
+.pml-kartu-total__jumlah {
+  font-size: 0.7rem;
+  font-weight: 700;
+  min-width: 1.35rem;
+  text-align: center;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+}
+
+.pml-kartu__baris--margin {
+  border-top: 1px solid var(--border, #e3e6eb);
+  margin-top: 0.25rem;
+  padding-top: 0.5rem;
+  font-weight: 700;
+  color: var(--ink, #16181d);
+}

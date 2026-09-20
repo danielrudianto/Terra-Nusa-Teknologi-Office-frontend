@@ -177,7 +177,7 @@
           </th>
           <td mat-cell *matCellDef="let p" class="num">
             <span class="prl-uang" *ngIf="p.contractCount > 0">
-              {{ p.contractValue | number: "1.0-0" }}
+              {{ p.contractValue | number: "1.2-2" }}
             </span>
             <span class="prl-kosong" *ngIf="p.contractCount === 0">
               {{ "project.noContract" | translate }}

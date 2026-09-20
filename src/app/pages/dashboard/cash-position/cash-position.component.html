@@ -3,9 +3,30 @@
   <div class="cp-header">
     <div>
       <h2 class="cp-title">{{ "dashboard.cashPosition" | translate }}</h2>
+      <!--
+        Hitungan di sini menyebut rekening yang MENDUKUNG angka di bawahnya.
+
+        Dulu ia selalu `accounts.length` — seluruh rekening yang dimuat.
+        Sesudah rekening yang dikecualikan berhenti masuk Total Saldo, angka
+        itu menjadi keterangan yang salah: "12 rekening" tepat di atas total
+        yang hanya berisi delapan. Tidak ada yang merah; hanya keterangan yang
+        tidak lagi cocok dengan angka yang diterangkannya.
+
+        Bentuk "8 dari 12" dipakai HANYA saat ada yang dikecualikan. Tanpa
+        pengecualian, "12 dari 12" hanya menimbulkan pertanyaan yang tidak
+        ada jawabannya.
+      -->
       <span class="cp-subtitle" *ngIf="!isLoading && !errorMsg">
         {{ "dashboard.asOf" | translate }} {{ asOfLabel() }} ·
-        {{ accounts.length }} {{ "dashboard.accounts" | translate }}
+        <ng-container *ngIf="excludedCount > 0; else semuaRekening">
+          {{
+            "dashboard.rekeningDihitung"
+              | translate: { n: jumlahDihitung, total: accounts.length }
+          }}
+        </ng-container>
+        <ng-template #semuaRekening>
+          {{ accounts.length }} {{ "dashboard.accounts" | translate }}
+        </ng-template>
       </span>
     </div>
     <button
@@ -41,11 +62,26 @@
     <span
       class="cp-total__value"
       *ngIf="!isLoading"
-      [class.negative]="totalBalance < 0"
+      [class.negative]="negatif(totalBalance)"
     >
       {{ formatIDR(totalBalance) }}
     </span>
     <span class="cp-skeleton cp-skeleton--hero" *ngIf="isLoading"></span>
+
+    <!--
+      Keterangan yang terlihat SAAT TERLIPAT.
+
+      Kartunya terlipat secara bawaan, jadi yang membuka beranda hanya melihat
+      satu angka. Kalau angka itu meninggalkan sesuatu, kalimat yang
+      mengatakannya harus ada di sebelah angkanya — bukan di dalam rincian
+      yang harus dibuka lebih dulu.
+    -->
+    <span
+      class="cp-kecuali__ket"
+      *ngIf="!isLoading && excludedCount > 0"
+    >
+      {{ "dashboard.dikecualikanKet" | translate: { n: excludedCount } }}
+    </span>
   </div>
 
   <!--
@@ -117,19 +153,52 @@
         <span class="cp-bank">
           {{ shortBank(a.bankName) }}
           <span class="cp-badge" *ngIf="!a.hasActivity">tanpa mutasi</span>
+          <span class="cp-badge cp-badge--kecuali" *ngIf="a.excludeFromCalendar">
+            {{ "dashboard.dikecualikan" | translate }}
+          </span>
         </span>
         <span class="cp-meta"
           >{{ a.bankAccountName }} ·
           {{ maskAccount(a.bankAccountNumber) }}</span
         >
       </div>
-      <span class="cp-balance" [class.negative]="a.balance < 0">
+      <span class="cp-balance" [class.negative]="negatif(a.balance)">
         {{ formatIDR(a.balance) }}
       </span>
     </div>
 
     <div class="cp-empty" *ngIf="accounts.length === 0">
       {{ "dashboard.noActiveAccount" | translate }}
+    </div>
+
+    <!--
+      Penjumlahan yang dapat DICOCOKKAN.
+
+      Tanpa dua baris ini, rincian memuat saldo yang tidak dapat dijumlahkan
+      menjadi angka mana pun di kartunya: menjumlahkan seluruh baris tidak
+      menghasilkan Total Saldo, dan tidak ada tempat yang menyebut selisihnya.
+      Yang melihatnya akan menyangka salah satunya keliru.
+    -->
+    <div class="cp-kecuali" *ngIf="excludedCount > 0">
+      <div class="cp-kecuali__baris">
+        <span class="cp-kecuali__label">
+          {{ "dashboard.saldoDikecualikan" | translate }}
+        </span>
+        <span class="cp-kecuali__nilai" [class.negative]="negatif(excludedBalance)">
+          {{ formatIDR(excludedBalance) }}
+        </span>
+      </div>
+      <div class="cp-kecuali__baris cp-kecuali__baris--total">
+        <span class="cp-kecuali__label">
+          {{ "dashboard.totalSemuaRekening" | translate }}
+        </span>
+        <span
+          class="cp-kecuali__nilai"
+          [class.negative]="negatif(grandTotalBalance)"
+        >
+          {{ formatIDR(grandTotalBalance) }}
+        </span>
+      </div>
     </div>
   </div>
 </div>

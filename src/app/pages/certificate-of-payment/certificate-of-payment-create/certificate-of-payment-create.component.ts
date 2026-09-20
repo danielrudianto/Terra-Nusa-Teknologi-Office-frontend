@@ -88,6 +88,19 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
   /** Id CoP bila sedang MENYUNTING; kosong bila membuat baru. */
   copId: number | null = null;
 
+  /**
+   * Versi baris CoP yang sedang disunting.
+   *
+   * Dibaca saat memuat, dikirim kembali saat menyimpan. Server membandingkan
+   * keduanya; bila sudah berbeda, ada yang menyimpan lebih dulu dan
+   * penyimpanan ini ditolak alih-alih menimpa pekerjaannya.
+   *
+   * Tidak perlu disegarkan setelah menyimpan: layar ini selalu berpindah ke
+   * daftar begitu tersimpan, jadi tidak ada keadaan di mana versinya basi
+   * sementara formulirnya masih terbuka.
+   */
+  private versiCop: number | null = null;
+
   readonly memuat = signal(false);
   readonly menyimpan = signal(false);
 
@@ -123,6 +136,24 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
    */
   readonly volumeAwal = signal<Record<number, number>>({});
   readonly catatanBaris = signal<Record<number, string>>({});
+
+  /**
+   * SPK ini sudah pernah ditagih lewat pembuat faktur tenaga kerja.
+   *
+   * TAMBALAN, dan layarnya mengatakan begitu.
+   *
+   * Pembuat faktur (halaman Invoice) menagih SPK yang sama tanpa menyentuh
+   * pagu di layar ini: yang diketik di sana EMPAT BARIS BAKU — Upah Harian,
+   * Lembur, Bonus, Insentif Bor — bukan baris SPK-nya, dan nomor SPK-nya
+   * teks bebas. Jadi volume di sini dan nominal di sana tidak saling tahu.
+   *
+   * Yang dapat dilakukan sekarang hanya MENGATAKANNYA. Bukan menolak:
+   * menagih bulan lalu lewat faktur dan bulan ini lewat CoP adalah keadaan
+   * yang sah, dan menolaknya akan mematikan jalur yang baru saja dibuka.
+   */
+  readonly tagihanFaktur = signal<{ jumlah: number; nilai?: number } | null>(
+    null,
+  );
 
   readonly tanggal = new FormControl<Date | null>(new Date());
   /*
@@ -245,6 +276,7 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
   /** Lepas pilihan supaya SPK lain dapat dicari. */
   lepasSpk(): void {
     this.spkTerpilih.set(null);
+    this.tagihanFaktur.set(null);
     this.baris.set([]);
     this.kontrol.clear();
     this.isian.set({});
@@ -260,7 +292,28 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
     this.isian.set({});
     this.catatanBaris.set({});
     this.volumeAwal.set({});
+    this.tagihanFaktur.set(null);
     await this.muatPagu(spk.id);
+    await this.muatPeringatanFaktur(spk.id);
+  }
+
+  /**
+   * Peringatan jalur ganda; kegagalannya DITELAN dengan sengaja.
+   *
+   * Yang hilang saat ia gagal hanyalah keterangan. Menggagalkan pemilihan SPK
+   * karena peringatan tidak terbaca berarti sebuah tambalan menjatuhkan
+   * layar yang seharusnya ditambalnya.
+   */
+  private async muatPeringatanFaktur(spkId: number): Promise<void> {
+    try {
+      const hasil = (await firstValueFrom(
+        this.service.peringatanFaktur(spkId),
+      )) as { jumlah?: number; nilai?: number };
+      const jumlah = Number(hasil?.jumlah) || 0;
+      this.tagihanFaktur.set(jumlah > 0 ? { jumlah, nilai: hasil?.nilai } : null);
+    } catch {
+      this.tagihanFaktur.set(null);
+    }
   }
 
   private async muatPagu(spkId: number): Promise<void> {
@@ -298,7 +351,11 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
       const c = new FormControl<string | null>(
         awal === null || awal === undefined ? '' : String(awal),
       );
-      if (this.sisaBoleh(b) <= 0) c.disable({ emitEvent: false });
+      // Baris tanpa plafon TIDAK dimatikan: sisanya nol atau minus, dan
+      // aturan ini akan mengunci isiannya sebelum satu volume pun diketik.
+      if (!b.tanpaPagu && this.sisaBoleh(b) <= 0) {
+        c.disable({ emitEvent: false });
+      }
       c.valueChanges.subscribe((v) => this.terimaVolume(id, v));
       this.kontrol.set(id, c);
     });
@@ -319,6 +376,8 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
     this.memuat.set(true);
     try {
       const cop: any = await firstValueFrom(this.service.detail(id));
+      this.versiCop =
+        typeof cop.rowVersion === 'number' ? cop.rowVersion : null;
       this.tanggal.setValue(cop.date ? new Date(cop.date) : null);
       this.periodeAwal.setValue(
         cop.periodStart ? new Date(cop.periodStart) : null,
@@ -407,6 +466,11 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
   }
 
   melebihi(b: BarisPagu): boolean {
+    // Tidak ada plafon, jadi tidak ada yang dapat dilampaui. Diperiksa
+    // dengan penanda yang SAMA dengan yang dipakai server; bila layar
+    // menghitung sendiri, ia akan menandai merah baris yang justru diterima
+    // saat disimpan — atau sebaliknya.
+    if (b.tanpaPagu) return false;
     const v = this.nilai(b.purchaseOrderItemID);
     return v !== null && v > this.sisaBoleh(b);
   }
@@ -618,6 +682,13 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
             periodEnd: this.tanggalTeks(this.periodeAkhir.value),
             note: this.catatan.value || null,
             items,
+            // `?? undefined`, BUKAN `?? 0`.
+            //
+            // Nol adalah versi yang SAH — setiap baris dimulai dari sana.
+            // Mengirim nol untuk "tidak tahu" berarti menabrak dokumen yang
+            // memang belum pernah disunting, dan penyimpanan yang benar
+            // ditolak tanpa sebab yang dapat dijelaskan.
+            rowVersion: this.versiCop ?? undefined,
           }),
         );
       } else {

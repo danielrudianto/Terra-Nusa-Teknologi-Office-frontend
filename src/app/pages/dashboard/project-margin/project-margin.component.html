@@ -66,16 +66,16 @@
             </div>
             <div class="pm-card__baris">
               <span>{{ "projectMargin.kontrak" | translate }}</span>
-              <span>Rp {{ p.kontrak | number: "1.0-0" }}</span>
+              <span>Rp {{ p.kontrak | number: "1.2-2" }}</span>
             </div>
             <div class="pm-card__baris">
               <span>{{ "projectMargin.biaya" | translate }}</span>
-              <span>Rp {{ biaya(p) | number: "1.0-0" }}</span>
+              <span>Rp {{ biaya(p) | number: "1.2-2" }}</span>
             </div>
             <div class="pm-card__baris pm-card__baris--tebal">
               <span>{{ "projectMargin.margin" | translate }}</span>
               <span [class.pm-rugi]="margin(p) < 0"
-                >Rp {{ margin(p) | number: "1.0-0" }}</span
+                >Rp {{ margin(p) | number: "1.2-2" }}</span
               >
             </div>
           }

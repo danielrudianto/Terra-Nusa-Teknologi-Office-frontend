@@ -1,0 +1,180 @@
+<h2 mat-dialog-title class="rd-judul">
+  {{ "posisiKeuangan.namaRasio." + data.kode | translate }}
+</h2>
+
+<mat-dialog-content class="rd-isi">
+  <!-- Angka, letaknya, dan pitanya — sekali, di atas. -->
+  <div class="rd-kepala">
+    <span class="rd-nilai">{{ data.teks }}</span>
+    @if (data.posisi) {
+      <span
+        class="rd-chip"
+        [class.rd-chip--baik]="data.baik === true"
+        [class.rd-chip--awas]="data.baik === false"
+        >{{ "posisiKeuangan.posisi." + data.posisi | translate }}</span
+      >
+    }
+    <span class="rd-acuan">
+      {{ "posisiKeuangan.acuanSingkat" | translate }} {{ data.pitaTeks }}
+      @if (data.acuan) {
+        ({{ data.acuan }})
+      }
+    </span>
+  </div>
+
+  <!--
+    ARTI DAN RISIKONYA — inilah alasan dialog ini dibuka.
+
+    Bukan label SEHAT pada perusahaannya: label seperti itu membuat orang
+    berhenti bertanya. Yang disebut di sini apa artinya angkanya berada di
+    situ, dan apa risikonya.
+  -->
+  @if (data.arti) {
+    <p class="rd-arti">{{ data.arti }}</p>
+  }
+
+  <!-- ---- Hitungannya ---- -->
+  @if (data.hitungan; as h) {
+    <h3 class="rd-subjudul">
+      {{ "posisiKeuangan.hitunganJudul" | translate }}
+    </h3>
+
+    <div class="rd-hitung">
+      <div class="rd-sisi">
+        <span class="rd-sisi__cap">{{
+          "posisiKeuangan.pembilang" | translate
+        }}</span>
+        <span class="rd-sisi__nilai">{{ uang(h.pembilang?.nilai) }}</span>
+        @for (x of rincian(h.pembilang); track $index) {
+          <div class="rd-baris">
+            <span>{{ labelKomponen(x) }}</span>
+            <span class="angka">{{ uang(x.nilai) }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="rd-sisi">
+        <span class="rd-sisi__cap">{{
+          "posisiKeuangan.penyebut" | translate
+        }}</span>
+        <span class="rd-sisi__nilai">{{ uang(h.penyebut?.nilai) }}</span>
+        @for (x of rincian(h.penyebut); track $index) {
+          <div class="rd-baris">
+            <span>{{ labelKomponen(x) }}</span>
+            <span class="angka">{{ uang(x.nilai) }}</span>
+          </div>
+        }
+      </div>
+
+      @if (h.pengali) {
+        <div class="rd-sisi">
+          <span class="rd-sisi__cap">{{
+            "posisiKeuangan.pengali" | translate
+          }}</span>
+          <span class="rd-sisi__nilai">{{ h.pengali.nilai }}</span>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ---- Ubah pita acuan ---- -->
+  @if (bolehUbah()) {
+    <h3 class="rd-subjudul">
+      {{ "posisiKeuangan.ubahAcuanJudul" | translate }}
+    </h3>
+
+    @if (!mengubah()) {
+      <p class="rd-acuanKet">{{ "posisiKeuangan.ubahAcuanKet" | translate }}</p>
+      <button mat-stroked-button type="button" (click)="mulaiUbah()">
+        <mat-icon>tune</mat-icon>
+        {{ "posisiKeuangan.ubahAcuan" | translate }}
+      </button>
+    } @else {
+      <!--
+        SATUANNYA DICETAK DI SEBELAH KOTAKNYA.
+
+        Pita rasio persen disimpan sebagai pecahan (0,15) tetapi dibaca orang
+        sebagai 15%. Kotak tanpa satuan membuat yang mengisinya menebak mana
+        yang diminta — dan menebak salah tidak menghasilkan galat apa pun,
+        hanya pita yang meleset seratus kali lipat.
+      -->
+      <div class="rd-ubah">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "posisiKeuangan.batasBawah" | translate }}</mat-label>
+          <input
+            matInput
+            type="number"
+            [(ngModel)]="isianBawah"
+            [disabled]="menyimpan()"
+          />
+          @if (satuan()) {
+            <span matTextSuffix>{{ satuan() }}</span>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "posisiKeuangan.batasAtas" | translate }}</mat-label>
+          <input
+            matInput
+            type="number"
+            [(ngModel)]="isianAtas"
+            [disabled]="menyimpan()"
+          />
+          @if (satuan()) {
+            <span matTextSuffix>{{ satuan() }}</span>
+          }
+        </mat-form-field>
+      </div>
+
+      <p class="rd-acuanKet">{{ "posisiKeuangan.batasKosong" | translate }}</p>
+
+      @if (pitaTerbalik()) {
+        <div class="rd-galat">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ "posisiKeuangan.pitaTerbalik" | translate }}</span>
+        </div>
+      }
+
+      @if (galatSimpan()) {
+        <div class="rd-galat">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ galatSimpan() }}</span>
+        </div>
+      }
+
+      <div class="rd-ubahAksi">
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          [disabled]="menyimpan() || pitaTerbalik()"
+          (click)="simpan()"
+        >
+          {{ "common.save" | translate }}
+        </button>
+        <button
+          mat-button
+          type="button"
+          [disabled]="menyimpan()"
+          (click)="kembalikanBawaan()"
+        >
+          {{ "posisiKeuangan.kembalikanBawaan" | translate }}
+        </button>
+        <button
+          mat-button
+          type="button"
+          [disabled]="menyimpan()"
+          (click)="batalUbah()"
+        >
+          {{ "common.cancel" | translate }}
+        </button>
+      </div>
+    }
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="tutup()">
+    {{ "common.close" | translate }}
+  </button>
+</mat-dialog-actions>

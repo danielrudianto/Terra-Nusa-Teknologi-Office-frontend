@@ -235,7 +235,7 @@
                 {{ "cop.harga" | translate }}
               </th>
               <td mat-cell *matCellDef="let i" class="cv-angka">
-                {{ i.price | number: "1.0-2" }}
+                {{ i.price | number: "1.2-2" }}
               </td>
             </ng-container>
 
@@ -244,7 +244,7 @@
                 {{ "cop.jumlah" | translate }}
               </th>
               <td mat-cell *matCellDef="let i" class="cv-angka">
-                {{ i.amount | number: "1.0-2" }}
+                {{ i.amount | number: "1.2-2" }}
               </td>
             </ng-container>
           }
@@ -264,7 +264,7 @@
       @if (bolehLihatNilai() && total !== null) {
         <p class="cv-total">
           {{ "cop.nilaiPekerjaan" | translate }}:
-          <strong>{{ total | number: "1.0-2" }}</strong>
+          <strong>{{ total | number: "1.2-2" }}</strong>
         </p>
       }
     </section>
@@ -296,15 +296,15 @@
                   <div class="cv-pagu__angka">
                     <div>
                       <dt>{{ "cop.dpSeluruhnya" | translate }}</dt>
-                      <dd>{{ sy.dpPagu | number: "1.0-0" }}</dd>
+                      <dd>{{ sy.dpPagu | number: "1.2-2" }}</dd>
                     </div>
                     <div>
                       <dt>{{ "cop.sudahDikembalikan" | translate }}</dt>
-                      <dd>{{ sy.dpTerpakai | number: "1.0-0" }}</dd>
+                      <dd>{{ sy.dpTerpakai | number: "1.2-2" }}</dd>
                     </div>
                     <div class="cv-pagu__sisa">
                       <dt>{{ "cop.sisa" | translate }}</dt>
-                      <dd>{{ sy.dpSisa | number: "1.0-0" }}</dd>
+                      <dd>{{ sy.dpSisa | number: "1.2-2" }}</dd>
                     </div>
                   </div>
                 </div>
@@ -318,15 +318,15 @@
                   <div class="cv-pagu__angka">
                     <div>
                       <dt>{{ "cop.retensiSeluruhnya" | translate }}</dt>
-                      <dd>{{ sy.retensiPagu | number: "1.0-0" }}</dd>
+                      <dd>{{ sy.retensiPagu | number: "1.2-2" }}</dd>
                     </div>
                     <div>
                       <dt>{{ "cop.sudahDitahan" | translate }}</dt>
-                      <dd>{{ sy.retensiTerpakai | number: "1.0-0" }}</dd>
+                      <dd>{{ sy.retensiTerpakai | number: "1.2-2" }}</dd>
                     </div>
                     <div class="cv-pagu__sisa">
                       <dt>{{ "cop.sisa" | translate }}</dt>
-                      <dd>{{ sy.retensiSisa | number: "1.0-0" }}</dd>
+                      <dd>{{ sy.retensiSisa | number: "1.2-2" }}</dd>
                     </div>
                   </div>
                 </div>
@@ -363,7 +363,7 @@
                 </span>
                 <span class="cv-adj__nilai">
                   {{ a.kind === "deduction" ? "−" : "+" }}
-                  {{ a.amount | number: "1.0-2" }}
+                  {{ a.amount | number: "1.2-2" }}
                 </span>
               </li>
             }
@@ -374,23 +374,23 @@
         <dl class="cv-ringkas">
           <div>
             <dt>{{ "cop.nilaiPekerjaan" | translate }}</dt>
-            <dd>{{ c.grossAmount | number: "1.0-2" }}</dd>
+            <dd>{{ c.grossAmount | number: "1.2-2" }}</dd>
           </div>
           <div>
             <dt>{{ "cop.totalPotongan" | translate }}</dt>
             <dd class="cv-ringkas--kurang">
-              −{{ c.deductionTotal | number: "1.0-2" }}
+              −{{ c.deductionTotal | number: "1.2-2" }}
             </dd>
           </div>
           <div>
             <dt>{{ "cop.totalTambahan" | translate }}</dt>
             <dd class="cv-ringkas--tambah">
-              +{{ c.additionTotal | number: "1.0-2" }}
+              +{{ c.additionTotal | number: "1.2-2" }}
             </dd>
           </div>
           <div class="cv-ringkas__bersih">
             <dt>{{ "cop.subtotalDpp" | translate }}</dt>
-            <dd>{{ c.netAmount | number: "1.0-2" }}</dd>
+            <dd>{{ c.netAmount | number: "1.2-2" }}</dd>
           </div>
         </dl>
 
@@ -412,7 +412,7 @@
         <dl class="cv-pajak">
           <div>
             <dt>{{ "cop.subtotalDpp" | translate }}</dt>
-            <dd>{{ c.netAmount | number: "1.0-2" }}</dd>
+            <dd>{{ c.netAmount | number: "1.2-2" }}</dd>
           </div>
 
           <div [class.cv-pajak--nol]="tarifPpn <= 0">
@@ -420,12 +420,12 @@
               {{ "cop.ppn" | translate }}
               <em>{{ tarifPpn | number: "1.0-2" }}%</em>
             </dt>
-            <dd class="cv-pajak--tambah">+{{ nilaiPpn | number: "1.0-2" }}</dd>
+            <dd class="cv-pajak--tambah">+{{ nilaiPpn | number: "1.2-2" }}</dd>
           </div>
 
           <div class="cv-pajak__total">
             <dt>{{ "cop.totalDibayar" | translate }}</dt>
-            <dd>{{ totalDibayar | number: "1.0-2" }}</dd>
+            <dd>{{ totalDibayar | number: "1.2-2" }}</dd>
           </div>
 
           <!--
@@ -448,7 +448,7 @@
                 }
               </dt>
               <dd>
-                −{{ nilaiPph | number: "1.0-2" }}
+                −{{ nilaiPph | number: "1.2-2" }}
                 <span>{{ "cop.pphSaatPembayaran" | translate }}</span>
               </dd>
             </div>
@@ -556,7 +556,8 @@
 
       <!-- Volume masih boleh disunting SELAMA BAP belum disetujui. -->
       @if (!c.isBapApproved) {
-        <button mat-stroked-button (click)="ubah()">
+        <button
+      *appCan="'certificate_of_payment:update'" mat-stroked-button (click)="ubah()">
           <mat-icon>edit</mat-icon>
           {{ "common.edit" | translate }}
         </button>

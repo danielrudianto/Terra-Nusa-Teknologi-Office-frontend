@@ -1,0 +1,150 @@
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+}
+
+.rd-judul {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.rd-isi {
+  min-width: 0;
+}
+
+.rd-kepala {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.6rem;
+}
+.rd-nilai {
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+/* Keadaan disebut sebagai KATA, bukan diserahkan pada warna: warna saja
+   tidak terbaca oleh yang kesulitan membedakannya, dan hilang saat dicetak. */
+.rd-chip {
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #f6f8fb);
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &--baik {
+    border-color: var(--good-fg, #30a46c);
+    color: var(--good-fg, #1a7f4b);
+  }
+  &--awas {
+    border-color: var(--warn-fg, #d97706);
+    color: var(--warn-fg, #a85c04);
+  }
+}
+.rd-acuan {
+  font-size: 0.72rem;
+  color: var(--muted, #6b7280);
+  font-variant-numeric: tabular-nums;
+}
+
+.rd-arti {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.rd-subjudul {
+  margin: 0.75rem 0 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--muted, #6b7280);
+}
+
+.rd-hitung {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  background: var(--surface-2, #f6f8fb);
+}
+.rd-sisi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.rd-sisi__cap {
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--muted, #6b7280);
+}
+.rd-sisi__nilai {
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  /* Angka rupiah panjang MELUBER, tidak membungkus — tidak ada kesempatan
+     pemenggalan di dalam "12.345.678.901". */
+  overflow-wrap: anywhere;
+}
+.rd-baris {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.72rem;
+  color: var(--muted, #6b7280);
+
+  .angka {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+}
+
+/* ---------------- Ubah pita acuan ---------------- */
+
+.rd-acuanKet {
+  margin: 0 0 0.6rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+}
+.rd-ubah {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+:host ::ng-deep .rd-ubah .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+.rd-ubahAksi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+.rd-galat {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  background: var(--bad-bg, #fdf1f1);
+  color: var(--bad-fg, #b4282c);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+.rd-galat mat-icon {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}

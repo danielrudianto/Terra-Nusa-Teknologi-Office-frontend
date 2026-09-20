@@ -148,7 +148,17 @@ export class LoansViewComponent implements OnInit {
    * sisa, dan persentasenya sekaligus tampil sebagai "NaN%". Yang terlihat
    * pengguna bukan data yang kurang, melainkan halaman yang rusak.
    */
-  private angka(nilai: any): number {
+  /**
+   * Dibuat PUBLIK supaya templatenya ikut memakainya.
+   *
+   * Seluruh nilai hitungan di komponen ini sudah dinormalkan lewat sini —
+   * kecuali satu: daftar pembayaran menampilkan `p.amount` MENTAH ke pipe
+   * `number`. Nilai yang tidak dapat dibaca sebagai angka membuat
+   * `DecimalPipe` MELEMPAR, dan yang jatuh bukan satu barisnya melainkan
+   * seluruh dialognya — layar kosong tanpa satu pun keterangan, untuk satu
+   * baris yang bermasalah di antara sepuluh yang baik.
+   */
+  angka(nilai: any): number {
     const n = Number(nilai);
     return Number.isFinite(n) ? n : 0;
   }
@@ -174,8 +184,8 @@ export class LoansViewComponent implements OnInit {
     if (this.loan == null) return;
     const fmt = (n: number) =>
       new Intl.NumberFormat('id-ID', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
       }).format(n);
 
     const text =

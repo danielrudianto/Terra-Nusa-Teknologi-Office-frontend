@@ -239,14 +239,17 @@ export const WARNA_KAS: Record<KunciSeriKas, { garis: string; isi: string }> = {
   saldo: { garis: '#154dec', isi: 'rgba(21, 77, 236, 0.10)' },
 };
 
-/** Satu bulan pada grafik arus kas. */
+/** Satuan waktu grafik arus kas. */
+export type SatuanKas = 'hari' | 'bulan';
+
+/** Satu titik pada grafik arus kas — satu hari atau satu bulan. */
 export interface TitikKas {
-  /** `YYYY-MM`. */
+  /** `YYYY-MM-DD` untuk harian, `YYYY-MM` untuk bulanan. */
   bulan: string;
   label: string;
   masuk: number;
   keluar: number;
-  /** Saldo kas proyek pada AKHIR bulan ini, kumulatif. */
+  /** Saldo kas proyek pada AKHIR titik ini, kumulatif. */
   saldo: number;
 }
 
@@ -256,43 +259,73 @@ const NAMA_BULAN = [
 ];
 
 /**
- * Pembayaran mentah -> titik per BULAN, dengan saldo kas berjalan.
+ * Pembayaran mentah -> titik arus kas, dengan saldo kas berjalan.
  *
- * KENAPA BULANAN, BUKAN MINGGUAN SEPERTI TAB DI ATAS
+ * KENAPA ADA PILIHAN HARIAN
  *
- * Tab "arus per minggu" membaca gerak belanja; mingguan tepat untuk itu.
- * Arus kas dibaca sepanjang umur proyek — dua tahun mingguan adalah seratus
- * titik lebih, dan garis sepadat itu berhenti menunjukkan bentuk apa pun.
+ * Titik bulanan hanya punya SATU nilai per bulan: saldo pada akhir bulan.
+ * Garis di antara dua titik itu adalah tarikan lurus — bukan pengukuran —
+ * dan tarikan itu MENUTUPI apa yang terjadi di dalam bulannya.
  *
- * KENAPA BULAN KOSONG TETAP DIGAMBAR
+ * Yang tertutup persis hal yang paling perlu terlihat: bulan yang kasnya
+ * sempat menembus nol di pertengahan lalu tertolong termin di akhir bulan
+ * tergambar tidak pernah minus sama sekali. Proyek yang sempat menalangi
+ * uang perusahaan selama tiga minggu terbaca aman. Tidak ada galat, tidak
+ * ada tanda — grafiknya hanya lebih optimistik daripada kenyataannya.
  *
- * Kalau bulan tanpa pembayaran dilewati, Januari dan Juni menjadi dua titik
- * bersebelahan, dan kemiringan garis di antaranya berbohong: lima bulan tanpa
- * penerimaan justru terbaca sebagai penurunan yang landai. Bulan kosong
- * diisi nol supaya jarak pada sumbu waktu sepadan dengan waktu sebenarnya.
+ * Harian tidak menarik garis di antara apa pun: tiap hari punya angkanya
+ * sendiri. Bulanan tetap disediakan karena untuk proyek dua tahun ia lebih
+ * mudah dibaca ketika yang dicari bentuk kasarnya.
+ *
+ * KENAPA HARI/BULAN KOSONG TETAP DIGAMBAR
+ *
+ * Kalau yang tanpa pembayaran dilewati, Januari dan Juni menjadi dua titik
+ * bersebelahan, dan kemiringan garis di antaranya berbohong: lima bulan
+ * tanpa penerimaan justru terbaca sebagai penurunan yang landai. Yang kosong
+ * diisi nol supaya jarak pada sumbu waktu sepadan dengan waktu sebenarnya —
+ * dan pada satuan harian, inilah yang membuat saldo terlihat BERTAHAN datar
+ * alih-alih melandai menuju titik berikutnya.
  *
  * KENAPA TANGGALNYA DIPOTONG SEBAGAI TEKS
  *
- * `String(tanggal).slice(0, 7)` — bukan `new Date(...)`. Mengurai
+ * `String(tanggal).slice(0, 10)` — bukan `new Date(...)`. Mengurai
  * `"2026-09-15"` menghasilkan tengah malam UTC, dan di WIB pembayaran tanggal
- * 1 pukul 00:00 mundur ke bulan sebelumnya. Kekeliruan yang sama sudah pernah
+ * 1 pukul 00:00 mundur ke hari sebelumnya. Kekeliruan yang sama sudah pernah
  * menggeser seluruh kurva kalender; di sini ia akan memindahkan penerimaan ke
- * bulan yang salah tanpa satu pun galat.
+ * hari yang salah tanpa satu pun galat.
+ *
+ * Penambahan harinya memakai `Date.UTC`, bukan `new Date(y, m, d)`: yang
+ * kedua memakai zona waktu lokal, dan melewati pergantian musim panas di
+ * zona mana pun akan melompati atau menggandakan satu hari.
  */
 export function titikKas(
   masuk: any[],
   keluar: any[],
   saldoAwal = 0,
+  /*
+   * Bawaan FUNGSI ini tetap bulanan, sementara bawaan LAYARNYA harian.
+   *
+   * Dua hal yang berbeda, dan sengaja tidak disamakan. Layar memilih harian
+   * karena itu yang jujur untuk dibaca; fungsi ini mempertahankan perilaku
+   * lamanya supaya pemanggil yang tidak menyebut satuannya tidak tiba-tiba
+   * menerima tujuh ratus titik. Pemanggil yang mau harian menyebutnya —
+   * dan komponen laporan proyek memang menyebutnya.
+   */
+  satuan: SatuanKas = 'bulan',
 ): TitikKas[] {
-  const bulanDari = (v: any): string | null => {
-    const s = String(v ?? '').slice(0, 7);
-    return /^\d{4}-\d{2}$/.test(s) ? s : null;
+  const harian = satuan === 'hari';
+  const panjang = harian ? 10 : 7;
+  const pola = harian ? /^\d{4}-\d{2}-\d{2}$/ : /^\d{4}-\d{2}$/;
+
+  const kunciDari = (v: any): string | null => {
+    const s = String(v ?? '').slice(0, panjang);
+    return pola.test(s) ? s : null;
   };
 
   const ember = new Map<string, { masuk: number; keluar: number }>();
   const tambah = (baris: any[], arah: 'masuk' | 'keluar') => {
     for (const b of baris ?? []) {
-      const kunci = bulanDari(b?.date);
+      const kunci = kunciDari(b?.date);
       if (!kunci) continue;
       const n = Number(b?.amount) || 0;
       const e = ember.get(kunci) ?? { masuk: 0, keluar: 0 };
@@ -309,20 +342,71 @@ export function titikKas(
   const hasil: TitikKas[] = [];
   let saldo = saldoAwal;
 
+  const catat = (k: string, label: string) => {
+    const e = ember.get(k) ?? { masuk: 0, keluar: 0 };
+    saldo += e.masuk - e.keluar;
+    hasil.push({ bulan: k, label, masuk: e.masuk, keluar: e.keluar, saldo });
+  };
+
+  if (harian) {
+    /*
+     * HARI DITAMBAHKAN SECARA ARITMETIKA, TANPA `Date` SAMA SEKALI.
+     *
+     * Bukan kerapian: `new Date(y, m, d)` memakai zona waktu lokal, dan
+     * `new Date("2026-09-01")` memakai UTC — dua jawaban berbeda dari satu
+     * bentuk yang mirip. Karma di repo ini berjalan pada UTC, jadi uji apa
+     * pun yang membandingkan keduanya TIDAK akan pernah gagal di sini; yang
+     * gagal adalah peramban orang di WIB, pada tanggal 1 pukul 00:00, dengan
+     * pembayaran yang mundur sehari tanpa satu pun galat.
+     *
+     * Aritmetika pada (tahun, bulan, tanggal) tidak punya zona waktu untuk
+     * salah. Kabisat diurus sendiri — aturannya tiga baris, dan `Date`
+     * tidak dibutuhkan untuk itu.
+     */
+    const kabisat = (y: number) =>
+      y % 4 === 0 && (y % 100 !== 0 || y % 400 === 0);
+    const HARI_BULAN = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    const panjangBulan = (y: number, m: number) =>
+      m === 2 && kabisat(y) ? 29 : HARI_BULAN[m - 1];
+
+    let [y, m, hari] = kunci[0].split('-').map(Number);
+    const [ay, am, ad] = kunci[kunci.length - 1].split('-').map(Number);
+
+    // Pagar keras: satu proyek yang tanggalnya rusak (mis. tahun 1900) akan
+    // menghasilkan puluhan ribu titik dan membekukan peramban. Sepuluh tahun
+    // kalender sudah jauh melampaui umur proyek mana pun di sini.
+    const MAKS_HARI = 3660;
+
+    const lewat = () =>
+      y > ay ||
+      (y === ay && (m > am || (m === am && hari > ad)));
+
+    while (!lewat() && hasil.length < MAKS_HARI) {
+      const k =
+        `${y}-${String(m).padStart(2, '0')}-${String(hari).padStart(2, '0')}`;
+      catat(
+        k,
+        `${hari} ${NAMA_BULAN[m - 1]} ${String(y).slice(2)}`,
+      );
+      hari += 1;
+      if (hari > panjangBulan(y, m)) {
+        hari = 1;
+        m += 1;
+        if (m > 12) {
+          m = 1;
+          y += 1;
+        }
+      }
+    }
+    return hasil;
+  }
+
   let [th, bl] = kunci[0].split('-').map(Number);
   const [thAkhir, blAkhir] = kunci[kunci.length - 1].split('-').map(Number);
 
   while (th < thAkhir || (th === thAkhir && bl <= blAkhir)) {
     const k = `${th}-${String(bl).padStart(2, '0')}`;
-    const e = ember.get(k) ?? { masuk: 0, keluar: 0 };
-    saldo += e.masuk - e.keluar;
-    hasil.push({
-      bulan: k,
-      label: `${NAMA_BULAN[bl - 1]} ${String(th).slice(2)}`,
-      masuk: e.masuk,
-      keluar: e.keluar,
-      saldo,
-    });
+    catat(k, `${NAMA_BULAN[bl - 1]} ${String(th).slice(2)}`);
     bl += 1;
     if (bl > 12) {
       bl = 1;
@@ -809,7 +893,18 @@ export class ProjectReportComponent implements OnInit {
     maintainAspectRatio: false,
     interaction: { mode: 'index', intersect: false },
     plugins: {
-      legend: { position: 'bottom' },
+      /*
+       * Legenda dengan kotak KECIL dan bergaya titik.
+       *
+       * Bawaan Chart.js menggambar kotak selebar 40px per seri. Dua seri
+       * berarti 80px hanya untuk kotaknya, dan pada layar 390px legendanya
+       * membungkus menjadi dua baris — yang diambil dari tinggi grafik,
+       * bukan dari ruang kosong.
+       */
+      legend: {
+        position: 'bottom',
+        labels: { usePointStyle: true, boxWidth: 8, boxHeight: 8 },
+      },
       tooltip: {
         callbacks: {
           label: (ctx) =>
@@ -818,6 +913,22 @@ export class ProjectReportComponent implements OnInit {
       },
     },
     scales: {
+      x: {
+        /*
+         * Label tanggal TIDAK dimiringkan.
+         *
+         * Dengan rotasi, Chart.js memutar `12/09` sampai 90 derajat begitu
+         * ruangnya kurang — dan pada grafik setinggi 240px di ponsel, label
+         * tegak memakan hampir seperempat tingginya. Yang tersisa untuk
+         * kurvanya sendiri tinggal setengah.
+         *
+         * `maxRotation: 0` membuat Chart.js MELEWATI label yang tidak muat
+         * alih-alih memutarnya. Yang dibaca dari kurva S adalah bentuknya
+         * beserta beberapa tanggal jangkar, bukan setiap tanggal opname —
+         * daftar di bawah grafiknya yang memuat semuanya.
+         */
+        ticks: { maxRotation: 0, autoSkip: true },
+      },
       y: {
         // Sengaja dikunci 0-100 dan TIDAK menyesuaikan isinya.
         //
@@ -978,6 +1089,38 @@ export class ProjectReportComponent implements OnInit {
     return jumlah(this.arusKasMasuk()) - jumlah(this.arusKasKeluar());
   });
 
+  /**
+   * Satuan grafik arus kas. HARIAN yang menjadi bawaan.
+   *
+   * Bulanan hanya punya satu nilai per bulan — saldo akhir bulan — dan garis
+   * di antaranya tarikan lurus, bukan pengukuran. Bulan yang kasnya sempat
+   * menembus nol di pertengahan lalu tertolong termin di akhir bulan
+   * tergambar tidak pernah minus. Untuk grafik yang dibaca justru untuk
+   * mengetahui "sejak kapan proyek ini menalangi", itu lebih optimistik
+   * daripada kenyataannya.
+   *
+   * Bulanan TETAP disediakan: pada proyek dua tahun ia lebih mudah dibaca
+   * ketika yang dicari bentuk kasarnya, bukan hari tertentu.
+   */
+  readonly satuanKas = signal<SatuanKas>('hari');
+
+  readonly PILIHAN_SATUAN_KAS: SatuanKas[] = ['hari', 'bulan'];
+
+  gantiSatuanKas(s: SatuanKas): void {
+    this.satuanKas.set(s);
+    // Lebar jendela dikembalikan ke otomatis.
+    //
+    // Chipnya menyatakan JUMLAH TITIK, dan satu titik berarti hal yang
+    // berbeda pada tiap satuan: "6" yang terbawa dari bulanan menjadi
+    // jendela enam HARI. Angkanya masih masuk akal, grafiknya masih
+    // tergambar, dan tidak ada apa pun yang menyebutkan sebabnya.
+    this.pilihanJendela.set('auto');
+    // Jendela dikembalikan ke ujung kanan: lebar jendela dihitung dalam
+    // SATUAN titik, jadi geseran 6 pada bulanan berarti 6 hari pada harian —
+    // tampilannya melompat ke rentang yang tidak diminta siapa pun.
+    this.geserKas.set(0);
+  }
+
   readonly titikArusKas = computed<TitikKas[]>(() => {
     const t = this.tahun();
     const saring = (baris: any[]) =>
@@ -989,6 +1132,7 @@ export class ProjectReportComponent implements OnInit {
       saring(this.arusKasMasuk()),
       saring(this.arusKasKeluar()),
       this.kasDibawa(),
+      this.satuanKas(),
     );
   });
 
@@ -1016,7 +1160,19 @@ export class ProjectReportComponent implements OnInit {
   /** `'auto'` = menyesuaikan lebar layar. */
   readonly pilihanJendela = signal<number | 'auto'>('auto');
 
-  readonly PILIHAN_JENDELA: (number | 'auto')[] = ['auto', 6, 10, 18];
+  /**
+   * Pilihan lebar jendela — IKUT SATUANNYA.
+   *
+   * Angka di chip ini adalah JUMLAH TITIK, dan satu titik berarti hal yang
+   * berbeda pada tiap satuan. Dibiarkan tetap `[6, 10, 18]`, chip "6" pada
+   * satuan harian berarti jendela ENAM HARI: grafik yang hanya memuat
+   * seminggu, dengan kendali geser yang harus ditekan belasan kali untuk
+   * menyeberangi satu proyek. Tidak ada galat — hanya kendali yang terasa
+   * rusak, dan itulah yang dilaporkan.
+   */
+  readonly PILIHAN_JENDELA = computed<(number | 'auto')[]>(() =>
+    this.satuanKas() === 'hari' ? ['auto', 30, 60, 90] : ['auto', 6, 10, 18],
+  );
 
   /**
    * Titik ke sekian dari UJUNG KANAN; 0 berarti menampilkan yang terbaru.
@@ -1071,6 +1227,37 @@ export class ProjectReportComponent implements OnInit {
    */
   readonly jendelaOtomatis = computed(() => {
     const w = this.lebarWadah();
+
+    /*
+     * HARIAN memakai ukuran yang berbeda, dan itu bukan selera.
+     *
+     * 160px per titik disusun untuk LABEL BULAN yang harus terbaca satu per
+     * satu. Pada harian tidak ada yang membaca label tiap hari — yang dibaca
+     * BENTUK garisnya, dan bentuk baru muncul kalau titiknya cukup banyak.
+     * Sepuluh hari bukan grafik, itu sepuluh batang berjajar.
+     *
+     * Sekitar satu triwulan (90 hari) memberi bentuk yang berarti dan masih
+     * memuat rincian hariannya; sumbu-x menipiskan labelnya sendiri.
+     */
+    if (this.satuanKas() === 'hari') {
+      /*
+       * ~22px per hari, bukan 8px.
+       *
+       * 8px memberi jendela seratus tujuh puluhan hari pada layar lebar —
+       * dan proyek yang panjangnya kurang dari itu jadi TIDAK PERNAH
+       * memunculkan kendali geser sama sekali, karena kendalinya hanya
+       * digambar ketika titiknya lebih banyak daripada yang muat. Yang
+       * dialami orang: grafik harian yang padat dan tidak dapat digeser ke
+       * mana pun.
+       *
+       * 22px memberi sekitar dua bulan pada layar lebar: bentuk garisnya
+       * masih terbaca, dan proyek yang lebih panjang dari itu — hampir
+       * semuanya — mendapatkan kendali gesernya.
+       */
+      if (!w) return 60;
+      return Math.max(30, Math.min(120, Math.round(w / 22)));
+    }
+
     // Belum terukur (ResizeObserver belum menyala): 10, bukan 0 — jendela
     // nol berarti grafik kosong pada kedipan pertama.
     if (!w) return 10;
@@ -1168,12 +1355,19 @@ export class ProjectReportComponent implements OnInit {
   );
 
   /**
-   * Bulan PERTAMA saldo kasnya menembus nol; `null` bila tidak pernah.
+   * Titik PERTAMA saldo kasnya menembus nol; `null` bila tidak pernah.
    *
    * Ini angka yang sebenarnya dicari orang di grafik ini — sejak kapan proyek
    * ini menalangi uang perusahaan. Disebutkan sebagai teks, bukan hanya
    * digambar: yang membuka laporan dari layar kecil tidak dapat membaca
    * perpotongan garis dengan sumbu nol dengan mata.
+   *
+   * Pada satuan HARIAN angka ini menjadi lebih jujur, dan kadang lebih buruk
+   * daripada yang tertulis sebelumnya: saldo yang sempat minus di tengah
+   * bulan lalu tertolong termin di akhir bulan TIDAK pernah muncul pada
+   * satuan bulanan. Kalau tanggalnya tiba-tiba lebih awal daripada yang
+   * diingat orang, itu bukan kemunduran — itu hari yang selama ini tidak
+   * terlihat.
    */
   readonly bulanMulaiMinus = computed<string | null>(() => {
     const t = this.titikArusKas().find((x) => x.saldo < 0);
@@ -1239,6 +1433,16 @@ export class ProjectReportComponent implements OnInit {
     const aktif = this.seriKas();
 
     /*
+     * TITIK DIHILANGKAN PADA SATUAN HARIAN.
+     *
+     * Sembilan puluh bulatan berjejer bukan grafik, itu pita bulatan: bentuk
+     * garisnya tertutup oleh penandanya sendiri. Pada bulanan titiknya
+     * sedikit dan penanda justru membantu — di sanalah nilainya benar-benar
+     * diukur, bukan ditarik lurus di antara dua titik.
+     */
+    const jari = this.satuanKas() === 'hari' ? 0 : 2;
+
+    /*
      * Seri yang dimatikan DIBUANG dari `datasets`, bukan ditandai `hidden`.
      *
      * `hidden` menyembunyikan garisnya tetapi nilainya tetap ikut
@@ -1270,7 +1474,7 @@ export class ProjectReportComponent implements OnInit {
           borderColor: WARNA_KAS.masuk.garis,
           backgroundColor: WARNA_KAS.masuk.isi,
           tension: 0,
-          pointRadius: 2,
+          pointRadius: jari,
         },
         {
           kunci: 'keluar' as KunciSeriKas,
@@ -1279,7 +1483,7 @@ export class ProjectReportComponent implements OnInit {
           borderColor: WARNA_KAS.keluar.garis,
           backgroundColor: WARNA_KAS.keluar.isi,
           tension: 0,
-          pointRadius: 2,
+          pointRadius: jari,
         },
         {
           /*
@@ -1297,7 +1501,7 @@ export class ProjectReportComponent implements OnInit {
           borderWidth: 2.5,
           fill: true,
           tension: 0,
-          pointRadius: 2,
+          pointRadius: jari,
         },
     ];
 
@@ -1314,7 +1518,12 @@ export class ProjectReportComponent implements OnInit {
     maintainAspectRatio: false,
     interaction: { mode: 'index', intersect: false },
     plugins: {
-      legend: { position: 'bottom' },
+      // Sama seperti kurva S: legenda bertitik kecil supaya tidak membungkus
+      // menjadi dua baris di layar sempit.
+      legend: {
+        position: 'bottom',
+        labels: { usePointStyle: true, boxWidth: 8, boxHeight: 8 },
+      },
       tooltip: {
         callbacks: {
           label: (ctx) =>
@@ -1323,6 +1532,10 @@ export class ProjectReportComponent implements OnInit {
       },
     },
     scales: {
+      x: {
+        // Alasannya sama dengan kurva S — lihat `opsiKurvaS`.
+        ticks: { maxRotation: 0, autoSkip: true },
+      },
       y: {
         /*
          * TIDAK dikunci mulai nol — kebalikan dari kurva S, dan disengaja.

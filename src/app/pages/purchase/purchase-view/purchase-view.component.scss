@@ -429,3 +429,48 @@
   font-weight: 500;
   cursor: help;
 }
+
+/*
+ * Nomor PO beserta tombol salinnya.
+ *
+ * `.pv-field` menyusun isinya ke bawah; keduanya harus sebaris, jadi
+ * dibungkus sendiri. `justify-content: flex-end` mempertahankan perataan
+ * kanan yang sudah dipakai `.pv-polink`.
+ */
+.pv-po {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+  min-width: 0;
+}
+
+/*
+ * Tombol ikon yang dikecilkan HARUS memusatkan isinya sendiri.
+ *
+ * Material menghitung letak ikon dari ukuran bawaannya (24px di dalam tombol
+ * 40px). Mengecilkan tombolnya tanpa menyetel ulang pemusatannya membuat
+ * ikonnya turun — terlihat meleset dari tombolnya. Sama persis dengan
+ * `.eol-copy` di daftar lawan transaksi; alasannya juga sama.
+ */
+.pv-salin {
+  display: inline-flex;
+  place-items: center;
+  place-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  flex: 0 0 auto;
+  color: var(--muted, #6b7280);
+
+  .mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    line-height: 16px;
+  }
+}
+.pv-salin:hover {
+  color: var(--brand, #154dec);
+}
+

@@ -80,6 +80,7 @@
     -->
     @if (bolehHapus) {
       <button
+      *appCan="'payment_outgoing:delete'"
         type="button"
         mat-button
         color="warn"

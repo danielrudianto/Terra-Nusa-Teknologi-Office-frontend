@@ -3,6 +3,7 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { documentFonts } from '../constants/document-font.constant';
 import { downloadRecapExcel } from './tax-recap-excel';
+import { uangDokumenRp } from './uang.helper';
 
 /**
  * Unduhan Laporan Proyek — Excel dan PDF.
@@ -71,7 +72,7 @@ export interface DataLaporanProyek {
 const PERUSAHAAN = 'PT. ALPHA KONSTRUKSI NUSANTARA';
 
 function rupiah(n: number): string {
-  return `Rp ${Math.round(Number(n) || 0).toLocaleString('id-ID')}`;
+  return uangDokumenRp(n);
 }
 
 function persen(bagian: number, dari: number): string {
@@ -172,7 +173,7 @@ export async function unduhLaporanProyekExcel(
         rows: ringkasan,
         columns: [
           { header: 'Keterangan', key: 'label', width: 34 },
-          { header: 'Nilai', key: 'nilai', width: 22, numFmt: '#,##0' },
+          { header: 'Nilai', key: 'nilai', width: 22, numFmt: '#,##0.00' },
           { header: 'Catatan', key: 'ket', width: 30 },
         ],
       },
@@ -186,7 +187,7 @@ export async function unduhLaporanProyekExcel(
         columns: [
           { header: 'Kategori', key: 'kategori', width: 30 },
           { header: 'Pemasok', key: 'pemasok', width: 34 },
-          { header: 'Nilai', key: 'nilai', width: 20, numFmt: '#,##0' },
+          { header: 'Nilai', key: 'nilai', width: 20, numFmt: '#,##0.00' },
           { header: 'Porsi', key: 'porsi', width: 12 },
         ],
       },
@@ -199,10 +200,10 @@ export async function unduhLaporanProyekExcel(
         rows: arus,
         columns: [
           { header: 'Minggu', key: 'minggu', width: 26 },
-          { header: 'Biaya', key: 'biaya', width: 20, numFmt: '#,##0' },
-          { header: 'Tagihan', key: 'tagihan', width: 20, numFmt: '#,##0' },
-          { header: 'Biaya kumulatif', key: 'kumulatif', width: 22, numFmt: '#,##0' },
-          { header: 'Sisa kontrak', key: 'sisa', width: 22, numFmt: '#,##0' },
+          { header: 'Biaya', key: 'biaya', width: 20, numFmt: '#,##0.00' },
+          { header: 'Tagihan', key: 'tagihan', width: 20, numFmt: '#,##0.00' },
+          { header: 'Biaya kumulatif', key: 'kumulatif', width: 22, numFmt: '#,##0.00' },
+          { header: 'Sisa kontrak', key: 'sisa', width: 22, numFmt: '#,##0.00' },
         ],
       },
     ],

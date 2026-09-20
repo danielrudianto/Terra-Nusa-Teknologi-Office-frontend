@@ -2,10 +2,18 @@
   <div mat-dialog-title class="ds-head" appDialogGeser>
     <div class="ds-head__text">
       <h2 class="ds-title">{{ "calendarDay.title" | translate }}</h2>
+      <!--
+        TANGGALNYA disebut, bukan hanya judul modulnya.
+
+        Dialog ini menutupi kalender yang memanggilnya, jadi sesudah terbuka
+        tidak ada lagi di layar yang menyebut hari mana yang sedang dilihat —
+        padahal yang diputuskan di sini menyetujui atau menolak pembayaran.
+      -->
+      <span class="ds-sub ds-sub--tanggal">{{ tanggalTeks() }}</span>
       <span class="ds-sub">{{ "calendarDay.subtitle" | translate }}</span>
     </div>
     <span class="ds-daychip" *ngIf="!isLoading">
-      Total hari ini · Rp {{ getTotalDailyAmount() | number: "0.2-2" }}
+      Total hari ini · Rp {{ getTotalDailyAmount() | number: "1.2-2" }}
     </span>
   </div>
 
@@ -130,7 +138,7 @@
                       }
                     </span>
                     <span class="ds-optamt"
-                      >Rp {{ i.amount | number: "0.2-2" }}</span
+                      >Rp {{ i.amount | number: "1.2-2" }}</span
                     >
                   </div>
                 </div>
@@ -168,7 +176,7 @@
                       <span class="ds-opt__sub">{{ getProjectName(p) }}</span>
                     </span>
                     <span class="ds-optamt"
-                      >Rp {{ p.amount | number: "0.2-2" }}</span
+                      >Rp {{ p.amount | number: "1.2-2" }}</span
                     >
                   </button>
                 </div>
@@ -218,7 +226,7 @@
                           : {
                               interbank: selectedAccount.interbankTransferCount,
                               total: selectedAccount.pendingCount,
-                              fee: "Rp " + (interbankFee | number: "0.0-0"),
+                              fee: "Rp " + (interbankFee | number: "1.2-2"),
                               bank: selectedAccount.bankName,
                             }
                     }}</span>
@@ -259,35 +267,35 @@
               <div class="ds-foot__row">
                 <span>{{ "calendarDay.selected" | translate }}</span>
                 <span class="ds-foot__sel"
-                  >Rp {{ selectedAmount | number: "0.2-2" }}</span
+                  >Rp {{ selectedAmount | number: "1.2-2" }}</span
                 >
               </div>
 
               <div class="ds-foot__row">
                 <span>{{ "calendarDay.openingBalance" | translate }}</span>
-                <span>Rp {{ openingBalance | number: "0.2-2" }}</span>
+                <span>Rp {{ openingBalance | number: "1.2-2" }}</span>
               </div>
               <div class="ds-foot__row ds-foot__row--total">
                 <span>{{ "calendarDay.totalAmount" | translate }}</span>
-                <span>&minus; Rp {{ totalAmount | number: "0.2-2" }}</span>
+                <span>&minus; Rp {{ totalAmount | number: "1.2-2" }}</span>
               </div>
               <div class="ds-foot__row">
                 <span>{{ "calendarDay.adminFee" | translate }}</span>
-                <span>&minus; Rp {{ adminFee | number: "0.2-2" }}</span>
+                <span>&minus; Rp {{ adminFee | number: "1.2-2" }}</span>
               </div>
               <div
                 class="ds-foot__row ds-foot__row--closing"
                 [class.is-short]="isShortfall"
               >
                 <span>{{ "calendarDay.closingBalance" | translate }}</span>
-                <span>Rp {{ closingBalance | number: "0.2-2" }}</span>
+                <span>Rp {{ closingBalance | number: "1.2-2" }}</span>
               </div>
               @if (isShortfall) {
                 <div class="ds-short">
                   <mat-icon>error</mat-icon>
                   <span
                     >{{ "calendarDay.shortfall" | translate }} Rp
-                    {{ -closingBalance | number: "0.2-2" }}</span
+                    {{ -closingBalance | number: "1.2-2" }}</span
                   >
                 </div>
               }

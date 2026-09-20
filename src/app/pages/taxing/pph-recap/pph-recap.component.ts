@@ -101,7 +101,7 @@ export class PphRecapComponent {
     return {
       width,
       align: 'right' as const,
-      numFmt: '#,##0',
+      numFmt: '#,##0.00',
       total: true,
     };
   }

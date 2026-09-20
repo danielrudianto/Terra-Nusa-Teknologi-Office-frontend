@@ -19,7 +19,7 @@ export interface RecapColumn {
   width: number;
   /** Rata teks isi kolom. */
   align?: 'left' | 'center' | 'right';
-  /** Format angka Excel, mis. '#,##0'. Kolom ber-format ikut dijumlahkan. */
+  /** Format angka Excel, mis. '#,##0.00'. Kolom ber-format ikut dijumlahkan. */
   numFmt?: string;
   /** Ikut baris total di bawah tabel. */
   total?: boolean;
@@ -263,7 +263,7 @@ export function addDetailSheet(
         c.border = thinBorder();
         c.font = { name: 'Calibri', bold: row.kind === 'total' };
         if (i >= 3) {
-          c.numFmt = '#,##0';
+          c.numFmt = '#,##0.00';
           c.alignment = { horizontal: 'right' };
         } else if (i > 0) {
           c.alignment = { horizontal: 'center' };
@@ -328,7 +328,7 @@ export function sheetFromObjects(
       key,
       width: Math.min(Math.max(longest + 2, 12), 40),
       ...(numeric
-        ? { align: 'right' as const, numFmt: '#,##0', total: true }
+        ? { align: 'right' as const, numFmt: '#,##0.00', total: true }
         : {}),
       ...(isDate ? { align: 'center' as const, numFmt: 'dd mmm yyyy' } : {}),
       // format eksplisit menang atas hasil deteksi otomatis; persentase

@@ -34,8 +34,26 @@ export interface BarisPagu {
   pagu: number;
   /** Sudah disertifikasi CoP lain. */
   terpakai: number;
-  /** Yang masih boleh diisi. */
+  /**
+   * Yang masih boleh diisi.
+   *
+   * TIDAK BERLAKU bila `tanpaPagu` benar — di sana angkanya nol atau minus,
+   * dan membandingkannya akan menolak volume berapa pun.
+   */
   sisa: number;
+  /**
+   * Baris ini TIDAK berplafon: SPK D harga satuan yang tidak menyepakati
+   * volume. Setiap pembanding sisa harus memeriksanya lebih dahulu.
+   */
+  tanpaPagu?: boolean;
+  /**
+   * Komponen upah — gaji pokok, uang makan, lembur.
+   *
+   * Seluruh baris satu SPK D memakai `task` yang sama, yaitu nama
+   * pekerjaannya; tanpa ini layar menampilkan dua baris yang tidak dapat
+   * dibedakan satu sama lain.
+   */
+  komponen?: string | null;
   /** Hanya untuk level 2 ke atas. */
   price?: number;
 }
@@ -289,6 +307,24 @@ export class CertificateOfPaymentService {
     return this.api.get(`${CertificateOfPaymentService.JALUR}/spk`, params);
   }
 
+  /**
+   * Apakah SPK ini sudah pernah ditagih lewat pembuat faktur tenaga kerja.
+   *
+   * TAMBALAN, dan disebut begitu di layarnya juga. Pembuat faktur menagih SPK
+   * yang sama tanpa menyentuh pagu CoP — yang diketik di sana empat baris
+   * baku, bukan baris SPK-nya — sehingga selama keduanya belum membaca
+   * catatan yang sama, dua dokumen dapat terbit atas progres yang satu.
+   *
+   * PERMINTAAN TERSENDIRI, bukan bidang tambahan pada `pagu()`: gagalnya
+   * peringatan tidak boleh menjatuhkan layar pencatatan volume.
+   */
+  peringatanFaktur(purchaseOrderId: number) {
+    return this.api.get(
+      `${CertificateOfPaymentService.JALUR}/peringatan-faktur/${purchaseOrderId}`,
+      {},
+    );
+  }
+
   /** Baris pekerjaan SPK beserta sisa pagunya. */
   pagu(purchaseOrderId: number) {
     return this.api.get(
@@ -334,6 +370,16 @@ export class CertificateOfPaymentService {
       periodEnd?: string | null;
       note?: string | null;
       items?: BarisCoPInput[];
+      /**
+       * Versi baris yang DIBACA layar penyuntingnya.
+       *
+       * Server menolak penyimpanan bila versinya sudah bertambah — artinya
+       * ada yang menyimpan lebih dulu sejak layar ini dibuka. Tanpa bidang
+       * ini, penjagaannya di server tidak pernah menyala: permintaan tanpa
+       * versi sengaja diperlakukan seperti sebelumnya, supaya penyuntingan
+       * tidak berhenti pada jeda antara deploy backend dan frontend.
+       */
+      rowVersion?: number;
     },
   ) {
     return this.api.put(`${CertificateOfPaymentService.JALUR}/${id}`, body);

@@ -16,6 +16,7 @@ import {
   namaPemasokRekap,
   sudahDisetujuiRekap,
 } from './purchase-order-rekap-excel';
+import { uangDokumen } from './uang.helper';
 
 /**
  * Rekap purchase order sebuah proyek sebagai PDF.
@@ -39,7 +40,7 @@ function angka(v: unknown): number {
 }
 
 function rp(n: number): string {
-  return n.toLocaleString('id-ID', { maximumFractionDigits: 0 });
+  return uangDokumen(n);
 }
 
 /**

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 
 import { LoansViewComponent } from './loans-view.component';
@@ -33,7 +34,27 @@ describe('LoansViewComponent', () => {
   beforeEach(async () => {
     api = jasmine.createSpyObj('ApiService', ['get']);
     await TestBed.configureTestingModule({
-      imports: [LoansViewComponent],
+      imports: [
+        LoansViewComponent,
+        /*
+         * `TranslateModule.forRoot()` — tanpa ini, KOMPONENNYA TIDAK PERNAH
+         * DIBUAT.
+         *
+         * Komponen ini memakai pipe `translate`, dan sejak ketergantungan itu
+         * masuk, `createComponent` melempar `NG0201: No provider found for
+         * TranslateService` sebelum satu baris asersi pun dijalankan.
+         *
+         * Akibatnya enam pengujian di berkas ini BERHENTI MENJAGA APA PUN,
+         * sementara tetap terhitung sebagai uji yang ada. Ia tidak ditandai
+         * sebagai dilewati, tidak dimatikan siapa pun — ia hanya merah, lalu
+         * tenggelam di antara 184 kegagalan lain yang sudah dianggap wajar.
+         *
+         * Yang dijaganya bukan hal sepele: pembayaran yang sudah dihapus
+         * tidak boleh ikut mengurangi hutang, dan nilai kosong tidak boleh
+         * menjadi NaN di layar.
+         */
+        TranslateModule.forRoot(),
+      ],
       providers: [
         { provide: ApiService, useValue: api },
         { provide: MAT_DIALOG_DATA, useValue: { id: 1 } },

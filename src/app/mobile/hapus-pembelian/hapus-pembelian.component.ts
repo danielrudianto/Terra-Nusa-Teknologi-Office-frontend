@@ -12,6 +12,7 @@ import { debounceTime } from 'rxjs';
 
 import { ApiService } from '../../services/api.service';
 import { ServerMessageService } from '../../services/server-message.service';
+import { PermissionService } from '../../services/permission.service';
 
 /**
  * Menghapus pembelian dari ponsel.
@@ -47,7 +48,27 @@ import { ServerMessageService } from '../../services/server-message.service';
 })
 export class HapusPembelianComponent implements OnInit {
   private readonly api = inject(ApiService);
+  private readonly perm = inject(PermissionService);
   private readonly snackBar = inject(MatSnackBar);
+
+  /**
+   * Berhak menghapus pembelian?
+   *
+   * SELURUH LAYAR yang disembunyikan, bukan tombolnya saja — layar ini tidak
+   * punya kegunaan lain. Menyisakan pencarian dan daftarnya berarti
+   * menyodorkan deretan dokumen yang tak satu pun dapat ditindaklanjuti,
+   * dan itu persis keluhannya: tombol yang tampil lalu ditolak server.
+   *
+   * Ini KENYAMANAN, bukan pengamanan. `purchase:delete` tetap ditegakkan di
+   * server, lengkap dengan syarat tambahan yang tidak dapat dinyatakan di
+   * matriks izin — pembelian yang pembayarannya sudah ada hanya boleh
+   * dihapus level 4 ke atas. Syarat itu SENGAJA tidak disalin ke sini:
+   * salinan aturan izin di layar adalah aturan kedua yang suatu saat
+   * berselisih dengan yang sebenarnya berlaku.
+   */
+  bolehHapus(): boolean {
+    return this.perm.can('purchase', 'delete');
+  }
   private readonly translate = inject(TranslateService);
   private readonly pesanServer = inject(ServerMessageService);
 

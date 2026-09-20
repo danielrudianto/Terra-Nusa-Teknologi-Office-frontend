@@ -64,7 +64,7 @@
 
         <span class="rh-baris__nilai" [class.masuk]="r.planType === 'masuk'">
           {{ r.planType === "masuk" ? "+" : "−" }}
-          {{ r.amount | number: "1.0-0" }}
+          {{ r.amount | number: "1.2-2" }}
         </span>
 
         <button
@@ -91,7 +91,18 @@
               <mat-icon>block</mat-icon>
               <span>{{ "rencana.batalkan" | translate }}</span>
             </button>
-            <button mat-menu-item type="button" (click)="hapus(r)">
+            <!--
+              `payment_plan:delete` ditetapkan level 2. Tanpa gerbang ini
+              tombolnya tampil bagi semua orang lalu ditolak server pada
+              ketukan terakhir — dan yang membacanya menyimpulkan sistemnya
+              rusak, bukan bahwa ia memang tidak berhak.
+            -->
+            <button
+              *appCan="'payment_plan:delete'"
+              mat-menu-item
+              type="button"
+              (click)="hapus(r)"
+            >
               <mat-icon>delete_outline</mat-icon>
               <span>{{ "common.delete" | translate }}</span>
             </button>
@@ -114,19 +125,19 @@
       @if (totalMasuk) {
         <div class="rh-ringkas__baris">
           <span>{{ "rencana.rencanaMasuk" | translate }}</span>
-          <span class="masuk">+ {{ totalMasuk | number: "1.0-0" }}</span>
+          <span class="masuk">+ {{ totalMasuk | number: "1.2-2" }}</span>
         </div>
       }
       @if (totalKeluar) {
         <div class="rh-ringkas__baris">
           <span>{{ "rencana.rencanaKeluar" | translate }}</span>
-          <span>− {{ totalKeluar | number: "1.0-0" }}</span>
+          <span>− {{ totalKeluar | number: "1.2-2" }}</span>
         </div>
       }
       <div class="rh-ringkas__baris rh-ringkas__baris--utama">
         <span>{{ "rencana.selisih" | translate }}</span>
         <strong [class.masuk]="totalMasuk - totalKeluar >= 0">
-          {{ totalMasuk - totalKeluar | number: "1.0-0" }}
+          {{ totalMasuk - totalKeluar | number: "1.2-2" }}
         </strong>
       </div>
     </div>

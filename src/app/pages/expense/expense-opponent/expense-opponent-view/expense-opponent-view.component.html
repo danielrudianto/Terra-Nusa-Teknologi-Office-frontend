@@ -60,7 +60,8 @@
     <button type="button" class="eov-close" (click)="onClose()">
       {{ "expenseOpponentView.close" | translate }}
     </button>
-    <button type="button" class="eov-edit" (click)="onEdit()">
+    <button
+      *appCan="'expense_opponent:update'" type="button" class="eov-edit" (click)="onEdit()">
       <mat-icon>edit</mat-icon>
       {{ "expenseOpponentView.edit" | translate }}
     </button>

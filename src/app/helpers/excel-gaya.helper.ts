@@ -30,11 +30,23 @@ export const GARIS = 'FF9E9E9E';
 /** Garis pembatas blok; lebih gelap supaya kisinya terbaca dari jauh. */
 export const GARIS_TEGAS = 'FF4A4A4A';
 
-/** Rupiah; nilai negatif dalam kurung, nol sebagai tanda hubung. */
-export const RP = '#,##0;(#,##0);"-"';
+/**
+ * Rupiah; nilai negatif dalam kurung, nol sebagai tanda hubung.
+ *
+ * DUA DESIMAL — sama dengan `RP2`, dan itu maksudnya.
+ *
+ * Dulu `RP` membulatkan ke rupiah penuh sementara `RP2` menyimpan sen, dan
+ * berkas yang sama memakai keduanya di lembar yang berbeda. Yang membukanya
+ * menjumlahkan satu kolom, membandingkannya dengan kolom di lembar sebelah,
+ * dan menemukan selisih beberapa rupiah yang tidak ada sebabnya — selisih
+ * pembulatan yang menumpuk sebaris demi sebaris.
+ *
+ * Keduanya dipertahankan sebagai nama karena dipakai di banyak tempat.
+ */
+export const RP = '#,##0.00;(#,##0.00);"-"';
 
-/** Rupiah dengan dua desimal; dipakai saldo yang menyimpan sen. */
-export const RP2 = '#,##0.00;(#,##0.00);"-"';
+/** Sama dengan `RP`. Lihat keterangannya. */
+export const RP2 = RP;
 
 export const TANGGAL = 'dd-mmm-yyyy';
 

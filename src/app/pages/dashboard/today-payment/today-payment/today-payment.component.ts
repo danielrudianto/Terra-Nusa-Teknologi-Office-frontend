@@ -163,7 +163,8 @@ export class TodayPaymentComponent implements OnInit {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-      maximumFractionDigits: 0,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(n ?? 0);
   }
 

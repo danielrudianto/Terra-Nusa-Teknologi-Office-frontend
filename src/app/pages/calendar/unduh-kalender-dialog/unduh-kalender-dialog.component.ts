@@ -3,7 +3,6 @@ import { Component, Inject, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -55,6 +54,74 @@ export function tanggalLokal(d: Date): string {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
+/**
+ * Apa pun yang keluar dari datepicker menjadi `Date` biasa — atau `null`.
+ *
+ * KENAPA INI PERLU
+ *
+ * Aplikasi ini mendaftarkan `provideMomentDateAdapter(...)` di `app.module.ts`.
+ * Artinya SETIAP datepicker Material di sini menghasilkan objek **Moment**,
+ * bukan `Date`. Moment tidak punya `getFullYear()`; ia punya `year()`.
+ *
+ * Dialog ini semula menyimpannya apa adanya ke `signal<Date | null>` dan
+ * memanggil `getFullYear()` atasnya. Hasilnya di peramban:
+ *
+ *     TypeError: c.getFullYear is not a function
+ *
+ * TypeScript tidak dapat menangkapnya: `(ngModelChange)` memancarkan `any`,
+ * jadi anotasi `Date` pada signalnya cuma janji yang tidak pernah ditagih.
+ * Uji pun tidak — uji `jumlahHari` memberi `Date` sungguhan, karena itu yang
+ * ditulis di tipenya. Satu-satunya yang tahu adalah aplikasi yang berjalan.
+ *
+ * Karena itu penormalannya ditaruh DI PERBATASAN: apa pun bentuk yang datang,
+ * yang disimpan selalu `Date`. Moment, Luxon, dan Day.js sama-sama menyediakan
+ * `toDate()`, jadi mengganti adapter di kemudian hari tidak menjatuhkan dialog
+ * ini lagi.
+ */
+export function keTanggal(nilai: unknown): Date | null {
+  if (nilai === null || nilai === undefined || nilai === '') return null;
+
+  if (nilai instanceof Date) {
+    return Number.isNaN(nilai.getTime()) ? null : nilai;
+  }
+
+  // Moment / Luxon / Day.js.
+  const pustaka = nilai as { toDate?: () => Date; isValid?: () => boolean };
+  if (typeof pustaka?.toDate === 'function') {
+    // Mengetik tanggal yang tidak masuk akal menghasilkan Moment yang TIDAK
+    // sah — dan `toDate()` atasnya memberi `Invalid Date`, yang lolos
+    // `instanceof Date` lalu meracuni setiap hitungan di belakangnya.
+    if (typeof pustaka.isValid === 'function' && !pustaka.isValid()) return null;
+    const d = pustaka.toDate();
+    return d instanceof Date && !Number.isNaN(d.getTime()) ? d : null;
+  }
+
+  if (typeof nilai === 'string') {
+    /*
+     * `YYYY-MM-DD` diurai SENDIRI, tidak diserahkan ke `new Date(teks)`.
+     *
+     * `new Date('2026-09-14')` dibaca sebagai tengah malam UTC. Di Jakarta
+     * (UTC+7) itu menjadi 14 September pukul 07.00 — masih tanggal yang sama,
+     * jadi tampak benar. Tetapi di zona barat UTC ia MUNDUR SATU HARI, dan
+     * yang mengunduh rekapnya mendapat rentang yang bergeser tanpa satu pun
+     * pesan galat.
+     */
+    const cocok = /^(\d{4})-(\d{2})-(\d{2})/.exec(nilai);
+    if (cocok) {
+      return new Date(Number(cocok[1]), Number(cocok[2]) - 1, Number(cocok[3]));
+    }
+    const d = new Date(nilai);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+
+  if (typeof nilai === 'number' && Number.isFinite(nilai)) {
+    const d = new Date(nilai);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+
+  return null;
+}
+
 /** Selisih hari, INKLUSIF kedua ujungnya. 1 Sep–1 Sep = 1 hari. */
 export function jumlahHari(mulai: Date, akhir: Date): number {
   const a = new Date(mulai.getFullYear(), mulai.getMonth(), mulai.getDate());
@@ -81,7 +148,15 @@ export function jumlahHari(mulai: Date, akhir: Date): number {
     MatFormFieldModule,
     MatInputModule,
     MatDatepickerModule,
-    MatNativeDateModule,
+    /*
+     * `MatNativeDateModule` SENGAJA tidak ada di sini.
+     *
+     * Adapter tanggal aplikasi ini adalah Moment (`provideMomentDateAdapter`
+     * di `app.module.ts`). Mencantumkan modul adapter bawaan di sini memberi
+     * kesan dialog ini bekerja dengan `Date` — dan kesan itulah yang membuat
+     * signalnya dulu dianotasi `Date` lalu melempar `getFullYear is not a
+     * function` di peramban.
+     */
     MatButtonModule,
     MatIconModule,
     TranslateModule,
@@ -155,6 +230,15 @@ export class UnduhKalenderDialogComponent {
     if (this.mode() === 'bulan') return true;
     return !!this.mulai() && !!this.akhir() && !this.terbalik() && !this.kepanjangan();
   });
+
+  /**
+   * Dipakai template untuk menormalkan nilai dari datepicker.
+   *
+   * Disediakan sebagai method, bukan dipanggil di dalam `set()` milik signal,
+   * supaya perbatasannya terlihat di templatenya — di situlah nilai asing
+   * masuk, dan di situ pula orang berikutnya akan mencarinya.
+   */
+  readonly keTanggal = keTanggal;
 
   onBulanBerubah(e: { month: number; year: number }) {
     this.month = e.month;

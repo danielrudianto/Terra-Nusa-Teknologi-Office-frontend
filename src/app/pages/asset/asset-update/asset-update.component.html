@@ -76,7 +76,7 @@
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>{{ "asset.depreciation" | translate }}</mat-label>
           <mat-select formControlName="depreciation">
-            <mat-optgroup label="General">
+            <mat-optgroup [label]="'grupPilihan.general' | translate">
               <mat-option [value]="4">{{
                 "asset.dep4" | translate
               }}</mat-option>
@@ -90,7 +90,7 @@
                 "asset.dep20" | translate
               }}</mat-option>
             </mat-optgroup>
-            <mat-optgroup label="Buildings">
+            <mat-optgroup [label]="'grupPilihan.buildings' | translate">
               <mat-option [value]="20"
                 >{{ "common.20YearsPermanentBuilding" | translate }}</mat-option
               >

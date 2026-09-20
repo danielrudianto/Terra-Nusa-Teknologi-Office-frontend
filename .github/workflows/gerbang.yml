@@ -1,0 +1,95 @@
+# Gerbang sebelum kode masuk ke main.
+#
+# KENAPA INI BARU ADA SEKARANG
+#
+# Sampai hari ini `ng test` tidak dapat dipakai sebagai gerbang, dan bukan
+# karena tidak ada yang mau. Satu berkas — `form-controls.spec.ts` — memanggil
+# `require.context`, API webpack yang tidak ada di builder esbuild. Ia melempar
+# di dalam `describe()`, dan SELURUH sesi Karma terputus: 974 uji tidak pernah
+# selesai dijalankan. Yang terlihat cuma "DISCONNECTED", yang tidak menunjuk ke
+# berkas mana pun.
+#
+# Di atas itu ada 195 spec bawaan Angular CLI yang tidak pernah diisi — hanya
+# `should create`, dan gagal karena penyedianya tidak dipasang. Dengan ratusan
+# kegagalan yang sudah dianggap wajar, kerusakan BARU tidak akan pernah
+# terlihat; ia hanya menjadi angka ke-185.
+#
+# Keduanya sudah dibereskan, dan suitenya sekarang hijau penuh. Berkas ini yang
+# menjaga agar tetap begitu — karena "hijau hari ini" tidak berarti apa-apa
+# tanpa sesuatu yang menagihnya setiap kali.
+
+name: Gerbang
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # `npm ci`, BUKAN `npm install`.
+      #
+      # `ci` memasang persis yang tertulis di `package-lock.json`. `install`
+      # boleh memutakhirkan versi minor, jadi CI dapat hijau atas pustaka yang
+      # berbeda dari yang dijalankan di server — dan kegagalannya muncul saat
+      # deploy, bukan di sini.
+      - name: Pasang dependensi
+        run: npm ci
+
+      - name: Build
+        # Konfigurasi PRODUKSI — yang benar-benar dikirim ke server.
+        #
+        # Build pengembangan melewatkan penganggaran ukuran dan pengoptimalan,
+        # jadi ia dapat hijau untuk kode yang gagal dibangun saat deploy.
+        #
+        # Bila langkah ini gagal dengan "Inlining of fonts failed ...
+        # fonts.googleapis.com", itu bukan kode yang rusak melainkan jaringan
+        # runner yang tidak dapat menjangkau Google Fonts. Penanganannya
+        # `optimization.fonts.inline: false` di `angular.json`, bukan
+        # mematikan langkah ini.
+        run: npx ng build --configuration=production
+
+      - name: Uji
+        run: npx ng test --watch=false --browsers=ChromeHeadless
+
+      # Pemeriksa menangkap kelas kegagalan yang TIDAK DAPAT ditangkap uji:
+      # zona waktu, kabel animasi, teks yang tidak diterjemahkan, nilai
+      # datepicker yang salah tipe, `rowVersion` yang tidak pernah dikirim.
+      # Semuanya gagal tanpa melempar apa pun.
+      #
+      # Dijalankan lewat `jalankan.py`, yang memakai GARIS DASAR: empat
+      # pemeriksa sudah merah sebelum gerbang ini ada, dan gerbang yang merah
+      # sejak hari pertama akan dimatikan orang. Yang menggagalkan kiriman
+      # hanya KEMUNDURAN — pemeriksa yang tadinya hijau menjadi merah, atau
+      # temuan yang bertambah pada yang sudah merah.
+      #
+      # Keadaannya karena itu hanya dapat membaik.
+      # SATU pemeriksa DILEWATI di sini, dan itu disebutkan di keluarannya.
+      #
+      # `lebarcek` mengukur tata letak ponsel di peramban sungguhan lewat
+      # Playwright — satu-satunya cara mengetahui bahwa sebuah baris melebihi
+      # layar 390px tanpa ada orang yang membukanya di ponsel. Playwright
+      # bukan dependensi proyek ini: menambahkannya berarti setiap `npm ci`
+      # mengunduh peramban ratusan megabita.
+      #
+      # Supaya ia ikut menjaga di sini, tambahkan `playwright` sebagai
+      # devDependency lalu sisipkan langkah berikut sebelum yang di bawah:
+      #
+      #     - run: npx playwright install --with-deps chromium
+      #
+      # Selama itu belum dilakukan, `jalankan.py` menyebutkannya di bawah
+      # "TIDAK BERJALAN" — pemeriksa yang diam-diam tidak berjalan lebih buruk
+      # daripada yang tidak ada.
+      - name: Pemeriksa
+        run: python3 scripts/pemeriksa/jalankan.py

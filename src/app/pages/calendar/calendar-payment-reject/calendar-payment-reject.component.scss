@@ -1,52 +1,168 @@
-h1 {
-  color: var(--ink, #16181d);
+/*
+ * Dialog penolakan pembayaran — bentuknya kembar dengan dialog persetujuan.
+ *
+ * APA YANG SALAH SEBELUMNYA
+ *
+ * Dialog persetujuan sudah dirapikan; yang ini tertinggal, dan sisa bentuk
+ * lamanya masih menempel:
+ *
+ *   * KEDUA tombolnya `mat-stroked-button`, jadi "Batal" dan "Tolak" tampil
+ *     persis sama. Tindakan yang membatalkan pembayaran tidak dapat
+ *     dibedakan dari tindakan yang tidak melakukan apa-apa.
+ *   * Tombol tolaknya `color="primary"` — biru merek. Di dialog sebelahnya,
+ *     biru berarti "izinkan uang keluar".
+ *   * `style="letter-spacing: 0"` ditulis langsung di markup, dua kali.
+ *   * Jaraknya memakai utilitas Bootstrap (`mb-0`, `mt-2`) sementara
+ *     kembarannya memakai kelas komponennya sendiri. Keduanya BEKERJA —
+ *     Bootstrap memang dimuat di `styles.scss`, dan saya sempat keliru
+ *     menyangka kelas itu mati — tetapi angkanya berbeda: 0,5rem di sini,
+ *     1rem di sana, untuk centang yang sama.
+ *   * Kotak peringatannya rata TENGAH (`align-items`/`justify-content:
+ *     center`) sementara yang di dialog persetujuan rata atas, sehingga pada
+ *     peringatan dua baris ikonnya melayang di tengah alih-alih sejajar
+ *     baris pertama.
+ *   * Judulnya digayakan lewat pemilih `h1` telanjang, yang mengenai `h1`
+ *     mana pun yang kelak masuk ke dialog ini.
+ *   * Tidak ada penataan ulang di layar sempit sama sekali; kembarannya
+ *     menumpuk tombolnya di bawah 480px.
+ *
+ * Tidak satu pun dari itu menghasilkan galat. Yang terjadi cuma: dua dialog
+ * kembar terbuka dengan rupa yang berbeda, dan yang membukanya menyangka
+ * salah satunya belum selesai dikerjakan.
+ */
+
+$danger: var(--bad-fg, #e5484d);
+
+.cpr-title {
   font-family: "Poppins", sans-serif;
-  font-size: 1rem;
-  font-weight: bold;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink, #16181d);
+  margin: 0 0 0.25rem;
 }
 
-.banner__warning {
-  /* Menolak pembayaran adalah tindakan yang membatalkan; warnanya
-     mengikuti penanda peringatan, bukan keterangan biasa. */
-  background-color: var(--bad-bg, #fdecec);
-  border: 0.5px solid var(--bad-fg, #b3322f);
-  border-radius: 0.75rem;
+.cpr-prompt {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--muted, #6b7280);
+  margin: 0 0 1rem;
+}
+
+/*
+ * Kotak peringatan — MERAH, bukan jingga.
+ *
+ * Bedanya dengan dialog persetujuan disengaja dan satu-satunya yang
+ * disengaja: di sana isinya "perhatikan sebelum mengizinkan", di sini
+ * "pembayaran ini akan dibatalkan".
+ */
+.cpr-warning {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
-  max-width: 500px;
-  gap: 1rem;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  background: var(--bad-bg, #fdecec);
+  border: 0.5px solid var(--bad-fg, #b3322f);
+  color: var(--bad-fg, #b3322f);
 
   mat-icon {
-    font-size: 1rem;
-    width: 1rem;
-    height: 1rem;
-    flex-shrink: 0;
-    color: var(--bad-fg, #b3322f);
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+    margin-top: 1px;
   }
 
   p {
-    font-family: "Poppins";
-    font-size: 0.85rem;
-    flex-grow: 1;
-    color: var(--bad-fg, #b3322f);
+    // `margin: 0` DISEBUTKAN di sini, bukan lewat `mb-0` di markup.
+    //
+    // Keduanya menghasilkan hal yang sama; bedanya, yang ini tetap berlaku
+    // bila kelak Bootstrap dilepas dari `styles.scss` — dan kembarannya
+    // sudah lebih dulu begitu.
+    margin: 0;
+    font-size: 0.83rem;
+    line-height: 1.5;
+  }
 
-    span {
-      color: var(--bad-fg, #b3322f);
-      font-weight: bold;
-    }
+  strong {
+    font-weight: 700;
   }
 }
 
-/* Bentuk disamakan dengan dialog persetujuan; keduanya dipanggil dari
-   tempat yang sama dan isinya sebentuk. */
-:host {
+.cpr-agree {
   display: block;
-  max-width: 100%;
+  margin-top: 1rem;
+  font-size: 0.87rem;
 }
 
+.cpr-foot {
+  padding: 0.75rem 0 0;
+  gap: 10px;
+}
+
+.cpr-cancel {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface, #fff);
+  color: var(--ink, #16181d);
+  border-radius: 11px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+}
+
+/*
+ * Tombol utama berlatar penuh dan MERAH.
+ *
+ * Latar penuh: tindakannya yang utama di dialog ini, dan sebelumnya ia
+ * sejajar dengan tombol batal. Merah: warnanya mengikuti akibatnya, dan
+ * biru di dialog sebelahnya sudah berarti hal yang berlawanan.
+ */
+.cpr-reject {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border: none;
+  background: $danger;
+  color: #fff;
+  border-radius: 11px;
+  padding: 0.6rem 1.5rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: #cf3b40;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+/*
+ * Di layar sempit tombolnya BERTUMPUK, dan urutannya dibalik.
+ *
+ * `column-reverse` menaruh tindakan utama di ATAS batal. Pada ponsel yang
+ * dipegang satu tangan, yang paling mudah tertekan adalah yang paling
+ * bawah — dan yang paling mudah tertekan sebaiknya bukan tombol yang
+ * membatalkan pembayaran.
+ */
+@media (max-width: 480px) {
+  .cpr-foot {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  .cpr-cancel,
+  .cpr-reject {
+    width: 100%;
+  }
+}
+
+.cpr-prompt,
+.cpr-warning p {
+  overflow-wrap: anywhere;
+}
 
 /* ---------------------------------------------------------------------------
    Jarak tepi.
@@ -61,7 +177,7 @@ h1 {
   max-width: 100%;
 }
 
-h1[mat-dialog-title] {
+.cpr-title {
   padding: 1.25rem 1.5rem 0 !important;
   margin: 0 0 0.25rem !important;
 }
@@ -74,7 +190,7 @@ mat-dialog-content {
   overflow-y: auto;
 }
 
-mat-dialog-actions {
+.cpr-foot {
   padding: 1rem 1.5rem !important;
   border-top: 1px solid var(--line, #e6e9ee);
   margin: 0 !important;

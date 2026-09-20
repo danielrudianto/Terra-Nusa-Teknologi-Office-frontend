@@ -35,8 +35,22 @@ const GARIS = 'FFBFBFBF';
 const MERAH = 'FFC00000';
 const ABU = 'FF7F7F7F';
 
-const RP = '#,##0;(#,##0);"-"';
-const RP2 = '#,##0.00;(#,##0.00);"-"';
+// SALINAN yang sudah disamakan dengan `excel-gaya.helper`.
+//
+// Dulu `RP` di sini membulatkan ke rupiah penuh sementara `RP2` menyimpan
+// sen, sehingga dua lembar pada BERKAS YANG SAMA menuliskan angka yang sama
+// dengan ketelitian berbeda.
+const RP = '#,##0.00;(#,##0.00);"-"';
+const RP2 = RP;
+
+/**
+ * HITUNGAN — banyak dokumen, banyak baris barang. BUKAN rupiah.
+ *
+ * Diberi nama sendiri supaya bedanya dari `RP` terbaca di tempat
+ * pemakaiannya, dan supaya `uangcek.py` tidak menuduhnya sebagai nominal yang
+ * lupa didesimalkan.
+ */
+const HITUNGAN = '#,##0';
 const PERSEN = '0.0%;;"-"';
 
 /** Dokumen purchase order sebagaimana dikirim `/purchase-orders/rekap`. */
@@ -562,8 +576,8 @@ function lembarIkhtisar(
   };
 
   const ringkas: [string, string, string][] = [
-    ['Jumlah dokumen', `COUNTA('Per Dokumen'!C${awal}:C${akhir})`, '#,##0'],
-    ['Jumlah baris barang/jasa', `SUM('Per Dokumen'!G${awal}:G${akhir})`, '#,##0'],
+    ['Jumlah dokumen', `COUNTA('Per Dokumen'!C${awal}:C${akhir})`, HITUNGAN],
+    ['Jumlah baris barang/jasa', `SUM('Per Dokumen'!G${awal}:G${akhir})`, HITUNGAN],
     ['DPP', `SUM('Per Dokumen'!H${awal}:H${akhir})`, RP],
     ['PPN', `SUM('Per Dokumen'!J${awal}:J${akhir})`, RP],
     ['PPh dipotong', `SUM('Per Dokumen'!L${awal}:L${akhir})`, RP],
@@ -650,7 +664,8 @@ function lembarIkhtisar(
         c.border = tepi();
         c.alignment = { horizontal: i === 1 ? 'left' : 'right' };
       }
-      sheet.getCell(r, 2).numFmt = '#,##0';
+      // Kolom 2 adalah HITUNGAN dokumen, bukan rupiah — tanpa desimal.
+      sheet.getCell(r, 2).numFmt = HITUNGAN;
       for (const i of [3, 4]) sheet.getCell(r, i).numFmt = RP;
       r += 1;
     }

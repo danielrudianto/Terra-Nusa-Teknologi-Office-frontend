@@ -15,13 +15,25 @@ DUA HAL DI SINI TIDAK DAPAT DIJAGA OLEH UJI
    menjaganya dari sisi repo secara keseluruhan, termasuk bila rutenya
    dipindah ke berkas lain.
 
-2. ZONA WAKTU PADA PENGEMBERAN BULAN.
+2. ZONA WAKTU PADA PENGEMBERAN TANGGAL.
 
-   `titikKas()` memotong tanggal sebagai TEKS (`slice(0, 7)`), bukan lewat
+   `titikKas()` memotong tanggal sebagai TEKS (`slice(0, ...)`), bukan lewat
    `new Date(...)`. Karma di repo ini berjalan pada zona UTC, sehingga uji
    yang membandingkan hasil keduanya TIDAK dapat gagal di sana — `new Date`
    memberi jawaban yang sama persis. Bentuk kodenyalah yang menjaga, jadi
    bentuk kodenya yang diperiksa di sini.
+
+   Sejak grafiknya punya satuan HARIAN, pemotongannya dua panjang: 7 untuk
+   bulan (`YYYY-MM`) dan 10 untuk hari (`YYYY-MM-DD`). Yang diperiksa di
+   bawah karena itu "memotong sebagai teks", bukan angka tertentu — dan
+   larangan `new Date` justru menjadi LEBIH penting, sebab menambahkan hari
+   adalah tempat paling mudah untuk memanggilnya.
+
+   Penambahan harinya pun dilakukan secara aritmetika pada (tahun, bulan,
+   tanggal), bukan dengan menambah milidetik pada sebuah `Date`. Keduanya
+   tampak sama benar sampai melewati pergantian waktu musim panas di zona
+   mana pun — dan pada deret kumulatif, satu hari yang hilang menggeser
+   seluruh sisanya.
 """
 
 import os
@@ -78,10 +90,24 @@ def periksa():
                 'di repo ini berjalan pada UTC sehingga ujinya TIDAK akan '
                 'menangkapnya'
             )
-        if 'slice(0, 7)' not in badan:
+        if not re.search(r'\.slice\(0,\s*(?:7|10|panjang)\)', badan):
             masalah.append(
                 'project-report: `titikKas()` tidak lagi memotong tanggal '
-                "sebagai teks (`slice(0, 7)`) — lihat catatan di atas"
+                'sebagai teks (`slice(0, ...)`) — lihat catatan di atas'
+            )
+        if re.search(r'\bDate\.(UTC|parse)\b', badan):
+            masalah.append(
+                'project-report: `titikKas()` memakai `Date.UTC`/`Date.parse` '
+                '— penambahan harinya harus aritmetika pada (tahun, bulan, '
+                'tanggal); lewat `Date`, pergantian waktu musim panas dapat '
+                'melompati atau menggandakan satu hari, dan pada deret '
+                'kumulatif satu hari yang hilang menggeser seluruh sisanya'
+            )
+        if 'kabisat' not in badan:
+            masalah.append(
+                'project-report: `titikKas()` tidak lagi mengurus tahun '
+                'KABISAT — 29 Februari akan dilewati, dan seluruh saldo '
+                'sesudahnya bergeser satu hari tanpa satu pun galat'
             )
         if 'Math.abs(' not in badan:
             masalah.append(
