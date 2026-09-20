@@ -64,6 +64,7 @@ import { PermissionService } from '../../../services/permission.service';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { PurchaseOrderRekapComponent } from '../purchase-order-rekap/purchase-order-rekap.component';
 import { PurchaseOrderFilterComponent } from './purchase-order-filter/purchase-order-filter.component';
+import { SetujuiPoDialogComponent } from '../setujui-po-dialog/setujui-po-dialog.component';
 
 @Component({
   selector: 'app-purchase-order-list',
@@ -98,6 +99,20 @@ export class PurchaseOrderListComponent {
   displayStatus(po: any): string {
     if (po?.isDelete) return 'deleted';
     if (po?.isApproved) return 'approved';
+    /*
+     * SUDAH DIPERIKSA adalah statusnya sendiri, bukan draf berlencana.
+     *
+     * Sebelumnya baris seperti ini menampilkan dua hal berdampingan:
+     * lencana kuning "Draf" dan lencana kedua "Diperiksa". Keduanya benar,
+     * tetapi dibaca bersama keduanya bertentangan — dokumen yang sudah
+     * diperiksa bukan lagi draf yang belum disentuh siapa pun, dan yang
+     * membuka daftar tidak dapat membedakan mana yang menunggu dirinya
+     * tanpa membaca lencana kedua pada setiap baris.
+     *
+     * Statusnya di server TIDAK berubah: `isChecked` tetap penanda
+     * tersendiri, dan yang disusun di sini hanya cara membacanya.
+     */
+    if (po?.isChecked && !po?.isApproved) return 'checked';
     return po?.status || 'draft';
   }
 
@@ -108,6 +123,8 @@ export class PurchaseOrderListComponent {
         return 'status.approved';
       case 'cancelled':
         return 'status.cancelled';
+      case 'checked':
+        return 'purchaseOrder.statusDiperiksa';
       case 'pending':
         return 'status.pending';
       case 'published':
@@ -177,6 +194,9 @@ export class PurchaseOrderListComponent {
     // Buka dokumennya langsung bila datang dari ketukan notifikasi.
     this.bukaDariAlamat();
     this.fetch();
+    // Pilihan proyek dimuat SEKALI di sini, bukan bersama tiap halaman:
+    // isinya tidak berubah karena penyaring.
+    this.muatProyekOptions();
     this.searchControl.valueChanges.pipe(debounceTime(400)).subscribe(() => {
       this.fetch(1);
     });
@@ -195,7 +215,23 @@ export class PurchaseOrderListComponent {
   filterDari: Date | null = null;
   filterSampai: Date | null = null;
 
-  /** Kode proyek untuk pilihan; diambil dari daftar yang sedang tampil. */
+  /**
+   * Kode proyek untuk pilihan penyaring.
+   *
+   * DIAMBIL DARI SERVER, bukan dari baris yang sedang tampil.
+   *
+   * Sebelumnya daftar ini disusun dari `this.orders` — satu halaman, sepuluh
+   * dokumen. Proyek yang dokumennya berada di halaman berikutnya, atau yang
+   * seluruh dokumennya berstatus lain, TIDAK PERNAH muncul sebagai pilihan.
+   * Yang mencarinya harus lebih dulu mengubah penyaring lain sampai
+   * dokumennya kebetulan ikut termuat, dan tidak ada apa pun di layar yang
+   * menyebutkan itu — tampilannya persis seperti proyek yang memang tidak
+   * punya dokumen.
+   *
+   * Alasan lama ("jangan tampilkan proyek yang selesai bertahun lalu") tetap
+   * dijawab, tetapi oleh SUMBERNYA: rutenya hanya mengembalikan kode proyek
+   * yang benar-benar punya purchase order, bukan seluruh isi tabel proyek.
+   */
   proyekOptions: string[] = [];
 
   /**
@@ -212,6 +248,33 @@ export class PurchaseOrderListComponent {
     if (this.filterProyek) n++;
     if (this.filterDari || this.filterSampai) n++;
     return n;
+  }
+
+  /**
+   * Muat kode proyek untuk penyaring — SEKALI, saat halaman dibuka.
+   *
+   * Tidak diulang setiap kali daftarnya dimuat: isinya tidak berubah karena
+   * penyaring, dan mengulanginya berarti satu kueri tambahan pada setiap
+   * pindah halaman.
+   *
+   * Kegagalannya TIDAK menjatuhkan apa pun. Penyaring proyek akan jatuh ke
+   * kode yang terlihat di baris yang tampil — berkurang, tetapi tidak
+   * kosong, dan daftarnya sendiri tetap utuh.
+   */
+  private muatProyekOptions(): void {
+    this.apiService.get('purchase-orders/proyek', {}).subscribe({
+      next: (res: any) => {
+        const dari = Array.isArray(res) ? res : [];
+        const proyek = new Set<string>(this.proyekOptions);
+        for (const p of dari) {
+          if (p) proyek.add(String(p));
+        }
+        this.proyekOptions = [...proyek].sort();
+      },
+      error: () => {
+        /* Sengaja diam: lihat catatan di atas. */
+      },
+    });
   }
 
   openFilter(): void {
@@ -288,12 +351,11 @@ export class PurchaseOrderListComponent {
           this.count = res.count || 0;
 
           /*
-           * Kode proyek dikumpulkan dari daftar yang tampil.
+           * Baris yang tampil DITAMBAHKAN, bukan menjadi sumbernya.
            *
-           * Bukan dari seluruh proyek yang pernah ada: sebagian sudah selesai
-           * bertahun lalu dan tidak akan pernah dicari lagi, sementara
-           * daftar pilihan yang panjang justru menyulitkan menemukan yang
-           * sedang berjalan.
+           * Sumber utamanya `muatProyekOptions()`. Penggabungan ini jaring
+           * pengaman: bila rutenya gagal dimuat, penyaingnya tetap menawarkan
+           * proyek yang terlihat di layar alih-alih kosong sama sekali.
            */
           const proyek = new Set(this.proyekOptions);
           for (const o of this.orders) {
@@ -959,6 +1021,27 @@ export class PurchaseOrderListComponent {
               output);
           } else {
             return printPurchaseOrderA({
+              /*
+               * MUATAN BERSAMA DISEBAR LEBIH DULU, lalu ditimpa yang khas dokumen
+               * ini.
+               *
+               * Bidangnya dulu ditulis tangan satu per satu di sini, dan
+               * `approvedByName` serta `approvedByPosition` TERTINGGAL — sehingga
+               * dokumen yang SUDAH disetujui tetap tercetak "Sign Here" dengan nama
+               * kosong, sementara jenis lain mencetaknya lengkap.
+               *
+               * Tidak ada galat apa pun: `signerLines` memang menggambar penunjuk
+               * itu ketika namanya kosong, dan kosong adalah keadaan yang BENAR
+               * bagi dokumen yang belum disetujui. Jadi yang keluar dari pencetak
+               * tampak sah sepenuhnya — hanya tidak menyebut siapa yang
+               * mengesahkannya, pada lembar yang justru diedarkan untuk
+               * ditandatangani.
+               *
+               * Kekeliruan yang sama pernah diperbaiki untuk SPK pekerjaan (PO-H)
+               * dengan cara ini; tiga titik cetak lain tertinggal, dan tertinggalnya
+               * baru ketahuan dari dokumen yang sudah beredar.
+               */
+              ...printData,
               isApproved,
               status,
               isAdendum,
@@ -1225,6 +1308,27 @@ export class PurchaseOrderListComponent {
           };
 
           return printPurchaseOrder641({
+            /*
+             * MUATAN BERSAMA DISEBAR LEBIH DULU, lalu ditimpa yang khas dokumen
+             * ini.
+             *
+             * Bidangnya dulu ditulis tangan satu per satu di sini, dan
+             * `approvedByName` serta `approvedByPosition` TERTINGGAL — sehingga
+             * dokumen yang SUDAH disetujui tetap tercetak "Sign Here" dengan nama
+             * kosong, sementara jenis lain mencetaknya lengkap.
+             *
+             * Tidak ada galat apa pun: `signerLines` memang menggambar penunjuk
+             * itu ketika namanya kosong, dan kosong adalah keadaan yang BENAR
+             * bagi dokumen yang belum disetujui. Jadi yang keluar dari pencetak
+             * tampak sah sepenuhnya — hanya tidak menyebut siapa yang
+             * mengesahkannya, pada lembar yang justru diedarkan untuk
+             * ditandatangani.
+             *
+             * Kekeliruan yang sama pernah diperbaiki untuk SPK pekerjaan (PO-H)
+             * dengan cara ini; tiga titik cetak lain tertinggal, dan tertinggalnya
+             * baru ketahuan dari dokumen yang sudah beredar.
+             */
+            ...printData,
               isApproved,
               status,
               isAdendum,
@@ -1326,6 +1430,27 @@ export class PurchaseOrderListComponent {
           // Termasuk yang diterbitkan sebagai tipe A — bentuk dokumennya
           // mengikuti formulir asalnya, bukan kode jenisnya.
           return printPurchaseOrderB({
+            /*
+             * MUATAN BERSAMA DISEBAR LEBIH DULU, lalu ditimpa yang khas dokumen
+             * ini.
+             *
+             * Bidangnya dulu ditulis tangan satu per satu di sini, dan
+             * `approvedByName` serta `approvedByPosition` TERTINGGAL — sehingga
+             * dokumen yang SUDAH disetujui tetap tercetak "Sign Here" dengan nama
+             * kosong, sementara jenis lain mencetaknya lengkap.
+             *
+             * Tidak ada galat apa pun: `signerLines` memang menggambar penunjuk
+             * itu ketika namanya kosong, dan kosong adalah keadaan yang BENAR
+             * bagi dokumen yang belum disetujui. Jadi yang keluar dari pencetak
+             * tampak sah sepenuhnya — hanya tidak menyebut siapa yang
+             * mengesahkannya, pada lembar yang justru diedarkan untuk
+             * ditandatangani.
+             *
+             * Kekeliruan yang sama pernah diperbaiki untuk SPK pekerjaan (PO-H)
+             * dengan cara ini; tiga titik cetak lain tertinggal, dan tertinggalnya
+             * baru ketahuan dari dokumen yang sudah beredar.
+             */
+            ...printData,
               isApproved,
               status,
               isAdendum,
@@ -1528,11 +1653,31 @@ export class PurchaseOrderListComponent {
            * ada, misalnya — tidak berkode sama sekali. Menampilkan `detail`
            * apa adanya membuat pengguna membaca "Not Found".
            */
-          this.snackBar.open(this.serverMessage.terjemahkan(err), 'Close', {
-            duration: 4000,
-          });
+          this.galatTindakan(err, 4000);
         },
       });
+  }
+
+  /**
+   * Galat pada tindakan baris, dengan SATU perlakuan khusus: 409.
+   *
+   * 409 berarti keadaan dokumennya sudah berubah — hampir selalu karena
+   * orang lain mendahului sementara daftar di layar ini belum dimuat ulang.
+   * Menampilkan pesannya saja meninggalkan baris yang sama, dengan menu
+   * yang sama, menawarkan tindakan yang sama: yang membacanya menekannya
+   * lagi, dan ditolak lagi.
+   *
+   * Karena itu daftarnya ikut dimuat ulang. Sesudahnya barisnya menunjukkan
+   * status yang sebenarnya, dan pilihan yang sudah tidak berlaku hilang
+   * dengan sendirinya.
+   */
+  private galatTindakan(err: any, durasi = 5000): void {
+    this.snackBar.open(this.serverMessage.terjemahkan(err), 'Close', {
+      duration: durasi,
+    });
+    if (err?.status === 409) {
+      this.fetch(this.page);
+    }
   }
 
   /** Dokumen ini sudah diperiksa. */
@@ -1854,17 +1999,60 @@ export class PurchaseOrderListComponent {
           );
           this.fetch(this.page);
         },
-        error: (err) =>
-          this.snackBar.open(
-            this.serverMessage.terjemahkan(err),
-            'Close',
-            { duration: 5000 },
-          ),
+        error: (err) => this.galatTindakan(err),
       });
   }
 
+  /**
+   * Menyetujui SPK — lewat dialog yang menunjukkan ANGKANYA lebih dulu.
+   *
+   * Sebelumnya satu klik di dalam menu titik tiga, tanpa satu pun angka
+   * terlihat pada saat memutuskan. Dan menu itu berganti menampilkan
+   * "Setujui" tepat di tempat "Periksa" barusan ditekan — dua tindakan
+   * berbeda di bawah kursor yang sama.
+   *
+   * Menyetujui adalah satu-satunya tindakan di daftar ini yang MENGIKAT
+   * perusahaan kepada pihak luar, dan ia tidak dapat dicabut lewat layar
+   * ini: yang sudah disetujui hanya dapat dibatalkan, bukan dikembalikan
+   * menjadi draf.
+   *
+   * Dialognya bukan sekadar "yakin?" — pertanyaan itu dijawab "ya" oleh
+   * refleks. Yang ditampilkan nomor, pemasok, proyek, dan nilai yang akan
+   * mengikat, supaya SPK yang salah pemasok atau salah proyek punya satu
+   * kesempatan untuk ketahuan sebelum terbit.
+   */
   approve(po: any) {
-    this.ubahStatus(po, 'approved', 'notify.approveSuccess');
+    this.dialog
+      .open(SetujuiPoDialogComponent, {
+        width: '520px',
+        maxWidth: '95vw',
+        autoFocus: false,
+        data: {
+          nomor: po?.name || '—',
+          jenis: this.typeLabel(po?.purchaseType),
+          pemasok: this.supplierLabel(po),
+          proyek: po?.projectName || '—',
+          tanggal: po?.date ?? null,
+          total: this.total(po),
+          diperiksaOleh: po?.checkedByName || '—',
+          // Adendum memuat SELISIH, bukan nilai yang berlaku. Dibaca sebagai
+          // nilai total, angkanya menyesatkan ke dua arah sekaligus.
+          adendum: !!po?.parentPurchaseOrderID,
+        },
+      })
+      .afterClosed()
+      .subscribe((hasil: any) => {
+        if (hasil?.aksi === 'buka') {
+          // Membuka dokumen BUKAN menyetujui. Dibedakan sebagai hasil
+          // tersendiri supaya keduanya tidak dapat tertukar — keduanya
+          // menutup dialog yang sama.
+          this.reprint(po);
+          return;
+        }
+        if (hasil?.aksi === 'setujui') {
+          this.ubahStatus(po, 'approved', 'notify.approveSuccess');
+        }
+      });
   }
 
   reject(po: any) {

@@ -91,6 +91,22 @@ export class ServerMessageService {
       // ngx-translate mengembalikan kuncinya sendiri bila tidak ketemu.
       if (hasil !== kunci) return hasil;
 
+      /*
+       * Kode tanpa terjemahan, TETAPI pesannya sudah berbahasa Indonesia.
+       *
+       * Jalur teks di bawah sudah meneruskan pesan Indonesia apa adanya;
+       * jalur berkode ini dulu tidak, sehingga galat berkode justru
+       * dijawab lebih buruk daripada galat tanpa kode — kalimat umum
+       * menggantikan kalimat yang menjelaskan keadaannya.
+       *
+       * Itu terasa paling jelas pada pesan yang memuat nilai yang hanya
+       * diketahui server. "Sudah diperiksa oleh Budi Santoso" tidak dapat
+       * ditulis sebagai kunci terjemahan tetap; namanya justru bagian yang
+       * memberi tahu penggunanya harus menghubungi siapa.
+       */
+      const pesanKode = String(detail.message ?? '').trim();
+      if (pesanKode && this.tampakIndonesia(pesanKode)) return pesanKode;
+
       console.warn('[ServerMessage] kode belum diterjemahkan:', detail.code);
       return this.translate.instant(cadangan);
     }

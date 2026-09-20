@@ -85,6 +85,52 @@ export const routes: Routes = [
           ),
         data: { title: 'Dashboard' },
       },
+      /*
+       * Alamat LAMA tetap bekerja.
+       *
+       * `Posisi-keuangan` dan `KPI` pernah jadi dua halaman terpisah, dan
+       * keduanya sudah ada di riwayat peramban, di tab yang masih terbuka,
+       * dan di tautan yang sempat dikirim orang. Tanpa pengalihan ini
+       * membukanya jatuh ke halaman "tidak ditemukan" — dan yang membukanya
+       * menyimpulkan laporannya dihapus, bukan dipindah.
+       *
+       * `pathMatch: 'full'` wajib: tanpa itu awalan yang sama ikut
+       * tertangkap, dan alamat lain yang kebetulan berawalan sama ikut
+       * dialihkan.
+       */
+      {
+        path: 'Laporan/Posisi-keuangan',
+        redirectTo: 'Laporan/Status-keuangan',
+        pathMatch: 'full',
+      },
+      {
+        path: 'Laporan/KPI',
+        redirectTo: 'Laporan/Status-keuangan',
+        pathMatch: 'full',
+      },
+      {
+        /*
+         * Posisi keuangan — divisi FAT, level 4 ke atas.
+         *
+         * Dijaga `permissionGuard` dengan `finance_status:read`, BUKAN
+         * `minLevel`: modulnya sudah ada di matriks izin dan dipetakan ke
+         * departemennya, jadi ambang levelnya cukup disebut SEKALI di sana.
+         * Menuliskannya lagi di sini membuat dua tempat yang harus sepakat.
+         *
+         * `data.permission` juga yang membuat entri menunya menyembunyikan
+         * diri sendiri — `sideNavItems` membacanya dari konfigurasi rute ini.
+         */
+        path: 'Laporan/Status-keuangan',
+        canActivate: [permissionGuard],
+        loadComponent: () =>
+          import(
+            './pages/report/posisi-keuangan/posisi-keuangan.component'
+          ).then((m) => m.PosisiKeuanganComponent),
+        data: {
+          title: 'Status Keuangan',
+          permission: 'finance_status:read',
+        },
+      },
       {
         /*
          * Laba rugi — HANYA pemilik usaha (level 5). Batasnya ditegakkan
@@ -980,7 +1026,25 @@ export const routes: Routes = [
           import('./pages/master/master.component').then(
             (m) => m.MasterComponent,
           ),
-        data: { title: 'Master Data', permission: 'master_item:read' , panduan: 'master-data' },
+        /*
+         * `transisiBersarang` — halaman ini MENGURUS TRANSISINYA SENDIRI.
+         *
+         * `master.component.html` memasang `appTransisiHalaman` pada outlet di
+         * dalamnya. Tanpa penanda ini, kerangka utama ikut menganimasikan
+         * seluruh halaman Master setiap kali anak rutenya berganti — dua
+         * animasi berlapis pada isi yang sama, dan satu perpindahan terbaca
+         * sebagai dua halaman yang dibalik berurutan.
+         *
+         * Penandanya membuat kunci transisi kerangka utama berhenti di
+         * `/Master`, sehingga Pemasok dan Karyawan menghasilkan kunci yang
+         * sama. Lihat `kunciTransisi()` di `main.component.ts`.
+         */
+        data: {
+          title: 'Master Data',
+          permission: 'master_item:read',
+          panduan: 'master-data',
+          transisiBersarang: true,
+        },
         children: [
           {
             path: '',

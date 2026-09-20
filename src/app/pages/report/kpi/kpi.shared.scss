@@ -1,0 +1,231 @@
+.kpi {
+  padding: 0 1rem 2rem;
+}
+
+.kpi-akordeon {
+  display: block;
+}
+
+.kpi-panel {
+  margin-bottom: 0.75rem;
+}
+
+.kpi-kartu-baris {
+  /* `auto-fit` + `minmax`, bukan jumlah kolom tetap — angka rupiah TIDAK
+     punya kesempatan pemenggalan di dalam "12.345.678.901", jadi kolom tetap
+     memotong digitnya di tepi kartu alih-alih membungkus.
+
+     minmax() BERSARANG adalah CSS yang tidak sah dan peramban membuang
+     SELURUH deklarasinya tanpa galat — grid jatuh ke satu kolom. Lihat
+     `scripts/pemeriksa/csstolakcek.py`. */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin: 0.75rem 0;
+}
+
+.kpi-kartu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.85rem 1rem;
+  border: 0.5px solid var(--border, #e5e7eb);
+  border-radius: 10px;
+  background: var(--surface, #fff);
+}
+.kpi-kartu__cap {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--muted, #6b7280);
+}
+.kpi-kartu__tanya {
+  font-size: 1rem;
+  width: 1rem;
+  height: 1rem;
+  /* Ikon di dalam baris teks: tanpa `line-height` ia duduk di garis dasar
+     sendiri dan tulisannya tampak melompat setengah baris. */
+  line-height: 1rem;
+  cursor: help;
+}
+.kpi-kartu__nilai {
+  font-size: 1.15rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.kpi-kartu__ket {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.7rem;
+  color: var(--muted, #6b7280);
+  overflow-wrap: anywhere;
+}
+.kpi-kartu__ket mat-icon {
+  font-size: 0.95rem;
+  width: 0.95rem;
+  height: 0.95rem;
+  line-height: 0.95rem;
+}
+
+.kpi-naik {
+  color: var(--ok-fg, #1a7f45);
+}
+.kpi-turun {
+  color: var(--bad-fg, #b3322f);
+}
+
+/* Spanduk: ikon + blok teks, BUKAN `mat-hint`.
+   Teks hint terlalu kecil untuk kalimat sepanjang ini. */
+.kpi-banner {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  padding: 0.7rem 0.9rem;
+  margin: 0.75rem 0;
+  border-radius: 10px;
+  background: var(--info-bg, #eef3ff);
+  color: var(--info-fg, #274690);
+  font-size: 0.8rem;
+}
+.kpi-banner p {
+  margin: 0.2rem 0 0;
+}
+.kpi-banner--bahaya {
+  background: var(--bad-bg, #fdecec);
+  color: var(--bad-fg, #b3322f);
+}
+
+.kpi-galat {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0;
+  color: var(--bad-fg, #b3322f);
+  font-size: 0.85rem;
+}
+
+.kpi-pilih {
+  margin-top: 0.5rem;
+}
+
+.kpi-kartu-grafik {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem 1.2rem;
+  border: 0.5px solid var(--border, #e5e7eb);
+  border-radius: 10px;
+  background: var(--surface, #fff);
+}
+.kpi-kartu-grafik h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.kpi-catatan {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  color: var(--muted, #6b7280);
+}
+.kpi-grafik {
+  /* `maintainAspectRatio: false` mengambil tinggi INDUK. Induk yang tingginya
+     ditentukan isi menghasilkan tinggi nol, dan kanvasnya tidak pernah
+     terlihat — tanpa galat apa pun. */
+  height: 300px;
+}
+
+/* ---- papan antrean ---- */
+
+.kpi-tahap-daftar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.kpi-tahap {
+  padding: 0.85rem 1rem;
+  border: 0.5px solid var(--border, #e5e7eb);
+  border-radius: 10px;
+  background: var(--surface, #fff);
+}
+.kpi-tahap--tertahan {
+  border-color: var(--bad-fg, #b3322f);
+}
+.kpi-tahap__kepala {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.kpi-tahap__nama {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.kpi-tahap__jumlah {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+.kpi-tahap__gagal {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--bad-fg, #b3322f);
+}
+.kpi-tahap__gagal mat-icon {
+  font-size: 1rem;
+  width: 1rem;
+  height: 1rem;
+  line-height: 1rem;
+}
+.kpi-tahap__tertua {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  color: var(--muted, #6b7280);
+}
+.kpi-tahap__tertua mat-icon {
+  font-size: 0.95rem;
+  width: 0.95rem;
+  height: 0.95rem;
+  line-height: 0.95rem;
+}
+
+.kpi-ember {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.kpi-ember__baris {
+  display: grid;
+  grid-template-columns: 3.2rem 1fr 1.8rem;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+}
+.kpi-ember__cap {
+  color: var(--muted, #6b7280);
+}
+.kpi-ember__rel {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--hover, #f6f8ff);
+  overflow: hidden;
+}
+.kpi-ember__isi {
+  height: 100%;
+  background: var(--brand, #154dec);
+  /* Nol lebar tetap terlihat sebagai batang kosong, bukan menghilang. */
+  min-width: 0;
+}
+.kpi-ember__isi.kpi-mendesak {
+  background: var(--bad-fg, #b3322f);
+}
+.kpi-ember__nilai {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

@@ -16,6 +16,10 @@ import { VersiService } from 'src/app/services/versi.service';
 import { MatIconModule } from '@angular/material/icon';
 import { TransisiHalamanDirective } from '../../animations/transisi-halaman.directive';
 import { SettingsService } from '../../services/setting.service';
+import {
+  kunciTransisi,
+  SimpulRute,
+} from '../../animations/transisi-rute';
 
 @Component({
   selector: 'app-main',
@@ -166,6 +170,24 @@ export class MainComponent {
     );
   }
 
+  /**
+   * Kunci transisi kerangka utama, dipotong di batas layout bersarang.
+   *
+   * Data Master memasang transisinya SENDIRI pada outlet di dalamnya. Tanpa
+   * pemotongan ini, berpindah dari Pemasok ke Karyawan menyalakan keduanya —
+   * dua animasi berlapis pada isi yang sama, yang terbaca sebagai dua halaman
+   * yang dibalik berurutan.
+   *
+   * Aturannya di `animations/transisi-rute.ts`, bersama alasannya; ditaruh di
+   * sana supaya dapat diuji tanpa membangun seluruh kerangka ini.
+   */
+  private hitungKunciTransisi(): string {
+    return kunciTransisi(
+      this.route.root as unknown as SimpulRute,
+      this.router.url,
+    );
+  }
+
   ngOnInit(): void {
     this.versi.mulai();
     // Mode sidenav ditetapkan sebelum penanda dipasang, agar keadaan awal
@@ -210,7 +232,7 @@ export class MainComponent {
      * Karena itu urutannya dibalik: yang menyalakan transisi dipasang lebih
      * dulu, dan pembacaan judulnya dibuat tidak mungkin melempar.
      */
-    this.kunciRute.set(this.router.url);
+    this.kunciRute.set(this.hitungKunciTransisi());
     this.label = this.route.snapshot.firstChild?.data?.['title'] ?? this.label;
     this.router.events
       .pipe(
@@ -251,29 +273,85 @@ export class MainComponent {
          * satu pun perpindahan halaman yang menyalakan transisi lagi, dan
          * tidak ada apa pun di layar yang menunjukkannya.
          */
-        this.kunciRute.set(this.router.url);
+        this.kunciRute.set(this.hitungKunciTransisi());
         this.label = route?.snapshot?.data?.['title'] ?? '';
       });
   }
 
+  /*
+   * URUTAN MENU MENGIKUTI ALIRAN UANG, bukan urutan modul dibangun.
+   *
+   * Susunan sebelumnya menyisakan tiga nama kelompok yang tidak menyebut
+   * isinya: "Menu" (tidak berarti apa pun — semuanya menu), "Implementasi"
+   * (tidak ada yang tahu apa yang ada di dalamnya tanpa membukanya), dan
+   * "Administrator" (yang justru memuat dua laporan keuangan). Nama yang
+   * tidak menyebut isinya memaksa setiap orang membuka semua kelompok untuk
+   * menemukan satu halaman — dan itu dilakukan setiap hari.
+   *
+   * Satu lagi yang diperbaiki: PEMBELIAN dulu terpecah di dua kelompok.
+   * Draf Pembelian dan Purchase Order di "Menu", faktur Pembelian di
+   * "Implementasi" — tiga tahap dari satu pekerjaan yang sama, di dua tempat
+   * yang berjauhan. Sekarang ketiganya berurutan di satu kelompok.
+   *
+   * Kelompoknya sekarang menyebut PEKERJAANNYA:
+   *   1. Penjualan     - uang masuk, dari tender sampai tertagih
+   *   2. Pengadaan     - uang keluar untuk pekerjaan, dari draf sampai faktur
+   *   3. Kas & Bank    - pergerakan uangnya sendiri
+   *   4. Beban & Gaji  - biaya yang bukan pengadaan proyek
+   *   5. Laporan       - angka jadi (dulu terselip di "Administrator")
+   *   6. Master        - data yang jarang berubah
+   *   7. HRD
+   *   8. Administrasi  - pajak dan pengguna
+   *   9. Umum          - HARUS TERAKHIR; `bottomGroup` mengambil yang paling
+   *                     bawah dan menempelkannya di kaki menu.
+   */
   private readonly allSideNavItems = [
     {
-      name: 'nav.menu',
+      /*
+       * PENJUALAN — urut sesuai jalannya pekerjaan, bukan sesuai abjad:
+       * tender dimenangkan, progresnya disertifikasi (CoP), difakturkan,
+       * lalu uangnya masuk. Dibaca dari atas ke bawah, urutan ini
+       * menceritakan satu siklus utuh.
+       */
+      name: 'nav.penjualan',
       children: [
         {
-          /*
-           * Tender ditaruh SEBELUM draf pembelian.
-           *
-           * Urutan menu mengikuti urutan pekerjaannya: mencari pemasok lebih
-           * dulu, baru mencatat pembeliannya.
-           *
-           * `price.svg` dipakai karena tender pada dasarnya membandingkan
-           * harga; tidak ada ikon yang lebih tepat di antara yang tersedia.
-           */
+          // `price.svg`: tender pada dasarnya membandingkan harga; tidak ada
+          // ikon yang lebih tepat di antara yang tersedia.
           name: 'nav.tender',
           icon: 'price.svg',
           route: '/Tender',
         },
+        {
+          // Lambang DOKUMEN bercentang, bukan keranjang belanja.
+          //
+          // Keranjang dipinjam dari faktur pembelian saat menu ini baru
+          // ditambahkan. CoP bukan pembelian: ia berita acara yang dibaca,
+          // diperiksa, dan ditandatangani — dan lambang keranjang membuatnya
+          // dicari di kelompok pembelian oleh yang membuka menu.
+          name: 'nav.certificateOfPayment',
+          icon: 'certificate-of-payment.svg',
+          route: '/Certificate-of-payment',
+        },
+        {
+          name: 'nav.salesInvoice',
+          icon: 'sales-invoice.svg',
+          route: '/Sales-invoice',
+        },
+        {
+          name: 'nav.income',
+          icon: 'income.svg',
+          route: '/Income',
+        },
+      ],
+    },
+    {
+      /*
+       * PENGADAAN — ketiga tahap satu pekerjaan, berurutan dan berdekatan:
+       * draf disusun, SPK/PO terbit, fakturnya masuk.
+       */
+      name: 'nav.pengadaan',
+      children: [
         {
           name: 'nav.purchaseDraft',
           icon: 'purchase-invoice.svg',
@@ -285,31 +363,31 @@ export class MainComponent {
           route: '/Purchase-order',
         },
         {
-          /*
-           * Certificate of Payment ditaruh SESUDAH purchase order.
-           *
-           * Urutan menu mengikuti urutan pekerjaannya: SPK terbit lebih
-           * dulu, progresnya disertifikasi sesudahnya.
-           */
-          name: 'nav.certificateOfPayment',
-          // Lambang DOKUMEN bercentang, bukan keranjang belanja.
-          //
-          // Keranjang dipinjam dari faktur pembelian saat menu ini baru
-          // ditambahkan. CoP bukan pembelian: ia berita acara yang dibaca,
-          // diperiksa, dan ditandatangani — dan lambang keranjang membuatnya
-          // dicari di kelompok pembelian oleh yang membuka menu.
-          icon: 'certificate-of-payment.svg',
-          route: '/Certificate-of-payment',
+          name: 'nav.purchase',
+          icon: 'purchase-invoice.svg',
+          route: '/Purchase',
+        },
+      ],
+    },
+    {
+      /* KAS & BANK — pergerakan uangnya sendiri: yang direncanakan
+         (kalender), tempatnya (bank), dan yang benar-benar dibayarkan. */
+      name: 'nav.kasBank',
+      children: [
+        {
+          name: 'nav.calendar',
+          icon: 'calendar.svg',
+          route: '/Calendar',
         },
         {
-          name: 'nav.income',
-          icon: 'income.svg',
-          route: '/Income',
+          name: 'nav.bank',
+          icon: 'payment-method.svg',
+          route: '/Bank',
         },
         {
-          name: 'nav.salesInvoice',
-          icon: 'sales-invoice.svg',
-          route: '/Sales-invoice',
+          name: 'nav.payment',
+          icon: 'payment-method.svg',
+          route: '/Payment',
         },
         {
           name: 'nav.interPayment',
@@ -317,9 +395,67 @@ export class MainComponent {
           route: '/Interpayment',
         },
         {
+          name: 'nav.loans',
+          icon: 'loan.svg',
+          route: '/Loans',
+        },
+      ],
+    },
+    {
+      /* BEBAN & GAJI — biaya yang BUKAN pengadaan proyek. Dipisahkan dari
+         Pengadaan justru karena perbedaan itulah yang memisahkan HPP dari
+         beban usaha di laba rugi. */
+      name: 'nav.bebanGaji',
+      children: [
+        {
+          name: 'nav.expense',
+          icon: 'expense.svg',
+          route: '/Expense',
+        },
+        {
+          name: 'nav.reimbursement',
+          icon: 'reimbursement.svg',
+          route: '/Reimbursement',
+        },
+        {
           name: 'nav.salarySlip',
           icon: 'salary-slip.svg',
           route: '/Salary-slip',
+        },
+      ],
+    },
+    {
+      /*
+       * LAPORAN — kelompok tersendiri.
+       *
+       * Keduanya dulu di "Administrator", di antara Pinjaman, Perpajakan,
+       * dan Pengguna. Laporan keuangan bukan pekerjaan administrasi, dan
+       * menaruhnya di sana membuat halaman yang paling sering dicari
+       * pemilik justru paling sulit ditemukan.
+       */
+      name: 'nav.laporan',
+      children: [
+        {
+          /*
+           * SATU pintu untuk seluruh status keuangan.
+           *
+           * Dulu tiga entri terpisah — Posisi Keuangan, KPI, dan Laba Rugi —
+           * dan ketiganya menjawab pertanyaan yang sama dari sudut berbeda.
+           * Tiga entri membuat yang membuka menu harus memutuskan lebih dulu
+           * laporan mana yang memuat angka yang ia cari, padahal justru itu
+           * yang ingin ia ketahui.
+           *
+           * KPI kini dua panel di dalam halaman ini; laba rugi jadi kartu
+           * tautan di dalamnya, yang hanya muncul untuk level 5 — sama
+           * dengan `minLevel` yang dulu dipasang di sini.
+           *
+           * Tidak ber-`minLevel`: penyaringnya membaca `data.permission`
+           * dari konfigurasi rute (`finance_status:read`), sehingga ambang
+           * levelnya hanya disebut sekali — di matriks izin server.
+           */
+          name: 'nav.statusKeuangan',
+          icon: 'income.svg',
+          route: '/Laporan/Status-keuangan',
         },
       ],
     },
@@ -346,69 +482,6 @@ export class MainComponent {
           name: 'nav.asset',
           icon: 'asset.svg',
           route: '/Asset',
-        },
-      ],
-    },
-    {
-      name: 'nav.administrator',
-      children: [
-        {
-          name: 'nav.loans',
-          icon: 'loan.svg',
-          route: '/Loans',
-        },
-        {
-          name: 'nav.taxing',
-          icon: 'tax.svg',
-          route: '/Taxing',
-        },
-        {
-          name: 'nav.user',
-          icon: 'user.svg',
-          route: '/User',
-        },
-        {
-          // HANYA pemilik usaha (level 5) — lihat penyaring `sideNavItems`.
-          name: 'nav.labaRugi',
-          icon: 'income.svg',
-          route: '/Laporan/Laba-rugi',
-          minLevel: 5,
-        },
-      ],
-    },
-
-    {
-      name: 'nav.implementations',
-      children: [
-        {
-          name: 'nav.bank',
-          icon: 'payment-method.svg',
-          route: '/Bank',
-        },
-        {
-          name: 'nav.calendar',
-          icon: 'calendar.svg',
-          route: '/Calendar',
-        },
-        {
-          name: 'nav.payment',
-          icon: 'payment-method.svg',
-          route: '/Payment',
-        },
-        {
-          name: 'nav.purchase',
-          icon: 'purchase-invoice.svg',
-          route: '/Purchase',
-        },
-        {
-          name: 'nav.reimbursement',
-          icon: 'reimbursement.svg',
-          route: '/Reimbursement',
-        },
-        {
-          name: 'nav.expense',
-          icon: 'expense.svg',
-          route: '/Expense',
         },
       ],
     },
@@ -445,6 +518,30 @@ export class MainComponent {
       ],
     },
     {
+      /* ADMINISTRASI — yang memang pekerjaan administrasi. */
+      name: 'nav.administrasi',
+      children: [
+        {
+          name: 'nav.taxing',
+          icon: 'tax.svg',
+          route: '/Taxing',
+        },
+        {
+          name: 'nav.user',
+          icon: 'user.svg',
+          route: '/User',
+        },
+      ],
+    },
+    {
+      /*
+       * UMUM HARUS TETAP PALING BAWAH.
+       *
+       * `bottomGroup` di side-nav memilih kelompok TERAKHIR dan
+       * menempelkannya di kaki menu. Menyelipkan kelompok baru sesudah ini
+       * memindahkan kelompok itu ke kaki menu, dan "Keluar" naik ke tengah
+       * daftar — tanpa galat apa pun.
+       */
       name: 'nav.general',
       children: [
         {

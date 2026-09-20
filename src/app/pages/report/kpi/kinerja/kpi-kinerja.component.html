@@ -1,0 +1,137 @@
+@if (memuat()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
+@if (galat()) {
+  <div class="kpi-galat">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ galat() }}</span>
+  </div>
+}
+
+<!--
+  Angka yang TIDAK TERBACA dibedakan dari angka nol.
+
+  Deret kosong karena kuerinya gagal akan digambar sebagai perusahaan
+  tanpa pendapatan sama sekali: grafik rata di nol, tanpa satu pun
+  galat yang menyebutkan bahwa angkanya memang tidak terbaca. Spanduk
+  ini yang mengatakannya.
+-->
+@if (gagalBaca()) {
+  <div class="kpi-banner kpi-banner--bahaya">
+    <mat-icon>report</mat-icon>
+    <div>
+      <strong>{{ "kpi.gagalBacaJudul" | translate }}</strong>
+      <p>{{ "kpi.gagalBacaIsi" | translate }}</p>
+    </div>
+  </div>
+}
+
+@if (!memuat() && !galat() && !gagalBaca() && terkini(); as t) {
+  <div class="kpi-kartu-baris">
+    <div class="kpi-kartu">
+      <span class="kpi-kartu__cap">{{ "kpi.pendapatan" | translate }}</span>
+      <span class="kpi-kartu__nilai">{{ uang(t.pendapatan) }}</span>
+      <span class="kpi-kartu__ket" [class.kpi-naik]="arah(selisih('pendapatan','bulanLalu')) === 'naik'" [class.kpi-turun]="arah(selisih('pendapatan','bulanLalu')) === 'turun'">
+        <mat-icon>{{ ikonArah(selisih("pendapatan", "bulanLalu")) }}</mat-icon>
+        @if (selisih("pendapatan", "bulanLalu") !== null) {
+          {{ uang(selisih("pendapatan", "bulanLalu")) }}
+          {{ "kpi.dibandingBulanLalu" | translate }}
+        } @else {
+          {{ "kpi.tanpaPembanding" | translate }}
+        }
+      </span>
+    </div>
+
+    <div class="kpi-kartu">
+      <span class="kpi-kartu__cap">{{ "kpi.labaKotor" | translate }}</span>
+      <span class="kpi-kartu__nilai">{{ uang(t.labaKotor) }}</span>
+      <span class="kpi-kartu__ket">
+        {{ "kpi.hpp" | translate }} {{ uang(t.hpp) }}
+      </span>
+    </div>
+
+    <div class="kpi-kartu">
+      <span class="kpi-kartu__cap">{{ "kpi.labaSebelumPajak" | translate }}</span>
+      <span class="kpi-kartu__nilai" [class.kpi-turun]="t.labaSebelumPajak < 0">{{ uang(t.labaSebelumPajak) }}</span>
+      <span class="kpi-kartu__ket">
+        {{ "kpi.bebanUsaha" | translate }} {{ uang(t.bebanUsaha) }}
+      </span>
+    </div>
+
+    <div class="kpi-kartu">
+      <span class="kpi-kartu__cap">
+        {{ "kpi.marjinKotor" | translate }}
+        <mat-icon
+          class="kpi-kartu__tanya"
+          [matTooltip]="'kpi.kenapaJendela' | translate"
+          >help_outline</mat-icon
+        >
+      </span>
+      @if (jendela(); as j) {
+        <span class="kpi-kartu__nilai">{{ persen(j.marjinKotor) }}</span>
+        <span class="kpi-kartu__ket">
+          {{ "kpi.jendelaKet" | translate: { bulan: j.bulan } }}
+        </span>
+      } @else {
+        <span class="kpi-kartu__nilai">—</span>
+        <span class="kpi-kartu__ket">{{ "kpi.belumCukup" | translate }}</span>
+      }
+    </div>
+  </div>
+
+  <!--
+    Kenapa rupiah per bulan tetapi marjin jendela dua belas bulan —
+    disebut di layar, bukan hanya di kode. Yang melihat dua grafik
+    dengan sumbu waktu yang sama tetapi perlakuan berbeda berhak tahu
+    sebabnya tanpa bertanya.
+  -->
+  <div class="kpi-banner">
+    <mat-icon>info</mat-icon>
+    <div>
+      <strong>{{ "kpi.kenapaJendelaJudul" | translate }}</strong>
+      <p>{{ "kpi.kenapaJendela" | translate }}</p>
+    </div>
+  </div>
+
+  <div class="kpi-pilih">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "kpi.periode" | translate }}</mat-label>
+      <mat-select
+        [value]="mundur()"
+        (valueChange)="gantiMundur($event)"
+      >
+        <mat-option [value]="6">{{ "kpi.bulan6" | translate }}</mat-option>
+        <mat-option [value]="12">{{ "kpi.bulan12" | translate }}</mat-option>
+        <mat-option [value]="24">{{ "kpi.bulan24" | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="kpi-kartu-grafik">
+    <h3>{{ "kpi.grafikRupiah" | translate }}</h3>
+    <div class="kpi-grafik">
+      <canvas
+        baseChart
+        type="bar"
+        [data]="dataRupiah()"
+        [options]="opsiRupiah"
+      ></canvas>
+    </div>
+  </div>
+
+  <div class="kpi-kartu-grafik">
+    <h3>{{ "kpi.grafikMarjin" | translate }}</h3>
+    @if (belumCukup()) {
+      <p class="kpi-catatan">{{ "kpi.belumCukupPanjang" | translate }}</p>
+    }
+    <div class="kpi-grafik">
+      <canvas
+        baseChart
+        type="line"
+        [data]="dataMarjin()"
+        [options]="opsiMarjin"
+      ></canvas>
+    </div>
+  </div>
+}

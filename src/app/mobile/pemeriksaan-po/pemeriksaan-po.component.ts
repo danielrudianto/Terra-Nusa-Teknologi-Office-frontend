@@ -350,6 +350,23 @@ export class PemeriksaanPoComponent implements OnInit {
           this.snackBar.open(this.pesanServer.terjemahkan(err), 'Close', {
             duration: 5000,
           });
+          /*
+           * 409 berarti dokumennya SUDAH diputuskan orang lain.
+           *
+           * Barisnya dibuang persis seperti pada jalur berhasil: daftar ini
+           * hanya memuat yang masih menunggu, dan dokumen ini sudah tidak
+           * menunggu siapa pun. Membiarkannya di layar berarti menyodorkan
+           * tombol yang pasti ditolak lagi — dan yang menekannya membaca
+           * penolakan kedua sebagai kerusakan, bukan sebagai keadaan.
+           *
+           * Hanya 409. Galat jaringan atau 500 justru harus meninggalkan
+           * barisnya di tempat: keputusannya TIDAK tercatat, dan membuang
+           * barisnya akan menyembunyikan pekerjaan yang masih harus
+           * dikerjakan.
+           */
+          if (err?.status === 409) {
+            this.daftar = this.daftar.filter((x: any) => x?.id !== po?.id);
+          }
         },
       })
       .add(() => (this.sedangKirim = false));

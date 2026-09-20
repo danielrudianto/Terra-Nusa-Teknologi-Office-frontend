@@ -1,0 +1,81 @@
+@if (memuat()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
+@if (galat()) {
+  <div class="kpi-galat">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ galat() }}</span>
+  </div>
+}
+
+<!--
+  Angka di papan ini BOLEH berbeda dari angka lencana di menu, dan
+  itu disebut terang-terangan. Lencana menjawab "berapa yang dapat
+  saya kerjakan sekarang" dan mengecualikan dokumen buatan sendiri;
+  papan ini menjawab "berapa yang tertahan di tahap ini". Dua angka
+  berbeda tanpa keterangan akan dibaca sebagai salah satunya rusak.
+-->
+@if (adaAntrean()) {
+  <div class="kpi-banner">
+    <mat-icon>info</mat-icon>
+    <div>
+      <strong>{{ "kpi.antreanBedaJudul" | translate }}</strong>
+      <p>{{ "kpi.antreanBedaIsi" | translate }}</p>
+    </div>
+  </div>
+}
+
+<div class="kpi-tahap-daftar">
+  @for (t of tahap(); track t.kode) {
+    <div class="kpi-tahap" [class.kpi-tahap--tertahan]="tertahan(t)">
+      <div class="kpi-tahap__kepala">
+        <span class="kpi-tahap__nama">{{ labelTahap(t) }}</span>
+        @if (t.gagal) {
+          <!--
+            Kegagalan DISEBUT. Nol berarti "tidak ada yang menunggu",
+            dan papan yang kosong karena rusak terlihat persis seperti
+            papan yang kosong karena pekerjaannya sudah beres.
+          -->
+          <span class="kpi-tahap__gagal">
+            <mat-icon>error_outline</mat-icon>
+            {{ "kpi.tahapGagal" | translate }}
+          </span>
+        } @else {
+          <span class="kpi-tahap__jumlah">{{ t.jumlah }}</span>
+        }
+      </div>
+
+      @if (!t.gagal) {
+        <div class="kpi-tahap__tertua">
+          @if (t.jumlah) {
+            <mat-icon>schedule</mat-icon>
+            {{ "kpi.tertua" | translate: { hari: t.tertuaHari } }}
+          } @else {
+            {{ "kpi.tidakAdaMenunggu" | translate }}
+          }
+        </div>
+
+        @if (t.jumlah) {
+          <div class="kpi-ember">
+            @for (em of emberTahap(t); track em.kunci) {
+              <div class="kpi-ember__baris">
+                <span class="kpi-ember__cap">{{
+                  "kpi.ember." + em.kunci | translate
+                }}</span>
+                <div class="kpi-ember__rel">
+                  <div
+                    class="kpi-ember__isi"
+                    [class.kpi-mendesak]="em.mendesak && em.nilai"
+                    [style.width.%]="lebar(t, em)"
+                  ></div>
+                </div>
+                <span class="kpi-ember__nilai">{{ em.nilai }}</span>
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+  }
+</div>
