@@ -142,7 +142,6 @@
 }
 
 .spo-foot {
-  padding: 0.75rem 0 0;
   gap: 10px;
 }
 
@@ -207,7 +206,39 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+   JARAK TEPI.
+
+   Angkanya disalin dari `calendar-payment-confirm`, yang menyalinnya dari
+   `user-create` — pola yang diikuti dialog lain di aplikasi ini.
+
+   `!important` bukan kemalasan: Material memasang paddingnya sendiri pada
+   `mat-dialog-content` lewat selektor yang lebih kuat, dan tanpa menimpanya
+   isi dialog ini menempel ke tepi kotak. Itu yang terjadi di sini — seluruh
+   tulisannya rapat ke garis tepi, termasuk kotak nilai yang justru harus
+   paling mudah dibaca.
+   --------------------------------------------------------------------------- */
 :host {
   display: block;
   max-width: 100%;
+}
+
+.spo-title {
+  padding: 1.25rem 1.5rem 0 !important;
+  margin: 0 0 0.25rem !important;
+}
+
+mat-dialog-content {
+  padding: 0.5rem 1.5rem 1rem !important;
+  /* Isi yang panjang digulung DI DALAM dialog, bukan mendorong tombolnya
+     keluar layar — pada layar pendek, tombol Setujui yang terdorong keluar
+     membuat dialog ini terlihat seperti tidak punya jalan keluar. */
+  max-height: 62vh;
+  overflow-y: auto;
+}
+
+.spo-foot {
+  padding: 1rem 1.5rem !important;
+  border-top: 1px solid var(--line, #e6e9ee);
+  margin: 0 !important;
 }

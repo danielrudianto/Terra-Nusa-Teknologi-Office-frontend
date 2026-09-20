@@ -194,6 +194,9 @@ export class PurchaseOrderListComponent {
     // Buka dokumennya langsung bila datang dari ketukan notifikasi.
     this.bukaDariAlamat();
     this.fetch();
+    // Pilihan proyek dimuat SEKALI di sini, bukan bersama tiap halaman:
+    // isinya tidak berubah karena penyaring.
+    this.muatProyekOptions();
     this.searchControl.valueChanges.pipe(debounceTime(400)).subscribe(() => {
       this.fetch(1);
     });
@@ -212,7 +215,23 @@ export class PurchaseOrderListComponent {
   filterDari: Date | null = null;
   filterSampai: Date | null = null;
 
-  /** Kode proyek untuk pilihan; diambil dari daftar yang sedang tampil. */
+  /**
+   * Kode proyek untuk pilihan penyaring.
+   *
+   * DIAMBIL DARI SERVER, bukan dari baris yang sedang tampil.
+   *
+   * Sebelumnya daftar ini disusun dari `this.orders` — satu halaman, sepuluh
+   * dokumen. Proyek yang dokumennya berada di halaman berikutnya, atau yang
+   * seluruh dokumennya berstatus lain, TIDAK PERNAH muncul sebagai pilihan.
+   * Yang mencarinya harus lebih dulu mengubah penyaring lain sampai
+   * dokumennya kebetulan ikut termuat, dan tidak ada apa pun di layar yang
+   * menyebutkan itu — tampilannya persis seperti proyek yang memang tidak
+   * punya dokumen.
+   *
+   * Alasan lama ("jangan tampilkan proyek yang selesai bertahun lalu") tetap
+   * dijawab, tetapi oleh SUMBERNYA: rutenya hanya mengembalikan kode proyek
+   * yang benar-benar punya purchase order, bukan seluruh isi tabel proyek.
+   */
   proyekOptions: string[] = [];
 
   /**
@@ -229,6 +248,33 @@ export class PurchaseOrderListComponent {
     if (this.filterProyek) n++;
     if (this.filterDari || this.filterSampai) n++;
     return n;
+  }
+
+  /**
+   * Muat kode proyek untuk penyaring — SEKALI, saat halaman dibuka.
+   *
+   * Tidak diulang setiap kali daftarnya dimuat: isinya tidak berubah karena
+   * penyaring, dan mengulanginya berarti satu kueri tambahan pada setiap
+   * pindah halaman.
+   *
+   * Kegagalannya TIDAK menjatuhkan apa pun. Penyaring proyek akan jatuh ke
+   * kode yang terlihat di baris yang tampil — berkurang, tetapi tidak
+   * kosong, dan daftarnya sendiri tetap utuh.
+   */
+  private muatProyekOptions(): void {
+    this.apiService.get('purchase-orders/proyek', {}).subscribe({
+      next: (res: any) => {
+        const dari = Array.isArray(res) ? res : [];
+        const proyek = new Set<string>(this.proyekOptions);
+        for (const p of dari) {
+          if (p) proyek.add(String(p));
+        }
+        this.proyekOptions = [...proyek].sort();
+      },
+      error: () => {
+        /* Sengaja diam: lihat catatan di atas. */
+      },
+    });
   }
 
   openFilter(): void {
@@ -305,12 +351,11 @@ export class PurchaseOrderListComponent {
           this.count = res.count || 0;
 
           /*
-           * Kode proyek dikumpulkan dari daftar yang tampil.
+           * Baris yang tampil DITAMBAHKAN, bukan menjadi sumbernya.
            *
-           * Bukan dari seluruh proyek yang pernah ada: sebagian sudah selesai
-           * bertahun lalu dan tidak akan pernah dicari lagi, sementara
-           * daftar pilihan yang panjang justru menyulitkan menemukan yang
-           * sedang berjalan.
+           * Sumber utamanya `muatProyekOptions()`. Penggabungan ini jaring
+           * pengaman: bila rutenya gagal dimuat, penyaingnya tetap menawarkan
+           * proyek yang terlihat di layar alih-alih kosong sama sekali.
            */
           const proyek = new Set(this.proyekOptions);
           for (const o of this.orders) {
