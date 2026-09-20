@@ -1,0 +1,167 @@
+<h2 mat-dialog-title class="hnd-judul">
+  <mat-icon>fact_check</mat-icon>
+  <span>{{ "hrNilai.judul" | translate }} — {{ data.name }}</span>
+</h2>
+
+<mat-dialog-content class="hnd-isi">
+  @if (memuat()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  @if (galat()) {
+    <div class="hnd-galat">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ galat() }}</span>
+    </div>
+  }
+
+  @if (pelamar(); as p) {
+    <div class="hnd-kepala">
+      <div class="hnd-kepala__baris">
+        <span class="hnd-kode" [matTooltip]="'hrNilai.kodeKet' | translate">{{
+          p.kodePeserta
+        }}</span>
+        <span>{{ p.testName }}</span>
+      </div>
+      <div class="hnd-kepala__baris hnd-kepala__samar">
+        @if (p.submittedAt) {
+          <span>{{ "hrNilai.dikirim" | translate }} {{ p.submittedAt | date: "d MMM y, HH:mm" }}</span>
+        } @else if (p.startedAt) {
+          <!--
+            Belum dikirim TIDAK berarti tidak ada yang dapat dinilai.
+            Jawaban tersimpan sambil diketik, jadi lembar ini tetap berisi —
+            dan yang memeriksa perlu tahu bahwa pelamarnya berhenti di
+            tengah, bukan mengira sistemnya kehilangan jawabannya.
+          -->
+          <span class="hnd-peringatan">
+            <mat-icon>warning</mat-icon>
+            {{ "hrNilai.belumDikirim" | translate }}
+          </span>
+        } @else {
+          <span class="hnd-peringatan">
+            <mat-icon>warning</mat-icon>
+            {{ "hrNilai.belumMulai" | translate }}
+          </span>
+        }
+      </div>
+    </div>
+
+    <!-- Rekap MENEMPEL di atas: dengan 24 soal, totalnya keluar layar. -->
+    <div class="hnd-rekap">
+      <div>
+        <span class="hnd-rekap__cap">{{ "hrNilai.total" | translate }}</span>
+        <span class="hnd-rekap__nilai"
+          >{{ rekap().nilai }} / {{ rekap().maks }}</span
+        >
+      </div>
+      <div>
+        <span class="hnd-rekap__cap">{{ "hrNilai.belumDinilai" | translate }}</span>
+        <span
+          class="hnd-rekap__nilai"
+          [class.hnd-sisa]="rekap().belum > 0"
+          >{{ rekap().belum }} / {{ rekap().jumlah }}</span
+        >
+      </div>
+    </div>
+
+    @for (s of soal(); track s.questionID; let i = $index) {
+      <div class="hnd-soal">
+        <div class="hnd-soal__kepala">
+          <span class="hnd-nomor">{{ i + 1 }}</span>
+          <div class="hnd-soal__teks">
+            <p class="hnd-pertanyaan">{{ s.question }}</p>
+            @if (s.notes) {
+              <p class="hnd-catatan-soal">{{ s.notes }}</p>
+            }
+          </div>
+        </div>
+
+        @if (s.attachment) {
+          <div class="hnd-lampiran" [innerHTML]="s.attachment"></div>
+        }
+
+        <!--
+          Jawaban yang TIDAK ADA dibedakan dari jawaban KOSONG.
+
+          `null` berarti soal ini tidak pernah disentuh; string kosong
+          berarti pelamarnya membukanya lalu tidak menulis apa pun. Keduanya
+          bernilai nol, tetapi menyatakan hal berbeda tentang pengerjaannya.
+        -->
+        <div class="hnd-jawaban" [class.hnd-jawaban--kosong]="!s.answer">
+          @if (s.answer) {
+            @for (b of bagian(s.answer); track $index) {
+              @if (b.tautan) {
+                <a [href]="b.teks" target="_blank" rel="noopener noreferrer">{{
+                  b.teks
+                }}</a>
+              } @else {
+                <span>{{ b.teks }}</span>
+              }
+            }
+          } @else if (s.answer === '') {
+            <em>{{ "hrNilai.dijawabKosong" | translate }}</em>
+          } @else {
+            <em>{{ "hrNilai.tidakDijawab" | translate }}</em>
+          }
+        </div>
+
+        <div class="hnd-nilai">
+          <mat-form-field appearance="outline" class="hnd-nilai__kotak">
+            <mat-label>{{ "hrNilai.nilai" | translate }}</mat-label>
+            <input
+              matInput
+              type="number"
+              inputmode="numeric"
+              [min]="0"
+              [max]="s.maxScore"
+              [ngModel]="draf()[s.questionID]?.score"
+              (ngModelChange)="ubahNilai(s.questionID, $event)"
+            />
+            <span matTextSuffix>/ {{ s.maxScore }}</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="hnd-nilai__catatan">
+            <mat-label>{{ "hrNilai.catatan" | translate }}</mat-label>
+            <input
+              matInput
+              [maxlength]="500"
+              [ngModel]="draf()[s.questionID]?.note"
+              (ngModelChange)="ubahCatatan(s.questionID, $event)"
+            />
+          </mat-form-field>
+        </div>
+
+        @if (nilaiTidakSah(s)) {
+          <div class="hnd-salah">
+            <mat-icon>error_outline</mat-icon>
+            {{ "hrNilai.diluarBatas" | translate: { maks: s.maxScore } }}
+          </div>
+        }
+
+        @if (s.checkedByName) {
+          <div class="hnd-jejak">
+            {{ "hrNilai.diperiksaOleh" | translate }} {{ s.checkedByName }}
+            @if (s.checkedAt) {
+              · {{ s.checkedAt | date: "d MMM y, HH:mm" }}
+            }
+          </div>
+        }
+      </div>
+    }
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="hnd-aksi">
+  <button mat-button type="button" (click)="tutup()">
+    {{ "common.close" | translate }}
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    [disabled]="menyimpan() || memuat() || adaYangTidakSah()"
+    (click)="simpan()"
+  >
+    {{ "hrNilai.simpan" | translate }}
+  </button>
+</mat-dialog-actions>

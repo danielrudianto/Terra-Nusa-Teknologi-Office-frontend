@@ -220,6 +220,23 @@
     "1": "Jan", "2": "Feb", "3": "Mar", "4": "Apr", "5": "Mei", "6": "Jun",
     "7": "Jul", "8": "Agu", "9": "Sep", "10": "Okt", "11": "Nov", "12": "Des"
   },
+  "hrNilai": {
+    "judul": "Lembar jawaban",
+    "kodeKet": "Kode peserta — diturunkan dari token, tidak dapat dikembalikan menjadi token.",
+    "dikirim": "Dikirim",
+    "belumDikirim": "Belum dikirim — pelamar berhenti di tengah. Jawaban yang sempat diketik tetap tersimpan.",
+    "belumMulai": "Belum pernah membuka tautannya.",
+    "total": "Total nilai",
+    "belumDinilai": "Belum dinilai",
+    "nilai": "Nilai",
+    "catatan": "Catatan pemeriksa",
+    "simpan": "Simpan penilaian",
+    "tersimpan": "Penilaian tersimpan.",
+    "tidakDijawab": "Tidak dijawab sama sekali.",
+    "dijawabKosong": "Dibuka, lalu dikosongkan.",
+    "diluarBatas": "Nilai harus antara 0 dan {{maks}}.",
+    "diperiksaOleh": "Diperiksa oleh"
+  },
   "kpi": {
     "judul": "KPI",
     "kinerja": "Kinerja perusahaan",
@@ -5036,6 +5053,7 @@
     "dialogSub": "Soal esai; jawabannya dinilai manusia."
   },
   "hrCandidate": {
+    "nilai": "Nilai",
     "judul": "Pelamar rekrutmen",
     "subjudul": "Daftarkan pelamar dan terbitkan tautan pengerjaan ujian.",
     "paketUjian": "Paket ujian",
@@ -5078,6 +5096,8 @@
     "dialogSub": "Nama dan jenis kelamin saja; sisanya diisi pelamar sendiri."
   },
   "exam": {
+    "warna": "Warna",
+    "warnaNama": { "akn": "Oranye AKN", "biru": "Biru", "hijau": "Hijau", "slate": "Abu" },
     "departemen": "Human Resource Department",
     "motoAwal": "We believe in",
     "motoSatu": "Dedication",
@@ -5108,6 +5128,8 @@
     "belumSiap": "Halaman pengerjaan sedang disiapkan. Mohon hubungi bagian HRD."
   },
   "examWork": {
+    "menunggu": "Belum tersimpan...",
+    "coba": "Coba lagi",
     "menyiapkan": "Menyiapkan soal…",
     "gagalMemuat": "Gagal memuat soal. Periksa koneksi Anda lalu muat ulang halaman.",
     "gagalKirim": "Gagal mengirim. Periksa koneksi Anda lalu coba lagi.",
@@ -5118,7 +5140,9 @@
     "terjawab": "{{n}} dari {{total}} terjawab",
     "jawaban": "Jawaban Anda",
     "jawabanPlaceholder": "Tuliskan jawaban beserta penjelasannya",
-    "unggahBelumAda": "Unggah berkas belum tersedia — jelaskan dengan kata-kata.",
+    "unggahJudul": "Soal ini meminta gambar",
+    "unggahLangkah": "Unggah berkasnya ke Google Drive (atau Dropbox/OneDrive), lalu tempelkan tautannya ke kotak jawaban di atas. Boleh lebih dari satu tautan.",
+    "unggahIzin": "Penting: setel tautannya ke \"siapa pun yang memiliki link\" dapat melihat. Tautan bawaan Drive hanya terbuka untuk Anda sendiri, dan pemeriksa akan melihat halaman minta izin, bukan gambar Anda.",
     "masihKosong": "{{n}} soal belum dijawab",
     "kirim": "Kirim jawaban",
     "mengirim": "Mengirim…",

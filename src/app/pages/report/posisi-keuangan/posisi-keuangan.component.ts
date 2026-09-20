@@ -161,19 +161,29 @@ export class PosisiKeuanganComponent {
   private readonly izin = inject(PermissionService);
 
   /**
-   * Level minimum untuk membuka laba rugi.
+   * Kartu laba rugi ditampilkan.
    *
-   * Angka yang SAMA dengan `minLevel` rute laba rugi dan dengan penjagaan
-   * servernya. Disebut di tiga tempat memang tidak ideal, tetapi
-   * menyembunyikan tautan berdasarkan tebakan lain — misalnya izin modul —
-   * akan membuat kartunya muncul bagi orang yang tetap ditolak saat
-   * menekannya.
+   * MEMAKAI IZIN MODUL, bukan ambang level — dan itu koreksi, bukan
+   * penyederhanaan.
+   *
+   * Versi pertama memakai `level >= 5`, menyalin `minLevel` yang dulu ada
+   * di entri sidenav. Itu keliru: server mengizinkan laba rugi bagi level 5
+   * ke atas ATAU siapa pun yang punya `laba_rugi:read`
+   * (`routes/report_routes.py`). Modul itu diberikan kepada divisi
+   * **konsultan** pada level 3 — konsultan pajaknya berhak membacanya, dan
+   * memang itu alasan modulnya dibuat terpisah dari tangga level.
+   *
+   * Dengan ambang level, konsultan tidak melihat kartunya sama sekali,
+   * padahal server menerimanya. Dan karena entri sidenav laba rugi kini
+   * sudah dibuang, kartu ini satu-satunya jalan yang tersisa — jadi
+   * menyembunyikannya berarti menutup laporan itu dari orang yang paling
+   * sering memerlukannya.
+   *
+   * `can()` membaca peta izin dari server, jadi satu-satunya sumbernya
+   * tetap matriks izin di sana.
    */
-  private static readonly LEVEL_LABA_RUGI = 5;
-
-  /** Kartu tautan laba rugi ditampilkan. */
-  readonly bolehLabaRugi = computed<boolean>(
-    () => this.izin.level() >= PosisiKeuanganComponent.LEVEL_LABA_RUGI,
+  readonly bolehLabaRugi = computed<boolean>(() =>
+    this.izin.can('laba_rugi', 'read'),
   );
 
   /*

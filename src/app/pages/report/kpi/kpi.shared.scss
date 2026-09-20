@@ -229,3 +229,20 @@
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
+
+/* IKON DI DALAM WADAH FLEX TIDAK BOLEH MENCIUT.
+
+   `mat-icon` berukuran tetap 24px, tetapi `flex-shrink` bawaannya 1. Begitu
+   teks di sebelahnya panjang, ikonnya ikut dipersempit sampai yang terlihat
+   cuma irisan tipis di tepi kiri — dan tidak ada galat apa pun: CSS-nya sah,
+   build bersih, seluruh uji hijau.
+
+   Terjadi pada spanduk keterangan di halaman KPI, yang teksnya memang
+   panjang sengaja. Dijaga `scripts/pemeriksa/ikonflexcek.py`. */
+.kpi-banner > mat-icon,
+.kpi-galat > mat-icon,
+.kpi-kartu__ket > mat-icon,
+.kpi-tahap__gagal > mat-icon,
+.kpi-tahap__tertua > mat-icon {
+  flex: 0 0 auto;
+}

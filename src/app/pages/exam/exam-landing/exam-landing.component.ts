@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, HostBinding, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -23,6 +23,13 @@ import { environment } from 'src/environments/environment';
  * Keduanya diperlukan: tautan panjang kerap terpotong saat disalin dari
  * WhatsApp, dan yang mengalaminya perlu jalan lain selain meminta tautan baru.
  */
+import { MatTooltipModule } from '@angular/material/tooltip';
+
+import {
+  PALET,
+  PaletUjianService,
+} from '../palet-ujian.service';
+
 @Component({
   selector: 'app-exam-landing',
   standalone: true,
@@ -37,11 +44,32 @@ import { environment } from 'src/environments/environment';
     MatSelectModule,
     MatProgressSpinnerModule,
     TranslateModule,
+    MatTooltipModule,
   ],
   templateUrl: './exam-landing.component.html',
   styleUrl: './exam-landing.component.scss',
 })
 export class ExamLandingComponent implements OnInit {
+  private readonly paletSvc = inject(PaletUjianService);
+
+  readonly paletPilihan = PALET;
+  readonly paletAktif = this.paletSvc.palet;
+
+  /**
+   * Palet dipasang sebagai ATRIBUT pada host.
+   *
+   * Gaya komponen ini tercakup (scoped), jadi variabel warnanya harus
+   * bersarang di `:host([data-palet='...'])` — menyetelnya lewat kelas di
+   * `<body>` tidak akan menembus batas cakupannya.
+   */
+  @HostBinding('attr.data-palet') get paletHost(): string {
+    return this.paletAktif();
+  }
+
+  pilihPalet(kode: string): void {
+    this.paletSvc.pilih(kode);
+  }
+
   private readonly http = inject(HttpClient);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);

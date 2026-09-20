@@ -856,3 +856,18 @@
 .pkeu-tautan__panah {
   color: var(--muted, #6b7280);
 }
+
+/* IKON DI DALAM WADAH FLEX TIDAK BOLEH MENCIUT.
+
+   `mat-icon` berukuran tetap 24px, tetapi `flex-shrink` bawaannya 1. Begitu
+   teks di sebelahnya panjang, ikonnya ikut dipersempit sampai yang terlihat
+   cuma irisan tipis di tepi kiri — dan tidak ada galat apa pun: CSS-nya sah,
+   build bersih, seluruh uji hijau.
+
+   Terjadi pada spanduk keterangan di halaman KPI, yang teksnya memang
+   panjang sengaja. Dijaga `scripts/pemeriksa/ikonflexcek.py`. */
+.pkeu-banner > mat-icon,
+.pkeu-galat > mat-icon,
+.pkeu-tautan > mat-icon {
+  flex: 0 0 auto;
+}

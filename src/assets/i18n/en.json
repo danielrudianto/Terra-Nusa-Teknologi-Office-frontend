@@ -220,6 +220,23 @@
     "1": "Jan", "2": "Feb", "3": "Mar", "4": "Apr", "5": "May", "6": "Jun",
     "7": "Jul", "8": "Aug", "9": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"
   },
+  "hrNilai": {
+    "judul": "Answer sheet",
+    "kodeKet": "Participant code — derived from the token and cannot be turned back into it.",
+    "dikirim": "Submitted",
+    "belumDikirim": "Not submitted — the candidate stopped partway. Whatever they typed is still saved.",
+    "belumMulai": "Never opened the link.",
+    "total": "Total score",
+    "belumDinilai": "Not yet scored",
+    "nilai": "Score",
+    "catatan": "Reviewer note",
+    "simpan": "Save scores",
+    "tersimpan": "Scores saved.",
+    "tidakDijawab": "Never answered.",
+    "dijawabKosong": "Opened, then left blank.",
+    "diluarBatas": "Score must be between 0 and {{maks}}.",
+    "diperiksaOleh": "Reviewed by"
+  },
   "kpi": {
     "judul": "KPI",
     "kinerja": "Company performance",
@@ -5036,6 +5053,7 @@
     "dialogSub": "Essay question; answers are graded by a person."
   },
   "hrCandidate": {
+    "nilai": "Score",
     "judul": "Recruitment candidates",
     "subjudul": "Register candidates and issue their test links.",
     "paketUjian": "Test package",
@@ -5078,6 +5096,8 @@
     "dialogSub": "Name and gender only; candidates fill in the rest themselves."
   },
   "exam": {
+    "warna": "Colour",
+    "warnaNama": { "akn": "AKN orange", "biru": "Blue", "hijau": "Green", "slate": "Slate" },
     "departemen": "Human Resource Department",
     "motoAwal": "We believe in",
     "motoSatu": "Dedication",
@@ -5108,6 +5128,8 @@
     "belumSiap": "The test page is still being prepared. Please contact HR."
   },
   "examWork": {
+    "menunggu": "Not saved yet...",
+    "coba": "Try again",
     "menyiapkan": "Preparing questions…",
     "gagalMemuat": "Could not load the questions. Check your connection and reload the page.",
     "gagalKirim": "Could not submit. Check your connection and try again.",
@@ -5118,7 +5140,9 @@
     "terjawab": "{{n}} of {{total}} answered",
     "jawaban": "Your answer",
     "jawabanPlaceholder": "Write your answer and your reasoning",
-    "unggahBelumAda": "File upload isn't available yet — describe it in words.",
+    "unggahJudul": "This question asks for a drawing",
+    "unggahLangkah": "Upload the file to Google Drive (or Dropbox/OneDrive), then paste the link into the answer box above. More than one link is fine.",
+    "unggahIzin": "Important: set the link so that \"anyone with the link\" can view. Drive's default link only opens for you, and the reviewer will see a request-access page instead of your drawing.",
     "masihKosong": "{{n}} question(s) not answered",
     "kirim": "Submit answers",
     "mengirim": "Submitting…",

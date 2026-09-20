@@ -24,22 +24,78 @@
 }
 
 /*
- * Panel kanan.
+ * WARNA PT ALPHA KONSTRUKSI NUSANTARA, bukan warna TerraBot.
  *
- * Gradien, bukan foto: berkas gambar rig dari sistem lama tidak ikut
- * dipindahkan, dan menunjuk berkas yang tidak ada menghasilkan kotak kosong
- * berbatas — lebih buruk daripada latar polos yang memang dirancang begitu.
+ * Halaman ini dibaca PELAMAR, yang tidak tahu dan tidak perlu tahu apa itu
+ * TerraBot. Yang mengundangnya adalah AKN, dan halamannya harus terlihat
+ * seperti AKN. Oranyenya DIAMBIL dari kop surat resmi
+ * (`templates/pdf/assets/kop.png`), bukan dikira-kira: #dd8840.
  *
- * Bila kelak fotonya tersedia, ganti `background` di bawah dengan:
- *   url("/assets/images/hero-image.png") center / cover no-repeat
+ * TIGA nilai per palet, bukan satu. Warna yang enak sebagai isian belum
+ * tentu terbaca sebagai teks: oranye AKN berkontras hanya 2,74:1 dengan
+ * putih, jauh di bawah syarat WCAG AA. Jadi `--akn` tidak pernah dipakai
+ * sebagai warna teks — itu tugas `--akn-ink`.
+ *
+ * Nilainya disebut di SINI dan di `palet-ujian.service.ts`. Keduanya harus
+ * sepakat, dan `scripts/pemeriksa/paletujiancek.py` yang memaksanya.
+ */
+:host {
+  --akn: #dd8840;
+  --akn-ink: #9c5715;
+  --akn-dark: #7a4319;
+}
+:host([data-palet='biru']) {
+  --akn: #3b6fe0;
+  --akn-ink: #1f4bb8;
+  --akn-dark: #12306f;
+}
+:host([data-palet='hijau']) {
+  --akn: #2f9e63;
+  --akn-ink: #1a6b41;
+  --akn-dark: #12472c;
+}
+:host([data-palet='slate']) {
+  --akn: #64748b;
+  --akn-ink: #475569;
+  --akn-dark: #2b3648;
+}
+
+/*
+ * Panel kanan — DISAMAKAN dengan halaman login.
+ *
+ * Maskot yang sama, perlakuan yang sama: gelap dengan pendar hangat di
+ * belakangnya. Pelamar yang diterima akan melihat maskot itu lagi setiap
+ * kali ia masuk, dan halaman ujian yang memakai bahasa rupa berbeda membuat
+ * keduanya terasa seperti dua sistem yang tak berhubungan.
+ *
+ * Berkasnya yang SUDAH ADA (`login.png`) dipakai ulang, bukan disalin ke
+ * nama baru: dua berkas dengan isi sama akan berpisah pada saat salah
+ * satunya diperbarui, dan tidak ada yang akan menyadarinya.
  */
 .exl-kanan {
   flex: 1 1 40%;
-  background: linear-gradient(
-    160deg,
-    var(--brand-strong) 0%,
-    #0b2a5b 100%
-  );
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(
+      circle at 50% 46%,
+      color-mix(in srgb, var(--akn) 55%, transparent) 0%,
+      transparent 62%
+    ),
+    linear-gradient(160deg, var(--akn-dark) 0%, #14161b 100%);
+}
+
+.exl-maskot {
+  width: min(70%, 320px);
+  height: auto;
+  /* Berkasnya berlatar gelap dengan pendar; `mix-blend-mode: screen`
+     melarutkan kotak hitamnya ke dalam gradien alih-alih menampilkannya
+     sebagai persegi yang batasnya terlihat. */
+  mix-blend-mode: screen;
+  user-select: none;
+  pointer-events: none;
 }
 
 .exl-merek {
@@ -52,7 +108,7 @@
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.14em;
-  color: var(--brand-strong);
+  color: var(--akn-ink);
 }
 
 .exl-merek__dept {
@@ -72,7 +128,7 @@
 
   span {
     font-weight: 700;
-    color: var(--brand-strong);
+    color: var(--akn-ink);
   }
 }
 
@@ -242,4 +298,52 @@ mat-checkbox {
   .exl-token__btn {
     flex: 1 1 100%;
   }
+}
+
+/*
+ * Pemilih warna.
+ *
+ * Sebaris kecil di sebelah pemilih bahasa: keduanya preferensi tampilan,
+ * dan mengelompokkannya membuat keduanya terbaca sebagai pilihan yang
+ * disengaja alih-alih tombol yang tercecer.
+ */
+.exl-palet {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 1.25rem;
+  flex-wrap: wrap;
+}
+.exl-palet__cap {
+  font-size: 0.72rem;
+  color: var(--muted, #6b7280);
+  margin-right: 0.15rem;
+}
+.exl-palet__tombol {
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  /* Lingkaran warna tanpa pembatas menghilang di atas latar putih ketika
+     paletnya terang; bayangan tipis memberinya tepi tanpa menambah warna. */
+  box-shadow: 0 0 0 1px rgba(16, 24, 40, 0.14);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.12s ease;
+}
+.exl-palet__tombol:hover {
+  transform: scale(1.12);
+}
+.exl-palet__tombol--aktif {
+  /* Yang terpilih ditandai CINCIN, bukan hanya diperbesar: pembesaran saja
+     tidak terlihat bagi yang membandingkan empat lingkaran sekaligus, dan
+     tidak terbaca sama sekali oleh yang tidak membedakan warna. */
+  border-color: var(--surface, #fff);
+  box-shadow:
+    0 0 0 2px rgba(16, 24, 40, 0.75),
+    0 0 0 3px rgba(255, 255, 255, 0.9);
+}
+.exl-palet__tombol:focus-visible {
+  outline: 2px solid var(--akn-ink);
+  outline-offset: 3px;
 }

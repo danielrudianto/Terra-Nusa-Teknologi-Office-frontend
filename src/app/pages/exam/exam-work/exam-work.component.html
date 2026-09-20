@@ -66,11 +66,37 @@
               }}
             </span>
           }
+          @case ("menunggu") {
+            <!--
+              Ada ketikan yang BELUM berangkat. Dibedakan dari "menyimpan":
+              menampilkan "menyimpan..." selama jeda dua detik membuat
+              pelamar yang menutup tabnya di detik itu mengira jawabannya
+              sudah aman.
+            -->
+            <span class="exw-simpan">{{
+              "examWork.menunggu" | translate
+            }}</span>
+          }
           @case ("gagal") {
             <span class="exw-simpan exw-simpan--gagal">
               <mat-icon>cloud_off</mat-icon>{{
                 "examWork.gagalSimpan" | translate
               }}
+              <!--
+                Tombol simpan MANUAL, hanya muncul saat gagal.
+
+                Percobaan ulang otomatis sudah berjalan di belakang, tetapi
+                pelamar yang melihat "gagal" tidak punya cara tahu itu — dan
+                menunggu tanpa dapat berbuat apa-apa di tengah ujian
+                berwaktu adalah hal yang membuat orang menutup tabnya.
+              -->
+              <button
+                type="button"
+                class="exw-simpan__ulang"
+                (click)="simpanSekarang()"
+              >
+                {{ "examWork.coba" | translate }}
+              </button>
             </span>
           }
         }
@@ -120,17 +146,33 @@
 
           @if (s.allowsUpload) {
             <!--
-              Unggah berkas belum tersedia.
+              Unggah berkas belum tersedia — jadi berkasnya DITITIPKAN lewat
+              tautan berbagi, bukan lewat surel.
 
-              Disebut terus terang, bukan disembunyikan: soal gambar memang
-              meminta berkas, dan yang mengerjakan perlu tahu bahwa
-              menjelaskannya dengan kata-kata sudah cukup untuk sekarang.
+              Sebelumnya di sini hanya tertulis "unggah belum tersedia",
+              yang memberi tahu apa yang TIDAK bisa tanpa memberi tahu apa
+              yang harus dikerjakan. Soal gambar memang menuntut gambar.
+
+              Tautan ditempel ke kotak jawaban di atas, bukan dikirim ke
+              surel HRD: tautannya lalu duduk persis di sebelah soalnya saat
+              diperiksa, tidak ada yang perlu disortir, dan tidak ada yang
+              bisa tercecer di kotak masuk.
+
+              Bagian "siapa pun yang punya tautan" disebut TEGAS: tautan
+              Drive bawaan hanya terbuka untuk pemiliknya, dan pemeriksanya
+              akan melihat halaman minta izin, bukan gambarnya — kegagalan
+              yang baru ketahuan setelah ujiannya lewat.
             -->
-            <p class="exw-soal__unggah">
-              <mat-icon>info</mat-icon>{{
-                "examWork.unggahBelumAda" | translate
-              }}
-            </p>
+            <div class="exw-soal__unggah">
+              <mat-icon>attach_file</mat-icon>
+              <div>
+                <strong>{{ "examWork.unggahJudul" | translate }}</strong>
+                <p>{{ "examWork.unggahLangkah" | translate }}</p>
+                <p class="exw-soal__unggah-tegas">
+                  {{ "examWork.unggahIzin" | translate }}
+                </p>
+              </div>
+            </div>
           }
         </div>
       }

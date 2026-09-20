@@ -21,7 +21,11 @@ Karma — pengujian di peramban tidak dapat membaca berkas sumber:
   3. Kartu laba rugi berhenti dijaga level. Level 4 melihat pintu yang pasti
      ditolak, sekaligus diberi tahu bahwa ada laporan yang disembunyikan
      dari mereka.
-  4. Panel KPI berhenti dimuat-saat-dibuka. Tanpa `@if`, komponennya tetap
+  4. Alamat yang sama didaftarkan DUA KALI. Router memakai yang duluan,
+     jadi yang kedua jadi blok mati — dan hidup kembali begitu urutannya
+     dipindah. Sudah terjadi: merge dari dua device menambahkan kembali
+     rute lama di bawah pengalihannya, dan seluruh uji tetap hijau.
+  5. Panel KPI berhenti dimuat-saat-dibuka. Tanpa `@if`, komponennya tetap
      dibuat dan konstruktornya tetap memanggil `kpi/perusahaan` — yang
      menyusun laba rugi dua puluh empat bulan — untuk SETIAP orang yang
      membuka halaman ini, termasuk yang hanya ingin melihat quick ratio.
@@ -96,6 +100,29 @@ def periksa():
                 f"pengalihan `{lama}` tanpa `pathMatch: 'full'` — awalan "
                 f"yang sama ikut tertangkap, dan alamat lain yang kebetulan "
                 f"berawalan sama ikut dialihkan"
+            )
+
+    # 1b. TIDAK ADA DUPLIKAT alamat.
+    #
+    # Ini benar-benar terjadi: merge dari dua device menambahkan kembali
+    # rute lama `Laporan/Posisi-keuangan` yang utuh, DI BAWAH pengalihan
+    # yang menggantikannya. Hari itu tidak ada yang rusak — router memakai
+    # yang duluan, dan yang duluan kebetulan pengalihannya — sehingga
+    # seluruh uji hijau, build bersih, dan halamannya berperilaku benar.
+    #
+    # Yang tertinggal: satu blok mati yang menyatakan kebalikan dari
+    # rancangannya, dan yang akan HIDUP KEMBALI begitu seseorang memindah
+    # urutan blok rute. Diuji dan dipastikan: pada larik yang sama dengan
+    # urutan terbalik, halaman lamalah yang menang.
+    for alamat in ALAMAT_LAMA + (BARU, "Laporan/Laba-rugi"):
+        n = rute.count(f"path: '{alamat}'")
+        if n > 1:
+            masalah.append(
+                f"alamat `{alamat}` muncul {n} kali di daftar rute — router "
+                f"memakai yang DULUAN, jadi sisanya blok mati yang "
+                f"menyatakan kebalikan dari rancangannya, dan akan hidup "
+                f"kembali begitu urutannya dipindah. Biasanya sisa merge "
+                f"dari dua device"
             )
 
     # 2. rutenya sendiri masih ada

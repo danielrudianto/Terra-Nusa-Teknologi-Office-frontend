@@ -31,6 +31,35 @@
       </mat-select>
     </mat-form-field>
 
+    <!--
+      Pemilih warna — DIKURASI, bukan pemilih warna bebas.
+
+      Ditaruh di sebelah pemilih bahasa, bukan mengambang sendiri: keduanya
+      preferensi tampilan, dan mengelompokkannya membuat keduanya terbaca
+      sebagai pilihan yang disengaja, bukan tombol yang tercecer.
+
+      Empat pilihan, seluruhnya sudah diukur kontrasnya — lihat
+      `palet-ujian.service.ts`. Pemilih warna bebas memang lebih mengesankan
+      sekilas, tetapi ia membiarkan orang memilih kuning muda untuk teks di
+      atas putih, dan halamannya menjadi tidak terbaca justru karena fitur
+      yang dipasang untuk memamerkan kerapian.
+    -->
+    <div class="exl-palet" role="group" [attr.aria-label]="'exam.warna' | translate">
+      <span class="exl-palet__cap">{{ "exam.warna" | translate }}</span>
+      @for (w of paletPilihan; track w.kode) {
+        <button
+          type="button"
+          class="exl-palet__tombol"
+          [class.exl-palet__tombol--aktif]="paletAktif() === w.kode"
+          [style.background]="w.aksen"
+          [attr.aria-pressed]="paletAktif() === w.kode"
+          [attr.aria-label]="'exam.warnaNama.' + w.kode | translate"
+          [matTooltip]="'exam.warnaNama.' + w.kode | translate"
+          (click)="pilihPalet(w.kode)"
+        ></button>
+      }
+    </div>
+
     <p class="exl-perkenalan">{{ "exam.perkenalan" | translate }}</p>
 
     @if (!ujian) {
@@ -142,5 +171,18 @@
     mendorong isian token ke bawah lipatan, dan yang membukanya harus
     menggulir sebelum menemukan hal yang ia datangi.
   -->
-  <div class="exl-kanan" aria-hidden="true"></div>
+  <div class="exl-kanan" aria-hidden="true">
+    <!--
+      Maskot yang SAMA dengan halaman login, dari berkas yang sama.
+
+      Pelamar yang nanti diterima akan melihat maskot ini lagi setiap kali
+      ia masuk; halaman ujian dengan bahasa rupa yang berbeda membuat
+      keduanya terasa seperti dua sistem yang tak berhubungan.
+
+      `aria-hidden` pada induknya: gambar ini hiasan, dan membacakannya
+      kepada pengguna pembaca layar hanya menyisipkan keterangan yang tidak
+      menolong siapa pun mengerjakan ujiannya.
+    -->
+    <img class="exl-maskot" src="/assets/images/login.png" alt="" />
+  </div>
 </div>

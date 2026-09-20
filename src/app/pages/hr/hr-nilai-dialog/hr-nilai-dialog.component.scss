@@ -1,0 +1,224 @@
+.hnd-judul {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.hnd-judul mat-icon {
+  /* Ikon di dalam baris teks: tanpa `line-height` ia duduk di garis dasar
+     sendiri dan tulisannya tampak melompat setengah baris. */
+  line-height: 24px;
+}
+
+.hnd-isi {
+  /* Padding tepi disebut sendiri: dialog Material di repo ini kerap tampil
+     mepet tanpa ini. */
+  padding: 0 1.25rem 0.5rem !important;
+  max-height: 72vh;
+}
+
+.hnd-kepala {
+  padding: 0.5rem 0 0.75rem;
+}
+.hnd-kepala__baris {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+}
+.hnd-kepala__samar {
+  color: var(--muted, #6b7280);
+  font-size: 0.75rem;
+  margin-top: 0.15rem;
+}
+.hnd-kode {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 0.1rem 0.4rem;
+  border-radius: 6px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand-ink, #0f3fd0);
+  cursor: help;
+}
+.hnd-peringatan {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--warn-fg, #8f5914);
+}
+.hnd-peringatan mat-icon {
+  font-size: 1rem;
+  width: 1rem;
+  height: 1rem;
+  line-height: 1rem;
+}
+
+/* Rekap MENEMPEL: dengan 24 soal, totalnya keluar layar saat menggulir. */
+.hnd-rekap {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  gap: 1.5rem;
+  padding: 0.6rem 0.9rem;
+  margin-bottom: 0.75rem;
+  border-radius: 10px;
+  background: var(--surface, #fff);
+  border: 0.5px solid var(--border, #e5e7eb);
+  box-shadow: var(--card-shadow);
+}
+.hnd-rekap__cap {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--muted, #6b7280);
+}
+.hnd-rekap__nilai {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.hnd-sisa {
+  color: var(--warn-fg, #8f5914);
+}
+
+.hnd-soal {
+  padding: 0.85rem 0;
+  border-top: 0.5px solid var(--border, #e5e7eb);
+}
+.hnd-soal__kepala {
+  display: flex;
+  gap: 0.6rem;
+}
+.hnd-nomor {
+  flex: 0 0 auto;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--hover, #f6f8ff);
+}
+.hnd-soal__teks {
+  /* `min-width: 0` supaya teks panjang boleh menyusut dan membungkus. */
+  min-width: 0;
+  flex: 1;
+}
+.hnd-pertanyaan {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  white-space: pre-wrap;
+}
+.hnd-catatan-soal {
+  margin: 0.2rem 0 0;
+  font-size: 0.75rem;
+  color: var(--muted, #6b7280);
+  white-space: pre-wrap;
+}
+
+.hnd-lampiran {
+  margin: 0.5rem 0 0 2.2rem;
+  font-size: 0.8rem;
+  overflow-x: auto;
+}
+.hnd-lampiran table {
+  min-width: 100%;
+  border-collapse: collapse;
+}
+.hnd-lampiran img {
+  max-width: 100%;
+  height: auto;
+}
+
+.hnd-jawaban {
+  margin: 0.5rem 0 0 2.2rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  background: var(--hover, #f6f8ff);
+  font-size: 0.85rem;
+  /* Jawaban esai memuat baris baru; tanpa ini seluruhnya jadi satu paragraf. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.hnd-jawaban--kosong {
+  color: var(--muted, #6b7280);
+}
+.hnd-jawaban a {
+  color: var(--brand, #154dec);
+}
+
+.hnd-nilai {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0.5rem 0 0 2.2rem;
+  flex-wrap: wrap;
+}
+.hnd-nilai__kotak {
+  width: 8.5rem;
+}
+.hnd-nilai__catatan {
+  flex: 1 1 14rem;
+  min-width: 0;
+}
+
+.hnd-salah {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 2.2rem;
+  font-size: 0.75rem;
+  color: var(--bad-fg, #b3322f);
+}
+.hnd-salah mat-icon {
+  font-size: 1rem;
+  width: 1rem;
+  height: 1rem;
+  line-height: 1rem;
+}
+
+.hnd-jejak {
+  margin: 0.3rem 0 0 2.2rem;
+  font-size: 0.7rem;
+  color: var(--muted, #6b7280);
+}
+
+.hnd-galat {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0;
+  color: var(--bad-fg, #b3322f);
+  font-size: 0.85rem;
+}
+
+.hnd-aksi {
+  padding: 0.5rem 1.25rem 1rem !important;
+}
+
+@media (max-width: 600px) {
+  .hnd-lampiran,
+  .hnd-jawaban,
+  .hnd-nilai,
+  .hnd-jejak,
+  .hnd-salah {
+    margin-left: 0;
+  }
+}
+
+/* IKON DI DALAM WADAH FLEX TIDAK BOLEH MENCIUT.
+
+   `mat-icon` berukuran tetap 24px, tetapi `flex-shrink` bawaannya 1. Begitu
+   teks di sebelahnya panjang, ikonnya ikut dipersempit sampai yang terlihat
+   cuma irisan tipis di tepi kiri — dan tidak ada galat apa pun: CSS-nya sah,
+   build bersih, seluruh uji hijau.
+
+   Terjadi pada spanduk keterangan di halaman KPI, yang teksnya memang
+   panjang sengaja. Dijaga `scripts/pemeriksa/ikonflexcek.py`. */
+.hnd-galat > mat-icon,
+.hnd-judul > mat-icon,
+.hnd-salah > mat-icon,
+.hnd-peringatan > mat-icon {
+  flex: 0 0 auto;
+}

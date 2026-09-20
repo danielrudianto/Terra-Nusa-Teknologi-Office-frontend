@@ -131,6 +131,30 @@
         }
 
         <!--
+          Tombol NILAI berada DI LUAR penjaga `!kedaluwarsa(p)` di atas.
+
+          Tautan ujian berlaku tujuh hari; pemeriksaan jawaban kerap
+          dikerjakan setelah itu. Bila tombol ini ikut di dalam penjaga tadi,
+          ia menghilang tepat ketika mulai dibutuhkan — dan jawabannya hanya
+          dapat dibaca lewat SQL.
+
+          Muncul sejak pelamarnya MULAI, bukan sejak mengirim: jawaban
+          tersimpan sambil diketik, jadi lembar yang belum dikirim pun sudah
+          berisi dan tetap layak dibaca.
+        -->
+        @if (p.startedAt) {
+          <button
+            type="button"
+            class="hcl-tautan hcl-tautan--nilai"
+            [attr.aria-label]="'hrCandidate.nilai' | translate"
+            (click)="bukaNilai(p)"
+          >
+            <mat-icon>fact_check</mat-icon>
+            {{ "hrCandidate.nilai" | translate }}
+          </button>
+        }
+
+        <!--
           Pratinjau pesan.
 
           Yang mengirimnya perlu membaca sebelum menempel: pesan ini kiriman

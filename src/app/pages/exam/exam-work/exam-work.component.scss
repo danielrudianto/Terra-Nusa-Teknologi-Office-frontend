@@ -1,4 +1,34 @@
 /*
+ * Palet DITERUSKAN dari halaman depan — lihat `palet-ujian.service.ts`.
+ *
+ * Nilainya disalin dari `exam-landing.component.scss` karena gaya Angular
+ * tercakup per komponen: variabel yang disetel di sana tidak menembus ke
+ * sini. `scripts/pemeriksa/paletujiancek.py` yang memaksa keduanya tetap
+ * sepakat — dua daftar warna yang berpisah diam-diam adalah tepat jenis
+ * kekeliruan yang tidak menghasilkan galat apa pun.
+ */
+:host {
+  --akn: #dd8840;
+  --akn-ink: #9c5715;
+  --akn-dark: #7a4319;
+}
+:host([data-palet='biru']) {
+  --akn: #3b6fe0;
+  --akn-ink: #1f4bb8;
+  --akn-dark: #12306f;
+}
+:host([data-palet='hijau']) {
+  --akn: #2f9e63;
+  --akn-ink: #1a6b41;
+  --akn-dark: #12472c;
+}
+:host([data-palet='slate']) {
+  --akn: #64748b;
+  --akn-ink: #475569;
+  --akn-dark: #2b3648;
+}
+
+/*
  * Halaman pengerjaan ujian.
  *
  * Dikerjakan pelamar dari perangkatnya sendiri — kerap ponsel, kerap dengan
@@ -159,8 +189,9 @@
   width: 28px;
   height: 28px;
   border-radius: 9px;
-  background: var(--brand-soft, #e7ecfb);
-  color: var(--brand, #154dec);
+  /* Ikut palet pilihan pelamar, bukan warna tetap TerraBot. */
+  background: color-mix(in srgb, var(--akn) 16%, #fff);
+  color: var(--akn-ink);
   display: grid;
   place-items: center;
   font-size: 0.82rem;
@@ -211,19 +242,38 @@
 }
 
 .exw-soal__unggah {
+  /* Dulu satu baris abu-abu samar yang cuma bilang "belum tersedia".
+     Sekarang petunjuk yang harus DIKERJAKAN, jadi bentuknya spanduk —
+     ikon + blok teks — bukan keterangan kecil yang mudah dilewati. */
   display: flex;
-  align-items: center;
-  gap: 0.3rem;
+  align-items: flex-start;
+  gap: 0.5rem;
   margin: 0 0 0.85rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  background: var(--warn-bg, #fcf0d9);
+  color: var(--warn-fg, #8f5914);
   font-size: 0.78rem;
-  color: var(--muted, #8a90a0);
 
-  .mat-icon {
-    width: 15px;
-    height: 15px;
-    font-size: 15px;
+  /* Ikon di wadah flex tidak boleh menciut — lihat `ikonflexcek.py`. */
+  > .mat-icon,
+  > mat-icon {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
+  }
+
+  p {
+    margin: 0.2rem 0 0;
   }
 }
+
+.exw-soal__unggah-tegas {
+  font-weight: 600;
+}
+
 
 /* ---- kirim ---- */
 .exw-kirim {
@@ -293,4 +343,22 @@
   .exw-soal {
     padding: 1rem 1rem 0.35rem;
   }
+}
+
+/* Tombol coba-lagi di dalam penanda gagal — kecil, sebaris, bukan tombol
+   Material penuh: ia muncul di dalam bilah yang sudah padat, dan tombol
+   berukuran normal di situ mendorong penghitung waktu keluar baris. */
+.exw-simpan__ulang {
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+.exw-simpan__ulang:hover {
+  background: rgba(255, 255, 255, 0.12);
 }

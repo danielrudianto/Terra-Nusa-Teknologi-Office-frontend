@@ -14,6 +14,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ApiService } from 'src/app/services/api.service';
+import { HrNilaiDialogComponent } from '../hr-nilai-dialog/hr-nilai-dialog.component';
 import { CanDirective } from 'src/app/directives/can.directive';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { HrCandidateFormComponent } from '../hr-candidate-form/hr-candidate-form.component';
@@ -70,6 +71,25 @@ interface Pelamar {
   styleUrl: './hr-candidate-list.component.scss',
 })
 export class HrCandidateListComponent implements OnInit {
+  /**
+   * Buka lembar jawaban untuk dinilai.
+   *
+   * Dialog, bukan halaman: yang memeriksa berpindah antar-pelamar berkali-
+   * kali, dan halaman tersendiri berarti daftar ini dimuat ulang setiap kali
+   * ia kembali — termasuk penyaring yang sudah ia setel.
+   */
+  bukaNilai(p: any): void {
+    this.dialog
+      .open(HrNilaiDialogComponent, {
+        width: '820px',
+        maxWidth: '96vw',
+        autoFocus: false,
+        data: { id: p.id, name: p.name },
+      })
+      .afterClosed()
+      .subscribe(() => this.muat());
+  }
+
   private readonly serverMessage = inject(ServerMessageService);
 
   private readonly apiService = inject(ApiService);
