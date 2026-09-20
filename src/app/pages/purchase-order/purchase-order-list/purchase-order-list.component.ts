@@ -1653,11 +1653,31 @@ export class PurchaseOrderListComponent {
            * ada, misalnya — tidak berkode sama sekali. Menampilkan `detail`
            * apa adanya membuat pengguna membaca "Not Found".
            */
-          this.snackBar.open(this.serverMessage.terjemahkan(err), 'Close', {
-            duration: 4000,
-          });
+          this.galatTindakan(err, 4000);
         },
       });
+  }
+
+  /**
+   * Galat pada tindakan baris, dengan SATU perlakuan khusus: 409.
+   *
+   * 409 berarti keadaan dokumennya sudah berubah — hampir selalu karena
+   * orang lain mendahului sementara daftar di layar ini belum dimuat ulang.
+   * Menampilkan pesannya saja meninggalkan baris yang sama, dengan menu
+   * yang sama, menawarkan tindakan yang sama: yang membacanya menekannya
+   * lagi, dan ditolak lagi.
+   *
+   * Karena itu daftarnya ikut dimuat ulang. Sesudahnya barisnya menunjukkan
+   * status yang sebenarnya, dan pilihan yang sudah tidak berlaku hilang
+   * dengan sendirinya.
+   */
+  private galatTindakan(err: any, durasi = 5000): void {
+    this.snackBar.open(this.serverMessage.terjemahkan(err), 'Close', {
+      duration: durasi,
+    });
+    if (err?.status === 409) {
+      this.fetch(this.page);
+    }
   }
 
   /** Dokumen ini sudah diperiksa. */
@@ -1979,12 +1999,7 @@ export class PurchaseOrderListComponent {
           );
           this.fetch(this.page);
         },
-        error: (err) =>
-          this.snackBar.open(
-            this.serverMessage.terjemahkan(err),
-            'Close',
-            { duration: 5000 },
-          ),
+        error: (err) => this.galatTindakan(err),
       });
   }
 

@@ -380,6 +380,17 @@ export class PoDaftarComponent implements OnInit {
           this.snackBar.open(this.pesanServer.terjemahkan(err), 'Tutup', {
             duration: 5000,
           });
+          /*
+           * 409 berarti dokumennya sudah diputuskan orang lain sementara
+           * daftar ini belum dimuat ulang. Tanpa memuat ulang, barisnya
+           * tetap menawarkan tindakan yang sama dan ditolak lagi.
+           *
+           * Hanya 409: galat jaringan atau 500 meninggalkan daftarnya apa
+           * adanya, karena keputusannya memang belum tercatat.
+           */
+          if (err?.status === 409) {
+            this.muat(true);
+          }
         },
       })
       .add(() => (this.sedangKirim = false));

@@ -310,7 +310,7 @@ html {
   /* Dipakai empat komponen; nama pendek dari `--warn-fg` yang sudah ada di
      bawah. Tanpa definisi ini masing-masing memakai cadangannya sendiri, dan
      peringatan di dua layar berbeda tampil dengan warna berbeda. */
-  --warn: #a2651a;
+  --warn: #8f5914;
   --ok: #1a7f45;
   --danger: #b3322f;
   --hover: #f6f8ff;
@@ -320,8 +320,22 @@ html {
   /* status tints */
   --ok-bg: #e6f6ec;
   --ok-fg: #1a7f45;
-  --warn-bg: #fdf0e3;
-  --warn-fg: #a2651a;
+  /* DRAF — dan kedua nilainya diukur, sama seperti "Diperiksa" di bawah.
+  
+     Yang lama `#fdf0e3` / `#a2651a` punya dua cacat, keduanya lama dan
+     keduanya tidak pernah menimbulkan galat:
+  
+       * kontras teksnya 4,25:1, DI BAWAH syarat WCAG AA (4,5:1);
+       * jaraknya dari lencana "Dibatalkan" (`--bad-bg`) hanya ΔE 6,8 —
+         krem dan merah-muda yang pada pandangan sekilas terbaca sama, di
+         kolom yang justru dibaca sekilas.
+  
+     Latarnya digeser ke kuning, menjauh dari merah: ΔE 11,8 dari
+     "Dibatalkan" (dari 6,8), dan tetap berjarak dari seluruh lencana lain
+     — 20,5 dari "Disetujui", 34,6 dari "Diperiksa", 12,1 dari "Selesai".
+     Teksnya digelapkan sampai kontrasnya 5,16:1. */
+  --warn-bg: #fcf0d9;
+  --warn-fg: #8f5914;
   --bad-bg: #fdecec;
   --bad-fg: #b3322f;
   /* Keterangan netral — BUKAN peringatan.
@@ -330,6 +344,19 @@ html {
      peringatan yang sungguhan berhenti dibaca. */
   --info-bg: #eef3ff;
   --info-fg: #274690;
+  /* SUDAH DIPERIKSA — ungu, dan warnanya DIUKUR, bukan dipilih sekenanya.
+  
+     Percobaan pertama memakai `--info-*`, dan hasilnya nyaris tidak dapat
+     dibedakan dari lencana "Disetujui": keduanya biru muda berteks biru.
+     Diukur di ruang Lab, jaraknya cuma ΔE 2,8 — di bawah ambang ~10 yang
+     baru terbaca sebagai warna berbeda sekilas.
+  
+     Ungu ini ΔE 18,4 dari "Disetujui", 29,9 dari "Draf", dan 23,3 dari
+     "Dibatalkan" — lebih jauh daripada jarak antar-lencana yang sudah ada
+     (Disetujui vs Draf hanya 15,8). Kontras teksnya 7,1:1, di atas syarat
+     WCAG AA (4,5:1) dan bahkan AAA (7:1). */
+  --checked-bg: #e3cef7;
+  --checked-fg: #5b1d91;
 
   /* existing shell vars */
   --base-color: rgba(247, 249, 251, 1);
@@ -418,6 +445,12 @@ html[data-theme="dark"] {
      tema gelap — teks gelap di atas latar terang, di tengah halaman gelap. */
   --info-bg: #16203a;
   --info-fg: #9dbaff;
+  /* Padanan gelapnya. Kontras 7,8:1 — sejajar dengan lencana gelap lain
+     (ok 7,4:1, warn 6,8:1, bad 6,6:1). Tanpa baris ini lencana "Diperiksa"
+     tetap ungu muda di tema gelap: teks gelap di atas latar terang, di
+     tengah halaman gelap. */
+  --checked-bg: #2d1a42;
+  --checked-fg: #cfa6f7;
 
   /* shell */
   --base-color: #14161b;

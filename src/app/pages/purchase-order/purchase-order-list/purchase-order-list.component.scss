@@ -290,13 +290,15 @@ $hover: var(--hover, #f6f8ff);
     background: var(--ok-bg, #e6f6ec);
     color: var(--ok-fg, #1a7f45);
   }
-  /* SUDAH DIPERIKSA — warnanya di ANTARA draf dan disetujui.
-     Dokumen ini sudah melewati satu tahap tetapi belum mengikat, dan
-     warnanya harus menyatakan itu: bukan kuning "belum disentuh", bukan
-     pula biru "sudah terbit". */
+  /* SUDAH DIPERIKSA — ungu, dan jaraknya DIUKUR.
+  
+     Percobaan pertama memakai warna keterangan (`--info-*`) yang biru muda
+     berteks biru — praktis tidak dapat dibedakan dari "Disetujui" di
+     sebelahnya, dan itu yang dilaporkan. Ukurannya di ruang Lab cuma ΔE
+     2,8; ungu ini 18,4. Nilainya ada di `styles.scss` beserta angkanya. */
   &.is-checked {
-    background: var(--info-bg, #e8f1fd);
-    color: var(--info-fg, #1a5fb4);
+    background: var(--checked-bg, #e3cef7);
+    color: var(--checked-fg, #5b1d91);
   }
   &.is-cancelled {
     background: var(--bad-bg, #fdecec);
