@@ -5393,6 +5393,8 @@
     "rekeningOpsional": "若尚未决定从哪个账户支付，账户可留空。",
     "terkunciKet": "该计划已标记为已使用，无法再修改。",
     "totalBulanIni": "本月资金计划",
+    "bawaan": "前几个月结转",
+    "bawaanKet": "{{n}} 项未执行计划，已计入计划余额",
     "katMaterial": "材料",
     "katSubkon": "分包商",
     "katGaji": "工资",

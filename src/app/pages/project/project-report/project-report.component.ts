@@ -870,7 +870,9 @@ export class ProjectReportComponent implements OnInit {
           borderColor: '#0f9d58',
           backgroundColor: 'rgba(15, 157, 88, 0.12)',
           fill: true,
-          tension: 0.25,
+          // LURUS, sama dengan arus kas: lengkung `tension` menarik garis
+          // melewati titiknya — kumulatif tampak turun padahal tidak pernah.
+          tension: 0,
           pointRadius: 2,
           spanGaps: true,
         },
@@ -880,7 +882,9 @@ export class ProjectReportComponent implements OnInit {
           borderColor: '#d93025',
           backgroundColor: 'rgba(217, 48, 37, 0.10)',
           fill: true,
-          tension: 0.25,
+          // LURUS, sama dengan arus kas: lengkung `tension` menarik garis
+          // melewati titiknya — kumulatif tampak turun padahal tidak pernah.
+          tension: 0,
           pointRadius: 2,
           spanGaps: true,
         },

@@ -147,6 +147,21 @@
     </button>
   </div>
 
+  <!-- Rencana yang belum jalan dari bulan sebelumnya, ikut di saldo rencana. -->
+  <div
+    class="cal-plan-total"
+    *ngIf="viewMode === 'balance-plan' && rencanaBawaan.length"
+  >
+    <mat-icon>history</mat-icon>
+    <span>{{ "rencana.bawaan" | translate }}</span>
+    <span class="cal-plan-total__rinci">{{
+      "rencana.bawaanKet" | translate: { n: rencanaBawaan.length }
+    }}</span>
+    <strong [class.masuk]="nilaiBawaan >= 0">{{
+      nilaiBawaan | shortCurrency: "Rp. "
+    }}</strong>
+  </div>
+
   <!--
     Total rencana bulan ini, dipisah menurut arahnya.
 

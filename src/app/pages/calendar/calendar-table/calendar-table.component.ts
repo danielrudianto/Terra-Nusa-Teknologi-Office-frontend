@@ -59,6 +59,15 @@ import {
   UnduhKalenderDialogComponent,
 } from '../unduh-kalender-dialog/unduh-kalender-dialog.component';
 
+/** [awal, akhir] 12 bulan sebelum `mulai` ('YYYY-MM-DD'), akhir = sehari sebelumnya. */
+export function rentangBawaan(mulai: string): [string, string] {
+  const [y, m, d] = mulai.slice(0, 10).split('-').map(Number);
+  const dd = (n: number) => String(n).padStart(2, '0');
+  const iso = (t: Date) =>
+    `${t.getFullYear()}-${dd(t.getMonth() + 1)}-${dd(t.getDate())}`;
+  return [iso(new Date(y, m - 1 - 12, 1)), iso(new Date(y, m - 1, d - 1))];
+}
+
 @Component({
   selector: 'app-calendar-table',
   providers: [DecimalPipe],
@@ -256,18 +265,63 @@ export class CalendarTableComponent {
    */
   rencana: any[] = [];
 
+  /**
+   * Rencana MENUNGGU dari SEBELUM bulan ini (sampai 12 bulan ke belakang).
+   *
+   * Saldo awal bulan hanya memuat yang SUDAH terjadi. Rencana yang belum
+   * jalan dari bulan-bulan sebelumnya karena itu tidak ada di mana pun:
+   * membuka November menampilkan saldo rencana tanpa rencana Oktober yang
+   * masih menunggu, dan rencana Agustus yang terlewat tidak pernah ditandai.
+   * Keduanya dibawa masuk sebagai satu suku di awal bulan.
+   */
+  rencanaBawaan: any[] = [];
+
+  /** Penanda muatan terakhir — jawaban bulan lama yang telat dibuang. */
+  private muatanRencana = 0;
+
   private muatRencana(): void {
     const dd = (n: number) => String(n).padStart(2, '0');
     const awal = `${this.year}-${dd(this.month + 1)}-01`;
     const akhirHari = new Date(this.year, this.month + 1, 0).getDate();
     const akhir = `${this.year}-${dd(this.month + 1)}-${dd(akhirHari)}`;
+    // Rekening yang sama dengan saldonya — lihat `PaymentPlanService.rentang`.
+    const rekening = this.bankAccounts
+      .filter((x) => x.selected)
+      .map((x) => x.id);
+    const ke = ++this.muatanRencana;
 
-    this.planService.rentang(awal, akhir).subscribe({
-      next: (res: any) => (this.rencana = res?.data ?? []),
+    this.planService.rentang(awal, akhir, '', rekening).subscribe({
+      next: (res: any) => {
+        if (ke === this.muatanRencana) this.rencana = res?.data ?? [];
+      },
       // Gagal memuat TIDAK mengosongkan kalendernya; pembayaran yang sudah
       // terjadi tetap tampil seperti biasa.
-      error: () => (this.rencana = []),
+      error: () => {
+        if (ke === this.muatanRencana) this.rencana = [];
+      },
     });
+    this.planService
+      .rentang(...rentangBawaan(awal), '', rekening)
+      .subscribe({
+        next: (res: any) => {
+          if (ke !== this.muatanRencana) return;
+          this.rencanaBawaan = (res?.data ?? []).filter(
+            (r: any) => r.status === 'rencana',
+          );
+        },
+        error: () => {
+          if (ke === this.muatanRencana) this.rencanaBawaan = [];
+        },
+      });
+  }
+
+  /** Nilai bersih rencana bawaan: masuk (+), keluar (−). */
+  get nilaiBawaan(): number {
+    return this.rencanaBawaan.reduce(
+      (a, r) =>
+        a + (r.planType === 'masuk' ? 1 : -1) * Number(r.amount || 0),
+      0,
+    );
   }
 
   /**
@@ -351,7 +405,8 @@ export class CalendarTableComponent {
    * angka posisi kas benar tetapi persoalannya tidak pernah terlihat.
    */
   get rencanaTerlewat(): any[] {
-    return this.rencana.filter((r) => r.lewat);
+    // Yang terlewat di bulan-bulan SEBELUMNYA ikut disebut.
+    return [...this.rencanaBawaan, ...this.rencana].filter((r) => r.lewat);
   }
 
   get nilaiTerlewat(): number {
@@ -519,8 +574,28 @@ export class CalendarTableComponent {
   bukaTerlewat(): void {
     const p = this.rencanaTerlewat[0];
     if (!p) return;
-    const hari = Number(String(p.date).slice(8, 10));
-    this.bukaRencana(hari);
+    const tgl = String(p.date).slice(0, 10);
+    if (tgl.slice(0, 7) === this.tanggalIso(1).slice(0, 7)) {
+      this.bukaRencana(Number(tgl.slice(8, 10)));
+      return;
+    }
+    // Dari bulan sebelumnya: dibuka di tempat, tanpa pindah bulan.
+    this.dialog
+      .open(RencanaHariDialogComponent, {
+        data: {
+          tanggal: tgl,
+          rencana: this.rencanaBawaan.filter(
+            (r) => String(r.date).slice(0, 10) === tgl,
+          ),
+        },
+        width: '620px',
+        maxWidth: '95vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((perlu) => {
+        if (perlu) this.muatRencana();
+      });
   }
 
   /** Rencana pada satu tanggal, untuk daftar yang dapat disunting. */
@@ -675,6 +750,8 @@ export class CalendarTableComponent {
     }
 
     if (ikutRencana) {
+      // Rencana menunggu dari bulan-bulan sebelumnya — semuanya sebelum `tgl`.
+      saldo += this.nilaiBawaan;
       for (const r of this.rencanaMenunggu) {
         if (!sampai(r.date)) continue;
         const n = Number(r.amount) || 0;
@@ -834,13 +911,20 @@ export class CalendarTableComponent {
         end: akhirDiminta,
         bankAccounts: rekening,
       }),
-      rencana: this.planService.rentang(mulaiDiminta, akhirDiminta).pipe(
-        // Gagal memuat rencana TIDAK menggagalkan unduhannya; yang sudah
-        // terjadi tetap dapat diunduh.
-        catchError(() => of({ data: [] })),
-      ),
+      rencana: this.planService
+        .rentang(mulaiDiminta, akhirDiminta, '', rekening)
+        .pipe(
+          // Gagal memuat rencana TIDAK menggagalkan unduhannya; yang sudah
+          // terjadi tetap dapat diunduh.
+          catchError(() => of({ data: [] })),
+        ),
+      // Rencana menunggu dari SEBELUM rentangnya — sama dengan layar
+      // (`rencanaBawaan`), supaya saldo berkas dan kalender tetap sama.
+      bawaan: this.planService
+        .rentang(...rentangBawaan(mulaiDiminta), '', rekening)
+        .pipe(catchError(() => of({ data: [] }))),
     }).subscribe({
-      next: ({ data, rencana }: any) => {
+      next: ({ data, rencana, bawaan }: any) => {
         /*
          * Rentangnya diambil dari JAWABAN SERVER, bukan dari yang dikirim.
          *
@@ -943,7 +1027,16 @@ export class CalendarTableComponent {
           ikutRencana ? 'calendar.exportPlan' : 'calendar.exportActual',
         );
 
-        const semuaRencana: any[] = rencana?.data ?? [];
+        // Bawaan dicatat pada TANGGAL PERTAMA rentang, keterangannya
+        // menyebut tanggal aslinya.
+        const dibawa: any[] = (bawaan?.data ?? [])
+          .filter((r: any) => r.status === 'rencana')
+          .map((r: any) => ({
+            ...r,
+            date: mulai,
+            description: `(${String(r.date).slice(0, 10)}) ${r.description ?? ''}`.trim(),
+          }));
+        const semuaRencana: any[] = [...dibawa, ...(rencana?.data ?? [])];
         const rencanaPerTanggal: Record<string, any[]> = Object.create(null);
         for (const r of ikutRencana
           ? semuaRencana.filter((r: any) => r.status === 'rencana')

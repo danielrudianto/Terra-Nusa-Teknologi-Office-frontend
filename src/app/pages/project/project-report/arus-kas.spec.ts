@@ -542,6 +542,15 @@ describe('ProjectReport — arus kas', () => {
     }));
   });
 
+  it('kurva S juga LURUS — kumulatif tidak boleh tampak turun', fakeAsync(() => {
+    const f = buat(ARUS);
+    f.componentInstance.muat('R501');
+    tick();
+    for (const d of f.componentInstance.dataKurvaS().datasets as any[]) {
+      expect(d.tension).toBe(0);
+    }
+  }));
+
   it('garis digambar LURUS, tanpa lengkung', fakeAsync(() => {
     /*
      * Lengkung (`tension > 0`) membuat chart.js menarik kurva MELEWATI titik

@@ -5393,6 +5393,8 @@
     "rekeningOpsional": "The account may be left blank if it has not been decided yet.",
     "terkunciKet": "This plan is marked as used, so it can no longer be changed.",
     "totalBulanIni": "Cash plans this month",
+    "bawaan": "Carried from earlier months",
+    "bawaanKet": "{{n}} pending plans, included in planned balance",
     "katMaterial": "Materials",
     "katSubkon": "Subcontractor",
     "katGaji": "Payroll",
