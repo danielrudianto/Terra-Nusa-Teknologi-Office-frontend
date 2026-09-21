@@ -1,3 +1,0 @@
-setelcek: reset() yang meninggalkan kendali menjadi null
-  src/app/pages/purchase/purchase-create/purchase-create.component.ts:1407: metaFormGroup.reset() tidak menyebut taxPeriod — kendali itu akan menjadi null, bukan kembali ke bawaannya
-  src/app/pages/purchase/purchase-create/purchase-create.component.ts:1524: metaFormGroup.reset() tidak menyebut taxPeriod — kendali itu akan menjadi null, bukan kembali ke bawaannya
