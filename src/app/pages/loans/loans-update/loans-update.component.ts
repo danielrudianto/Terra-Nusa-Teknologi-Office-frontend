@@ -24,6 +24,9 @@ import { banks, IBank } from 'src/app/utils/bank';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { jadwalAngsuran } from '../jadwal-angsuran';
 
 /**
  * Ubah data pinjaman.
@@ -54,10 +57,11 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
     MatIconModule,
     DialogGeserDirective,
     NgxMaskDirective,
+    MatDatepickerModule,
   ],
   // `provideNgxMask()` WAJIB ada di komponen yang memakai mask;
   // tanpa itu atribut `mask` hanya teks yang diabaikan Angular.
-  providers: [provideNgxMask()],
+  providers: [provideNgxMask(), provideNativeDateAdapter()],
   templateUrl: './loans-update.component.html',
   styleUrl: './loans-update.component.scss',
 })
@@ -101,6 +105,12 @@ export class LoansUpdateComponent {
     ]),
     // rekening PERUSAHAAN tujuan penerimaan dana pinjaman
     bankAccountID: new FormControl('', Validators.required),
+    // Jadwal angsuran — opsional; mengosongkan tenor MENGHAPUS jadwalnya.
+    tenorMonths: new FormControl<number | null>(null, [
+      Validators.min(1),
+      Validators.max(360),
+    ]),
+    firstInstallmentDate: new FormControl<Date | null>(null),
   });
 
   ngOnInit(): void {
@@ -122,6 +132,11 @@ export class LoansUpdateComponent {
       received: d.received ?? 0,
       bankName: d.bankName ?? '',
       bankAccountID: d.bankAccountID ?? '',
+      tenorMonths: d.tenorMonths ?? null,
+      // Tanggal dari server berupa teks `YYYY-MM-DD`; pemilih tanggal
+      // memerlukan Date. `new Date('2026-02-01')` dibaca UTC dan dapat
+      // bergeser sehari di zona waktu negatif — dirakit dari bagiannya.
+      firstInstallmentDate: tanggalLokal(d.firstInstallmentDate),
     });
 
     this.muatPembayaran();
@@ -250,7 +265,13 @@ export class LoansUpdateComponent {
   onSubmit() {
     this.isSubmitting = true;
     this.apiService
-      .put(`loans/${this.data?.loan?.id}`, this.formGroup.getRawValue())
+      .put(`loans/${this.data?.loan?.id}`, {
+        ...this.formGroup.getRawValue(),
+        ...jadwalAngsuran(
+          this.formGroup.value.tenorMonths,
+          this.formGroup.value.firstInstallmentDate,
+        ),
+      })
       .subscribe({
         next: (_) => {
           this.snackBar.open(
@@ -313,4 +334,10 @@ export class LoansUpdateComponent {
         option.alias.toLowerCase().includes(filterValue),
     );
   }
+}
+
+/** `YYYY-MM-DD` menjadi Date lokal; null bila kosong atau tidak sah. */
+function tanggalLokal(v: unknown): Date | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(v ?? ''));
+  return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
 }

@@ -341,6 +341,7 @@
     "penyebut": "\u5206\u6bcd",
     "pengali": "\u4e58\u4ee5",
     "komponen": {
+      "pinjamanLancar": "12 个月内到期的借款",
       "kas": "\u73b0\u91d1",
       "piutang": "\u5e94\u6536\u8d26\u6b3e",
       "utangUsaha": "\u5e94\u4ed8\u8d26\u6b3e",
@@ -388,10 +389,10 @@
       "satuKlienMenentukan": "{{konsentrasiPiutang}} 的应收集中在一个客户身上，应收账款周转天数为 {{dso}} 天。一个客户延迟就会让公司现金停摆——速动比率看不到这一点，因为同样的欠款来自一个客户还是八个客户，算出来完全一样。",
       "piutangTuaTersamar": "应收账款周转天数 {{dso}} 仍在区间内，但已有 {{piutangTua}} 的应收超过 90 天。DSO 是平均值：新开发票源源不断会把它拉低，而陈年欠款原地不动。平均值掩盖了这堆积压，并没有让它消失。",
       "dibiayaiPemasok": "应付账款周转天数 {{dpo}} 超过应收的 {{dso}} 天，而速动比率低于区间。这不是选择而是处境：现金不足以按时付款，由供应商在承担。一旦他们不再耐心，这笔账会一次性到期。",
-      "likuiditasBelumMemuatAngsuran": "速动比率 {{quickRatio}} 的分母中未计入借款，因为借款记录没有期限信息。借款余额：{{pinjaman}}。若有还款即将到期，这个数字会优于实际情况。"
+      "likuiditasBelumMemuatAngsuran": "速动比率 {{quickRatio}} 的分母未计入无期限的借款——其到期部分无法区分。余额：{{pinjaman}}。若这些借款即将到期，此数字会优于实际情况。若借款有还款计划，请在借款记录中填写期限。"
     },
     "takTerlihat": {
-      "pinjamanTanpaTenor": "一年内到期的借款比例——借款记录既无期限也无还款计划。",
+      "pinjamanTanpaTenor": "无期限借款（如个人借款）的到期部分——没有还款计划，无法区分一年内到期的部分。有期限的借款已计入流动负债。",
       "ekuitasDiturunkanBukanDicatat": "权益是由资产减负债推算的，而非取自账簿；客户预付款、未缴税款以及其他应收应付均未计入。",
       "piutangTanpaJatuhTempo": "每张发票实际何时到期——销售发票没有到期日，因此账龄从发票日期起算。",
       "marjinTidakIkutDinilai": "在此访问级别，利润率、管理费率与 ROE 不参与评估。"
@@ -497,8 +498,8 @@
     "modalKerja": "\u51c0\u8fd0\u8425\u8d44\u672c\uff1a",
     "pinjaman": "\u501f\u6b3e\u4f59\u989d\uff1a",
     "dokumen": "{{n}} \u4efd\u5355\u636e",
-    "pinjamanBannerJudul": "\u501f\u6b3e\u672a\u8ba1\u5165\u4e0a\u65b9\u6bd4\u7387",
-    "pinjamanBanner": "\u501f\u6b3e\u8bb0\u5f55\u65e2\u65e0\u671f\u9650\u4e5f\u65e0\u8fd8\u6b3e\u8ba1\u5212\uff0c\u56e0\u6b64\u65e0\u6cd5\u533a\u5206\u4e00\u5e74\u5185\u5230\u671f\u7684\u90e8\u5206\u4e0e\u957f\u671f\u90e8\u5206\u3002\u731c\u6d4b\u4f1a\u5f97\u51fa\u770b\u4f3c\u786e\u5207\u3001\u5b9e\u5219\u51ed\u7a7a\u7684\u6bd4\u7387\u3002\u540e\u679c\u662f\uff1a\u82e5\u6709\u5373\u5c06\u5230\u671f\u7684\u8fd8\u6b3e\uff0c\u4e0a\u65b9\u6bd4\u7387\u4f1a\u597d\u4e8e\u5b9e\u9645\u60c5\u51b5\u3002",
+    "pinjamanBannerJudul": "无期限借款未计入上方比率",
+    "pinjamanBanner": "未填写期限的借款（通常为个人借款）没有还款计划，无法区分一年内到期的部分，因此不计入速动比率。有期限的借款（租赁、银行贷款）已按其 12 个月部分计入流动负债。若借款有还款计划，请在借款记录中填写期限。",
     "likuiditasJudul": "\u672a\u6765\u4e09\u5341\u5929",
     "kasHariIni": "\u4eca\u65e5\u73b0\u91d1",
     "kewajiban30": "30 \u5929\u5185\u5230\u671f",
@@ -1721,6 +1722,12 @@
     "receiptSyncFailed": "借款金额已保存，但其收款未同步更新 —— 银行余额目前不一致。请先核对收款再使用该数字。"
   },
   "loansCreate": {
+    "sectionJadwal": "还款计划（可选）",
+    "jadwalJudul": "若借款有还款计划请填写",
+    "jadwalKet": "租赁或银行贷款（如 ORIX）请填写期限和首期还款日——财务状况将把 12 个月内到期的部分计入流动负债。无还款计划的借款（如个人借款）请留空。假定按月等额还款。",
+    "tenor": "期限",
+    "bulan": "个月",
+    "angsuranPertama": "首期还款",
     "title": "创建贷款",
     "subtitle": "记录新贷款/债务",
     "sectionCreditor": "债权人",

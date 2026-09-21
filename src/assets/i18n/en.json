@@ -341,6 +341,7 @@
     "penyebut": "Denominator",
     "pengali": "Times",
     "komponen": {
+      "pinjamanLancar": "Loans due within 12 months",
       "kas": "Cash",
       "piutang": "Receivables",
       "utangUsaha": "Accounts payable",
@@ -388,10 +389,10 @@
       "satuKlienMenentukan": "{{konsentrasiPiutang}} of receivables sit with a single client, and days sales outstanding is {{dso}} days. One late client stops the company's cash — the quick ratio cannot see this, because the same amount owed by one client and by eight clients produces exactly the same number.",
       "piutangTuaTersamar": "Days sales outstanding at {{dso}} is still inside the band, but {{piutangTua}} of receivables are already past 90 days. DSO is an AVERAGE: a stream of new invoices pulls it down while the old ones stay where they are. The average hides that pile, it does not remove it.",
       "dibiayaiPemasok": "Days payable at {{dpo}} exceeds days sales outstanding at {{dso}}, while the quick ratio sits below its band. That is not a choice but a condition: cash is not enough to pay on time, and suppliers are carrying it. That bill falls due all at once the moment they stop being patient.",
-      "likuiditasBelumMemuatAngsuran": "The quick ratio {{quickRatio}} is computed WITHOUT loans in the denominator, because loan records hold no tenor. Loans outstanding: {{pinjaman}}. If an instalment falls due soon, this figure is better than reality."
+      "likuiditasBelumMemuatAngsuran": "The quick ratio {{quickRatio}} leaves loans WITHOUT a tenor out of the denominator — the portion falling due cannot be separated. Outstanding: {{pinjaman}}. If those loans fall due soon, this figure is better than reality. Fill in the tenor on the loan record if it has a schedule."
     },
     "takTerlihat": {
-      "pinjamanTanpaTenor": "The share of loans falling due within a year — loan records hold neither tenor nor instalment schedule.",
+      "pinjamanTanpaTenor": "The due portion of loans without a tenor (e.g. personal loans) — with no instalment schedule, the part due within a year cannot be separated. Loans with a tenor are already in current liabilities.",
       "ekuitasDiturunkanBukanDicatat": "Equity is derived from assets minus liabilities, not read from the books; client advances, unremitted tax payable, and other receivables or payables are not in it.",
       "piutangTanpaJatuhTempo": "When each invoice was actually due — sales invoices hold no due date, so receivable ageing is counted from the invoice date.",
       "marjinTidakIkutDinilai": "Margins, overhead and ROE are not assessed at this access level."
@@ -497,8 +498,8 @@
     "modalKerja": "Net working capital:",
     "pinjaman": "Outstanding loans:",
     "dokumen": "{{n}} documents",
-    "pinjamanBannerJudul": "Loans are not in the ratio above",
-    "pinjamanBanner": "Loan records hold neither tenor nor an instalment schedule, so the portion falling due within a year cannot be separated from the long-term part. Guessing it would produce a ratio that looks certain on an invented basis. The consequence: if an instalment falls due soon, the ratio above is better than reality.",
+    "pinjamanBannerJudul": "Loans without a tenor are not in the ratio above",
+    "pinjamanBanner": "Loans with no tenor filled in — usually personal loans — have no instalment schedule, so the portion due within a year cannot be separated and they are left out of the quick ratio. Loans with a tenor (leasing, bank credit) are already in current liabilities at their 12-month portion. Fill in the tenor on the loan record if it has a schedule.",
     "likuiditasJudul": "The next thirty days",
     "kasHariIni": "Cash today",
     "kewajiban30": "Due within 30 days",
@@ -1721,6 +1722,12 @@
     "receiptSyncFailed": "The loan value was saved, but its incoming payment was not updated — the bank balance is out of step. Check the payment before relying on the figure."
   },
   "loansCreate": {
+    "sectionJadwal": "Instalment schedule (optional)",
+    "jadwalJudul": "Fill in if the loan has a schedule",
+    "jadwalKet": "For leasing or bank credit (e.g. ORIX), enter the tenor and first instalment date — Financial Status then counts the portion due within 12 months as a current liability. Leave empty for unscheduled loans such as personal loans. Instalments are assumed monthly and equal.",
+    "tenor": "Tenor",
+    "bulan": "months",
+    "angsuranPertama": "First instalment",
     "title": "Create Loan",
     "subtitle": "Record a new loan / debt",
     "sectionCreditor": "Creditor",

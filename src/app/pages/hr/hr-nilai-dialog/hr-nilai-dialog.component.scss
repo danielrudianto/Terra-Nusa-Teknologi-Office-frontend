@@ -6,7 +6,11 @@ $line: var(--line, #eef0f3);
 
 .hnd {
   font-family: "Montserrat", sans-serif;
-  width: min(880px, 96vw);
+  /* Mengisi dialognya — lebarnya ditentukan pemanggil (`dialog.open`
+     `width`). Lebar tetap di sini sempat lebih sempit dari dialognya
+     (520 di dalam 560), dan pita kepala serta garis kakinya berhenti
+     sebelum tepi kanan, menyisakan ruang putih. */
+  width: 100%;
   box-sizing: border-box;
   color: $ink;
 }

@@ -69,6 +69,42 @@
         </mat-form-field>
       </div>
 
+      <!-- Jadwal angsuran — opsional; lihat formulir buat pinjaman. -->
+      <div class="pou-banner pou-banner--adendum">
+        <mat-icon>event_repeat</mat-icon>
+        <div>
+          <strong>{{ "loansCreate.jadwalJudul" | translate }}</strong>
+          <span>{{ "loansCreate.jadwalKet" | translate }}</span>
+        </div>
+      </div>
+      <div class="lu-jadwal">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "loansCreate.tenor" | translate }}</mat-label>
+          <input
+            matInput
+            type="number"
+            inputmode="numeric"
+            min="1"
+            max="360"
+            formControlName="tenorMonths"
+          />
+          <span matTextSuffix>{{ "loansCreate.bulan" | translate }}</span>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "loansCreate.angsuranPertama" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="firstInstallmentDate"
+            [matDatepicker]="pickerAngsuran"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="pickerAngsuran"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pickerAngsuran></mat-datepicker>
+        </mat-form-field>
+      </div>
+
       <div class="lu-locked">
         <div class="lu-locked__item">
           <span class="lu-locked__label">{{

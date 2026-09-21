@@ -102,13 +102,13 @@
     }
 
     <!--
-      PINJAMAN DI LUAR RASIO — disebutkan, bukan disembunyikan.
+      PINJAMAN TANPA TENOR DI LUAR RASIO — disebutkan, bukan disembunyikan.
 
-      `loans` tidak menyimpan tenor maupun jadwal angsuran, sehingga porsi yang
-      jatuh tempo dalam setahun tidak dapat dipisahkan dari yang jangka
-      panjang. Menebak pemisahannya menghasilkan rasio yang tampak pasti
-      padahal dasarnya karangan. Konsekuensinya: bila ada angsuran yang segera
-      jatuh tempo, rasio di atas LEBIH BAIK daripada keadaan sebenarnya.
+      Pinjaman bertenor masuk kewajiban lancar sebesar porsi 12 bulannya
+      (`porsi_lancar()` di server). Yang tenornya kosong — biasanya pinjaman
+      pribadi — tidak punya jadwal, porsinya tidak dapat dipisahkan, dan
+      dibiarkan di luar rasio. Banner ini hanya muncul bila pinjaman seperti
+      itu memang ada.
     -->
     @if (d.catatan?.pinjamanDiluarRasio) {
       <div class="pkeu-banner">

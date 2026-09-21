@@ -21,6 +21,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import moment from 'moment';
+import { jadwalAngsuran } from '../jadwal-angsuran';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
@@ -82,6 +83,13 @@ export class LoansCreateComponent {
     bankName: new FormControl('', Validators.required),
     // rekening PERUSAHAAN tujuan penerimaan dana pinjaman
     bankAccountID: new FormControl('', Validators.required),
+    // Jadwal angsuran — OPSIONAL. Kosong untuk pinjaman tanpa jadwal
+    // (pinjaman pribadi); diisi untuk leasing dan kredit bank.
+    tenorMonths: new FormControl<number | null>(null, [
+      Validators.min(1),
+      Validators.max(360),
+    ]),
+    firstInstallmentDate: new FormControl<Date | null>(null),
   });
 
   ngOnInit(): void {
@@ -111,6 +119,10 @@ export class LoansCreateComponent {
         bankAccountNumber: this.formGroup.value.bankAccountNumber,
         bankName: this.formGroup.value.bankName,
         bankAccountID: this.formGroup.value.bankAccountID,
+        ...jadwalAngsuran(
+          this.formGroup.value.tenorMonths,
+          this.formGroup.value.firstInstallmentDate,
+        ),
       })
       .subscribe({
         next: (_) => {

@@ -341,6 +341,7 @@
     "penyebut": "Penyebut",
     "pengali": "Dikali",
     "komponen": {
+      "pinjamanLancar": "Pinjaman jatuh tempo ≤ 12 bulan",
       "kas": "Kas",
       "piutang": "Piutang usaha",
       "utangUsaha": "Utang usaha",
@@ -388,10 +389,10 @@
       "satuKlienMenentukan": "{{konsentrasiPiutang}} piutang menumpuk pada satu klien, dan umur tertagihnya {{dso}} hari. Satu klien yang terlambat membuat kas perusahaan berhenti — quick ratio tidak dapat melihat ini, karena piutang dua miliar pada satu klien dan pada delapan klien menghasilkan angka yang sama persis.",
       "piutangTuaTersamar": "Umur tertagih {{dso}} hari masih di dalam acuan, tetapi {{piutangTua}} piutang sudah lewat 90 hari. DSO adalah RATA-RATA: faktur baru yang deras menariknya turun sementara yang tua tetap di tempatnya. Rata-ratanya menyembunyikan tumpukan itu, bukan meniadakannya.",
       "dibiayaiPemasok": "Umur bayar {{dpo}} hari melampaui umur tertagih {{dso}} hari, sementara quick ratio di bawah acuan. Artinya bukan pilihan melainkan keadaan: kas tidak cukup untuk membayar tepat waktu, dan yang menanggung pemasok. Tagihan itu jatuh tempo sekaligus begitu mereka berhenti bersabar.",
-      "likuiditasBelumMemuatAngsuran": "Quick ratio {{quickRatio}} dihitung TANPA pinjaman di penyebutnya, karena data pinjaman tidak menyimpan tenor. Sisa pinjaman {{pinjaman}}. Bila ada angsuran yang segera jatuh tempo, angka ini lebih baik daripada keadaan sebenarnya."
+      "likuiditasBelumMemuatAngsuran": "Quick ratio {{quickRatio}} dihitung TANPA pinjaman yang tidak bertenor di penyebutnya — porsinya yang jatuh tempo tidak dapat dipisahkan. Sisanya {{pinjaman}}. Bila pinjaman itu segera jatuh tempo, angka ini lebih baik daripada keadaan sebenarnya. Isi tenornya di data pinjaman bila memang berjadwal."
     },
     "takTerlihat": {
-      "pinjamanTanpaTenor": "Porsi pinjaman yang jatuh tempo dalam setahun — data pinjaman tidak menyimpan tenor maupun jadwal angsuran.",
+      "pinjamanTanpaTenor": "Porsi jatuh tempo dari pinjaman yang tidak bertenor (mis. pinjaman pribadi) — tanpa jadwal angsuran, porsinya dalam setahun tidak dapat dipisahkan. Pinjaman bertenor sudah masuk kewajiban lancar.",
       "ekuitasDiturunkanBukanDicatat": "Ekuitas diturunkan dari aset dikurangi kewajiban, bukan dibaca dari pembukuan; uang muka klien, utang pajak yang belum disetor, dan piutang atau utang lain-lain tidak masuk.",
       "piutangTanpaJatuhTempo": "Kapan tiap faktur seharusnya tertagih — faktur penjualan tidak menyimpan tanggal jatuh tempo, sehingga umur piutang dihitung dari tanggal fakturnya.",
       "marjinTidakIkutDinilai": "Marjin, overhead, dan ROE tidak ikut dinilai pada level akses ini."
@@ -497,8 +498,8 @@
     "modalKerja": "Modal kerja bersih:",
     "pinjaman": "Sisa pinjaman:",
     "dokumen": "{{n}} dokumen",
-    "pinjamanBannerJudul": "Pinjaman tidak masuk rasio di atas",
-    "pinjamanBanner": "Data pinjaman tidak menyimpan tenor maupun jadwal angsuran, sehingga porsi yang jatuh tempo dalam setahun tidak dapat dipisahkan dari yang jangka panjang. Menebaknya akan menghasilkan rasio yang tampak pasti padahal dasarnya karangan. Akibatnya: bila ada angsuran yang segera jatuh tempo, rasio di atas lebih baik daripada keadaan sebenarnya.",
+    "pinjamanBannerJudul": "Pinjaman tanpa tenor tidak masuk rasio di atas",
+    "pinjamanBanner": "Pinjaman yang tenornya tidak diisi — biasanya pinjaman pribadi — tidak punya jadwal angsuran, sehingga porsi yang jatuh tempo dalam setahun tidak dapat dipisahkan dan pinjaman itu dibiarkan di luar quick ratio. Pinjaman bertenor (leasing, kredit bank) sudah masuk kewajiban lancar sebesar porsi 12 bulannya. Isi tenornya di data pinjaman bila pinjamannya berjadwal.",
     "likuiditasJudul": "Tiga puluh hari ke depan",
     "kasHariIni": "Kas hari ini",
     "kewajiban30": "Jatuh tempo \u2264 30 hari",
@@ -1721,6 +1722,12 @@
     "receiptSyncFailed": "Nilai pinjaman tersimpan, tetapi penerimaan dananya gagal ikut diubah — saldo bank sedang tidak sejalan. Periksa penerimaannya sebelum memakai angkanya."
   },
   "loansCreate": {
+    "sectionJadwal": "Jadwal angsuran (opsional)",
+    "jadwalJudul": "Isi bila pinjamannya berjadwal",
+    "jadwalKet": "Untuk leasing atau kredit bank (mis. ORIX), isi tenor dan tanggal angsuran pertama — Status Keuangan lalu memasukkan porsi yang jatuh tempo dalam 12 bulan ke kewajiban lancar. Biarkan kosong untuk pinjaman tanpa jadwal, seperti pinjaman pribadi. Angsuran dianggap bulanan dan sama besar.",
+    "tenor": "Tenor",
+    "bulan": "bulan",
+    "angsuranPertama": "Angsuran pertama",
     "title": "Buat Pinjaman",
     "subtitle": "Catat pinjaman / utang baru",
     "sectionCreditor": "Kreditur",
