@@ -112,6 +112,17 @@
 
   <div class="mbr-seksi">{{ "mobile.beranda.lainnya" | translate }}</div>
 
+  @if (bisaDrafPembelian()) {
+    <button type="button" class="mbr-petak" (click)="ke('/Draf-pembelian')">
+      <mat-icon>note_add</mat-icon>
+      <span class="mbr-petak__teks">
+        <span class="mbr-petak__judul">{{ "mobile.nav.drafPembelian" | translate }}</span>
+        <span class="mbr-petak__ket">{{ "mobile.beranda.drafPembelianKet" | translate }}</span>
+      </span>
+      <mat-icon class="mbr-petak__panah">chevron_right</mat-icon>
+    </button>
+  }
+
   <button type="button" class="mbr-petak" (click)="ke('/Proyek')">
     <mat-icon>insights</mat-icon>
     <span class="mbr-petak__teks">

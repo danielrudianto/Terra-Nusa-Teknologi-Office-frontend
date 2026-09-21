@@ -30,7 +30,11 @@ import { Router, provideRouter } from '@angular/router';
 import { Component } from '@angular/core';
 
 import { PermissionService } from '../services/permission.service';
-import { LEVEL_MINIMUM_MOBILE, levelGuard } from './penjaga-level';
+import {
+  LEVEL_MINIMUM_MOBILE,
+  bolehDrafPembelianMobile,
+  levelGuard,
+} from './penjaga-level';
 
 @Component({ standalone: true, template: 'x' })
 class Kosong {}
@@ -129,5 +133,29 @@ describe('penjaga level mobile', () => {
     expect(router.url)
       .withContext('layar penolakan memantul kembali ke penjaganya')
       .toBe('/TidakBerhak');
+  });
+});
+
+describe('bolehDrafPembelianMobile — level 5, atau level 3+ procurement', () => {
+  const izin = (lv: number, dept: string[], bisa = true) =>
+    ({
+      level: () => lv,
+      can: () => bisa,
+      inDepartment: (...k: string[]) => k.some((x) => dept.includes(x)),
+    }) as unknown as PermissionService;
+
+  it('level 5 boleh, apa pun divisinya', () => {
+    expect(bolehDrafPembelianMobile(izin(5, ['accounting']))).toBeTrue();
+  });
+  it('level 3 dan 4 procurement boleh', () => {
+    expect(bolehDrafPembelianMobile(izin(3, ['procurement']))).toBeTrue();
+    expect(bolehDrafPembelianMobile(izin(4, ['procurement']))).toBeTrue();
+  });
+  it('level 4 accounting dan level 2 procurement tidak', () => {
+    expect(bolehDrafPembelianMobile(izin(4, ['accounting']))).toBeFalse();
+    expect(bolehDrafPembelianMobile(izin(2, ['procurement']))).toBeFalse();
+  });
+  it('tanpa izin purchase_draft:create tidak, walau level 5', () => {
+    expect(bolehDrafPembelianMobile(izin(5, ['procurement'], false))).toBeFalse();
   });
 });

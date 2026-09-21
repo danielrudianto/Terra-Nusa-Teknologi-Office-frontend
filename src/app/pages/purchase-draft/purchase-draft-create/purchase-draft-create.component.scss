@@ -204,3 +204,32 @@ $line: var(--line, #eef0f3);
     font-variant-numeric: tabular-nums;
   }
 }
+
+/* Mode halaman (mobile): tanpa panel dialog, isi mengalir, tombol di bawah. */
+:host(.pdc-halaman) {
+  display: block;
+  .pdc {
+    background: var(--surface, #fff);
+    border-radius: 18px;
+    box-shadow: var(--card-shadow, none);
+    overflow: hidden;
+  }
+  .pdc-head {
+    cursor: default;
+  }
+  .pdc-content {
+    max-height: none;
+    padding: 1.1rem !important;
+  }
+  .pdc-grid {
+    grid-template-columns: 1fr;
+  }
+  .pdc-actions {
+    padding: 0.9rem 1.1rem 1.1rem !important;
+  }
+  .pdc-cancel,
+  .pdc-submit {
+    flex: 1 1 0;
+    min-height: 46px;
+  }
+}

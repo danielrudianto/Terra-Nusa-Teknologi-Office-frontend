@@ -12,6 +12,7 @@ import { catchError } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { AccountService } from '../../services/account.service';
 import { PermissionService } from '../../services/permission.service';
+import { bolehDrafPembelianMobile } from '../penjaga-level';
 
 /**
  * Beranda mobile: berapa yang menunggu, dan jalan ke sana.
@@ -69,6 +70,10 @@ export class BerandaComponent implements OnInit {
    * hanya muncul bila benar: beranda yang menjanjikan pekerjaan yang tidak
    * ada layarnya bagi pembacanya lebih buruk daripada beranda yang kosong.
    */
+  bisaDrafPembelian(): boolean {
+    return bolehDrafPembelianMobile(this.izin);
+  }
+
   bisaPeriksaCop(): boolean {
     return this.izin.can('certificate_of_payment', 'read') && this.izin.level() >= 2;
   }

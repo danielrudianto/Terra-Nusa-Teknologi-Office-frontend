@@ -86,3 +86,29 @@ export const levelGuard: CanActivateFn = async (rute) => {
   router.navigate(['/TidakBerhak']);
   return false;
 };
+
+/**
+ * Draf pembelian di mobile: level 5, atau level 3+ procurement.
+ *
+ * Lebih sempit dari izin servernya (`purchase_draft:create` mulai level 1)
+ * atas permintaan: yang mengisi draf dari ponsel hanya pemilik dan
+ * procurement senior. Server tetap memeriksa izinnya sendiri.
+ */
+export function bolehDrafPembelianMobile(izin: PermissionService): boolean {
+  if (!izin.can('purchase_draft', 'create')) return false;
+  const lv = izin.level();
+  return lv >= 5 || (lv >= 3 && izin.inDepartment('procurement'));
+}
+
+export const drafPembelianGuard: CanActivateFn = async () => {
+  const izin = inject(PermissionService);
+  const router = inject(Router);
+  try {
+    await izin.load();
+  } catch {
+    return true;
+  }
+  if (bolehDrafPembelianMobile(izin)) return true;
+  router.navigate(['/TidakBerhak']);
+  return false;
+};

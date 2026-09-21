@@ -5462,6 +5462,7 @@
       "reimbursement": "Reimbursement",
       "pembelian": "Pembelian",
       "proyek": "Proyek",
+      "drafPembelian": "Draf Pembelian",
       "setelan": "Pengaturan",
       "cop": "CoP"
     },
@@ -5471,6 +5472,7 @@
       "menunggu": "menunggu persetujuan",
       "perluPeriksa": "menunggu diperiksa",
       "laporan": "Laporan margin per proyek",
+      "drafPembelianKet": "Catat faktur pemasok sebagai draf",
       "hapus": "Cari lalu hapus pembelian",
       "halo": "Halo",
       "tuntas": "Semua sudah tuntas",

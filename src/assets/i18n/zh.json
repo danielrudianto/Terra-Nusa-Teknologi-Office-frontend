@@ -5462,6 +5462,7 @@
       "reimbursement": "报销",
       "pembelian": "采购",
       "proyek": "项目",
+      "drafPembelian": "采购草稿",
       "setelan": "设置",
       "cop": "证书"
     },
@@ -5471,6 +5472,7 @@
       "menunggu": "等待审批",
       "perluPeriksa": "等待审核",
       "laporan": "各项目毛利报告",
+      "drafPembelianKet": "将供应商发票记录为草稿",
       "hapus": "搜索后删除采购",
       "halo": "你好",
       "tuntas": "全部已处理",

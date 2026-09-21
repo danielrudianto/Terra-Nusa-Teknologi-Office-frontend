@@ -24,7 +24,7 @@
 import { Routes } from '@angular/router';
 
 import { authGuard } from '../guards/auth.guard';
-import { levelGuard } from './penjaga-level';
+import { drafPembelianGuard, levelGuard } from './penjaga-level';
 
 export const MOBILE_ROUTES: Routes = [
   {
@@ -128,6 +128,18 @@ export const MOBILE_ROUTES: Routes = [
           import('./bap-buat/bap-buat.component').then(
             (m) => m.BapBuatComponent,
           ),
+      },
+      {
+        /*
+         * Draf pembelian — form yang SAMA dengan dialog desktop, dibuka
+         * sebagai halaman. Hanya level 5 atau level 3+ procurement.
+         */
+        path: 'Draf-pembelian',
+        canActivate: [drafPembelianGuard],
+        loadComponent: () =>
+          import(
+            '../pages/purchase-draft/purchase-draft-create/purchase-draft-create.component'
+          ).then((m) => m.PurchaseDraftCreateComponent),
       },
       {
         path: 'Reimbursement',

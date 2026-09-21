@@ -2,7 +2,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { nilaiUang } from '../../../utils/angka';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
-import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, HostBinding, ViewChild, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   FormControl,
   FormGroup,
@@ -61,8 +62,21 @@ export class PurchaseDraftCreateComponent {
     private dialog: MatDialog,
     private apiService: ApiService,
     private snackBar: MatSnackBar,
-    private dialogRef: MatDialogRef<PurchaseDraftCreateComponent>,
   ) {}
+
+  /*
+   * Kosong bila dibuka sebagai HALAMAN (mobile `/Draf-pembelian`), bukan
+   * dialog. Form dan aturan simpannya tetap satu.
+   */
+  private readonly dialogRef = inject(MatDialogRef<PurchaseDraftCreateComponent>, {
+    optional: true,
+  });
+  private readonly router = inject(Router);
+
+  @HostBinding('class.pdc-halaman')
+  get modeHalaman(): boolean {
+    return !this.dialogRef;
+  }
 
   @ViewChild('input') input!: ElementRef<HTMLInputElement>;
   isSubmitting: boolean = false;
@@ -141,7 +155,8 @@ export class PurchaseDraftCreateComponent {
   });
 
   onCancel() {
-    this.dialogRef.close();
+    if (this.dialogRef) this.dialogRef.close();
+    else this.router.navigate(['/']);
   }
 
   /**
@@ -177,7 +192,8 @@ export class PurchaseDraftCreateComponent {
   openSupplierSelector() {
     this.dialog
       .open(SupplierSelectorComponent, {
-        minWidth: '400px',
+        minWidth: 'min(400px, 96vw)',
+        maxWidth: '96vw',
       })
       .afterClosed()
       .subscribe((data) => {
@@ -217,9 +233,18 @@ export class PurchaseDraftCreateComponent {
       this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
-          this.metaFormGroup.reset();
-          // close and signal the list to refresh
-          this.dialogRef.close(true);
+          if (this.dialogRef) {
+            this.metaFormGroup.reset();
+            this.dialogRef.close(true);
+          } else {
+            // Halaman: tetap di sini, kosongkan untuk faktur berikutnya.
+            this.metaFormGroup.reset({
+              description: '', taxInvoiceName: '', supplierID: '',
+              supplierName: '', supplierAddress: '', date: '',
+              purchaseOrderName: '', projectName: '', purchaseType: '',
+              dpp: 0, ppn: 0, ppnValue: 0, pbbkb: 0,
+            });
+          }
         },
         error: (error) => {
           this.snackBar.open(

@@ -89,6 +89,8 @@ export class ExpensePaymentCreateComponent {
     pphTaxObject: new FormControl(''),
     pphPercentage: new FormControl(0, Validators.required),
     pbbkb: new FormControl('', Validators.required),
+    // PPN dalam RUPIAH (di basis data tersimpan sebagai persen).
+    ppn: new FormControl(0),
     total: new FormControl('', Validators.required),
   });
 
@@ -197,17 +199,29 @@ export class ExpensePaymentCreateComponent {
             bankName: data.expense.bankName,
           });
 
+          /*
+           * Nilai tagihan = DPP + PPN + PBBKB − PPh — SAMA dengan server
+           * (`nilai_beban`), layar Lihat Beban, dan riwayat pembayaran.
+           * PPN dulu tidak ikut di sini: layar Lihat menampilkan PPN, layar
+           * Bayar tidak, dan pembayaran penuh yang benar tertolak.
+           */
+          const ppnRp =
+            ((Number(data.expense.ppn) || 0) * (Number(data.expense.dpp) || 0)) /
+            100;
+          const nilaiTagihan =
+            data.expense.dpp +
+            ppnRp +
+            data.expense.pbbkb -
+            (data.expense.pphPercentage * data.expense.dpp) / 100;
+
           this.valueFormGroup.patchValue({
             dpp: data.expense.dpp,
+            ppn: ppnRp,
             pbbkb: data.expense.pbbkb,
             pph: (data.expense.pphPercentage * data.expense.dpp) / 100,
             pphCode: data.expense.pphCode,
             pphTaxObject: data.expense.pphTaxObject,
-            total: (
-              data.expense.dpp +
-              data.expense.pbbkb -
-              (data.expense.pphPercentage * data.expense.dpp) / 100
-            ).toFixed(2),
+            total: nilaiTagihan.toFixed(2),
           });
 
           // set form array payments
@@ -232,9 +246,7 @@ export class ExpensePaymentCreateComponent {
 
           // set the maximum amount of dpp + ppn + pbbkb + otherValue - sum(data.payments.amount)
           const totalAmount =
-            data.expense.dpp -
-            (data.expense.pphPercentage * data.expense.dpp) / 100 +
-            data.expense.pbbkb -
+            nilaiTagihan -
             data.payments
               .filter((x: any) => x.isDelete == false)
               .reduce((sum: number, payment: any) => {

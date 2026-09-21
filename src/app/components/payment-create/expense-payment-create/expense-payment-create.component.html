@@ -79,6 +79,16 @@
         </div>
         <div
           class="epc-money__row"
+          *ngIf="valueFormGroup.get('ppn')?.value > 0"
+        >
+          <span>PPN</span
+          ><span class="epc-pos"
+            >+ Rp
+            {{ valueFormGroup.get("ppn")?.value | number: "1.2-2" }}</span
+          >
+        </div>
+        <div
+          class="epc-money__row"
           *ngIf="valueFormGroup.get('pbbkb')?.value > 0"
         >
           <span>{{ "expense.pbbkb" | translate }}</span

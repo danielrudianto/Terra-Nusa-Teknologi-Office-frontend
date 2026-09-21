@@ -5462,6 +5462,7 @@
       "reimbursement": "Reimbursement",
       "pembelian": "Purchase",
       "proyek": "Project",
+      "drafPembelian": "Purchase Draft",
       "setelan": "Settings",
       "cop": "CoP"
     },
@@ -5471,6 +5472,7 @@
       "menunggu": "awaiting approval",
       "perluPeriksa": "awaiting check",
       "laporan": "Margin report per project",
+      "drafPembelianKet": "Record a supplier invoice as a draft",
       "hapus": "Search then delete a purchase",
       "halo": "Hi",
       "tuntas": "All caught up",
