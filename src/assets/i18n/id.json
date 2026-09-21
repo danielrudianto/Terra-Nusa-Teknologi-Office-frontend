@@ -302,7 +302,13 @@
       "copSetujui": "CoP menunggu disetujui",
       "tender": "Tender menunggu disebarkan",
       "pembayaran": "Pembayaran menunggu disetujui",
-      "faktur": "Faktur penjualan menunggu disetujui"
+      "faktur": "Faktur penjualan menunggu disetujui",
+      "drafPembelian": "Draf pembelian belum dijadikan pembelian",
+      "pembelianDraft": "Pembelian masih draft (belum siap dibayar)",
+      "tenderBerjalan": "Tender berjalan, menunggu pemenang",
+      "hrNilai": "Pelamar menunggu dinilai",
+      "hrPutuskan": "Pelamar menunggu diputuskan",
+      "formulirKaryawan": "Formulir karyawan belum diisi"
     }
   },
   "posisiKeuangan": {

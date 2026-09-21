@@ -302,7 +302,13 @@
       "copSetujui": "\u5f85\u6279\u51c6\u7684 CoP",
       "tender": "\u5f85\u53d1\u5e03\u7684\u62db\u6807",
       "pembayaran": "\u5f85\u6279\u51c6\u7684\u4ed8\u6b3e",
-      "faktur": "\u5f85\u6279\u51c6\u7684\u9500\u552e\u53d1\u7968"
+      "faktur": "\u5f85\u6279\u51c6\u7684\u9500\u552e\u53d1\u7968",
+      "drafPembelian": "尚未转为采购的采购草稿",
+      "pembelianDraft": "仍为草稿的采购（尚未可付款）",
+      "tenderBerjalan": "进行中的招标，等待确定中标方",
+      "hrNilai": "等待评分的应聘者",
+      "hrPutuskan": "等待决定的应聘者",
+      "formulirKaryawan": "员工表单尚未填写"
     }
   },
   "posisiKeuangan": {

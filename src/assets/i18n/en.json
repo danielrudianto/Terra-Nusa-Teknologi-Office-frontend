@@ -302,7 +302,13 @@
       "copSetujui": "CoPs awaiting approval",
       "tender": "Tenders awaiting distribution",
       "pembayaran": "Payments awaiting approval",
-      "faktur": "Sales invoices awaiting approval"
+      "faktur": "Sales invoices awaiting approval",
+      "drafPembelian": "Purchase drafts not yet converted",
+      "pembelianDraft": "Purchases still in draft (not ready to pay)",
+      "tenderBerjalan": "Open tenders awaiting a winner",
+      "hrNilai": "Candidates awaiting grading",
+      "hrPutuskan": "Candidates awaiting decision",
+      "formulirKaryawan": "Employee forms not yet filled"
     }
   },
   "posisiKeuangan": {
