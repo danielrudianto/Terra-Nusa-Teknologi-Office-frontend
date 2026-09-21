@@ -649,7 +649,7 @@ export class PurchaseOrderCreate652Component {
     this.apiService
       [ubahId ? 'put' : 'post'](
         ubahId ? `purchase-orders/${ubahId}` : 'purchase-orders',
-        this.formatData(),
+        this.adendum.denganVersi(this.formatData()),
       )
       .subscribe({
         next: (res: any) => {

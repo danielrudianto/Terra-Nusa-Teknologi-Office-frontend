@@ -119,6 +119,20 @@
 .ip-toolbar__filter {
   display: flex;
 }
+/* Rentang tanggal di KANAN, bersebelahan dengan muat ulang — sama dengan
+   daftar Beban dan Pemasukan. Sebelumnya ia sendirian di kiri, dan satu-
+   satunya halaman yang penyaringnya berada di sisi berlawanan. */
+@media (min-width: min(768px, 92vw)) {
+  .ip-toolbar__filter {
+    margin-left: auto;
+  }
+  /* Lebar TETAP di layar lebar. `width: 100%` di dalam kelompok yang
+     didorong `margin-left: auto` menyusut ke isinya sendiri, dan kotak
+     tanggalnya menciut sampai rentangnya terpotong. */
+  .ip-range {
+    width: 300px;
+  }
+}
 .ip-range {
   width: 100%;
   max-width: 340px;

@@ -109,6 +109,28 @@ export class AdendumService {
     return this.dokumenLama?.date ?? '';
   }
 
+  /**
+   * Muatan simpan dengan VERSI yang dibaca saat membuka — hanya mode ubah.
+   *
+   * Server menolak (409) penyimpanan yang versinya sudah tertinggal: dua
+   * orang membuka PO yang sama, yang pertama menyimpan, lalu yang kedua
+   * menyimpan formulir lamanya dan diam-diam menimpa pekerjaan yang pertama.
+   * Backendnya sudah menjaga ini sejak lama, tetapi TIDAK SATU PUN dari
+   * enam belas formulir PO mengirim versinya — jadi penjaganya tidak pernah
+   * menyala.
+   *
+   * Satu tempat untuk keenam belasnya: semuanya memuat dokumen lewat
+   * `muatInduk()`, dan versinya diambil dari dokumen yang sama itu.
+   *
+   * Pembuatan dan ADENDUM tidak diberi versi: keduanya menerbitkan dokumen
+   * baru, bukan menimpa yang lama.
+   */
+  denganVersi<T extends object>(data: T): T & { rowVersion?: number } {
+    if (!this.isUbah) return data;
+    const v = this.dokumenLama?.rowVersion;
+    return typeof v === 'number' ? { ...data, rowVersion: v } : data;
+  }
+
   /** Ambil dokumen lama; null bila layar ini pembuatan biasa. */
   muatInduk(): Observable<any | null> {
     const id = this.indukId ?? this.ubahId;
