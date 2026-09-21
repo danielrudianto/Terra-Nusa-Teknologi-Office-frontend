@@ -81,7 +81,10 @@
     </svg>
   </div>
 
-  <h2 class="dc-title" mat-dialog-title>{{ data.title }}</h2>
+  <div class="dc-kepala" mat-dialog-title appDialogGeser>
+    <h2 class="dc-title">{{ data.title }}</h2>
+    <span class="dc-sub">{{ labelSub }}</span>
+  </div>
   <mat-dialog-content class="dc-content">
     <p>{{ data.prompt }}</p>
   </mat-dialog-content>

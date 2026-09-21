@@ -73,7 +73,23 @@ def _punya_penahan(scss: str, nama: str) -> bool:
     return False
 
 
+#: Aturan global yang menahan SEMUA ikon sekaligus (src/styles.scss).
+POLA_GLOBAL = re.compile(r"^\.mat-icon\s*\{[^}]*flex-shrink\s*:\s*0", re.M)
+
+
+def ada_penahan_global() -> bool:
+    jalur = os.path.join(SUMBER, "styles.scss")
+    return os.path.exists(jalur) and bool(
+        POLA_GLOBAL.search(open(jalur, encoding="utf-8").read())
+    )
+
+
 def periksa():
+    # Sejak ada `.mat-icon { flex-shrink: 0 }` global, tiap komponen sudah
+    # aman; yang dijaga tinggal aturan global itu sendiri. Bila ia hilang,
+    # pemeriksaan per komponen di bawah berjalan lagi dan memerahkan gerbang.
+    if ada_penahan_global():
+        return []
     masalah = []
     for dirpath, _, files in os.walk(SUMBER):
         for f in files:

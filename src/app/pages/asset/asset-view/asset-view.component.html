@@ -1,11 +1,11 @@
 <div class="av">
-  <h2 mat-dialog-title class="av-head" appDialogGeser>
+  <div mat-dialog-title class="av-head" appDialogGeser>
     <span class="av-head__icon"><mat-icon>inventory_2</mat-icon></span>
     <span class="av-head__text">
-      <span class="av-title">{{ "assetView.title" | translate }}</span>
-      <span class="av-name">{{ asset.name || "—" }}</span>
+      <span class="av-title av-sub">{{ "assetView.title" | translate }}</span>
+      <h2 class="av-name">{{ asset.name || "—" }}</h2>
     </span>
-  </h2>
+  </div>
 
   <mat-dialog-content class="av-content">
     <!-- value highlight -->

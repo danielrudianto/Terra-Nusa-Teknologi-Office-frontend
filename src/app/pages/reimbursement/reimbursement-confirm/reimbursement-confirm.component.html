@@ -7,10 +7,13 @@
   kini sama dengan ringkasan purchase order: label di kiri, isinya di kanan.
 -->
 <div class="rcf">
-  <h2 mat-dialog-title class="rcf-head" appDialogGeser>
+  <div mat-dialog-title class="rcf-head" appDialogGeser>
     <span class="rcf-head__icon"><mat-icon>fact_check</mat-icon></span>
-    <span class="rcf-title">{{ "reimbursementConfirm.title" | translate }}</span>
-  </h2>
+    <span class="rcf-head__teks">
+      <h2 class="rcf-title">{{ "reimbursementConfirm.title" | translate }}</h2>
+      <span class="rcf-sub">{{ "reimbursementConfirm.sub" | translate }}</span>
+    </span>
+  </div>
 
   <mat-dialog-content class="rcf-content">
     <div class="rcf-grup">

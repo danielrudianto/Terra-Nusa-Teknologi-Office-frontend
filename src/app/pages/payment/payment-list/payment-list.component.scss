@@ -329,3 +329,10 @@
 .pl-toolbar > *:nth-child(2) {
   margin-left: auto;
 }
+
+/* Muat ulang sebaris dengan pencarian & tanggal, paling kanan — sama
+   dengan daftar lain (dulu sendirian di baris chip). */
+.pl-filters > app-refresh-button {
+  flex: 0 0 auto;
+  margin-left: auto;
+}

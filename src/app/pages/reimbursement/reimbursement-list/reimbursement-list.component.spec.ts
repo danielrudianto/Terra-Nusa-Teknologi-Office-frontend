@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -31,9 +32,11 @@ import { ReimbursementListComponent } from './reimbursement-list.component';
  */
 describe('ReimbursementListComponent — saringan bawaan', () => {
   let queryParams: BehaviorSubject<Record<string, string>>;
+  let navigasi: jasmine.Spy;
 
   function buat(params: Record<string, string> = {}) {
     queryParams = new BehaviorSubject<Record<string, string>>(params);
+    navigasi = jasmine.createSpy('navigate');
 
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
@@ -44,7 +47,8 @@ describe('ReimbursementListComponent — saringan bawaan', () => {
           useValue: { get: () => of({ data: [], count: 0 }), post: () => of({}) },
         },
         { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(false) }) } },
-        { provide: Router, useValue: { navigate: () => {}, url: '/Reimbursement' } },
+        provideNoopAnimations(),
+        { provide: Router, useValue: { navigate: navigasi, url: '/Reimbursement' } },
         {
           provide: ActivatedRoute,
           useValue: { queryParams, snapshot: { queryParams: params } },
@@ -113,5 +117,20 @@ describe('ReimbursementListComponent — saringan bawaan', () => {
     expect(
       Object.values(c.filterFormGroup.value).every((v) => v === false),
     ).toBeTrue();
+  });
+
+  it('membuka halaman TIDAK menulis ulang URL (transisi tidak jalan dua kali)', fakeAsync(() => {
+    // Chip yang dipilih lewat `[selected]` ikut memancarkan selectionChange.
+    // Dulu itu menulis ulang URL -> kunci transisi berubah -> animasi kedua.
+    const f = buat();
+    f.detectChanges();
+    tick(600);
+    expect(navigasi).not.toHaveBeenCalled();
+  }));
+
+  it('chip yang DITEKAN tetap menulis URL', () => {
+    const c = buat().componentInstance;
+    c.changeSelection('isDelete', { isUserInput: true, selected: true });
+    expect(navigasi).toHaveBeenCalled();
   });
 });

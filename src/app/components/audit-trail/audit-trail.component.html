@@ -34,7 +34,7 @@
           <div class="at-item__body">
             <div class="at-item__line">
               <span class="at-item__action">{{
-                actionKey(e.action) | translate
+                e.action | auditLabel: 'audit'
               }}</span>
               @if (e.userName) {
                 <span class="at-item__by">· {{ e.userName }}</span>

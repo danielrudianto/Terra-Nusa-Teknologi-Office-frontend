@@ -2,8 +2,8 @@
   <div mat-dialog-title class="lv-head" appDialogGeser>
     <span class="lv-avatar">{{ (loan?.creditorName || "?").charAt(0) }}</span>
     <div class="lv-head__text">
-      <div class="lv-name">{{ loan?.creditorName || "Loan" }}</div>
-      <div class="lv-meta">{{ loan?.description || ('hardcoded.detailPinjaman' | translate) }}</div>
+      <h2 class="lv-name">{{ loan?.creditorName || "Loan" }}</h2>
+      <div class="lv-meta lv-sub">{{ loan?.description || ('hardcoded.detailPinjaman' | translate) }}</div>
     </div>
     <span
       class="lv-chip"
@@ -70,6 +70,66 @@
             <span>Rp {{ remaining | number: "1.2-2" }}</span>
           </div>
         </div>
+      </section>
+
+      <!--
+        Jadwal angsuran — dari tenor & tanggal angsuran pertama. Angkanya
+        memakai anggapan yang sama dengan Status Keuangan (angsuran rata
+        bulanan), jadi yang terlihat di sini = yang dihitung di sana.
+      -->
+      <section class="lv-section">
+        <div class="lv-section__title">
+          {{ "loansView.jadwal" | translate }}
+        </div>
+        @if (jadwal; as j) {
+          <div class="lv-grid">
+            <div class="lv-field">
+              <span class="lv-label">{{ "loansView.tenor" | translate }}</span>
+              <span class="lv-value">{{ "loansView.tenorBulan" | translate: { n: j.tenor } }}</span>
+            </div>
+            <div class="lv-field">
+              <span class="lv-label">{{ "loansView.angsuranBulan" | translate }}</span>
+              <span class="lv-value">Rp {{ j.angsuran | number: "1.2-2" }}</span>
+            </div>
+            <div class="lv-field">
+              <span class="lv-label">{{ "loansView.mulaiBayar" | translate }}</span>
+              <span class="lv-value">{{ j.pertama | date: "dd MMM yyyy" }}</span>
+            </div>
+            <div class="lv-field">
+              <span class="lv-label">{{ "loansView.angsuranTerakhir" | translate }}</span>
+              <span class="lv-value">{{ j.terakhir | date: "dd MMM yyyy" }}</span>
+            </div>
+            <div class="lv-field">
+              <span class="lv-label">{{ "loansView.jatuhTempo" | translate }}</span>
+              <span class="lv-value">{{
+                "loansView.jatuhTempoIsi" | translate: { n: j.jatuhTempo, tenor: j.tenor }
+              }}</span>
+            </div>
+            <div class="lv-field">
+              <span class="lv-label">{{ "loansView.berikutnya" | translate }}</span>
+              <span class="lv-value">{{
+                j.berikutnya ? (j.berikutnya | date: "dd MMM yyyy") : ("loansView.jadwalSelesai" | translate)
+              }}</span>
+            </div>
+          </div>
+          @if (j.tunggakan > 0 && !loan.isPaid) {
+            <div class="pou-banner lv-tunggak">
+              <mat-icon>warning_amber</mat-icon>
+              <div>
+                <strong>{{ "loansView.tunggakanJudul" | translate }}</strong>
+                <p>{{ "loansView.tunggakanIsi" | translate: { rp: (j.tunggakan | number: "1.2-2") } }}</p>
+              </div>
+            </div>
+          }
+        } @else {
+          <div class="pou-banner pou-banner--adendum">
+            <mat-icon>event_repeat</mat-icon>
+            <div>
+              <strong>{{ "loansView.tanpaJadwalJudul" | translate }}</strong>
+              <p>{{ "loansView.tanpaJadwalIsi" | translate }}</p>
+            </div>
+          </div>
+        }
       </section>
 
       <!-- creditor -->

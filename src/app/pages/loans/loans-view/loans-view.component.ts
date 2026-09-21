@@ -15,6 +15,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from '../../../services/api.service';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { RingkasJadwal, ringkasJadwal } from '../jadwal-angsuran';
 
 @Component({
   selector: 'app-loans-view',
@@ -161,6 +162,11 @@ export class LoansViewComponent implements OnInit {
   angka(nilai: any): number {
     const n = Number(nilai);
     return Number.isFinite(n) ? n : 0;
+  }
+
+  /** Jadwal angsuran (null = pinjaman tanpa tenor). */
+  get jadwal(): RingkasJadwal | null {
+    return ringkasJadwal(this.loan, this.totalPaid);
   }
 
   get totalPaid(): number {

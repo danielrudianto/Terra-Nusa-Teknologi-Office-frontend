@@ -148,3 +148,18 @@
   height: 18px;
   font-size: 18px;
 }
+
+/* Kepala: judul <h2> + anak judul, dapat digeser. */
+.rd-kepala-dlg {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+h2.rd-judul {
+  margin: 0;
+}
+.rd-judul-sub {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--muted, #6b7280);
+}

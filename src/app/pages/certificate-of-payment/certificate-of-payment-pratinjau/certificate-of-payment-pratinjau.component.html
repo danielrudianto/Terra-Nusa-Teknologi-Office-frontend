@@ -1,7 +1,12 @@
-<h2 mat-dialog-title class="cp-judul">
+<div mat-dialog-title class="cp-judul" appDialogGeser>
   <mat-icon>fact_check</mat-icon>
-  {{ (data.menyunting ? "cop.pratinjauUbah" : "cop.pratinjauBuat") | translate }}
-</h2>
+  <span class="cp-judul__teks">
+    <h2 class="cp-judul__h">
+      {{ (data.menyunting ? "cop.pratinjauUbah" : "cop.pratinjauBuat") | translate }}
+    </h2>
+    <span class="cp-judul__sub">{{ "cop.pratinjauSub" | translate }}</span>
+  </span>
+</div>
 
 <mat-dialog-content #isi class="cp-isi" (scroll)="padaGulir($any($event.target))">
   <!--

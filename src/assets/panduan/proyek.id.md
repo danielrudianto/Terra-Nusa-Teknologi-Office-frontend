@@ -114,3 +114,35 @@ Yang perlu diperhatikan di sini:
 - **Biaya kumulatif** dibandingkan terhadap nilai kontrak. Bila garisnya sudah
   mendekati batas sementara pekerjaan baru separuh, itu ketahuan sekarang,
   bukan setelah terlampaui.
+
+## Arus kas proyek
+
+Kartu **Arus kas** (bersebelahan dengan *Progress vs pengeluaran*) menjawab
+pertanyaan yang berbeda dari dua tampilan di atas: *kapan uangnya benar-benar
+bergerak*. Dasarnya **tanggal pembayaran**, bukan tanggal dokumen — pembelian
+bulan Maret yang baru dibayar bulan Mei tercatat keluar di bulan Mei.
+
+Tiga garis:
+
+- **Kas masuk** — pembayaran atas faktur penjualan proyek ini.
+- **Kas keluar** — pembayaran atas pembelian dan reimbursement proyek ini.
+- **Saldo kas** (garis tebal) — masuk dikurangi keluar, berjalan sejak awal
+  proyek. Saldo di bawah nol berarti proyek sedang **ditalangi** perusahaan;
+  keterangan di bawah grafik menyebut sejak tanggal berapa.
+
+Yang perlu diketahui:
+
+- **Pembelian internal** ikut dihitung hanya bila sakelar *Sertakan internal*
+  menyala, dan dianggap dibayar **pada tanggal pembeliannya** — umumnya ia
+  tidak punya catatan pembayaran.
+- **Beban dan gaji tidak ikut**, karena keduanya tidak punya kolom proyek.
+  Kas keluar di sini karena itu **batas bawah**, bukan angka utuh.
+- **Harian** adalah bawaan: saldo yang sempat minus di pertengahan bulan lalu
+  tertolong termin di akhir bulan tetap terlihat. **Bulanan** tersedia untuk
+  melihat bentuk kasarnya pada proyek panjang.
+- Grafik menampilkan jendela 30/60/90 hari (atau 6/10/18 bulan) yang dapat
+  digeser mundur; bulan tanpa pembayaran tetap digambar.
+- Saat memilih satu tahun, saldo dari tahun-tahun sebelumnya **dibawa masuk**
+  — proyek yang sudah menalangi setahun tidak dimulai dari nol.
+- Kartu ini hanya tampil bagi yang berhak melihat pembayaran keluar
+  (level 3 ke atas di bagian terkait); bagi yang lain kartunya disembunyikan.

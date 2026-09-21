@@ -33,7 +33,7 @@
             "activity.allEntities" | translate
           }}</mat-option>
           @for (e of entities; track e) {
-            <mat-option [value]="e">{{ entityKey(e) | translate }}</mat-option>
+            <mat-option [value]="e">{{ e | auditLabel: 'auditEntity' }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
@@ -170,7 +170,7 @@
           <td mat-cell *matCellDef="let e">
             <span class="al-action">
               <mat-icon class="al-action__icon">{{ icon(e.action) }}</mat-icon>
-              {{ actionKey(e.action) | translate }}
+              {{ e.action | auditLabel: 'audit' }}
             </span>
           </td>
         </ng-container>
@@ -180,7 +180,7 @@
             {{ "activity.module" | translate }}
           </th>
           <td mat-cell *matCellDef="let e">
-            <span class="al-tag">{{ entityKey(e.entity) | translate }}</span>
+            <span class="al-tag">{{ e.entity | auditLabel: 'auditEntity' }}</span>
             <span class="al-secondary">#{{ e.entityID }}</span>
           </td>
         </ng-container>

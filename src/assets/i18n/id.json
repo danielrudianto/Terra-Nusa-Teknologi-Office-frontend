@@ -312,6 +312,7 @@
     }
   },
   "posisiKeuangan": {
+    "rasioSub": "Cara membaca dan menghitungnya",
     "tautanLabaRugi": "Buka Laba Rugi",
     "tautanLabaRugiKet": "Laporan laba rugi lengkap beserta rincian tiap kategori biaya.",
     "judul": "Status Keuangan",
@@ -920,6 +921,7 @@
     "sameAccount": "Rekening asal dan tujuan tidak boleh sama."
   },
   "purchaseOrder": {
+    "setujuiSub": "Periksa nomor, pemasok, dan nilai sebelum menyetujui",
     "title": "Purchase Order",
     "description": "Kelola purchase order di sini",
     "createNew": "Buat purchase order",
@@ -1775,6 +1777,7 @@
     "stepPaymentHeader": "Data pembayaran"
   },
   "reimbursementConfirm": {
+    "sub": "Periksa kembali sebelum menyimpan",
     "title": "Konfirmasi data reimbursement",
     "sectionDetail": "Detail",
     "sectionBank": "Rekening & Pembayaran",
@@ -2222,6 +2225,20 @@
     "paid": "Sudah dibayar"
   },
   "loansView": {
+    "jadwal": "Jadwal angsuran",
+    "tenor": "Tenor",
+    "tenorBulan": "{{n}} bulan",
+    "angsuranBulan": "Angsuran per bulan",
+    "mulaiBayar": "Angsuran pertama",
+    "angsuranTerakhir": "Angsuran terakhir",
+    "jatuhTempo": "Sudah jatuh tempo",
+    "jatuhTempoIsi": "{{n}} dari {{tenor}} angsuran",
+    "berikutnya": "Angsuran berikutnya",
+    "jadwalSelesai": "Jadwal sudah selesai",
+    "tunggakanJudul": "Ada tunggakan",
+    "tunggakanIsi": "Pembayaran tertinggal Rp {{rp}} dari jadwal — ikut dihitung sebagai kewajiban yang jatuh tempo sekarang di Status Keuangan.",
+    "tanpaJadwalJudul": "Belum ada jadwal angsuran",
+    "tanpaJadwalIsi": "Isi tenor lewat Ubah Pinjaman supaya angsurannya ikut dihitung di kewajiban lancar dan likuiditas 30 hari. Pinjaman pribadi tanpa jadwal boleh dibiarkan kosong.",
     "paid": "Lunas",
     "unpaid": "Belum lunas",
     "repayment": "Pelunasan",
@@ -2236,6 +2253,7 @@
     "close": "Tutup"
   },
   "calendar": {
+    "dailySub": "Rincian pembayaran pada tanggal ini",
     "title": "Kalender Pembayaran",
     "subtitle": "Jadwal & saldo pembayaran per hari",
     "expense": "Pengeluaran",
@@ -2260,6 +2278,7 @@
     "totalTerlewat": "Total yang tertunda"
   },
   "calendarAccount": {
+    "selectSub": "Rekening yang dihitung di kalender",
     "dikecualikan": "Dikecualikan",
     "accountsSelected": "Rekening Dipilih",
     "selectTitle": "Pilih rekening bank"
@@ -2438,6 +2457,7 @@
     "darkMode": "Gelap"
   },
   "calendarPayment": {
+    "dipilih": "{{count}} pembayaran dipilih",
     "confirmTitle": "Konfirmasi Persetujuan Pembayaran",
     "confirmPrompt": "Yakin mau menyetujui {{count}} pembayaran?",
     "rejectTitle": "Konfirmasi Penolakan Pembayaran",
@@ -3490,6 +3510,8 @@
     "tanpaAkses": "Anda belum punya akses ke bagian ini"
   },
   "confirm": {
+    "subHapus": "Data yang dihapus tidak tampil lagi di daftar.",
+    "subLanjut": "Pastikan sebelum melanjutkan.",
     "cancel": "Batal",
     "yesDelete": "Ya, hapus",
     "yesContinue": "Ya, lanjut",
@@ -3507,6 +3529,12 @@
     "salinNomorPo": "Salin nomor PO"
   },
   "audit": {
+    "set_winner": "Pemenang ditetapkan",
+    "close_no_winner": "Ditutup tanpa pemenang",
+    "set_end_date": "Tanggal selesai diatur",
+    "hapus_pelamar": "Pelamar dihapus",
+    "pulihkan_pelamar": "Pelamar dipulihkan",
+    "hapus_hasil": "Hasil ujian dihapus",
     "sisaPerubahan": "…dan {{n}} perubahan lain",
     "title": "Riwayat perubahan",
     "empty": "Belum ada perubahan tercatat.",
@@ -3561,6 +3589,11 @@
     "filterTitle": "Penyaring"
   },
   "auditEntity": {
+    "laporan:pph_posisi": "Laporan Posisi PPh",
+    "certificate_of_payments": "Certificate of Payment",
+    "hr_candidates": "Pelamar",
+    "hr_questions": "Bank soal",
+    "user_permissions": "Izin pengguna",
     "purchase_orders": "Purchase Order",
     "purchases": "Pembelian",
     "expenses": "Biaya",
@@ -5178,6 +5211,7 @@
     "biodataKet": "Diisi sebelum ujian dimulai, jadi tidak memakan waktu pengerjaan. Boleh dikosongkan.",
     "panggilan": "Nama panggilan",
     "lahir": "Tanggal lahir",
+    "lahirContoh": "hh/bb/tttt",
     "telepon": "Nomor telepon",
     "surel": "Surel",
     "kota": "Kota",
@@ -5695,6 +5729,7 @@
     "menungguAnda": "Menunggu Anda"
   },
   "cop": {
+    "pratinjauSub": "Periksa volume dan nilai sebelum disimpan",
     "judul": "Certificate of Payment",
     "subjudul": "Berita acara progres pekerjaan atas SPK",
     "judulBuat": "Buat Certificate of Payment",

@@ -1,13 +1,13 @@
 <div class="pv">
-  <h2 mat-dialog-title class="pv-head" appDialogGeser>
+  <div mat-dialog-title class="pv-head" appDialogGeser>
     <span class="pv-head__icon"><mat-icon>payments</mat-icon></span>
     <span class="pv-head__text">
-      <span class="pv-title">{{ "paymentView.title" | translate }}</span>
-      <span class="pv-type" *ngIf="formGroup.get('type')?.value">
+      <h2 class="pv-title">{{ "paymentView.title" | translate }}</h2>
+      <span class="pv-type pv-sub" *ngIf="formGroup.get('type')?.value">
         {{ formGroup.get("type")?.value }}
       </span>
     </span>
-  </h2>
+  </div>
 
   <mat-dialog-content class="pv-content">
     <!-- amount highlight -->

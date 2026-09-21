@@ -1,6 +1,16 @@
 <div class="bm">
   <!-- account header -->
   <div class="bm-head">
+    <button
+      mat-icon-button
+      type="button"
+      class="bm-back"
+      (click)="kembali()"
+      [attr.aria-label]="'common.back' | translate"
+      [matTooltip]="'common.back' | translate"
+    >
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     <span class="bm-avatar">{{
       (bankAccount?.bankName || "?").charAt(0)
     }}</span>

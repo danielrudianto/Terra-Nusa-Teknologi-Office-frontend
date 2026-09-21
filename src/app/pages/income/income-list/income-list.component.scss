@@ -271,3 +271,11 @@ $hover: var(--hover, #f6f8ff);
   color: $muted;
   font-family: "Montserrat", sans-serif;
 }
+
+/* Bilah alat rata KANAN — sama dengan Transfer Antar Rekening & Beban:
+   tanggal, cari, abaikan tanggal, muat ulang satu kelompok di kanan. */
+@media (min-width: min(768px, 92vw)) {
+  .il-range {
+    margin-left: auto;
+  }
+}

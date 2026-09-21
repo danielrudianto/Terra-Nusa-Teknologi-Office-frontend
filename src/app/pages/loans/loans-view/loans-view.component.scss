@@ -418,3 +418,18 @@
   height: 17px;
   flex: 0 0 auto;
 }
+
+/* Judul kepala dialog = <h2>. */
+h2.lv-name {
+  margin: 0;
+}
+
+/* Spanduk tunggakan: warna waspada, bentuk banner yang sama. */
+.lv-tunggak {
+  margin-top: 0.75rem;
+  background: var(--warn-bg, #fff4e5);
+  color: var(--warn-fg, #8f5914);
+}
+.pou-banner > .mat-icon {
+  flex: 0 0 auto;
+}

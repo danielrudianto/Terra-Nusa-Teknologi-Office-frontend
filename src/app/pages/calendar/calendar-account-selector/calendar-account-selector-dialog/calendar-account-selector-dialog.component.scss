@@ -139,3 +139,22 @@
   background: var(--surface-2, #f3f4f6);
   border: 1px solid var(--line, #e5e7eb);
 }
+
+/* Kepala dialog: judul <h2> + anak judul (pola `bank-create`). */
+h2.casd-title {
+  margin: 0;
+}
+.casd-head__teks {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.casd-sub {
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--muted, #6b7280);
+}

@@ -267,3 +267,15 @@ $hover: var(--hover, #f6f8ff);
   color: $muted;
   font-family: "Montserrat", sans-serif;
 }
+
+/* Tombol kembali — bentuk sama dengan halaman Tender. */
+.bm-back {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  line-height: 0;
+  padding: 0;
+}

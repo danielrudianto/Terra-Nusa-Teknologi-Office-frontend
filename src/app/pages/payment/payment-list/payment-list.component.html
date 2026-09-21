@@ -30,15 +30,6 @@
         >{{ "status.rejected" | translate }}</mat-chip-option
       >
     </mat-chip-listbox>
-    <!--
-      Muat ulang DATANYA saja. Daftar ini menyimpan pencarian dan penyaring
-      pada alamat halaman; memuat ulang lewat `fetchPayments` menghormati
-      keduanya, sedangkan `Ctrl+R` mengembalikan semuanya ke awal.
-    -->
-    <app-refresh-button
-      [memuat]="isLoading"
-      (muatUlang)="fetchPayments(page)"
-    />
   </div>
 
   <!--
@@ -49,26 +40,6 @@
     berhalaman, dan menyaring di layar hanya menyaring halaman yang tampak.
   -->
   <div class="pl-filters">
-    <mat-form-field appearance="outline" class="pl-search">
-      <mat-icon matPrefix>search</mat-icon>
-      <mat-label>{{ "payment.cariOpponent" | translate }}</mat-label>
-      <input
-        matInput
-        [formControl]="cariCtrl"
-        [placeholder]="'payment.cariOpponentPlaceholder' | translate"
-      />
-      @if (cariCtrl.value) {
-        <button
-          matSuffix
-          mat-icon-button
-          type="button"
-          [attr.aria-label]="'common.close' | translate"
-          (click)="cariCtrl.setValue('')"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
-      }
-    </mat-form-field>
 
     <mat-form-field appearance="outline" class="pl-date">
       <mat-label>{{ "payment.dariTanggal" | translate }}</mat-label>
@@ -101,6 +72,36 @@
         {{ "payment.bersihkanFilter" | translate }}
       </button>
     }
+    <mat-form-field appearance="outline" class="pl-search">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>{{ "payment.cariOpponent" | translate }}</mat-label>
+      <input
+        matInput
+        [formControl]="cariCtrl"
+        [placeholder]="'payment.cariOpponentPlaceholder' | translate"
+      />
+      @if (cariCtrl.value) {
+        <button
+          matSuffix
+          mat-icon-button
+          type="button"
+          [attr.aria-label]="'common.close' | translate"
+          (click)="cariCtrl.setValue('')"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <!--
+      Muat ulang DATANYA saja. Daftar ini menyimpan pencarian dan penyaring
+      pada alamat halaman; memuat ulang lewat `fetchPayments` menghormati
+      keduanya, sedangkan `Ctrl+R` mengembalikan semuanya ke awal.
+    -->
+    <app-refresh-button
+      [memuat]="isLoading"
+      (muatUlang)="fetchPayments(page)"
+    />
   </div>
 
   <div class="pl-card">

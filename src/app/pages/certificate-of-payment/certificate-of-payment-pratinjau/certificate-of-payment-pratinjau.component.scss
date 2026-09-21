@@ -347,3 +347,21 @@
     cursor: not-allowed;
   }
 }
+
+/* Kepala: judul <h2> + anak judul, dapat digeser. */
+.cp-judul__teks {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.cp-judul__h {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+.cp-judul__sub {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--muted, #6b7280);
+}

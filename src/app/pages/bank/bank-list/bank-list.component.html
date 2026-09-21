@@ -17,17 +17,6 @@
   ></app-header-title>
 
   <div class="bl-toolbar">
-    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="bl-search">
-      <mat-icon matPrefix>search</mat-icon>
-      <mat-label>{{ "common.search" | translate }}</mat-label>
-      <input
-        autocomplete="off"
-        matInput
-        type="search"
-        [placeholder]="'bank.searchPlaceholder' | translate"
-        [formControl]="formControl"
-      />
-    </mat-form-field>
 
     <!--
       Keadaan rekening yang sedang ditampilkan.
@@ -48,18 +37,28 @@
       [ngModel]="keadaan"
       (ngModelChange)="gantiKeadaan($event)"
     >
-      <mat-chip-option class="bl-fchip" value="aktif">{{
+      <mat-chip-option class="bl-fchip bl-fchip--aktif" value="aktif">{{
         "bank.keadaanAktif" | translate
       }}</mat-chip-option>
       <mat-chip-option class="bl-fchip bl-fchip--hapus" value="dihapus">{{
         "bank.keadaanDihapus" | translate
       }}</mat-chip-option>
-      <mat-chip-option class="bl-fchip" value="semua">{{
+      <mat-chip-option class="bl-fchip bl-fchip--semua" value="semua">{{
         "bank.keadaanSemua" | translate
       }}</mat-chip-option>
     </mat-chip-listbox>
 
-    <span class="bl-spacer"></span>
+    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="bl-search">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
+      <input
+        autocomplete="off"
+        matInput
+        type="search"
+        [placeholder]="'bank.searchPlaceholder' | translate"
+        [formControl]="formControl"
+      />
+    </mat-form-field>
 
     <!--
       Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan

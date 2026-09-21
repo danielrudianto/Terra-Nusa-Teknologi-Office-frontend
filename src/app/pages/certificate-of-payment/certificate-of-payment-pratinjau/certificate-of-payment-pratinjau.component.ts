@@ -1,3 +1,4 @@
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 import { CommonModule } from '@angular/common';
 import {
   AfterViewChecked,
@@ -76,7 +77,7 @@ export interface DataPratinjauCoP {
 @Component({
   selector: 'app-certificate-of-payment-pratinjau',
   standalone: true,
-  imports: [
+  imports: [DialogGeserDirective, 
     CommonModule,
     FormsModule,
     MatDialogModule,

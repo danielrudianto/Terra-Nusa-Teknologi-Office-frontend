@@ -151,3 +151,22 @@ $danger: var(--bad-fg, #e5484d);
     background: #cf3b40;
   }
 }
+
+/* Kepala dapat digeser; anak judul mengingatkan bahwa ini perlu kepastian. */
+.dc-kepala {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0 !important;
+  margin: 0 !important;
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+}
+.dc-sub {
+  font-size: 0.8rem;
+  color: var(--muted, #6b7280);
+  text-align: center;
+}

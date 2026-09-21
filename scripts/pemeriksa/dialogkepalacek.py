@@ -20,7 +20,7 @@ bukan oleh satu pun uji.
 DUA HAL YANG DIPERIKSA pada elemen pembawa `mat-dialog-title`:
 
   1. `appDialogGeser` — dialognya dapat digeser.
-  2. Judul `<h2>` DAN anak judul (kelas berakhiran `-sub`) di dalamnya.
+  2. Judul `<h2>` DAN anak judul (kelas berakhiran `-sub` atau `__sub` ala BEM) di dalamnya.
 
 Yang TIDAK diperiksa, dan sebaiknya diketahui: warna pitanya, ukuran
 lencananya, dan apakah ikonnya SVG. Menuntut itu dari kode berarti
@@ -95,7 +95,7 @@ def periksa() -> list[str]:
             )
 
         punya_judul = re.search(r"<h2\b", isi) is not None or tag.lower() == "h2"
-        punya_sub = re.search(r'class="[^"]*-sub\b', isi) is not None
+        punya_sub = re.search(r'class="[^"]*[-_]sub\b', isi) is not None
         if not (punya_judul and punya_sub):
             kurang = []
             if not punya_judul:

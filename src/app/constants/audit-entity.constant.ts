@@ -65,4 +65,11 @@ export const AuditTrailEntities: string[] = [
    */
   'tenders',
   'tender_quotes',
+
+  // Dicatat server tetapi belum terdaftar (ketahuan dari halaman Aktivitas
+  // yang menampilkan "auditEntity.hr_candidates" mentah).
+  'certificate_of_payments',
+  'hr_candidates',
+  'hr_questions',
+  'user_permissions',
 ];

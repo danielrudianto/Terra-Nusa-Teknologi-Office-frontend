@@ -1,3 +1,4 @@
+import { AuditLabelPipe } from '../../../pipes/audit-label.pipe';
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -28,7 +29,7 @@ interface ActivityEntry {
 @Component({
   selector: 'app-activity-detail',
   standalone: true,
-  imports: [
+  imports: [AuditLabelPipe, 
     CommonModule,
     MatDialogModule,
     MatIconModule,

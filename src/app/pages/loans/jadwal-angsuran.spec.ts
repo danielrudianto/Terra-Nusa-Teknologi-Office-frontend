@@ -6,7 +6,7 @@
  * `null`, bukan dihilangkan), dan tanggal tidak bergeser sehari.
  */
 
-import { jadwalAngsuran } from './jadwal-angsuran';
+import { jadwalAngsuran, ringkasJadwal } from './jadwal-angsuran';
 
 describe('jadwalAngsuran', () => {
   it('tenor dan tanggal dikirim apa adanya', () => {
@@ -43,5 +43,38 @@ describe('jadwalAngsuran', () => {
     expect(jadwalAngsuran(12, new Date(2026, 0, 1, 0, 0, 0)).firstInstallmentDate).toBe(
       '2026-01-01',
     );
+  });
+});
+
+describe('ringkasJadwal — angka sama dengan server (porsi_lancar)', () => {
+  const kini = new Date(2026, 8, 21); // 21 Sep 2026
+  const orix = { debt: 36e6, tenorMonths: 36, firstInstallmentDate: '2026-02-01', date: '2026-01-05' };
+
+  it('tanpa tenor: null (pinjaman pribadi)', () => {
+    expect(ringkasJadwal({ debt: 1e7, tenorMonths: null }, 0, kini)).toBeNull();
+  });
+
+  it('8 jadwal sudah jatuh tempo, berikutnya 1 Okt, terakhir Jan 2029', () => {
+    const r = ringkasJadwal(orix, 8e6, kini)!;
+    expect(r.angsuran).toBe(1e6);
+    expect(r.jatuhTempo).toBe(8);
+    expect(r.berikutnya).toBe('2026-10-01');
+    expect(r.terakhir).toBe('2029-01-01');
+    expect(r.tunggakan).toBe(0);
+  });
+
+  it('baru bayar 5 jt: tertunggak 3 jt', () => {
+    expect(ringkasJadwal(orix, 5e6, kini)!.tunggakan).toBe(3e6);
+  });
+
+  it('tanpa tanggal angsuran pertama: sebulan setelah tanggal pinjaman', () => {
+    const r = ringkasJadwal({ ...orix, firstInstallmentDate: null }, 0, kini)!;
+    expect(r.pertama).toBe('2026-02-05');
+  });
+
+  it('jadwal habis: berikutnya null', () => {
+    const r = ringkasJadwal({ debt: 12e6, tenorMonths: 12, firstInstallmentDate: '2024-01-01' }, 12e6, kini)!;
+    expect(r.berikutnya).toBeNull();
+    expect(r.jatuhTempo).toBe(12);
   });
 });

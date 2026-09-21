@@ -1,15 +1,15 @@
 <div class="mev">
-  <h2 mat-dialog-title class="mev-head" appDialogGeser>
+  <div mat-dialog-title class="mev-head" appDialogGeser>
     <span class="mev-head__icon"
       ><mat-icon>precision_manufacturing</mat-icon></span
     >
     <span class="mev-head__text">
-      <span class="mev-title">{{
+      <span class="mev-title mev-sub">{{
         "masterEquipmentView.title" | translate
       }}</span>
-      <span class="mev-name">{{ equipment.name || "—" }}</span>
+      <h2 class="mev-name">{{ equipment.name || "—" }}</h2>
     </span>
-  </h2>
+  </div>
 
   <mat-dialog-content class="mev-content">
     <div class="mev-grid">

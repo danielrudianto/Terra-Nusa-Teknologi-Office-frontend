@@ -24,6 +24,8 @@ import { environment } from 'src/environments/environment';
  * WhatsApp, dan yang mengalaminya perlu jalan lain selain meminta tautan baru.
  */
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { DateAdapter, provideNativeDateAdapter } from '@angular/material/core';
 import { AknLogoComponent } from '../bagian/akn-logo.component';
 import { TemaUjianComponent } from '../bagian/tema-ujian.component';
 import { KONTAK, KakiAknComponent } from '../bagian/kaki-akn.component';
@@ -48,10 +50,12 @@ import {
     MatProgressSpinnerModule,
     TranslateModule,
     MatTooltipModule,
+    MatDatepickerModule,
     AknLogoComponent,
     TemaUjianComponent,
     KakiAknComponent,
   ],
+  providers: [provideNativeDateAdapter()],
   templateUrl: './exam-landing.component.html',
   styleUrl: './exam-landing.component.scss',
 })
@@ -100,6 +104,7 @@ export class ExamLandingComponent implements OnInit {
 
   ngOnInit(): void {
     this.bahasa = this.translate.currentLang || 'id';
+    this.aturLokalTanggal(this.bahasa);
 
     const dariTautan = this.route.snapshot.paramMap.get('token');
     if (dariTautan) {
@@ -113,6 +118,31 @@ export class ExamLandingComponent implements OnInit {
   gantiBahasa(kode: string): void {
     this.bahasa = kode;
     this.translate.use(kode);
+    this.aturLokalTanggal(kode);
+  }
+
+  private readonly adaptorTanggal = inject<DateAdapter<Date>>(DateAdapter);
+
+  /** Format tanggal pemilih mengikuti bahasa (id: 21/09/1995). */
+  private aturLokalTanggal(kode: string): void {
+    this.adaptorTanggal.setLocale(
+      kode === 'en' ? 'en-GB' : kode === 'zh' ? 'zh-CN' : 'id-ID',
+    );
+  }
+
+  /**
+   * Tanggal lahir untuk pemilih tanggal (objek Date). Dulu `<input
+   * type="date">` bawaan peramban: formatnya mengikuti sistem (mm/dd/yyyy),
+   * tidak ada pemilihnya di sebagian peramban, dan hurufnya terpotong.
+   * Dikirim ke server sebagai `YYYY-MM-DD` waktu setempat.
+   */
+  lahir: Date | null = null;
+  readonly hariIni = new Date();
+
+  private static iso(t: Date | null): string | null {
+    if (!t || isNaN(t.getTime())) return null;
+    const dd = (n: number) => String(n).padStart(2, '0');
+    return `${t.getFullYear()}-${dd(t.getMonth() + 1)}-${dd(t.getDate())}`;
   }
 
   get bolehMulai(): boolean {
@@ -205,6 +235,8 @@ export class ExamLandingComponent implements OnInit {
       phoneNumber: b.phoneNumber ?? null,
       email: b.email ?? null,
     };
+    const [y, m, d] = (this.bio.dateOfBirth ?? '').split('-').map(Number);
+    this.lahir = y && m && d ? new Date(y, m - 1, d) : null;
   }
 
   /**
@@ -219,6 +251,7 @@ export class ExamLandingComponent implements OnInit {
     const token = this.token.trim();
     const lanjut = () => this.router.navigate(['/exam', token, 'start']);
 
+    this.bio.dateOfBirth = ExamLandingComponent.iso(this.lahir);
     this.http
       .put(`${environment.url}hr/exam/${token}/biodata`, this.bio)
       .subscribe({ next: lanjut, error: lanjut });

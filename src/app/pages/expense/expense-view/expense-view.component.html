@@ -5,10 +5,10 @@
       (f["opponentName"].value || "?").charAt(0)
     }}</span>
     <div class="ev-head__text">
-      <div class="ev-name">
+      <h2 class="ev-name">
         {{ f["invoiceName"].value || f["receiptName"].value || "Expense" }}
-      </div>
-      <div class="ev-meta">{{ f["opponentName"].value || "—" }}</div>
+      </h2>
+      <div class="ev-meta ev-sub">{{ f["opponentName"].value || "—" }}</div>
     </div>
     <span class="ev-chip" *ngIf="f['purchaseType'].value">{{
       expenseTypeLabel

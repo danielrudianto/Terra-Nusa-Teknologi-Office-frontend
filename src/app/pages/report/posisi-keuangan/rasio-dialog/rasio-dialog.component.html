@@ -1,6 +1,7 @@
-<h2 mat-dialog-title class="rd-judul">
-  {{ "posisiKeuangan.namaRasio." + data.kode | translate }}
-</h2>
+<div mat-dialog-title class="rd-kepala-dlg" appDialogGeser>
+  <h2 class="rd-judul">{{ "posisiKeuangan.namaRasio." + data.kode | translate }}</h2>
+  <span class="rd-judul-sub">{{ "posisiKeuangan.rasioSub" | translate }}</span>
+</div>
 
 <mat-dialog-content class="rd-isi">
   <!-- Angka, letaknya, dan pitanya — sekali, di atas. -->

@@ -187,9 +187,13 @@
             <mat-label>{{ "exam.lahir" | translate }}</mat-label>
             <input
               matInput
-              type="date"
-              [(ngModel)]="bio.dateOfBirth"
+              [matDatepicker]="pilihLahir"
+              [max]="hariIni"
+              [(ngModel)]="lahir"
+              [placeholder]="'exam.lahirContoh' | translate"
             />
+            <mat-datepicker-toggle matIconSuffix [for]="pilihLahir"></mat-datepicker-toggle>
+            <mat-datepicker #pilihLahir startView="multi-year"></mat-datepicker>
           </mat-form-field>
 
           <mat-form-field appearance="outline">

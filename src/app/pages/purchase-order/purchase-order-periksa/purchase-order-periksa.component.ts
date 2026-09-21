@@ -1,3 +1,4 @@
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 import { CommonModule } from '@angular/common';
 import {
   Component,
@@ -53,7 +54,7 @@ export interface DataPeriksa {
 @Component({
   selector: 'app-purchase-order-periksa',
   standalone: true,
-  imports: [
+  imports: [DialogGeserDirective, 
     CommonModule,
     MatDialogModule,
     MatButtonModule,

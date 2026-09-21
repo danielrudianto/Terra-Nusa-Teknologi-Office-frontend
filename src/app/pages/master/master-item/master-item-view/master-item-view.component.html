@@ -1,11 +1,11 @@
 <div class="miv">
-  <h2 mat-dialog-title class="miv-head" appDialogGeser>
+  <div mat-dialog-title class="miv-head" appDialogGeser>
     <span class="miv-head__icon"><mat-icon>inventory</mat-icon></span>
     <span class="miv-head__text">
-      <span class="miv-title">{{ "masterItemView.title" | translate }}</span>
-      <span class="miv-name">{{ item.sku || "—" }}</span>
+      <span class="miv-title miv-sub">{{ "masterItemView.title" | translate }}</span>
+      <h2 class="miv-name">{{ item.sku || "—" }}</h2>
     </span>
-  </h2>
+  </div>
 
   <mat-dialog-content class="miv-content">
     <div class="miv-grid">

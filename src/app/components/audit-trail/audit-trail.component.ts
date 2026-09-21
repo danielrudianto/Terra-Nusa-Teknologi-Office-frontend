@@ -1,3 +1,4 @@
+import { AuditLabelPipe } from '../../pipes/audit-label.pipe';
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectorRef,
@@ -46,7 +47,7 @@ interface AuditEntry {
 @Component({
   selector: 'app-audit-trail',
   standalone: true,
-  imports: [
+  imports: [AuditLabelPipe, 
     CommonModule,
     MatIconModule,
     MatProgressSpinnerModule,

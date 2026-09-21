@@ -312,6 +312,7 @@
     }
   },
   "posisiKeuangan": {
+    "rasioSub": "解读与计算方法",
     "tautanLabaRugi": "\u6253\u5f00\u635f\u76ca\u8868",
     "tautanLabaRugiKet": "\u5b8c\u6574\u635f\u76ca\u8868\uff0c\u542b\u5404\u8d39\u7528\u7c7b\u522b\u660e\u7ec6\u3002",
     "judul": "\u8d22\u52a1\u72b6\u51b5",
@@ -920,6 +921,7 @@
     "sameAccount": "转出与转入账户不能相同。"
   },
   "purchaseOrder": {
+    "setujuiSub": "批准前请核对编号、供应商和金额",
     "title": "采购订单",
     "description": "在此管理采购订单",
     "createNew": "创建采购订单",
@@ -1775,6 +1777,7 @@
     "stepPaymentHeader": "付款数据"
   },
   "reimbursementConfirm": {
+    "sub": "保存前请再次检查",
     "title": "确认报销数据",
     "sectionDetail": "详情",
     "sectionBank": "银行与付款",
@@ -2222,6 +2225,20 @@
     "paid": "已付款"
   },
   "loansView": {
+    "jadwal": "分期计划",
+    "tenor": "期限",
+    "tenorBulan": "{{n}} 个月",
+    "angsuranBulan": "每月分期",
+    "mulaiBayar": "首期还款",
+    "angsuranTerakhir": "末期还款",
+    "jatuhTempo": "已到期",
+    "jatuhTempoIsi": "{{tenor}} 期中的 {{n}} 期",
+    "berikutnya": "下一期",
+    "jadwalSelesai": "计划已结束",
+    "tunggakanJudul": "存在逾期",
+    "tunggakanIsi": "付款落后计划 Rp {{rp}} — 在财务状况中计为当前到期。",
+    "tanpaJadwalJudul": "尚无分期计划",
+    "tanpaJadwalIsi": "通过“编辑贷款”填写期限，使其分期计入流动负债和30天流动性。无计划的个人借款可留空。",
     "paid": "已还清",
     "unpaid": "未还清",
     "repayment": "还款",
@@ -2236,6 +2253,7 @@
     "close": "关闭"
   },
   "calendar": {
+    "dailySub": "当日付款明细",
     "title": "付款日历",
     "subtitle": "每日付款计划与余额",
     "expense": "支出",
@@ -2260,6 +2278,7 @@
     "totalTerlewat": "逾期合计"
   },
   "calendarAccount": {
+    "selectSub": "日历中计入的账户",
     "dikecualikan": "已排除",
     "accountsSelected": "个银行账户已选",
     "selectTitle": "选择银行账户"
@@ -2438,6 +2457,7 @@
     "darkMode": "深色"
   },
   "calendarPayment": {
+    "dipilih": "已选择 {{count}} 笔付款",
     "confirmTitle": "付款审批确认",
     "confirmPrompt": "确定要批准 {{count}} 笔付款吗？",
     "rejectTitle": "付款拒绝确认",
@@ -3490,6 +3510,8 @@
     "tanpaAkses": "您尚无此部分的访问权限"
   },
   "confirm": {
+    "subHapus": "删除的数据将不再显示在列表中。",
+    "subLanjut": "继续之前请确认。",
     "cancel": "取消",
     "yesDelete": "确认删除",
     "yesContinue": "确认继续",
@@ -3507,6 +3529,12 @@
     "salinNomorPo": "复制采购订单编号"
   },
   "audit": {
+    "set_winner": "确定中标方",
+    "close_no_winner": "无中标方关闭",
+    "set_end_date": "设置结束日期",
+    "hapus_pelamar": "删除应聘者",
+    "pulihkan_pelamar": "恢复应聘者",
+    "hapus_hasil": "清除考试结果",
     "sisaPerubahan": "…以及另外 {{n}} 项变更",
     "title": "变更记录",
     "empty": "尚无变更记录。",
@@ -3561,6 +3589,11 @@
     "filterTitle": "筛选"
   },
   "auditEntity": {
+    "laporan:pph_posisi": "预扣税状况报告",
+    "certificate_of_payments": "付款证书",
+    "hr_candidates": "应聘者",
+    "hr_questions": "题库",
+    "user_permissions": "用户权限",
     "purchase_orders": "采购单",
     "purchases": "采购",
     "expenses": "费用",
@@ -5178,6 +5211,7 @@
     "biodataKet": "\u5728\u8003\u8bd5\u5f00\u59cb\u524d\u586b\u5199\uff0c\u4e0d\u5360\u7528\u8003\u8bd5\u65f6\u95f4\u3002\u5747\u4e3a\u9009\u586b\u3002",
     "panggilan": "\u79f0\u547c",
     "lahir": "\u51fa\u751f\u65e5\u671f",
+    "lahirContoh": "日/月/年",
     "telepon": "\u7535\u8bdd",
     "surel": "\u90ae\u7bb1",
     "kota": "\u57ce\u5e02",
@@ -5695,6 +5729,7 @@
     "menungguAnda": "等待您处理"
   },
   "cop": {
+    "pratinjauSub": "保存前请核对数量和金额",
     "judul": "付款证书",
     "subjudul": "基于工作指令的工程进度证明",
     "judulBuat": "创建付款证书",

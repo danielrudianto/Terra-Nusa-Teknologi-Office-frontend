@@ -1,3 +1,4 @@
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -38,7 +39,7 @@ export interface DataPilihCoP {
 @Component({
   selector: 'app-certificate-of-payment-pilih',
   standalone: true,
-  imports: [
+  imports: [DialogGeserDirective, 
     CommonModule,
     ReactiveFormsModule,
     MatDialogModule,

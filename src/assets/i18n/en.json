@@ -312,6 +312,7 @@
     }
   },
   "posisiKeuangan": {
+    "rasioSub": "How to read and calculate it",
     "tautanLabaRugi": "Open Profit & Loss",
     "tautanLabaRugiKet": "The full profit and loss report, with a breakdown of every cost category.",
     "judul": "Financial Status",
@@ -920,6 +921,7 @@
     "sameAccount": "Origin and destination accounts must differ."
   },
   "purchaseOrder": {
+    "setujuiSub": "Check the number, supplier and amount before approving",
     "title": "Purchase order",
     "description": "Manage purchase orders here",
     "createNew": "Create purchase order",
@@ -1775,6 +1777,7 @@
     "stepPaymentHeader": "Payment data"
   },
   "reimbursementConfirm": {
+    "sub": "Review before saving",
     "title": "Confirm reimbursement data",
     "sectionDetail": "Detail",
     "sectionBank": "Bank & payment",
@@ -2222,6 +2225,20 @@
     "paid": "Paid"
   },
   "loansView": {
+    "jadwal": "Instalment schedule",
+    "tenor": "Tenor",
+    "tenorBulan": "{{n}} months",
+    "angsuranBulan": "Monthly instalment",
+    "mulaiBayar": "First instalment",
+    "angsuranTerakhir": "Last instalment",
+    "jatuhTempo": "Due so far",
+    "jatuhTempoIsi": "{{n}} of {{tenor}} instalments",
+    "berikutnya": "Next instalment",
+    "jadwalSelesai": "Schedule completed",
+    "tunggakanJudul": "Instalments overdue",
+    "tunggakanIsi": "Payments are Rp {{rp}} behind schedule — counted as due now in Financial Status.",
+    "tanpaJadwalJudul": "No instalment schedule yet",
+    "tanpaJadwalIsi": "Set a tenor via Edit Loan so its instalments count towards current liabilities and 30-day liquidity. Personal loans without a schedule can be left empty.",
     "paid": "Paid",
     "unpaid": "Not paid",
     "repayment": "Repayment",
@@ -2236,6 +2253,7 @@
     "close": "Close"
   },
   "calendar": {
+    "dailySub": "Payments on this date",
     "title": "Payment Calendar",
     "subtitle": "Payment schedule & balance per day",
     "expense": "Expense",
@@ -2260,6 +2278,7 @@
     "totalTerlewat": "Total outstanding"
   },
   "calendarAccount": {
+    "selectSub": "Accounts included in the calendar",
     "dikecualikan": "Excluded",
     "accountsSelected": "Bank Account(s) Selected",
     "selectTitle": "Select bank account"
@@ -2438,6 +2457,7 @@
     "darkMode": "Dark"
   },
   "calendarPayment": {
+    "dipilih": "{{count}} payments selected",
     "confirmTitle": "Payment Approval Confirmation",
     "confirmPrompt": "Are you sure to confirm {{count}} payment(s)?",
     "rejectTitle": "Payment Rejection Confirmation",
@@ -3490,6 +3510,8 @@
     "tanpaAkses": "You do not have access to this section"
   },
   "confirm": {
+    "subHapus": "Deleted records no longer appear in the list.",
+    "subLanjut": "Please confirm before continuing.",
     "cancel": "Cancel",
     "yesDelete": "Yes, delete",
     "yesContinue": "Yes, continue",
@@ -3507,6 +3529,12 @@
     "salinNomorPo": "Copy PO number"
   },
   "audit": {
+    "set_winner": "Winner set",
+    "close_no_winner": "Closed without winner",
+    "set_end_date": "End date set",
+    "hapus_pelamar": "Candidate deleted",
+    "pulihkan_pelamar": "Candidate restored",
+    "hapus_hasil": "Exam result cleared",
     "sisaPerubahan": "…and {{n}} more changes",
     "title": "Change history",
     "empty": "No changes recorded yet.",
@@ -3561,6 +3589,11 @@
     "filterTitle": "Filters"
   },
   "auditEntity": {
+    "laporan:pph_posisi": "PPh Position Report",
+    "certificate_of_payments": "Certificate of Payment",
+    "hr_candidates": "Candidates",
+    "hr_questions": "Question bank",
+    "user_permissions": "User permissions",
     "purchase_orders": "Purchase Order",
     "purchases": "Purchase",
     "expenses": "Expense",
@@ -5178,6 +5211,7 @@
     "biodataKet": "Filled in before the exam starts, so it does not eat into your time. All fields are optional.",
     "panggilan": "Preferred name",
     "lahir": "Date of birth",
+    "lahirContoh": "dd/mm/yyyy",
     "telepon": "Phone number",
     "surel": "Email",
     "kota": "City",
@@ -5695,6 +5729,7 @@
     "menungguAnda": "Waiting for you"
   },
   "cop": {
+    "pratinjauSub": "Check volumes and amounts before saving",
     "judul": "Certificate of Payment",
     "subjudul": "Work progress certificate against a work order",
     "judulBuat": "Create Certificate of Payment",

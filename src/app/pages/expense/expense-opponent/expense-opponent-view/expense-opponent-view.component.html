@@ -1,13 +1,13 @@
 <div class="eov">
-  <h2 mat-dialog-title class="eov-head" appDialogGeser>
+  <div mat-dialog-title class="eov-head" appDialogGeser>
     <span class="eov-head__icon"><mat-icon>storefront</mat-icon></span>
     <span class="eov-head__text">
-      <span class="eov-title">{{
+      <span class="eov-title eov-sub">{{
         "expenseOpponentView.title" | translate
       }}</span>
-      <span class="eov-name">{{ opponent.name || "—" }}</span>
+      <h2 class="eov-name">{{ opponent.name || "—" }}</h2>
     </span>
-  </h2>
+  </div>
 
   <mat-dialog-content class="eov-content">
     <div class="eov-grid">

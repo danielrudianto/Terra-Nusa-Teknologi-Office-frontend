@@ -5,9 +5,12 @@
   yang dibuka dari tombol bersebelahan. Bedanya tidak pernah disengaja; ia
   sekadar tertinggal saat salah satunya dirapikan.
 -->
-<h1 mat-dialog-title class="cpc-title" appDialogGeser>
-  {{ "calendarPayment.confirmTitle" | translate }}
-</h1>
+<div mat-dialog-title class="cpc-kepala" appDialogGeser>
+  <h2 class="cpc-title">{{ "calendarPayment.confirmTitle" | translate }}</h2>
+  <span class="cpc-sub">{{
+    "calendarPayment.dipilih" | translate: { count: data.payments.length }
+  }}</span>
+</div>
 
 <mat-dialog-content>
   <p class="cpc-prompt">

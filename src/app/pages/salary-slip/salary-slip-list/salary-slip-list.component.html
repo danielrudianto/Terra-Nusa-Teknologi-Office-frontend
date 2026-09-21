@@ -37,13 +37,13 @@
       [ngModel]="keadaan"
       (ngModelChange)="gantiKeadaan($event)"
     >
-      <mat-chip-option class="ssl-fchip" value="aktif">{{
+      <mat-chip-option class="ssl-fchip ssl-fchip--aktif" value="aktif">{{
         "salarySlip.keadaanAktif" | translate
       }}</mat-chip-option>
       <mat-chip-option class="ssl-fchip ssl-fchip--hapus" value="dihapus">{{
         "salarySlip.keadaanDihapus" | translate
       }}</mat-chip-option>
-      <mat-chip-option class="ssl-fchip" value="semua">{{
+      <mat-chip-option class="ssl-fchip ssl-fchip--semua" value="semua">{{
         "salarySlip.keadaanSemua" | translate
       }}</mat-chip-option>
     </mat-chip-listbox>

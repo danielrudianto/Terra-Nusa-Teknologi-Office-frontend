@@ -7,9 +7,12 @@
   sudah dirapikan dan yang ini tertinggal, sehingga dua dialog kembar
   terbuka dengan rupa yang sama sekali berbeda.
 -->
-<h1 mat-dialog-title class="cpr-title" appDialogGeser>
-  {{ "calendarPayment.rejectTitle" | translate }}
-</h1>
+<div mat-dialog-title class="cpr-kepala" appDialogGeser>
+  <h2 class="cpr-title">{{ "calendarPayment.rejectTitle" | translate }}</h2>
+  <span class="cpr-sub">{{
+    "calendarPayment.dipilih" | translate: { count: data.payments.length }
+  }}</span>
+</div>
 
 <mat-dialog-content>
   <p class="cpr-prompt">

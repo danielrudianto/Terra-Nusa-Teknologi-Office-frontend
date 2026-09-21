@@ -5,10 +5,10 @@
       (formGroup.get("name")?.value || "?").charAt(0)
     }}</span>
     <div class="sv-head__text">
-      <div class="sv-name">
+      <h2 class="sv-name">
         {{ formGroup.get("name")?.value || ('hardcoded.salarySlip' | translate) }}
-      </div>
-      <div class="sv-meta">
+      </h2>
+      <div class="sv-meta sv-sub">
         {{ formGroup.get("monthName")?.value }}
         {{ formGroup.get("year")?.value }}
         <ng-container *ngIf="formGroup.get('position')?.value">

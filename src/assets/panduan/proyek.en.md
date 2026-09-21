@@ -112,3 +112,36 @@ Things to note here:
 - **Cumulative cost** is compared against the contract value. If the line is
   already near the limit while the work is only half done, that shows up now
   rather than after it's exceeded.
+
+## Project cash flow
+
+The **Cash flow** card (next to *Progress vs spending*) answers a different
+question from the two views above: *when did the money actually move*. It is
+based on **payment dates**, not document dates — a March purchase paid in May
+shows up as an outflow in May.
+
+Three lines:
+
+- **Cash in** — payments received for this project's sales invoices.
+- **Cash out** — payments made for this project's purchases and
+  reimbursements.
+- **Cash balance** (thick line) — in minus out, running from the start of the
+  project. Below zero means the company is **financing** the project; the note
+  under the chart says since which date.
+
+Worth knowing:
+
+- **Internal purchases** are included only when *Include internal* is on, and
+  are treated as paid **on their purchase date** — they usually have no
+  payment record.
+- **Expenses and salaries are not included**, because neither has a project
+  column. Cash out here is therefore a **lower bound**, not the full figure.
+- **Daily** is the default, so a balance that dipped below zero mid-month and
+  recovered with an end-of-month progress payment is still visible. **Monthly**
+  is available to see the overall shape of long projects.
+- The chart shows a 30/60/90-day (or 6/10/18-month) window that can be moved
+  back; months without payments are still drawn.
+- When a single year is selected, the balance from earlier years is **carried
+  in** — a project that has been financed for a year does not start from zero.
+- The card is only shown to users allowed to see outgoing payments (level 3
+  and above in the relevant department); for others it is hidden.

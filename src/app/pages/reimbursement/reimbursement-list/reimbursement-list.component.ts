@@ -344,6 +344,11 @@ export class ReimbursementListComponent implements OnDestroy {
   }
 
   changeSelection(field: string, event: any) {
+    // Chip yang dipilih LEWAT KODE (`[selected]` saat halaman dibuka)
+    // juga memancarkan `selectionChange`. Tanpa penyaring ini URL ditulis
+    // ulang dan data dimuat ganda saat halaman baru dibuka — transisi
+    // halamannya pun jalan dua kali.
+    if (event?.isUserInput === false) return;
     const isSelected = event.selected;
     this.filterFormGroup.get(field)?.setValue(isSelected);
     this.chipSelections[field] = isSelected;

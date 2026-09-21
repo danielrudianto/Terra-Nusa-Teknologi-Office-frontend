@@ -4,10 +4,10 @@
       (formGroup.get("supplierName")?.value || "?").charAt(0)
     }}</span>
     <div class="pdv-head__text">
-      <div class="pdv-name">
+      <h2 class="pdv-name">
         {{ formGroup.get("purchaseOrderName")?.value || ('hardcoded.purchaseDraft' | translate) }}
-      </div>
-      <div class="pdv-meta">
+      </h2>
+      <div class="pdv-meta pdv-sub">
         {{ formGroup.get("supplierName")?.value
         }}<ng-container *ngIf="formGroup.get('date')?.value">
           · {{ formGroup.get("date")?.value }}</ng-container

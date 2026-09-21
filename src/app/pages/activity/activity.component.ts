@@ -1,3 +1,4 @@
+import { AuditLabelPipe } from '../../pipes/audit-label.pipe';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -45,7 +46,7 @@ interface ActivityEntry {
 @Component({
   selector: 'app-activity',
   standalone: true,
-  imports: [
+  imports: [AuditLabelPipe, 
     MatAutocompleteModule,
     MatInputModule,
     MatNativeDateModule,

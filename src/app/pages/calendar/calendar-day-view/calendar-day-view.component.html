@@ -1,8 +1,11 @@
 <div class="cdv">
-  <h2 mat-dialog-title class="cdv-head" appDialogGeser>
+  <div mat-dialog-title class="cdv-head" appDialogGeser>
     <span class="cdv-head__icon"><mat-icon>event</mat-icon></span>
-    <span class="cdv-title">{{ "calendar.dailyTitle" | translate }}</span>
-  </h2>
+    <span class="cdv-head__teks">
+      <h2 class="cdv-title">{{ "calendar.dailyTitle" | translate }}</h2>
+      <span class="cdv-sub">{{ "calendar.dailySub" | translate }}</span>
+    </span>
+  </div>
 
   <mat-dialog-content class="cdv-content">
     <div class="cdv-total">

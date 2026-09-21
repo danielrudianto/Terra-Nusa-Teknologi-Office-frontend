@@ -204,10 +204,20 @@
             </span>
           </th>
           <td mat-cell *matCellDef="let purchase" class="ex-num">
+            <!--
+              Nilai FAKTUR = DPP + PPN + PBBKB — sama dengan daftar Pembelian.
+              Dulu PPN tidak ikut, jadi beban ber-PPN tampil sebesar DPP-nya
+              saja. PPh (dipotong) tidak dikurangkan di sini; yang ditransfer
+              (setelah PPh) terlihat di dialog pembayaran.
+            -->
             <span class="ex-amount">{{
-              purchase.dpp + purchase.pbbkb
-                | currency: "Rp " : "symbol" : "1.2-2"
+              purchase.dpp +
+                ((purchase.ppn || 0) * purchase.dpp) / 100 +
+                (purchase.pbbkb || 0) | currency: "Rp " : "symbol" : "1.2-2"
             }}</span>
+            <span class="ex-secondary" *ngIf="purchase.ppn"
+              >DPP {{ purchase.dpp | currency: "Rp " : "symbol" : "1.2-2" }}</span
+            >
           </td>
         </ng-container>
 

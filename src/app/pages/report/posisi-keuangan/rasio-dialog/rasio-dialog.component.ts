@@ -1,3 +1,4 @@
+import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -65,7 +66,7 @@ export interface DataRasioDialog {
   selector: 'app-rasio-dialog',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
+  imports: [DialogGeserDirective, 
     CommonModule,
     MatDialogModule,
     MatIconModule,

@@ -1241,3 +1241,67 @@ body.mobile-app *::-webkit-scrollbar {
   height: 0;
   display: none; /* WebKit/Blink */
 }
+
+/*
+ * Ikon TIDAK PERNAH menciut di wadah flex.
+ *
+ * `mat-icon` 24px tetapi `flex-shrink` bawaannya 1: di sebelah teks panjang
+ * ia dipersempit sampai terpotong (terukur 7px di spanduk KPI). Dulu
+ * ditambal per komponen — 160 tempat masih tertinggal. Satu aturan global
+ * menutup semuanya; `ikonflexcek.py` menjaga aturan ini tetap ada.
+ */
+.mat-icon {
+  flex-shrink: 0;
+}
+
+/*
+ * Pil penyaring (`mat-chip-option`) — SATU bentuk untuk seluruh aplikasi,
+ * mengikuti daftar Pembelian: pil bergaris dengan TITIK WARNA di depannya.
+ *
+ * Dulu hanya empat daftar (yang memakai `daftar.fchip`) yang punya titik;
+ * Rekening Bank, Slip Gaji, dan lainnya tampil polos. Warna titiknya
+ * dibaca dari akhiran kelas `*-fchip--<keadaan>` yang sudah ada di tiap
+ * daftar, jadi daftar baru cukup memberi nama keadaannya.
+ */
+.mat-mdc-chip-option .mdc-evolution-chip__graphic {
+  display: none;
+}
+.mat-mdc-chip-option .mdc-evolution-chip__text-label {
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+.mat-mdc-chip-option .mdc-evolution-chip__text-label::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 7px;
+  vertical-align: middle;
+  background: var(--fchip-titik, var(--brand, #154dec));
+  opacity: 0.9;
+}
+/* hijau — beres / berlaku */
+[class*="fchip--paid"], [class*="fchip--approved"], [class*="fchip--active"],
+[class*="fchip--aktif"], [class*="fchip--disetujui"], [class*="fchip--selesai"],
+[class*="fchip--jalan"] {
+  --fchip-titik: var(--ok-fg, #22a75a);
+}
+/* merah — tidak berlaku / bermasalah */
+[class*="fchip--unpaid"], [class*="fchip--rejected"], [class*="fchip--hapus"],
+[class*="fchip--blacklist"], [class*="fchip--batal"], [class*="fchip--inactive"] {
+  --fchip-titik: var(--bad-fg, #d64541);
+}
+/* jingga — menunggu / perlu perhatian */
+[class*="fchip--due"], [class*="fchip--draft"], [class*="fchip--pending"],
+[class*="fchip--retensi"], [class*="fchip--bap"] {
+  --fchip-titik: var(--warn-fg, #e0942e);
+}
+/* biru — sedang berjalan */
+[class*="fchip--ready"], [class*="fchip--berjalan"], [class*="fchip--dibuat"] {
+  --fchip-titik: var(--brand, #154dec);
+}
+/* abu — gabungan / netral (ditulis TERAKHIR: "notdue" memuat "due") */
+[class*="fchip--notdue"], [class*="fchip--all"], [class*="fchip--semua"] {
+  --fchip-titik: var(--muted, #9aa0ab);
+}

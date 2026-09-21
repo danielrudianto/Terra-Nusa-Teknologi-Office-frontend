@@ -8,9 +8,9 @@
       }
     </span>
     <div class="ad-head__text">
-      <h2 class="ad-title">{{ actionKey(entry.action) | translate }}</h2>
+      <h2 class="ad-title">{{ entry.action | auditLabel: 'audit' }}</h2>
       <span class="ad-sub">
-        {{ entityKey(entry.entity) | translate }} · #{{ entry.entityID }}
+        {{ entry.entity | auditLabel: 'auditEntity' }} · #{{ entry.entityID }}
       </span>
     </div>
     <button type="button" class="ad-close" mat-dialog-close>

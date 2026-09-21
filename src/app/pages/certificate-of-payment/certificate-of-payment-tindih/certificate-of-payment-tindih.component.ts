@@ -1,3 +1,4 @@
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -36,7 +37,7 @@ export interface DataTindih {
 @Component({
   selector: 'app-certificate-of-payment-tindih',
   standalone: true,
-  imports: [
+  imports: [DialogGeserDirective, 
     CommonModule,
     MatDialogModule,
     MatButtonModule,

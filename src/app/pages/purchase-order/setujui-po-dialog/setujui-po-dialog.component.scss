@@ -242,3 +242,17 @@ mat-dialog-content {
   border-top: 1px solid var(--line, #e6e9ee);
   margin: 0 !important;
 }
+
+/* Kepala: judul <h2> + anak judul, dapat digeser. */
+.spo-kepala {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.spo-kepala .spo-title {
+  margin: 0;
+}
+.spo-sub {
+  font-size: 0.8rem;
+  color: var(--muted, #6b7280);
+}

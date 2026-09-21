@@ -1,3 +1,4 @@
+import { DialogGeserDirective } from '../../directives/dialog-geser.directive';
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,7 +33,7 @@ export interface DeleteConfirmationData {
 @Component({
   selector: 'app-delete-confirmation',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, MatButtonModule],
+  imports: [DialogGeserDirective, CommonModule, MatDialogModule, MatButtonModule],
   templateUrl: './delete-confirmation.component.html',
   styleUrl: './delete-confirmation.component.scss',
 })
@@ -57,6 +58,13 @@ export class DeleteConfirmationComponent {
     if (this.data?.confirmLabel) return this.data.confirmLabel;
     return this.translate.instant(
       this.isDestructive ? 'confirm.yesDelete' : 'confirm.yesContinue',
+    );
+  }
+
+  /** Anak judul: menghapus perlu kepastian; aksi lain cukup dikonfirmasi. */
+  get labelSub(): string {
+    return this.translate.instant(
+      this.isDestructive ? 'confirm.subHapus' : 'confirm.subLanjut',
     );
   }
 

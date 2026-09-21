@@ -161,6 +161,11 @@ export class LoansListComponent {
   }
 
   changeSelection(field: string, event: any) {
+    // Chip yang dipilih LEWAT KODE (`[selected]` saat halaman dibuka)
+    // juga memancarkan `selectionChange`. Tanpa penyaring ini URL ditulis
+    // ulang dan data dimuat ganda saat halaman baru dibuka — transisi
+    // halamannya pun jalan dua kali.
+    if (event?.isUserInput === false) return;
     this.filterFormGroup.get(field)?.setValue(event.selected);
     this.updateQueryParams();
     this.fetchData(0);

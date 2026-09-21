@@ -10,7 +10,9 @@ import {
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ApiService } from '../../../services/api.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Location } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import moment from 'moment';
 import { MatTableModule } from '@angular/material/table';
@@ -37,6 +39,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatButtonModule,
     CalendarMonthSelectorComponent,
     TranslatePipe,
+    MatTooltipModule,
   ],
   templateUrl: './bank-mutation.component.html',
   styleUrl: './bank-mutation.component.scss',
@@ -49,6 +52,39 @@ export class BankMutationComponent {
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
   ) {}
+
+  private readonly router = inject(Router);
+  private readonly lokasi = inject(Location);
+
+  /**
+   * Kembali ke daftar rekening — ke halaman & pencarian yang tadi, karena
+   * keadaannya tersimpan di alamat daftar. Dibuka langsung (tanpa riwayat),
+   * jatuh ke daftar bawaan.
+   */
+  kembali(): void {
+    if (this.router.lastSuccessfulNavigation?.previousNavigation) {
+      this.lokasi.back();
+    } else {
+      this.router.navigate(['/Bank']);
+    }
+  }
+
+  /** Periode & halaman ke alamat (hanya yang bukan bawaan, hanya bila berubah). */
+  private simpanKeAlamat(): void {
+    const kini = new Date();
+    const qp: Record<string, string> = {};
+    if (this.month !== kini.getMonth() || this.year !== kini.getFullYear()) {
+      qp['periode'] = `${this.year}-${String(this.month + 1).padStart(2, '0')}`;
+    }
+    if (this.page > 1) qp['hal'] = String(this.page);
+    if (this.pageSize !== 20) qp['per'] = String(this.pageSize);
+    const lama = this.route.snapshot.queryParams ?? {};
+    const sama =
+      Object.keys(qp).length === Object.keys(lama).length &&
+      Object.keys(qp).every((k) => String(lama[k]) === qp[k]);
+    if (sama) return;
+    this.router.navigate([], { relativeTo: this.route, queryParams: qp, replaceUrl: true });
+  }
 
   bankAccount: any = null;
 
@@ -70,8 +106,17 @@ export class BankMutationComponent {
   ];
 
   ngOnInit(): void {
+    const q = this.route.snapshot.queryParamMap;
+    const m = /^(\d{4})-(\d{2})$/.exec(q.get('periode') ?? '');
+    if (m) {
+      this.year = Number(m[1]);
+      this.month = Math.min(11, Math.max(0, Number(m[2]) - 1));
+    }
+    const per = Number(q.get('per'));
+    if ([10, 20, 25, 50, 100].includes(per)) this.pageSize = per;
+    const hal = Number(q.get('hal'));
     this.fetchMetaData();
-    this.fetchData();
+    this.fetchData(Number.isFinite(hal) && hal > 1 ? Math.floor(hal) : 1);
   }
 
   onMonthChanged(event: { month: number; year: number }) {
@@ -108,6 +153,7 @@ export class BankMutationComponent {
 
   fetchData(page: number = this.page) {
     this.page = page;
+    this.simpanKeAlamat();
     const bankAccountID = this.route.snapshot.params['id'];
     this.apiService
       .post(`banks/mutation`, {

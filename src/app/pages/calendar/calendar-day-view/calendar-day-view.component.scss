@@ -137,3 +137,22 @@
     height: 18px;
   }
 }
+
+/* Kepala dialog: judul <h2> + anak judul (pola `bank-create`). */
+h2.cdv-title {
+  margin: 0;
+}
+.cdv-head__teks {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.cdv-sub {
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--muted, #6b7280);
+}

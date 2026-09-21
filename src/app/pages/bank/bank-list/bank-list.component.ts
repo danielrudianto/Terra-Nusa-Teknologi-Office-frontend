@@ -101,7 +101,18 @@ export class BankListComponent {
   }
 
   ngOnInit(): void {
-    this.fetchBankAccounts();
+    // Keadaan dari ALAMAT: kembali dari Mutasi (atau menyegarkan halaman)
+    // mendarat di halaman, pencarian, dan saringan yang sama.
+    const q = this.route?.snapshot?.queryParamMap;
+    const kd = q?.get('keadaan');
+    if (kd === 'aktif' || kd === 'dihapus' || kd === 'semua') this.keadaan = kd;
+    if (q?.get('cari')) this.formControl.setValue(q!.get('cari'), { emitEvent: false });
+    if (q?.get('urut')) this.sortBy = q.get('urut')!;
+    if (q?.get('arah') === 'desc' || q?.get('arah') === 'asc') {
+      this.sortByDirection = q?.get('arah') as 'asc' | 'desc';
+    }
+    const hal = Number(q?.get('hal'));
+    this.fetchBankAccounts(Number.isFinite(hal) && hal > 1 ? Math.floor(hal) : 1);
 
     this.formControl.valueChanges.pipe(debounceTime(500)).subscribe((_) => {
       this.fetchBankAccounts(1);
@@ -124,10 +135,32 @@ export class BankListComponent {
     this.fetchBankAccounts();
   }
 
+  /**
+   * Tulis keadaan daftar ke alamat — HANYA yang berbeda dari bawaan, dan
+   * hanya bila berubah. Menulis alamat yang sama saat halaman dibuka akan
+   * menjalankan transisi halaman dua kali.
+   */
+  private simpanKeAlamat(): void {
+    const qp: Record<string, string> = {};
+    if (this.keadaan !== 'aktif') qp['keadaan'] = this.keadaan;
+    const cari = String(this.formControl.value ?? '').trim();
+    if (cari) qp['cari'] = cari;
+    if (this.sortBy !== 'bankName') qp['urut'] = this.sortBy;
+    if (this.sortByDirection !== 'asc') qp['arah'] = this.sortByDirection;
+    if (this.page > 1) qp['hal'] = String(this.page);
+    const kini = this.route?.snapshot?.queryParams ?? {};
+    const sama =
+      Object.keys(qp).length === Object.keys(kini).length &&
+      Object.keys(qp).every((k) => String(kini[k]) === qp[k]);
+    if (sama) return;
+    this.router?.navigate?.([], { relativeTo: this.route, queryParams: qp, replaceUrl: true });
+  }
+
   fetchBankAccounts(targetPage: number = 1) {
     this.isLoading = true;
 
     this.page = targetPage;
+    this.simpanKeAlamat();
     this.apiService
       .get('banks', {
         sortBy: this.sortBy,
