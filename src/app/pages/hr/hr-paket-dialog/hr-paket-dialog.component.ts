@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 import { firstValueFrom } from 'rxjs';
 
 import { ApiService } from 'src/app/services/api.service';
@@ -41,6 +42,7 @@ export const DURASI_MAKS = 480;
     MatIconModule,
     MatInputModule,
     TranslateModule,
+    DialogGeserDirective,
   ],
   templateUrl: './hr-paket-dialog.component.html',
   styleUrls: ['./hr-paket-dialog.component.scss'],

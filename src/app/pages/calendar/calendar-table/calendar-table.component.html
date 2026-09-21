@@ -13,7 +13,7 @@
       class="cal-add-plan"
       (click)="buatRencana(null)"
     >
-      <mat-icon>event_upcoming</mat-icon>
+      <mat-icon>event_available</mat-icon>
       {{ "rencana.tambahRencana" | translate }}
     </button>
   </div>
@@ -80,7 +80,7 @@
             (click)="bukaRencana(day, $event)"
             [matTooltip]="'rencana.klikUntukUbah' | translate"
           >
-            <mat-icon>event_upcoming</mat-icon>
+            <mat-icon>event_available</mat-icon>
             {{ rencanaHari(day) | shortCurrency: "Rp. " }}
           </div>
 
@@ -160,7 +160,7 @@
     class="cal-plan-total"
     *ngIf="totalRencanaKeluar || totalRencanaMasuk"
   >
-    <mat-icon>event_upcoming</mat-icon>
+    <mat-icon>event_available</mat-icon>
     <span>{{ "rencana.totalBulanIni" | translate }}</span>
     <span class="cal-plan-total__rinci">
       <span *ngIf="totalRencanaMasuk" class="masuk">

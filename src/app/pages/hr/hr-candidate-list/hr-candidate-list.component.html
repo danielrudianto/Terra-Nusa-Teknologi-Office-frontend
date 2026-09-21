@@ -3,20 +3,86 @@
   [description]="'hrCandidate.subjudul' | translate"
 ></app-header-title>
 
-<div class="hcl">
+<div class="hcl-wrap">
+  <!--
+    MENU SAMPING, mengikuti `master.component` — bukan bentuk baru.
+
+    Enam kelompoknya menjawab satu pertanyaan yang sebelumnya menuntut
+    membuka penyaring dan menghitung baris: sudah sampai mana rekrutmen ini.
+    Lencananya bagian dari jawaban itu, bukan hiasan.
+
+    Kelompok adalah TOMBOL, bukan tautan ke rute lain. Daftarnya satu
+    halaman yang sama; membelahnya menjadi enam rute berarti enam salinan
+    kode yang sama dan enam kali memuat ulang seluruh layar.
+  -->
+  <aside class="hcl-nav">
+    <div class="hcl-nav__head">
+      <span class="hcl-nav__title">{{ "hrCandidate.judul" | translate }}</span>
+      <span class="hcl-nav__sub">{{ "hrCandidate.navKet" | translate }}</span>
+    </div>
+    <nav class="hcl-nav__list">
+      @for (e of emberPilihan; track e) {
+        <button
+          type="button"
+          class="hcl-nav__item"
+          [class.hcl-nav__item--active]="emberTerpilih === e"
+          [attr.aria-pressed]="emberTerpilih === e"
+          (click)="pilihEmber(e)"
+        >
+          <span class="hcl-nav__icon">
+            <mat-icon>{{ ikonEmber(e) }}</mat-icon>
+          </span>
+          <span class="hcl-nav__text">
+            <span class="hcl-nav__name">
+              {{ "hrCandidate.ember_" + e | translate }}
+            </span>
+            <span class="hcl-nav__desc">
+              {{ "hrCandidate.emberKet_" + e | translate }}
+            </span>
+          </span>
+          <!--
+            Lencana disembunyikan selama angkanya belum datang, bukan
+            ditulis "0". Nol yang keliru lebih buruk daripada kosong: yang
+            melihatnya menyimpulkan tidak ada pelamar, lalu tidak membukanya.
+          -->
+          @if (jumlahEmber(e) !== null) {
+            <span
+              class="hcl-nav__lencana"
+              [class.hcl-nav__lencana--nol]="jumlahEmber(e) === 0"
+            >{{ jumlahEmber(e) }}</span>
+          }
+        </button>
+      }
+    </nav>
+  </aside>
+
+  <section class="hcl">
   <div class="hcl-toolbar">
     <mat-form-field
       appearance="outline"
       subscriptSizing="dynamic"
-      class="hcl-filter"
+      class="hcl-cari"
     >
-      <mat-label>{{ "hrCandidate.paketUjian" | translate }}</mat-label>
-      <mat-select [(ngModel)]="ujianTerpilih" (selectionChange)="muat()">
-        <mat-option [value]="null">{{ "common.semua" | translate }}</mat-option>
-        @for (u of ujian; track u.id) {
-          <mat-option [value]="u.id">{{ u.name }}</mat-option>
-        }
-      </mat-select>
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>{{ "hrCandidate.cari" | translate }}</mat-label>
+      <input
+        matInput
+        type="search"
+        autocomplete="off"
+        [(ngModel)]="cari"
+        (ngModelChange)="ketikCari()"
+      />
+      @if (cari) {
+        <button
+          matSuffix
+          type="button"
+          class="hcl-cari__bersih"
+          [attr.aria-label]="'common.reset' | translate"
+          (click)="hapusCari()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
     </mat-form-field>
 
     <mat-form-field
@@ -24,13 +90,14 @@
       subscriptSizing="dynamic"
       class="hcl-filter"
     >
-      <mat-label>{{ "hrCandidate.status" | translate }}</mat-label>
-      <mat-select [(ngModel)]="statusTerpilih" (selectionChange)="muat()">
-        <mat-option value="">{{ "common.semua" | translate }}</mat-option>
-        @for (s of statusPilihan; track s) {
-          <mat-option [value]="s">
-            {{ "hrCandidate.status_" + s | translate }}
-          </mat-option>
+      <mat-label>{{ "hrCandidate.paketUjian" | translate }}</mat-label>
+      <mat-select
+        [(ngModel)]="ujianTerpilih"
+        (selectionChange)="muatRingkasan(); muat()"
+      >
+        <mat-option [value]="null">{{ "common.semua" | translate }}</mat-option>
+        @for (u of ujian; track u.id) {
+          <mat-option [value]="u.id">{{ u.name }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
@@ -185,7 +252,7 @@
                     ? "cancel"
                     : "record_voice_over"
               }}</mat-icon>
-              <span>{{ "status." + st | translate }}</span>
+              <span>{{ "hrCandidate.status_" + st | translate }}</span>
             </button>
           }
 
@@ -218,4 +285,5 @@
       </div>
     }
   }
+  </section>
 </div>

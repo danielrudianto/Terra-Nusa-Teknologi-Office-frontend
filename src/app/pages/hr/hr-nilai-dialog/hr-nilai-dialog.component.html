@@ -1,7 +1,28 @@
-<h2 mat-dialog-title class="hnd-judul">
-  <mat-icon>fact_check</mat-icon>
-  <span>{{ "hrNilai.judul" | translate }} — {{ data.name }}</span>
-</h2>
+<!-- Kepala mengikuti pola rumah (`bank-create`); lihat `dialogkepalacek.py`. -->
+<div class="hnd">
+  <div class="hnd-head" mat-dialog-title appDialogGeser>
+    <span class="hnd-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M9 4h6v2H9zM8 6H6v13h12V6h-2M9 12l2 2 4-4" />
+      </svg>
+    </span>
+    <div class="hnd-head__text">
+      <h2 class="hnd-title">{{ "hrNilai.judul" | translate }}</h2>
+      <!-- Nama pelamar jadi ANAK JUDUL, bukan disambung ke judulnya dengan
+           tanda pisah: nama panjang memanjangkan judulnya sampai membungkus,
+           dan yang membungkus di sana menggeser seluruh pita. -->
+      <span class="hnd-sub">{{ data.name }}</span>
+    </div>
+  </div>
 
 <mat-dialog-content class="hnd-isi">
   @if (memuat()) {
@@ -151,17 +172,17 @@
   }
 </mat-dialog-content>
 
-<mat-dialog-actions align="end" class="hnd-aksi">
-  <button mat-button type="button" (click)="tutup()">
-    {{ "common.close" | translate }}
-  </button>
-  <button
-    mat-flat-button
-    color="primary"
-    type="button"
-    [disabled]="menyimpan() || memuat() || adaYangTidakSah()"
-    (click)="simpan()"
-  >
-    {{ "hrNilai.simpan" | translate }}
-  </button>
-</mat-dialog-actions>
+  <mat-dialog-actions class="hnd-aksi">
+    <button type="button" class="hnd-batal" (click)="tutup()">
+      {{ "common.close" | translate }}
+    </button>
+    <button
+      type="button"
+      class="hnd-simpan"
+      [disabled]="menyimpan() || memuat() || adaYangTidakSah()"
+      (click)="simpan()"
+    >
+      {{ "hrNilai.simpan" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

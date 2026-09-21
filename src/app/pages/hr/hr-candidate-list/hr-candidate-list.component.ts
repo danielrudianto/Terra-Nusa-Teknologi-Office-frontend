@@ -12,6 +12,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ApiService } from 'src/app/services/api.service';
@@ -42,8 +43,20 @@ interface Pelamar {
   startedAt: string | null;
   submittedAt: string | null;
   status: string;
+  /** Baris yang hasilnya sudah dihapus; hanya muncul di ember `dihapus`. */
+  isDelete?: boolean | number;
   createdAt: string;
   testName: string;
+}
+
+/** Jumlah pelamar per ember, untuk lencana di menu samping. */
+interface Ringkasan {
+  terbit: number;
+  submit: number;
+  wawancara: number;
+  diterima: number;
+  ditolak: number;
+  dihapus: number;
 }
 
 /**
@@ -101,6 +114,8 @@ export class HrCandidateListComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   isLoading = false;
   ujian: Ujian[] = [];
@@ -110,23 +125,18 @@ export class HrCandidateListComponent implements OnInit {
 
   /** Pelamar yang pratinjau pesannya sedang dibuka. */
   intip: number | null = null;
-  statusTerpilih = '';
-
-  /**
-   * Pilihan penyaring status — URUT TANGGANYA, bukan urut abjad.
+  /*
+   * Penyaring status yang lama DIBUANG, bukan disembunyikan.
    *
-   * Daftar yang urut tangganya dapat dibaca sebagai perjalanan: yang
-   * membukanya tahu di mana sebuah lamaran berada tanpa menghafal artinya.
+   * Ia menawarkan tujuh anak tangga sebagai daftar turun — bentuk yang
+   * menuntut dibuka dulu sebelum memberi tahu apa pun, dan tidak pernah
+   * menyebut BERAPA isinya. Enam ember di menu samping menjawab keduanya
+   * sekaligus, dan menyisakan dua penyaring untuk hal yang sama hanya
+   * membuat dua jalan menuju layar yang sama dengan hasil berbeda.
+   *
+   * Servernya TETAP menerima `status`; hanya layar ini yang berhenti
+   * mengirimnya.
    */
-  readonly statusPilihan = [
-    'baru',
-    'mengerjakan',
-    'selesai',
-    'dinilai',
-    'diwawancara',
-    'diterima',
-    'ditolak',
-  ];
 
   /**
    * Status yang boleh DISETEL dari layar ini.
@@ -137,6 +147,101 @@ export class HrCandidateListComponent implements OnInit {
    * menyatakan "sudah dinilai" atas lembar yang belum disentuh siapa pun.
    */
   readonly statusManual = ['diwawancara', 'diterima', 'ditolak'];
+
+  /**
+   * ENAM EMBER di menu samping — urut perjalanan lamaran, bukan abjad.
+   *
+   * Larik harfiah berisi KODE saja, bukan objek berisi ikon dan label.
+   * `kuncirangkaicek.py` melacak `"hrCandidate.ember_" + e` ke larik ini
+   * dan memastikan keenam kuncinya ada di ketiga bahasa; larik berisi objek
+   * membuatnya ikut membaca nama ikon sebagai kode ember, dan penjagaannya
+   * berubah jadi temuan keliru.
+   */
+  readonly emberPilihan = [
+    'terbit',
+    'submit',
+    'wawancara',
+    'diterima',
+    'ditolak',
+    'dihapus',
+  ];
+
+  emberTerpilih = 'terbit';
+
+  ringkasan: Ringkasan | null = null;
+
+  /** Kata pencarian; dikirim ke server, bukan disaring di sini. */
+  cari = '';
+
+  /**
+   * Penunda ketikan.
+   *
+   * Tanpa ini setiap aksara mengirim satu permintaan: mengetik satu nama
+   * berarti belasan permintaan yang seluruhnya kecuali yang terakhir sudah
+   * tidak diperlukan — dan jawaban yang datang tidak berurutan dapat
+   * menimpa hasil yang benar dengan hasil yang lebih lama.
+   */
+  private jedaCari: any = null;
+
+  private static readonly IKON: Record<string, string> = {
+    terbit: 'send',
+    submit: 'assignment_turned_in',
+    wawancara: 'record_voice_over',
+    diterima: 'task_alt',
+    ditolak: 'cancel',
+    dihapus: 'delete_outline',
+  };
+
+  /** Ikon satu ember. Fungsi, bukan medan larik — lihat `emberPilihan`. */
+  ikonEmber(e: string): string {
+    return HrCandidateListComponent.IKON[e] || 'folder';
+  }
+
+  /** Lencana satu ember; `null` selama ringkasannya belum datang. */
+  jumlahEmber(e: string): number | null {
+    const r = this.ringkasan as any;
+    return r ? (r[e] ?? 0) : null;
+  }
+
+  pilihEmber(e: string): void {
+    if (this.emberTerpilih === e) return;
+    this.emberTerpilih = e;
+    this.simpanKeAlamat();
+    this.muat();
+  }
+
+  ketikCari(): void {
+    if (this.jedaCari) clearTimeout(this.jedaCari);
+    this.jedaCari = setTimeout(() => {
+      this.simpanKeAlamat();
+      this.muat();
+    }, 300);
+  }
+
+  hapusCari(): void {
+    this.cari = '';
+    this.ketikCari();
+  }
+
+  /**
+   * Ember dan kata pencarian disimpan di ALAMAT, bukan hanya di memori.
+   *
+   * Yang menyegarkan halaman sesudah menilai seseorang kembali ke ember yang
+   * sama, bukan ke awal; dan alamatnya dapat dikirim ke orang lain apa
+   * adanya. `replaceUrl` supaya tombol kembali tidak menelusuri setiap
+   * ketikan satu per satu.
+   */
+  private simpanKeAlamat(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        kelompok: this.emberTerpilih === 'terbit' ? null : this.emberTerpilih,
+        cari: this.cari.trim() || null,
+      },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
 
   /** Hapus hasil hanya untuk level 5 — lihat `hr_recruitment:delete`. */
   bolehHapusHasil(): boolean {
@@ -151,6 +256,9 @@ export class HrCandidateListComponent implements OnInit {
           'Close',
           { duration: 2500 },
         );
+        // Lencananya ikut berubah: satu pelamar baru saja pindah ember.
+        // Tanpa ini angkanya basi persis pada saat orang melihatnya.
+        this.muatRingkasan();
         this.muat();
       },
       error: (err) =>
@@ -189,6 +297,7 @@ export class HrCandidateListComponent implements OnInit {
                 'Close',
                 { duration: 2500 },
               );
+              this.muatRingkasan();
               this.muat();
             },
             error: (err) =>
@@ -201,8 +310,30 @@ export class HrCandidateListComponent implements OnInit {
 
 
   ngOnInit(): void {
+    const q = this.route.snapshot.queryParamMap;
+    const k = (q.get('kelompok') || '').trim();
+    if (this.emberPilihan.includes(k)) this.emberTerpilih = k;
+    this.cari = (q.get('cari') || '').trim();
+
     this.muatUjian();
+    this.muatRingkasan();
     this.muat();
+  }
+
+  /**
+   * Lencana dimuat TERPISAH dari daftarnya.
+   *
+   * Angkanya harus tetap benar untuk ember yang sedang tidak dibuka —
+   * menghitungnya dari `pelamar` hanya akan menampilkan jumlah baris yang
+   * kebetulan sedang tampil, dan lima lencana lainnya menjadi nol.
+   */
+  muatRingkasan(): void {
+    const param: any = {};
+    if (this.ujianTerpilih) param.testID = this.ujianTerpilih;
+    this.apiService.get('hr/candidates/ringkasan', param).subscribe({
+      next: (res: any) => (this.ringkasan = res || null),
+      error: () => (this.ringkasan = null),
+    });
   }
 
   private muatUjian(): void {
@@ -219,7 +350,8 @@ export class HrCandidateListComponent implements OnInit {
     // dan ia menolak seluruh permintaan dengan 422 sebelum satu baris dibaca.
     const param: any = {};
     if (this.ujianTerpilih) param.testID = this.ujianTerpilih;
-    if (this.statusTerpilih) param.status = this.statusTerpilih;
+    if (this.emberTerpilih) param.ember = this.emberTerpilih;
+    if (this.cari.trim()) param.cari = this.cari.trim();
 
     this.apiService
       .get('hr/candidates', param)
@@ -382,7 +514,10 @@ export class HrCandidateListComponent implements OnInit {
       })
       .afterClosed()
       .subscribe((hasil) => {
-        if (hasil) this.muat();
+        if (hasil) {
+          this.muatRingkasan();
+          this.muat();
+        }
       });
   }
 }

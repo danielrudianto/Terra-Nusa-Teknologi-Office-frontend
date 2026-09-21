@@ -110,18 +110,68 @@ export class HrQuestionListComponent implements OnInit {
   cari = '';
 
   ngOnInit(): void {
+    // Soal TIDAK dimuat di sini. Satu paket harus terpilih lebih dulu, dan
+    // paketnya baru diketahui setelah daftarnya datang — lihat `muatUjian`.
     this.muatUjian();
-    this.muatSoal();
   }
 
+  /**
+   * Daftar paket, lalu PILIH SATU.
+   *
+   * Sebelumnya pemilihnya punya pilihan "Semua" dan bermula tanpa pilihan.
+   * Hasilnya membingungkan: kotaknya tampak kosong seolah belum memilih apa
+   * pun, sementara daftar di bawahnya menampilkan judul paket sebagai
+   * kepala kelompok — dan judul itu terbaca sebagai pilihan yang sedang
+   * berlaku. Yang melihatnya tidak dapat menyimpulkan apakah ia sedang
+   * melihat satu paket atau seluruhnya.
+   *
+   * Sekarang TEPAT SATU paket, dan PADA MULANYA TIDAK ADA — layarnya
+   * meminta memilih dulu, seperti Master Data. Dua alasannya:
+   *
+   *   1. Tidak ada yang dapat salah dibaca. Kotak kosong berarti belum
+   *      memilih, dan daftarnya pun kosong; keduanya menyatakan hal yang
+   *      sama, bukan dua hal yang bertentangan.
+   *   2. Membukanya tidak lagi menarik tujuh puluh lima soal yang belum
+   *      tentu dilihat siapa pun.
+   *
+   * Paket yang sudah dipilih DIPERTAHANKAN selama masih ada — misalnya
+   * setelah menambah atau mengubah paket. Yang hilang dilepas, bukan
+   * diganti dengan paket lain diam-diam.
+   */
   muatUjian(): void {
     this.apiService.get('hr/tests', {}).subscribe({
-      next: (res: any) => (this.ujian = res || []),
-      error: () => (this.ujian = []),
+      next: (res: any) => {
+        this.ujian = res || [];
+        if (
+          this.ujianTerpilih &&
+          !this.ujian.some((u) => u.id === this.ujianTerpilih)
+        ) {
+          this.ujianTerpilih = null;
+        }
+        this.muatSoal();
+      },
+      error: () => {
+        this.ujian = [];
+        this.ujianTerpilih = null;
+        this.soal = [];
+      },
     });
   }
 
   muatSoal(): void {
+    /*
+     * Tanpa paket terpilih tidak ada yang dapat ditampilkan.
+     *
+     * Meminta seluruh soal di sini akan mengembalikan daftar tujuh puluh
+     * lima baris dari paket yang berbeda-beda — persis keadaan yang
+     * membingungkan itu, hanya tanpa pemilih yang menjelaskannya.
+     */
+    if (!this.ujianTerpilih) {
+      this.soal = [];
+      this.isLoading = false;
+      return;
+    }
+
     this.isLoading = true;
     /*
      * Parameter kosong TIDAK dikirim sama sekali.
@@ -148,22 +198,6 @@ export class HrQuestionListComponent implements OnInit {
       .add(() => (this.isLoading = false));
   }
 
-  /**
-   * Soal dikelompokkan per paket ujian.
-   *
-   * Daftar rata sepanjang tujuh puluh lima baris tidak memberi tahu soal itu
-   * milik ujian yang mana, dan yang mencarinya harus membaca kolom nama
-   * berulang kali.
-   */
-  get kelompok(): { nama: string; soal: Soal[] }[] {
-    const peta = new Map<string, Soal[]>();
-    for (const s of this.soal) {
-      const k = s.testName || '—';
-      if (!peta.has(k)) peta.set(k, []);
-      peta.get(k)!.push(s);
-    }
-    return [...peta.entries()].map(([nama, soal]) => ({ nama, soal }));
-  }
 
   /** Berapa soal yang sedang tampil; dipakai pada kepala halaman. */
   get jumlahTampil(): number {

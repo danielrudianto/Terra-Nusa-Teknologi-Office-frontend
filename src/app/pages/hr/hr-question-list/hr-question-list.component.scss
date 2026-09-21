@@ -43,19 +43,6 @@
 }
 
 /* --- kelompok per paket ujian --- */
-.hql-grup {
-  margin-bottom: 1.75rem;
-}
-
-.hql-grup__judul {
-  margin: 0 0 0.75rem;
-  font-family: "Montserrat", sans-serif;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--brand-strong);
-}
 
 /* --- satu soal --- */
 .hql-soal {
@@ -161,5 +148,60 @@
   .hql-cari,
   .hql-ujian {
     flex: 1 1 100%;
+  }
+}
+
+/* ============ BELUM MEMILIH PAKET ============
+
+   Bentuknya menyalin `master-welcome` — ukuran, sudut, dan bayangan yang
+   sama. Layar "pilih dulu" yang berbeda bentuk di tiap halaman membuat
+   keadaan yang sama terbaca sebagai hal yang berbeda. */
+.hql-sambut {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.9rem;
+  min-height: 420px;
+  padding: 3rem 2rem;
+  background: var(--surface, #ffffff);
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 18px;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 4px 16px rgba(16, 24, 40, 0.05);
+
+  &__ikon {
+    display: grid;
+    place-items: center;
+    width: 68px;
+    height: 68px;
+    border-radius: 18px;
+    background: var(--brand-soft, #e7ecfb);
+    color: var(--brand, #154dec);
+
+    mat-icon {
+      /* Ikon di wadah grid tetap disebut ukurannya — lihat `ikonflexcek.py`. */
+      flex: 0 0 auto;
+      font-size: 34px;
+      width: 34px;
+      height: 34px;
+    }
+  }
+
+  &__judul {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--ink, #16181d);
+  }
+
+  &__ket {
+    max-width: 420px;
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--muted, #6b7280);
   }
 }

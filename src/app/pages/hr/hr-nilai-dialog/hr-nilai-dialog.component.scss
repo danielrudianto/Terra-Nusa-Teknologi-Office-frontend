@@ -1,18 +1,79 @@
-.hnd-judul {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+/* Disalin dari `bank-create`, dialog acuan repo ini. */
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$line: var(--line, #eef0f3);
+
+.hnd {
+  font-family: "Montserrat", sans-serif;
+  width: min(880px, 96vw);
+  box-sizing: border-box;
+  color: $ink;
 }
-.hnd-judul mat-icon {
-  /* Ikon di dalam baris teks: tanpa `line-height` ia duduk di garis dasar
-     sendiri dan tulisannya tampak melompat setengah baris. */
-  line-height: 24px;
+.hnd *,
+.hnd *::before,
+.hnd *::after {
+  box-sizing: border-box;
+}
+
+.hnd-head {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  text-align: left;
+  background: linear-gradient(
+    135deg,
+    var(--brand-soft, #eef2fe) 0%,
+    var(--hover, #f6f8ff) 100%
+  );
+  border-bottom: 1px solid var(--line, #e4e9fb);
+
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+}
+
+.hnd-badge {
+  /* Ikon di wadah flex tidak boleh menciut — lihat `ikonflexcek.py`. */
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--surface, #ffffff);
+  color: $brand;
+  box-shadow: 0 2px 6px rgba(21, 77, 236, 0.14);
+}
+
+.hnd-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: $ink;
+  margin: 0;
+  line-height: 1.2;
+}
+.hnd-sub {
+  font-size: 0.76rem;
+  color: $muted;
+  /* Nama pelamar dapat panjang; dipotong, bukan membungkus. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .hnd-isi {
-  /* Padding tepi disebut sendiri: dialog Material di repo ini kerap tampil
-     mepet tanpa ini. */
-  padding: 0 1.25rem 0.5rem !important;
+  padding: 1.25rem 1.5rem !important;
+  overflow-x: hidden;
   max-height: 72vh;
 }
 
@@ -234,4 +295,51 @@
 .hnd-salah > mat-icon,
 .hnd-peringatan > mat-icon {
   flex: 0 0 auto;
+}
+
+/* aksi */
+.hnd-aksi {
+  padding: 1rem 1.5rem 1.25rem !important;
+  display: flex !important;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid $line;
+}
+
+.hnd-batal,
+.hnd-simpan {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border-radius: 11px;
+  padding: 0.6rem 1.25rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.hnd-batal {
+  border: none;
+  background: transparent;
+  color: $muted;
+  &:hover {
+    background: var(--surface-2, #f3f5f9);
+    color: $ink;
+  }
+}
+
+.hnd-simpan {
+  border: none;
+  background: $brand;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
+
+  &:hover:not(:disabled) {
+    background: var(--brand-strong, #0f3fd0);
+  }
+  &:disabled {
+    background: var(--line, #e6e9ee);
+    color: var(--faint, #9aa0ab);
+    box-shadow: none;
+    cursor: default;
+  }
 }

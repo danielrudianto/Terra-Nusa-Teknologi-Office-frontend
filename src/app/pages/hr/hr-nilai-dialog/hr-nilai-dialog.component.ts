@@ -20,6 +20,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 import { firstValueFrom } from 'rxjs';
 
 import { ApiService } from 'src/app/services/api.service';
@@ -72,6 +73,7 @@ export function pecahTautan(
     MatProgressBarModule,
     MatTooltipModule,
     TranslateModule,
+    DialogGeserDirective,
   ],
   templateUrl: './hr-nilai-dialog.component.html',
   styleUrls: ['./hr-nilai-dialog.component.scss'],

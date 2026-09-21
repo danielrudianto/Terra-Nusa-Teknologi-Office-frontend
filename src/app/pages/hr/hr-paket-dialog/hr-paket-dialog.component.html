@@ -1,7 +1,47 @@
-<h2 mat-dialog-title class="hpd-judul">
-  <mat-icon>quiz</mat-icon>
-  <span>{{ (sunting ? "hrPaket.judulUbah" : "hrPaket.judulBaru") | translate }}</span>
-</h2>
+<!--
+  KEPALA DIALOG MENGIKUTI POLA RUMAH, bukan bentuk sendiri.
+
+  Acuannya `bank-create`: pita berwarna, lencana 42px berisi SVG sebaris,
+  judul dengan anak judul di sebelahnya, dan `appDialogGeser` supaya
+  dialognya dapat digeser. Delapan puluh sembilan dari seratus tujuh belas
+  dialog di repo ini memakai bentuk itu; yang memakai bentuk lain terbaca
+  sebagai layar dari aplikasi yang berbeda.
+
+  Ikonnya SVG SEBARIS, bukan `<mat-icon>`, karena acuannya begitu: lencana
+  42px berisi gambar bergaris 20px, yang tidak dapat disusun dari ligatur
+  font berukuran tetap.
+
+  (`quiz` yang dipakai sebelumnya BUKAN nama yang keliru — ia memang ada di
+  Material Icons dan memang digambar sebagai kartu bertanda tanya. Yang
+  salah bentuk kepalanya, bukan ikonnya. Dicatat supaya tidak ada yang
+  "memperbaiki" nama ikon yang tidak pernah rusak. Yang benar-benar tidak
+  ada di font ini dijaga `ikonadacek.py`.)
+-->
+<div class="hpd">
+  <div class="hpd-head" mat-dialog-title appDialogGeser>
+    <span class="hpd-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M9 4h6v2H9zM8 6H6v13h12V6h-2M9 12l2 2 4-4" />
+      </svg>
+    </span>
+    <div class="hpd-head__text">
+      <h2 class="hpd-title">
+        {{ (sunting ? "hrPaket.judulUbah" : "hrPaket.judulBaru") | translate }}
+      </h2>
+      <span class="hpd-sub">
+        {{ (sunting ? "hrPaket.subUbah" : "hrPaket.subBaru") | translate }}
+      </span>
+    </div>
+  </div>
 
 <mat-dialog-content class="hpd-isi">
   <mat-form-field appearance="outline" class="hpd-penuh">
@@ -67,17 +107,17 @@
   <p class="hpd-ket">{{ "hrPaket.aktifKet" | translate }}</p>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end" class="hpd-aksi">
-  <button mat-button type="button" mat-dialog-close>
-    {{ "common.cancel" | translate }}
-  </button>
-  <button
-    mat-flat-button
-    color="primary"
-    type="button"
-    [disabled]="!bolehSimpan"
-    (click)="simpan()"
-  >
-    {{ "common.save" | translate }}
-  </button>
-</mat-dialog-actions>
+  <mat-dialog-actions class="hpd-aksi">
+    <button type="button" class="hpd-batal" mat-dialog-close>
+      {{ "common.cancel" | translate }}
+    </button>
+    <button
+      type="button"
+      class="hpd-simpan"
+      [disabled]="!bolehSimpan"
+      (click)="simpan()"
+    >
+      {{ "common.save" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

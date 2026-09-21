@@ -1,0 +1,46 @@
+kepala dialog: 44
+
+  src/app/components/date-selector/date-selector.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/components/delete-confirmation/delete-confirmation.component.html: kepala dialog tanpa `appDialogGeser` — dialognya tidak dapat digeser saat menutupi isi di belakangnya
+  src/app/components/delete-confirmation/delete-confirmation.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/asset/asset-view/asset-view.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/calendar/calendar-account-selector/calendar-account-selector-dialog/calendar-account-selector-dialog.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/calendar/calendar-day-view/calendar-day-view.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/calendar/calendar-payment-confirm/calendar-payment-confirm.component.html: kepala dialog tanpa judul `<h2>` dan anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/calendar/calendar-payment-reject/calendar-payment-reject.component.html: kepala dialog tanpa judul `<h2>` dan anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/calendar/rencana-dialog/rencana-dialog.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/calendar/rencana-hari-dialog/rencana-hari-dialog.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/calendar/terlewat-dialog/terlewat-dialog.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/calendar/unduh-kalender-dialog/unduh-kalender-dialog.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/certificate-of-payment/certificate-of-payment-pilih/certificate-of-payment-pilih.component.html: kepala dialog tanpa `appDialogGeser` — dialognya tidak dapat digeser saat menutupi isi di belakangnya
+  src/app/pages/certificate-of-payment/certificate-of-payment-pilih/certificate-of-payment-pilih.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/certificate-of-payment/certificate-of-payment-pratinjau/certificate-of-payment-pratinjau.component.html: kepala dialog tanpa `appDialogGeser` — dialognya tidak dapat digeser saat menutupi isi di belakangnya
+  src/app/pages/certificate-of-payment/certificate-of-payment-pratinjau/certificate-of-payment-pratinjau.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/certificate-of-payment/certificate-of-payment-tindih/certificate-of-payment-tindih.component.html: kepala dialog tanpa `appDialogGeser` — dialognya tidak dapat digeser saat menutupi isi di belakangnya
+  src/app/pages/certificate-of-payment/certificate-of-payment-tindih/certificate-of-payment-tindih.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/certificate-of-payment/certificate-of-payment-view/certificate-of-payment-view.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/employee/employee-create/employee-create.component.html: kepala dialog tanpa judul `<h2>` — bentuknya menyimpang dari `bank-create`
+  src/app/pages/expense/expense-opponent/expense-opponent-view/expense-opponent-view.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/expense/expense-view/expense-view.component.html: kepala dialog tanpa judul `<h2>` dan anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/loans/loans-view/loans-view.component.html: kepala dialog tanpa judul `<h2>` dan anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/master/master-equipment/master-equipment-view/master-equipment-view.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/master/master-item/master-item-view/master-item-view.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/payment/payment-view/payment-view.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/project/contract-view/contract-view.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/project/project-progress-dialog/project-progress-dialog.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/purchase/purchase-view/purchase-view.component.html: kepala dialog tanpa judul `<h2>` dan anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/purchase-draft/purchase-draft-view/purchase-draft-view.component.html: kepala dialog tanpa judul `<h2>` dan anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/purchase-order/purchase-order-list/purchase-order-filter/purchase-order-filter.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/purchase-order/purchase-order-periksa/purchase-order-periksa.component.html: kepala dialog tanpa `appDialogGeser` — dialognya tidak dapat digeser saat menutupi isi di belakangnya
+  src/app/pages/purchase-order/setujui-po-dialog/setujui-po-dialog.component.html: kepala dialog tanpa judul `<h2>` dan anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/reimbursement/reimbursement-confirm/reimbursement-confirm.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/reimbursement/reimbursement-view/reimbursement-view.component.html: kepala dialog tanpa judul `<h2>` dan anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/report/posisi-keuangan/rasio-dialog/rasio-dialog.component.html: kepala dialog tanpa `appDialogGeser` — dialognya tidak dapat digeser saat menutupi isi di belakangnya
+  src/app/pages/report/posisi-keuangan/rasio-dialog/rasio-dialog.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/salary-slip/salary-slip-employee-picker/salary-slip-employee-picker.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/salary-slip/salary-slip-view/salary-slip-view.component.html: kepala dialog tanpa judul `<h2>` dan anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/sales-invoice/sales-invoice-view/sales-invoice-view.component.html: kepala dialog tanpa judul `<h2>` dan anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/tender/tender-keputusan-dialog/tender-keputusan-dialog.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/tender/tender-quote-dialog/tender-quote-dialog.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/tender/tender-quote-view/tender-quote-view.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`
+  src/app/pages/user/user-view/user-view.component.html: kepala dialog tanpa anak judul (kelas `*-sub`) — bentuknya menyimpang dari `bank-create`

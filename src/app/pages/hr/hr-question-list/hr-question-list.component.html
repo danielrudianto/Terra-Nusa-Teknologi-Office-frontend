@@ -29,7 +29,15 @@
     >
       <mat-label>{{ "hrQuestion.paketUjian" | translate }}</mat-label>
       <mat-select [(ngModel)]="ujianTerpilih" (selectionChange)="muatSoal()">
-        <mat-option [value]="null">{{ "common.semua" | translate }}</mat-option>
+        <!--
+          TIDAK ada pilihan "Semua".
+
+          Soal selalu dilihat per paket: yang menyusun satu paket tidak
+          sedang melihat paket lain, dan daftar campuran hanya dapat dibaca
+          dengan memperhatikan judul kelompok di setiap sekat. Menghapusnya
+          menghilangkan satu keadaan yang tidak pernah berguna, sekaligus
+          satu pembacaan besar setiap kali layar ini dibuka.
+        -->
         @for (u of ujian; track u.id) {
           <mat-option [value]="u.id">
             {{ u.name }} ({{ u.jumlahSoal }})
@@ -83,7 +91,30 @@
     </button>
   </div>
 
-  @if (isLoading) {
+  @if (!ujianTerpilih) {
+    <!--
+      BELUM MEMILIH PAKET — bentuknya menyalin `master-welcome`.
+
+      Dibedakan tegas dari "paketnya kosong": yang satu menunggu pilihan,
+      yang lain sudah dipilih dan memang tidak berisi. Satu kalimat "tidak
+      ada soal" untuk kedua keadaan membuat yang belum memilih menyangka
+      bank soalnya kosong.
+    -->
+    <div class="hql-sambut">
+      <div class="hql-sambut__ikon">
+        <mat-icon>quiz</mat-icon>
+      </div>
+      <h2 class="hql-sambut__judul">
+        {{ "hrQuestion.pilihPaketJudul" | translate }}
+      </h2>
+      <p class="hql-sambut__ket">
+        {{
+          (ujian.length ? "hrQuestion.pilihPaketKet" : "hrQuestion.belumAdaPaket")
+            | translate
+        }}
+      </p>
+    </div>
+  } @else if (isLoading) {
     <div class="hql-muat"><mat-spinner diameter="30"></mat-spinner></div>
   } @else if (!soal.length) {
     <p class="hql-kosong">{{ "hrQuestion.kosong" | translate }}</p>
@@ -93,18 +124,17 @@
     </p>
 
     <!--
-      Dikelompokkan per paket ujian.
+      Daftar RATA, tanpa kepala kelompok.
 
-      Daftar rata sepanjang tujuh puluh lima baris tidak memberi tahu soal itu
-      milik ujian yang mana, dan yang mencarinya harus membaca kolom nama
-      berulang kali.
+      Pengelompokan per paket dulu diperlukan karena daftarnya memuat soal
+      dari beberapa paket sekaligus. Sekarang pemilihnya selalu menunjuk
+      TEPAT SATU paket, jadi kepala kelompoknya hanya mengulang isi
+      pemilihnya — dan pengulangan itu justru yang membingungkan: judul
+      paket di atas daftar terbaca sebagai penyaring yang sedang berlaku,
+      padahal ia sekadar judul.
     -->
-    @for (g of kelompok; track g.nama) {
-      <section class="hql-grup">
-        <h2 class="hql-grup__judul">{{ g.nama }}</h2>
-
-        @for (s of g.soal; track s.id) {
-          <div class="hql-soal">
+    @for (s of soal; track s.id) {
+      <div class="hql-soal">
             <div class="hql-soal__no">{{ s.sortOrder }}</div>
 
             <div class="hql-soal__isi">
@@ -162,8 +192,6 @@
               </button>
             </mat-menu>
           </div>
-        }
-      </section>
     }
   }
 </div>
