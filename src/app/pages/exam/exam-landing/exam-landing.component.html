@@ -47,16 +47,28 @@
     <div class="exl-palet" role="group" [attr.aria-label]="'exam.warna' | translate">
       <span class="exl-palet__cap">{{ "exam.warna" | translate }}</span>
       @for (w of paletPilihan; track w.kode) {
+        <!--
+          Lingkaran warnanya kecil, TOMBOLNYA tidak.
+
+          Diukur di viewport ponsel sungguhan: tombol lama berukuran 22px —
+          jauh di bawah sasaran sentuh yang dapat diandalkan (44px menurut
+          Apple, 48dp menurut Android). Yang memakainya meleset, dan pada
+          halaman ujian setiap ketukan meleset adalah detik yang hilang.
+
+          Warnanya digambar pada `span` di dalamnya, sehingga bidang
+          sentuhnya dapat diperbesar tanpa membesarkan lingkarannya.
+        -->
         <button
           type="button"
           class="exl-palet__tombol"
           [class.exl-palet__tombol--aktif]="paletAktif() === w.kode"
-          [style.background]="w.aksen"
           [attr.aria-pressed]="paletAktif() === w.kode"
           [attr.aria-label]="'exam.warnaNama.' + w.kode | translate"
           [matTooltip]="'exam.warnaNama.' + w.kode | translate"
           (click)="pilihPalet(w.kode)"
-        ></button>
+        >
+          <span class="exl-palet__bulat" [style.background]="w.aksen"></span>
+        </button>
       }
     </div>
 

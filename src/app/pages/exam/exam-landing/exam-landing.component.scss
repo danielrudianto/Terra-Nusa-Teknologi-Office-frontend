@@ -310,7 +310,9 @@ mat-checkbox {
 .exl-palet {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  /* Rapat: bidang sentuh tiap tombol sudah 44px, jadi jarak tambahan hanya
+     membuat barisnya membungkus lebih cepat di ponsel. */
+  gap: 0;
   margin: 0 0 1.25rem;
   flex-wrap: wrap;
 }
@@ -319,7 +321,26 @@ mat-checkbox {
   color: var(--muted, #6b7280);
   margin-right: 0.15rem;
 }
+/* SASARAN SENTUH 44px, lingkaran warnanya tetap 22px.
+
+   Diukur di viewport ponsel sungguhan (Playwright, 320–430px): tombol
+   lamanya 22px — jauh di bawah 44px yang disarankan Apple dan 48dp yang
+   disarankan Android. Bidang sentuhnya diperbesar lewat padding; yang
+   terlihat tetap lingkaran kecil. */
 .exl-palet__tombol {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: transform 0.12s ease;
+}
+.exl-palet__bulat {
+  display: block;
   width: 1.4rem;
   height: 1.4rem;
   border-radius: 50%;
@@ -327,14 +348,11 @@ mat-checkbox {
   /* Lingkaran warna tanpa pembatas menghilang di atas latar putih ketika
      paletnya terang; bayangan tipis memberinya tepi tanpa menambah warna. */
   box-shadow: 0 0 0 1px rgba(16, 24, 40, 0.14);
-  cursor: pointer;
-  padding: 0;
-  transition: transform 0.12s ease;
 }
 .exl-palet__tombol:hover {
   transform: scale(1.12);
 }
-.exl-palet__tombol--aktif {
+.exl-palet__tombol--aktif .exl-palet__bulat {
   /* Yang terpilih ditandai CINCIN, bukan hanya diperbesar: pembesaran saja
      tidak terlihat bagi yang membandingkan empat lingkaran sekaligus, dan
      tidak terbaca sama sekali oleh yang tidak membedakan warna. */
@@ -345,7 +363,7 @@ mat-checkbox {
 }
 .exl-palet__tombol:focus-visible {
   outline: 2px solid var(--akn-ink);
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 
 /* Formulir biodata: dua kolom di layar lebar, satu di ponsel.

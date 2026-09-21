@@ -334,8 +334,31 @@
 }
 
 @media (max-width: 600px) {
+  /*
+   * BILAH ATAS DIRAMPINGKAN DI PONSEL.
+   *
+   * Ia `position: sticky`, jadi tingginya dibayar sepanjang ujian. Diukur
+   * di viewport ponsel sungguhan (Playwright, 320–390px): isinya membungkus
+   * jadi TIGA baris dan bilahnya setinggi 105px — sekitar 15% layar hilang
+   * permanen, selama sembilan puluh menit mengerjakan esai.
+   *
+   * Yang dirampingkan jaraknya, bukan isinya: setiap bagiannya — waktu,
+   * penanda simpan, jumlah terjawab — dibutuhkan justru di ponsel.
+   */
   .exw-bar {
-    padding: 0.65rem 1rem;
+    padding: 0.5rem 0.9rem;
+    gap: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  .exw-bar__waktu {
+    font-size: 1rem;
+  }
+  .exw-bar__kanan {
+    gap: 0.5rem;
+  }
+  .exw-bar__hitung,
+  .exw-simpan {
+    font-size: 0.72rem;
   }
   .exw-isi {
     padding: 1rem 0.75rem 3rem;
@@ -361,4 +384,22 @@
 }
 .exw-simpan__ulang:hover {
   background: rgba(255, 255, 255, 0.12);
+}
+
+/*
+ * PERANTI SENTUH: tombol sebaris diperbesar.
+ *
+ * `pointer: coarse` menyasar jari, bukan lebar layar — tablet lebar dengan
+ * layar sentuh ikut terlayani, dan jendela peramban sempit di desktop
+ * tidak ikut membengkak tanpa perlu.
+ *
+ * 44px mengikuti saran Apple; Android menyarankan 48dp. Tombol ini duduk
+ * di dalam bilah yang sudah padat, jadi yang diperbesar BIDANG SENTUHNYA
+ * lewat padding tegak — tampilannya tetap kecil.
+ */
+@media (pointer: coarse) {
+  .exw-simpan__ulang {
+    min-height: 44px;
+    padding: 0.55rem 0.7rem;
+  }
 }
