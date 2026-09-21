@@ -33,6 +33,7 @@
     "@types/chart.js": "^2.9.41",
     "bootstrap": "^5.3.5",
     "chart.js": "^4.5.1",
+    "chartjs-plugin-zoom": "^2.2.0",
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "fuzzy-search": "^3.2.1",

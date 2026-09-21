@@ -64,6 +64,7 @@
             },
             "browser": "src/main.ts",
             "allowedCommonJsDependencies": [
+              "hammerjs",
               "moment",
               "pdfmake/build/pdfmake",
               "pdfmake/build/vfs_fonts",

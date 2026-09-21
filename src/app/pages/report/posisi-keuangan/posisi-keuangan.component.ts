@@ -18,7 +18,6 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData } from 'chart.js';
 import { firstValueFrom } from 'rxjs';
 
-import { RouterLink } from '@angular/router';
 
 import { ApiService } from 'src/app/services/api.service';
 import { PermissionService } from 'src/app/services/permission.service';
@@ -91,7 +90,6 @@ interface Ember {
     TranslateModule,
     HeaderTitleComponent,
     BaseChartDirective,
-    RouterLink,
     KpiKinerjaComponent,
     KpiAntreanComponent,
   ],

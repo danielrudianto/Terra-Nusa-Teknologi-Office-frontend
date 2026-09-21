@@ -1,4 +1,8 @@
-import { Chart, registerables } from 'chart.js';
+import { Chart, Plugin, registerables } from 'chart.js';
+// Plugin zoom membawa Hammer sendiri (dependensinya, bukan dependensi kita):
+// Hammer yang menangani SEMUA seretan — tetikus maupun jari. `hammerjs`
+// tercantum di `allowedCommonJsDependencies` karena paket itu bukan ESM.
+import zoomPlugin from 'chartjs-plugin-zoom';
 import { uangDokumenRp } from './uang.helper';
 
 /**
@@ -47,11 +51,132 @@ export function pastikanChart(): void {
   if (sudah) return;
   sudah = true;
 
-  Chart.register(...registerables);
+  Chart.register(...registerables, zoomPlugin, geserZoom);
 
   Chart.defaults.font.family = FONT_APLIKASI;
   Chart.defaults.font.size = 11;
+
+  pasangGeserZoom();
 }
+
+/**
+ * GESER & ZOOM SEPERTI GRAFIK SAHAM — berlaku untuk SEMUA grafik sekaligus.
+ *
+ * Dipasang sebagai bawaan global di sini, bukan di tiap komponen: setiap
+ * grafik di aplikasi ini sudah melewati `pastikanChart()` (dituntut
+ * `grafikcek.py`), jadi satu tempat mencakup semuanya — termasuk grafik
+ * berikutnya yang belum ditulis.
+ *
+ *   seret                 → geser mendatar
+ *   Ctrl + gulir / cubit  → perbesar-perkecil (di trackpad Mac, cubit
+ *                           dikirim sebagai Ctrl + gulir, jadi ikut jalan)
+ *   klik dua kali         → kembali ke tampilan semula
+ *
+ * Gulir TANPA Ctrl sengaja TIDAK memperbesar. Grafik di aplikasi ini duduk
+ * di tengah halaman yang panjang; roda yang ditangkap grafik membuat halaman
+ * berhenti bergulir tiap kali kursor melintas di atasnya.
+ *
+ * Hanya sumbu X. Sumbu Y rupiah yang ikut bergeser membuat nol hilang dari
+ * layar, dan batang yang tidak berpangkal di nol membohongi perbandingannya.
+ *
+ * Dibatasi pada data ASLI (`'original'`): tidak dapat digeser ke ruang
+ * kosong sebelum titik pertama atau sesudah titik terakhir. Akibatnya
+ * menggeser baru berpengaruh SETELAH diperbesar — pada tampilan penuh
+ * seluruh data sudah terlihat, dan tidak ada yang dapat digeser.
+ */
+/** Grafik tanpa sumbu X mendatar — tidak ada yang dapat digeser. */
+const JENIS_BUNDAR = ['pie', 'doughnut', 'polarArea', 'radar'];
+
+function pasangGeserZoom(): void {
+  const z: any = ((Chart.defaults.plugins as any).zoom ??= {});
+  z.pan = { ...(z.pan || {}), enabled: true, mode: 'x', threshold: 6 };
+  z.zoom = {
+    ...(z.zoom || {}),
+    mode: 'x',
+    wheel: { enabled: true, modifierKey: 'ctrl', speed: 0.12 },
+    pinch: { enabled: true },
+    drag: { enabled: false },
+  };
+  z.limits = {
+    ...(z.limits || {}),
+    x: { min: 'original', max: 'original' },
+  };
+
+  // Grafik BUNDAR tidak punya sumbu X: tidak ada yang dapat digeser pada
+  // lingkaran. Dimatikan lewat `Chart.overrides[jenis]` — mekanisme resmi
+  // chart.js untuk bawaan per jenis grafik, yang didahulukan di atas
+  // `Chart.defaults`.
+  //
+  // BUKAN dengan menulis ke `chart.options` di dalam plugin. Itu versi
+  // pertamanya, dan ketahuan di uji: `chart.options` adalah proksi yang
+  // menulis TEMBUS ke `Chart.defaults`. Satu grafik pai yang tampil
+  // mematikan geser untuk SELURUH grafik sesudahnya, se-aplikasi, tanpa
+  // galat — dan halaman laporan pembelian memuat grafik pai.
+  const mati = {
+    pan: { enabled: false },
+    zoom: { wheel: { enabled: false }, pinch: { enabled: false } },
+  };
+  for (const jenis of JENIS_BUNDAR) {
+    const o: any = (Chart.overrides as any)[jenis];
+    if (!o) continue;
+    o.plugins = { ...(o.plugins || {}), zoom: mati };
+  }
+}
+
+/**
+ * Pelengkap plugin zoom: kursor, petunjuk, dan klik ganda.
+ *
+ * - Grafik tanpa sumbu X (pai, donat) dilewati; geser-zoom-nya sudah
+ *   dimatikan lewat `Chart.overrides` di `pasangGeserZoom`.
+ * - Kursor tangan (`grab`) memberi tahu bahwa grafiknya dapat diseret;
+ *   tanpa itu fiturnya ada tetapi tidak ditemukan siapa pun.
+ * - Petunjuk cara pakainya lewat `title` kanvas — muncul saat kursor diam
+ *   di atas grafik, tanpa menambah satu baris pun di halaman.
+ * - Klik ganda mengembalikan tampilan semula. Pendengarnya DIBUANG saat
+ *   grafiknya dihancurkan, supaya kanvas yang dipakai ulang tidak menumpuk
+ *   pendengar lama.
+ */
+const PETUNJUK =
+  'Seret untuk menggeser · Ctrl + gulir (atau cubit) untuk memperbesar · ' +
+  'klik dua kali untuk kembali';
+
+const PENDENGAR = new WeakMap<
+  object,
+  { kanvas: HTMLCanvasElement; kembali: () => void }
+>();
+
+export const geserZoom: Plugin = {
+  id: 'geserZoomAkn',
+  afterInit(chart) {
+    // HANYA MEMBACA setelan — tidak pernah menulis ke `chart.options`
+    // (lihat `pasangGeserZoom`: proksinya menulis tembus ke bawaan global).
+    //
+    // Jenis grafik dibaca dari KONFIGURASINYA, bukan dari `chart.scales`:
+    // pada `afterInit` sumbunya belum dibangun (itu terjadi pada `update()`
+    // sesudahnya), sehingga `chart.scales.x` selalu kosong di sini dan
+    // SETIAP grafik terbaca sebagai grafik bundar. Itu yang terjadi pada
+    // versi pertamanya.
+    const zoom: any = (chart.options.plugins as any)?.zoom;
+    if (JENIS_BUNDAR.includes((chart.config as any).type)) return;
+    if (zoom?.pan?.enabled === false) return;
+
+    const kanvas = chart.canvas;
+    kanvas.style.cursor = 'grab';
+    if (!kanvas.title) kanvas.title = PETUNJUK;
+
+    const kembali = () => (chart as any).resetZoom?.();
+    kanvas.addEventListener('dblclick', kembali);
+    PENDENGAR.set(chart, { kanvas, kembali });
+  },
+  // Kanvasnya DISIMPAN saat dipasang: pada `afterDestroy` chart.js sudah
+  // mengosongkan `chart.canvas`, dan membuang pendengar dari `null` gagal
+  // diam-diam — pendengarnya tertinggal pada kanvas yang dipakai ulang.
+  afterDestroy(chart) {
+    const p = PENDENGAR.get(chart);
+    if (p) p.kanvas.removeEventListener('dblclick', p.kembali);
+    PENDENGAR.delete(chart);
+  },
+};
 
 /**
  * Nominal rupiah untuk tooltip — dua desimal, seperti di mana pun.
