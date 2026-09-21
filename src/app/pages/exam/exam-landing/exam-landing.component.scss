@@ -347,3 +347,20 @@ mat-checkbox {
   outline: 2px solid var(--akn-ink);
   outline-offset: 3px;
 }
+
+/* Formulir biodata: dua kolom di layar lebar, satu di ponsel.
+
+   `auto-fit` + `minmax`, bukan jumlah kolom tetap — dua kolom tetap membuat
+   isian terjepit pada layar sempit, dan papan ketik ponsel menutupi
+   separuhnya. */
+.exl-bio {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.25rem 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.exl-bio__penuh {
+  /* Alamat memanjang; memaksanya satu kolom membuat isinya tergulir
+     mendatar di dalam kotak yang sempit. */
+  grid-column: 1 / -1;
+}

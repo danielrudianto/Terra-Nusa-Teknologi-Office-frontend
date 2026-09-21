@@ -220,6 +220,23 @@
     "1": "Jan", "2": "Feb", "3": "Mar", "4": "Apr", "5": "Mei", "6": "Jun",
     "7": "Jul", "8": "Agu", "9": "Sep", "10": "Okt", "11": "Nov", "12": "Des"
   },
+  "hrPaket": {
+    "tambah": "Paket baru",
+    "ubah": "Ubah paket",
+    "judulBaru": "Paket ujian baru",
+    "judulUbah": "Ubah paket ujian",
+    "nama": "Nama paket",
+    "namaWajib": "Nama paket minimal 2 huruf.",
+    "keterangan": "Keterangan",
+    "durasi": "Durasi",
+    "menit": "menit",
+    "durasiBatas": "Durasi antara {{min}} dan {{maks}} menit.",
+    "durasiHatiJudul": "Durasi sedang diubah",
+    "durasiHatiIsi": "Sisa waktu pelamar dihitung dari durasi paket ini, dibaca ulang setiap kali jawabannya tersimpan. Bila ada yang sedang mengerjakan, perubahan ini akan memotong atau memanjangkan waktu mereka seketika — dan server akan menolaknya sampai mereka selesai.",
+    "aktif": "Paket aktif",
+    "aktifKet": "Paket yang tidak aktif tetap dapat dikerjakan oleh pelamar yang tautannya sudah terbit; yang ditutup hanya penerbitan tautan baru.",
+    "tersimpan": "Paket ujian tersimpan."
+  },
   "hrNilai": {
     "judul": "Lembar jawaban",
     "kodeKet": "Kode peserta — diturunkan dari token, tidak dapat dikembalikan menjadi token.",
@@ -588,6 +605,8 @@
     }
   },
   "status": {
+    "dinilai": "Dinilai",
+    "diwawancara": "Diwawancara",
     "paid": "Lunas",
     "unpaid": "Belum Lunas",
     "due": "Jatuh Tempo",
@@ -5053,6 +5072,12 @@
     "dialogSub": "Soal esai; jawabannya dinilai manusia."
   },
   "hrCandidate": {
+    "tindakan": "Tindakan",
+    "statusDiubah": "Status pelamar diperbarui.",
+    "hapusHasil": "Hapus hasil & ulangi",
+    "hapusHasilJudul": "Hapus hasil ujian?",
+    "hapusHasilPrompt": "Seluruh jawaban {{nama}} akan dihapus dan tidak dapat dikembalikan. Pelamarnya TIDAK dihapus — tautannya tetap sama dan dapat dipakai mengerjakan lagi.",
+    "hasilDihapus": "Hasil ujian dihapus; pelamar kembali ke awal.",
     "nilai": "Nilai",
     "judul": "Pelamar rekrutmen",
     "subjudul": "Daftarkan pelamar dan terbitkan tautan pengerjaan ujian.",
@@ -5096,6 +5121,14 @@
     "dialogSub": "Nama dan jenis kelamin saja; sisanya diisi pelamar sendiri."
   },
   "exam": {
+    "biodata": "Biodata",
+    "biodataKet": "Diisi sebelum ujian dimulai, jadi tidak memakan waktu pengerjaan. Boleh dikosongkan.",
+    "panggilan": "Nama panggilan",
+    "lahir": "Tanggal lahir",
+    "telepon": "Nomor telepon",
+    "surel": "Surel",
+    "kota": "Kota",
+    "alamat": "Alamat",
     "warna": "Warna",
     "warnaNama": { "akn": "Oranye AKN", "biru": "Biru", "hijau": "Hijau", "slate": "Abu" },
     "departemen": "Human Resource Department",

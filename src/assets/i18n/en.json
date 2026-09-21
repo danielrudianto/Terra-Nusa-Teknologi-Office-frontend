@@ -220,6 +220,23 @@
     "1": "Jan", "2": "Feb", "3": "Mar", "4": "Apr", "5": "May", "6": "Jun",
     "7": "Jul", "8": "Aug", "9": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"
   },
+  "hrPaket": {
+    "tambah": "New package",
+    "ubah": "Edit package",
+    "judulBaru": "New exam package",
+    "judulUbah": "Edit exam package",
+    "nama": "Package name",
+    "namaWajib": "Package name needs at least 2 characters.",
+    "keterangan": "Description",
+    "durasi": "Duration",
+    "menit": "minutes",
+    "durasiBatas": "Duration must be between {{min}} and {{maks}} minutes.",
+    "durasiHatiJudul": "You are changing the duration",
+    "durasiHatiIsi": "A candidate's remaining time is derived from this package's duration, re-read every time their answers are saved. If anyone is sitting the exam right now, this change would cut or extend their time instantly — and the server will refuse it until they finish.",
+    "aktif": "Package active",
+    "aktifKet": "An inactive package can still be sat by candidates whose links are already issued; only issuing new links is closed off.",
+    "tersimpan": "Exam package saved."
+  },
   "hrNilai": {
     "judul": "Answer sheet",
     "kodeKet": "Participant code — derived from the token and cannot be turned back into it.",
@@ -588,6 +605,8 @@
     }
   },
   "status": {
+    "dinilai": "Scored",
+    "diwawancara": "Interviewed",
     "paid": "Paid",
     "unpaid": "Unpaid",
     "due": "Due",
@@ -5053,6 +5072,12 @@
     "dialogSub": "Essay question; answers are graded by a person."
   },
   "hrCandidate": {
+    "tindakan": "Actions",
+    "statusDiubah": "Candidate status updated.",
+    "hapusHasil": "Clear result & retake",
+    "hapusHasilJudul": "Clear exam result?",
+    "hapusHasilPrompt": "All of {{nama}}'s answers will be deleted and cannot be recovered. The candidate is NOT removed — their link stays the same and can be used to sit the exam again.",
+    "hasilDihapus": "Result cleared; the candidate is back to the start.",
     "nilai": "Score",
     "judul": "Recruitment candidates",
     "subjudul": "Register candidates and issue their test links.",
@@ -5096,6 +5121,14 @@
     "dialogSub": "Name and gender only; candidates fill in the rest themselves."
   },
   "exam": {
+    "biodata": "Your details",
+    "biodataKet": "Filled in before the exam starts, so it does not eat into your time. All fields are optional.",
+    "panggilan": "Preferred name",
+    "lahir": "Date of birth",
+    "telepon": "Phone number",
+    "surel": "Email",
+    "kota": "City",
+    "alamat": "Address",
     "warna": "Colour",
     "warnaNama": { "akn": "AKN orange", "biru": "Blue", "hijau": "Green", "slate": "Slate" },
     "departemen": "Human Resource Department",

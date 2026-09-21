@@ -155,6 +155,57 @@
         }
 
         <!--
+          Menu tindakan lanjutan.
+
+          Status yang DAPAT disetel hanya yang diputuskan manusia; `dinilai`
+          naik sendiri begitu soal terakhir bernilai, dan mundur lagi bila
+          ada nilai yang dicabut. Menawarkannya sebagai tombol berarti
+          daftar ini dapat menyatakan "sudah dinilai" atas lembar yang belum
+          disentuh siapa pun.
+        -->
+        <button
+          type="button"
+          class="hcl-intip"
+          [matMenuTriggerFor]="menuAksi"
+          [attr.aria-label]="'hrCandidate.tindakan' | translate"
+        >
+          <mat-icon>more_horiz</mat-icon>
+        </button>
+        <mat-menu #menuAksi="matMenu">
+          @for (st of statusManual; track st) {
+            <button
+              mat-menu-item
+              [disabled]="p.status === st"
+              (click)="ubahStatus(p, st)"
+            >
+              <mat-icon>{{
+                st === "diterima"
+                  ? "task_alt"
+                  : st === "ditolak"
+                    ? "cancel"
+                    : "record_voice_over"
+              }}</mat-icon>
+              <span>{{ "status." + st | translate }}</span>
+            </button>
+          }
+
+          <!--
+            Hapus hasil DIPISAH dengan garis, dan hanya untuk level 5.
+
+            Ia satu-satunya tindakan di layar ini yang membuang pekerjaan
+            orang tanpa dapat dikembalikan; menaruhnya berdempetan dengan
+            tombol status membuatnya tertekan karena salah sasaran.
+          -->
+          @if (bolehHapusHasil()) {
+            <mat-divider></mat-divider>
+            <button mat-menu-item class="hcl-bahaya" (click)="hapusHasil(p)">
+              <mat-icon>restart_alt</mat-icon>
+              <span>{{ "hrCandidate.hapusHasil" | translate }}</span>
+            </button>
+          }
+        </mat-menu>
+
+        <!--
           Pratinjau pesan.
 
           Yang mengirimnya perlu membaca sebelum menempel: pesan ini kiriman

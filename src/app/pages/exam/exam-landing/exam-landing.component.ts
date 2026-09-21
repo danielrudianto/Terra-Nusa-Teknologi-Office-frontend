@@ -123,6 +123,9 @@ export class ExamLandingComponent implements OnInit {
     this.http.get<any>(`${environment.url}hr/exam/${t}`).subscribe({
       next: (res) => {
         this.ujian = res;
+        // Biodata yang SUDAH pernah diisi dikembalikan ikut jawaban ini —
+        // tanpa ini pelamar mengetiknya ulang setiap kali membuka tautannya.
+        this.terapkanBiodata(res?.biodata);
         this.isChecking = false;
       },
       error: (err) => {
@@ -161,8 +164,56 @@ export class ExamLandingComponent implements OnInit {
    * Ganti isi metode ini dengan `router.navigate` begitu halaman
    * pengerjaannya dibuat.
    */
+  /** Biodata yang diisi pelamar; dimuat dari server bila sudah pernah diisi. */
+  bio: {
+    nickName: string | null;
+    dateOfBirth: string | null;
+    address: string | null;
+    city: string | null;
+    phoneNumber: string | null;
+    email: string | null;
+  } = {
+    nickName: null,
+    dateOfBirth: null,
+    address: null,
+    city: null,
+    phoneNumber: null,
+    email: null,
+  };
+
+  /**
+   * Isi formulir biodata dari jawaban server.
+   *
+   * `dateOfBirth` dipotong ke `YYYY-MM-DD`: `<input type="date">` menolak
+   * nilai berformat lain dan menampilkan kotak KOSONG tanpa galat apa pun —
+   * pelamar lalu mengisinya ulang, dan yang sudah tersimpan tertimpa.
+   */
+  terapkanBiodata(b: any): void {
+    if (!b) return;
+    this.bio = {
+      nickName: b.nickName ?? null,
+      dateOfBirth: b.dateOfBirth ? String(b.dateOfBirth).slice(0, 10) : null,
+      address: b.address ?? null,
+      city: b.city ?? null,
+      phoneNumber: b.phoneNumber ?? null,
+      email: b.email ?? null,
+    };
+  }
+
+  /**
+   * Simpan biodata, LALU pindah ke halaman pengerjaan.
+   *
+   * Gagal menyimpan TIDAK menghalangi ujiannya. Biodata dapat dilengkapi
+   * kemudian lewat HR; ujian yang batal karena satu kotak alamat tidak
+   * dapat.
+   */
   mulai(): void {
     if (!this.bolehMulai) return;
-    this.router.navigate(['/exam', this.token.trim(), 'start']);
+    const token = this.token.trim();
+    const lanjut = () => this.router.navigate(['/exam', token, 'start']);
+
+    this.http
+      .put(`${environment.url}hr/exam/${token}/biodata`, this.bio)
+      .subscribe({ next: lanjut, error: lanjut });
   }
 }

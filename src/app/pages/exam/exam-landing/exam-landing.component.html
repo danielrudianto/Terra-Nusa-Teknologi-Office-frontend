@@ -139,6 +139,73 @@
           }}</span>
         </div>
 
+        <!--
+          BIODATA, diisi SEBELUM menekan Mulai.
+
+          Kolomnya sudah ada di `hr_candidates` sejak awal dengan keterangan
+          "diisi sendiri lewat tautan", dan tidak pernah ada formulirnya —
+          seluruhnya tetap kosong.
+
+          Di sini, bukan di dalam ujian: mengisinya setelah timer berjalan
+          memakan waktu mengerjakan, dan yang mengetik alamatnya dengan
+          tergesa akan salah.
+
+          SELURUHNYA opsional. Pelamar yang tidak punya surel tetap harus
+          dapat mengerjakan ujiannya; mewajibkannya berarti menutup ujian
+          bagi orang yang justru hendak diuji.
+        -->
+        <h2 class="exl-kartu__judul">{{ "exam.biodata" | translate }}</h2>
+        <p class="exl-kartu__ket">{{ "exam.biodataKet" | translate }}</p>
+
+        <div class="exl-bio">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "exam.panggilan" | translate }}</mat-label>
+            <input matInput [(ngModel)]="bio.nickName" [maxlength]="50" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "exam.lahir" | translate }}</mat-label>
+            <input
+              matInput
+              type="date"
+              [(ngModel)]="bio.dateOfBirth"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "exam.telepon" | translate }}</mat-label>
+            <input
+              matInput
+              type="tel"
+              inputmode="tel"
+              [(ngModel)]="bio.phoneNumber"
+              [maxlength]="30"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "exam.surel" | translate }}</mat-label>
+            <input
+              matInput
+              type="email"
+              inputmode="email"
+              autocomplete="email"
+              [(ngModel)]="bio.email"
+              [maxlength]="150"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "exam.kota" | translate }}</mat-label>
+            <input matInput [(ngModel)]="bio.city" [maxlength]="100" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="exl-bio__penuh">
+            <mat-label>{{ "exam.alamat" | translate }}</mat-label>
+            <input matInput [(ngModel)]="bio.address" [maxlength]="255" />
+          </mat-form-field>
+        </div>
+
         <h2 class="exl-kartu__judul">{{ "exam.persiapan" | translate }}</h2>
 
         <mat-checkbox color="primary" [(ngModel)]="siapPerangkat">

@@ -156,7 +156,20 @@
   flex-wrap: wrap;
 }
 .hnd-nilai__kotak {
-  width: 8.5rem;
+  /* Cukup untuk label "Reviewer note"-panjang + angka + sufiks "/ 5" pada
+     satu baris. 8,5rem membuat sufiksnya terdorong ke baris kedua, dan
+     yang terlihat "Nilai   /" lalu "5" sendirian di bawahnya. */
+  width: 11rem;
+}
+
+/* Sufiks "/ 5" TIDAK boleh membungkus.
+
+   Ia dua "kata" bagi peramban, jadi pada lebar sempit garis miringnya
+   tertinggal di baris pertama dan angkanya turun sendirian. `nowrap` di
+   sini, dan `&nbsp;` di templatnya, menutup kedua jalan itu. */
+.hnd-maks {
+  white-space: nowrap;
+  color: var(--muted, #6b7280);
 }
 .hnd-nilai__catatan {
   flex: 1 1 14rem;

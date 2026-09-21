@@ -1,0 +1,83 @@
+<h2 mat-dialog-title class="hpd-judul">
+  <mat-icon>quiz</mat-icon>
+  <span>{{ (sunting ? "hrPaket.judulUbah" : "hrPaket.judulBaru") | translate }}</span>
+</h2>
+
+<mat-dialog-content class="hpd-isi">
+  <mat-form-field appearance="outline" class="hpd-penuh">
+    <mat-label>{{ "hrPaket.nama" | translate }}</mat-label>
+    <input matInput [(ngModel)]="nama" [maxlength]="150" />
+    @if (namaTidakSah) {
+      <mat-error>{{ "hrPaket.namaWajib" | translate }}</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="hpd-penuh">
+    <mat-label>{{ "hrPaket.keterangan" | translate }}</mat-label>
+    <textarea
+      matInput
+      rows="2"
+      [(ngModel)]="keterangan"
+      [maxlength]="500"
+    ></textarea>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="hpd-durasi">
+    <mat-label>{{ "hrPaket.durasi" | translate }}</mat-label>
+    <input
+      matInput
+      type="number"
+      inputmode="numeric"
+      [min]="min"
+      [max]="maks"
+      [(ngModel)]="durasi"
+    />
+    <span matTextSuffix>{{ "hrPaket.menit" | translate }}</span>
+    @if (durasiTidakSah) {
+      <mat-error>{{
+        "hrPaket.durasiBatas" | translate: { min: min, maks: maks }
+      }}</mat-error>
+    }
+  </mat-form-field>
+
+  <!--
+    Peringatan ini muncul SEBELUM Simpan ditekan, bukan sesudah ditolak.
+
+    Sisa waktu pelamar dihitung dari `durationMinutes` yang dibaca LANGSUNG
+    dari paket ini setiap kali jawabannya disimpan — bukan dari nilai yang
+    disalin saat ia mulai. Memendekkannya memangkas waktu semua orang yang
+    sedang mengerjakan, seketika, di tengah kalimat.
+
+    Server tetap yang menolak; ini hanya supaya penolakannya tidak datang
+    sebagai kejutan.
+  -->
+  @if (durasiBerubah) {
+    <div class="hpd-banner">
+      <mat-icon>timer</mat-icon>
+      <div>
+        <strong>{{ "hrPaket.durasiHatiJudul" | translate }}</strong>
+        <p>{{ "hrPaket.durasiHatiIsi" | translate }}</p>
+      </div>
+    </div>
+  }
+
+  <mat-checkbox color="primary" [(ngModel)]="aktif">
+    {{ "hrPaket.aktif" | translate }}
+  </mat-checkbox>
+  <p class="hpd-ket">{{ "hrPaket.aktifKet" | translate }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="hpd-aksi">
+  <button mat-button type="button" mat-dialog-close>
+    {{ "common.cancel" | translate }}
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    [disabled]="!bolehSimpan"
+    (click)="simpan()"
+  >
+    {{ "common.save" | translate }}
+  </button>
+</mat-dialog-actions>

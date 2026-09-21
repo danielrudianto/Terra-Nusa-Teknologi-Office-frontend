@@ -117,7 +117,7 @@
               [ngModel]="draf()[s.questionID]?.score"
               (ngModelChange)="ubahNilai(s.questionID, $event)"
             />
-            <span matTextSuffix>/ {{ s.maxScore }}</span>
+            <span matTextSuffix class="hnd-maks">/&nbsp;{{ s.maxScore }}</span>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="hnd-nilai__catatan">

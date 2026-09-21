@@ -14,6 +14,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ApiService } from 'src/app/services/api.service';
+import { HrPaketDialogComponent } from '../hr-paket-dialog/hr-paket-dialog.component';
 import { CanDirective } from 'src/app/directives/can.directive';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { HrQuestionFormComponent } from '../hr-question-form/hr-question-form.component';
@@ -68,6 +69,32 @@ interface Soal {
   styleUrl: './hr-question-list.component.scss',
 })
 export class HrQuestionListComponent implements OnInit {
+  /** Paket yang sedang dipilih di penyaring; untuk tombol Ubah. */
+  paketTerpilih(): any {
+    return this.ujian.find((u: any) => u.id === this.ujianTerpilih) ?? null;
+  }
+
+  /**
+   * Buat atau ubah paket ujian.
+   *
+   * Daftar paket DIMUAT ULANG setelahnya, bukan diubah di tempat: jumlah
+   * soalnya dihitung server, dan menyusunnya sendiri di layar berarti dua
+   * tempat yang harus sepakat tentang soal mana yang terhapus.
+   */
+  bukaPaket(paket?: any): void {
+    this.dialog
+      .open(HrPaketDialogComponent, {
+        width: '560px',
+        maxWidth: '95vw',
+        autoFocus: false,
+        data: { paket },
+      })
+      .afterClosed()
+      .subscribe((berubah) => {
+        if (berubah) this.muatUjian();
+      });
+  }
+
   private readonly serverMessage = inject(ServerMessageService);
 
   private readonly apiService = inject(ApiService);
@@ -87,7 +114,7 @@ export class HrQuestionListComponent implements OnInit {
     this.muatSoal();
   }
 
-  private muatUjian(): void {
+  muatUjian(): void {
     this.apiService.get('hr/tests', {}).subscribe({
       next: (res: any) => (this.ujian = res || []),
       error: () => (this.ujian = []),

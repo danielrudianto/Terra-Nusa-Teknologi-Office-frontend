@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,6 +15,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ApiService } from 'src/app/services/api.service';
+import { PermissionService } from 'src/app/services/permission.service';
+import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { HrNilaiDialogComponent } from '../hr-nilai-dialog/hr-nilai-dialog.component';
 import { CanDirective } from 'src/app/directives/can.directive';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
@@ -61,6 +64,7 @@ interface Pelamar {
     MatSelectModule,
     MatIconModule,
     MatButtonModule,
+    MatDividerModule,
     MatMenuModule,
     MatProgressSpinnerModule,
     TranslatePipe,
@@ -93,6 +97,7 @@ export class HrCandidateListComponent implements OnInit {
   private readonly serverMessage = inject(ServerMessageService);
 
   private readonly apiService = inject(ApiService);
+  private readonly izin = inject(PermissionService);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
@@ -107,7 +112,93 @@ export class HrCandidateListComponent implements OnInit {
   intip: number | null = null;
   statusTerpilih = '';
 
-  readonly statusPilihan = ['baru', 'mengerjakan', 'selesai', 'diterima', 'ditolak'];
+  /**
+   * Pilihan penyaring status — URUT TANGGANYA, bukan urut abjad.
+   *
+   * Daftar yang urut tangganya dapat dibaca sebagai perjalanan: yang
+   * membukanya tahu di mana sebuah lamaran berada tanpa menghafal artinya.
+   */
+  readonly statusPilihan = [
+    'baru',
+    'mengerjakan',
+    'selesai',
+    'dinilai',
+    'diwawancara',
+    'diterima',
+    'ditolak',
+  ];
+
+  /**
+   * Status yang boleh DISETEL dari layar ini.
+   *
+   * Sisanya disimpulkan server dari keadaan dokumennya — `dinilai` naik
+   * sendiri begitu soal terakhir bernilai, dan mundur lagi bila ada nilai
+   * yang dicabut. Menawarkannya sebagai tombol berarti daftar dapat
+   * menyatakan "sudah dinilai" atas lembar yang belum disentuh siapa pun.
+   */
+  readonly statusManual = ['diwawancara', 'diterima', 'ditolak'];
+
+  /** Hapus hasil hanya untuk level 5 — lihat `hr_recruitment:delete`. */
+  bolehHapusHasil(): boolean {
+    return this.izin.can('hr_recruitment', 'delete');
+  }
+
+  ubahStatus(p: any, status: string): void {
+    this.apiService.put(`hr/candidates/${p.id}/status`, { status }).subscribe({
+      next: () => {
+        this.snackBar.open(
+          this.translate.instant('hrCandidate.statusDiubah'),
+          'Close',
+          { duration: 2500 },
+        );
+        this.muat();
+      },
+      error: (err) =>
+        this.snackBar.open(this.serverMessage.terjemahkan(err), 'Close', {
+          duration: 5000,
+        }),
+    });
+  }
+
+  /**
+   * Hapus hasil ujian dan kembalikan pelamarnya ke awal.
+   *
+   * Dikonfirmasi lebih dulu: jawabannya dibuang dan TIDAK dapat
+   * dikembalikan. Tautannya sendiri tidak berubah, jadi ujiannya dapat
+   * dikerjakan lagi — itu gunanya.
+   */
+  hapusHasil(p: any): void {
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: this.translate.instant('hrCandidate.hapusHasilJudul'),
+          prompt: this.translate.instant('hrCandidate.hapusHasilPrompt', {
+            nama: p.name,
+          }),
+        },
+      })
+      .afterClosed()
+      .subscribe((setuju) => {
+        if (!setuju) return;
+        this.apiService
+          .delete(`hr/candidates/${p.id}/hasil`)
+          .subscribe({
+            next: () => {
+              this.snackBar.open(
+                this.translate.instant('hrCandidate.hasilDihapus'),
+                'Close',
+                { duration: 2500 },
+              );
+              this.muat();
+            },
+            error: (err) =>
+              this.snackBar.open(this.serverMessage.terjemahkan(err), 'Close', {
+                duration: 5000,
+              }),
+          });
+      });
+  }
+
 
   ngOnInit(): void {
     this.muatUjian();

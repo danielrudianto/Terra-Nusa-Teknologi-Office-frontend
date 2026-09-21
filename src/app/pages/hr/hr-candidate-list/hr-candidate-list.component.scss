@@ -224,3 +224,10 @@
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+/* Tindakan yang tidak dapat dikembalikan diberi warna bahaya — bukan
+   supaya menonjol, tetapi supaya jari yang melewatinya berhenti sebentar. */
+.hcl-bahaya,
+.hcl-bahaya .mat-icon {
+  color: var(--bad-fg, #b3322f);
+}

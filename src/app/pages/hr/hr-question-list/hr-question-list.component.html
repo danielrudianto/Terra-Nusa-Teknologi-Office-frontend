@@ -38,6 +38,37 @@
       </mat-select>
     </mat-form-field>
 
+    <!--
+      Kelola paket ujian, di sebelah pemilihnya.
+
+      Sebelumnya `hr_tests` hanya punya rute BACA: paket ujian harus
+      dimasukkan lewat SQL langsung, dan tidak ada berkas seed di `sql/`.
+
+      "Ubah" hanya muncul bila ada paket yang DIPILIH — tombol ubah tanpa
+      sasaran hanya menimbulkan pertanyaan apa yang akan diubahnya.
+    -->
+    <button
+      type="button"
+      mat-stroked-button
+      class="hql-paket"
+      (click)="bukaPaket()"
+    >
+      <mat-icon>add</mat-icon>
+      {{ "hrPaket.tambah" | translate }}
+    </button>
+
+    @if (ujianTerpilih) {
+      <button
+        type="button"
+        mat-stroked-button
+        class="hql-paket"
+        (click)="bukaPaket(paketTerpilih())"
+      >
+        <mat-icon>edit</mat-icon>
+        {{ "hrPaket.ubah" | translate }}
+      </button>
+    }
+
     <span class="hql-spacer"></span>
 
     <button
