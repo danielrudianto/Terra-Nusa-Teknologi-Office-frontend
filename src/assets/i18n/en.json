@@ -912,6 +912,9 @@
     "description": "Record and monitor fund transfers between company accounts.",
     "createNew": "Create new interpayment",
     "dateRange": "Enter a date range",
+    "saringRekening": "Account",
+    "semuaRekening": "All accounts",
+    "cariPlaceholder": "Description or account",
     "startDate": "Start date",
     "endDate": "End date",
     "sameAccount": "Origin and destination accounts must differ."

@@ -912,6 +912,9 @@
     "description": "记录并监控公司账户之间的资金转移。",
     "createNew": "创建新转账",
     "dateRange": "选择日期范围",
+    "saringRekening": "账户",
+    "semuaRekening": "全部账户",
+    "cariPlaceholder": "说明或账户",
     "startDate": "开始日期",
     "endDate": "结束日期",
     "sameAccount": "转出与转入账户不能相同。"

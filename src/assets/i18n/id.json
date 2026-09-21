@@ -912,6 +912,9 @@
     "description": "Catat dan pantau perpindahan dana antar rekening perusahaan.",
     "createNew": "Buat transfer baru",
     "dateRange": "Pilih rentang tanggal",
+    "saringRekening": "Rekening",
+    "semuaRekening": "Semua rekening",
+    "cariPlaceholder": "Keterangan atau rekening",
     "startDate": "Tanggal mulai",
     "endDate": "Tanggal akhir",
     "sameAccount": "Rekening asal dan tujuan tidak boleh sama."

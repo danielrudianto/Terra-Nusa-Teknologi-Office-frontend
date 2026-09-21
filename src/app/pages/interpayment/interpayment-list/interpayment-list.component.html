@@ -16,39 +16,65 @@
     (onActionButtonClicked)="createNewInterpayment()"
   />
 
-  <!-- ===== toolbar: rentang tanggal + muat ulang, di KANAN ===== -->
+  <!-- ===== toolbar: saring rekening di kiri; tanggal, cari, muat ulang di KANAN ===== -->
   <div class="ip-toolbar">
-    <form [formGroup]="formGroup" class="ip-toolbar__filter">
-      <mat-form-field subscriptSizing="dynamic" appearance="outline" class="ip-range">
-        <mat-label>{{ "interpayment.dateRange" | translate }}</mat-label>
-        <mat-date-range-input [rangePicker]="picker">
-          <input
-            matStartDate
-            formControlName="start"
-            [placeholder]="'interpayment.startDate' | translate"
-          />
-          <input
-            matEndDate
-            formControlName="end"
-            [placeholder]="'interpayment.endDate' | translate"
-          />
-        </mat-date-range-input>
-        <mat-datepicker-toggle
-          matIconPrefix
-          [for]="picker"
-        ></mat-datepicker-toggle>
-        <mat-date-range-picker #picker></mat-date-range-picker>
-      </mat-form-field>
-    </form>
+    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="ip-rekening">
+      <mat-label>{{ "interpayment.saringRekening" | translate }}</mat-label>
+      <mat-select [formControl]="rekeningControl">
+        <mat-option [value]="null">{{ "interpayment.semuaRekening" | translate }}</mat-option>
+        @for (b of rekening; track b.id) {
+          <mat-option [value]="b.id">
+            {{ b.bankAccountName }} · {{ b.bankAccountNumber }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
 
-    <!--
-      Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan
-      pencarian, penyaring, dan halaman ke keadaan awal.
-    -->
-    <app-refresh-button
-      [memuat]="isLoading"
-      (muatUlang)="fetchData()"
-    />
+    <div class="ip-toolbar__right">
+      <form [formGroup]="formGroup" class="ip-toolbar__filter">
+        <mat-form-field subscriptSizing="dynamic" appearance="outline" class="ip-range">
+          <mat-label>{{ "interpayment.dateRange" | translate }}</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input
+              matStartDate
+              formControlName="start"
+              [placeholder]="'interpayment.startDate' | translate"
+            />
+            <input
+              matEndDate
+              formControlName="end"
+              [placeholder]="'interpayment.endDate' | translate"
+            />
+          </mat-date-range-input>
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+      </form>
+
+      <mat-form-field subscriptSizing="dynamic" appearance="outline" class="ip-search">
+        <mat-icon matPrefix>search</mat-icon>
+        <mat-label>{{ "common.search" | translate }}</mat-label>
+        <input
+          autocomplete="off"
+          type="search"
+          matInput
+          [placeholder]="'interpayment.cariPlaceholder' | translate"
+          [formControl]="searchControl"
+        />
+      </mat-form-field>
+
+      <!--
+        Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan
+        pencarian, penyaring, dan halaman ke keadaan awal.
+      -->
+      <app-refresh-button
+        [memuat]="isLoading"
+        (muatUlang)="fetchData()"
+      />
+    </div>
   </div>
 
   <!-- ===== table card ===== -->
@@ -120,6 +146,18 @@
                 }}</span>
               </div>
             </div>
+          </td>
+        </ng-container>
+
+        <!-- Description -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.description" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let payment">
+            <span class="ip-desc" [attr.title]="payment.description || null">{{
+              payment.description || "—"
+            }}</span>
           </td>
         </ng-container>
 

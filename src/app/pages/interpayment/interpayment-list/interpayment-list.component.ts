@@ -25,6 +25,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
 import { InterpaymentCreateComponent } from '../interpayment-create/interpayment-create.component';
 import { InterpaymentViewComponent } from '../interpayment-view/interpayment-view.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -47,6 +48,7 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
     MatButtonModule,
     TranslatePipe,
     RefreshButtonComponent,
+    MatSelectModule,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './interpayment-list.component.html',
@@ -78,6 +80,11 @@ export class InterpaymentListComponent implements OnInit {
     end: new FormControl<Date | null>(this.endOfDate, Validators.required),
   });
 
+  /** Saring rekening (asal ATAU tujuan) dan kata kunci. */
+  rekeningControl = new FormControl<number | null>(null);
+  searchControl = new FormControl<string>('', { nonNullable: true });
+  rekening: any[] = [];
+
   page: number = 1;
   payments: any[] = []; // Change from dataSource to payments
   count: number = 0;
@@ -89,6 +96,7 @@ export class InterpaymentListComponent implements OnInit {
     'date',
     'bankAccountOrigin',
     'bankAccountDestination',
+    'description',
     'amount',
     'action',
   ];
@@ -114,6 +122,14 @@ export class InterpaymentListComponent implements OnInit {
     this.formGroup.valueChanges.pipe(debounceTime(100)).subscribe(() => {
       this.fetchData(1);
     });
+    this.rekeningControl.valueChanges.subscribe(() => this.fetchData(1));
+    this.searchControl.valueChanges
+      .pipe(debounceTime(400))
+      .subscribe(() => this.fetchData(1));
+    this.apiService.get('banks/all', {}).subscribe({
+      next: (d: any) => (this.rekening = Array.isArray(d) ? d : []),
+      error: () => (this.rekening = []),
+    });
   }
 
   fetchData(targetPage: number = 1) {
@@ -128,6 +144,8 @@ export class InterpaymentListComponent implements OnInit {
       return;
     }
 
+    // Paginator ikut ke halaman yang diminta (saringan baru = halaman 1).
+    this.page = targetPage;
     this.isLoading = true;
     this.apiService
       .get('interpayments', {
@@ -137,6 +155,10 @@ export class InterpaymentListComponent implements OnInit {
         sortByDirection: this.sortByDirection,
         start: moment(this.formGroup.value.start).format('YYYY-MM-DD'),
         end: moment(this.formGroup.value.end).format('YYYY-MM-DD'),
+        keyword: this.searchControl.value.trim(),
+        ...(this.rekeningControl.value
+          ? { bankAccountID: this.rekeningControl.value }
+          : {}),
       })
       .subscribe({
         next: (data: any) => {

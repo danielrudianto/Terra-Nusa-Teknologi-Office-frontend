@@ -445,6 +445,52 @@
  * menaruh yang di tengah persis di tengah — kotak pencariannya tampak
  * mengambang, terpisah dari keduanya.
  */
-.ip-toolbar > *:nth-child(2) {
-  margin-left: auto;
+/* Kelompok kanan (tanggal + cari + muat ulang) didorong ke kanan; saring
+   rekening di kiri. Dulu aturan `:nth-child(2) { margin-left: auto }`
+   bertabrakan dengan `margin-left: auto` milik rentang tanggal — ruang
+   kosongnya terbagi dua dan kotak tanggal jatuh di TENGAH. */
+.ip-toolbar__right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+@media (min-width: min(768px, 92vw)) {
+  .ip-toolbar__right {
+    margin-left: auto;
+  }
+  .ip-toolbar__filter {
+    margin-left: 0;
+  }
+}
+@media (max-width: 767px) {
+  .ip-toolbar__right {
+    flex-wrap: wrap;
+  }
+}
+.ip-rekening {
+  width: 100%;
+  max-width: 300px;
+}
+.ip-search {
+  flex: 1 1 200px;
+  min-width: 160px;
+  max-width: 280px;
+}
+:host ::ng-deep .ip-toolbar .mat-mdc-text-field-wrapper {
+  border-radius: 14px;
+  background: var(--surface, #ffffff);
+}
+:host ::ng-deep .ip-search .mat-mdc-form-field-icon-prefix > .mat-icon {
+  color: var(--faint, #9aa0ab);
+  margin: 0 6px 0 4px;
+}
+.ip-desc {
+  display: block;
+  max-width: 260px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--muted, #6b7280);
+  font-size: 0.84rem;
 }
