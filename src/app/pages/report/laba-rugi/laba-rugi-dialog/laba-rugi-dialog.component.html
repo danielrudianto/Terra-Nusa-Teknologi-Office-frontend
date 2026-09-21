@@ -1,0 +1,33 @@
+<!-- Kepala mengikuti pola rumah (`bank-create`); lihat `dialogkepalacek.py`. -->
+<div class="lrd">
+  <div class="lrd-head" mat-dialog-title appDialogGeser>
+    <span class="lrd-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+      </svg>
+    </span>
+    <div class="lrd-head__text">
+      <h2 class="lrd-title">{{ "labaRugi.judul" | translate }}</h2>
+      <span class="lrd-sub">{{ "labaRugi.subjudul" | translate }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="lrd-isi">
+    <app-laba-rugi [modeDialog]="true"></app-laba-rugi>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="lrd-aksi">
+    <button type="button" class="lrd-tutup" mat-dialog-close>
+      {{ "common.close" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

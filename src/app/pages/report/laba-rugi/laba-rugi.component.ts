@@ -3,18 +3,23 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
+  input,
   signal,
 } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 
 import { ApiService } from 'src/app/services/api.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
+import { unduhPdfLabaRugi } from './laba-rugi-pdf';
 
 /**
  * Laba rugi konsolidasi — "versi kita".
@@ -36,6 +41,7 @@ import { HeaderTitleComponent } from 'src/app/components/header-title/header-tit
     MatSelectModule,
     MatIconModule,
     MatProgressBarModule,
+    MatButtonModule,
     TranslateModule,
     HeaderTitleComponent,
   ],
@@ -46,6 +52,19 @@ export class LabaRugiComponent {
   private readonly api = inject(ApiService);
   private readonly translate = inject(TranslateService);
   private readonly pesanServer = inject(ServerMessageService);
+  private readonly http = inject(HttpClient);
+  private readonly snackBar = inject(MatSnackBar);
+
+  /**
+   * Dipasang di dalam dialog, bukan sebagai halaman.
+   *
+   * Kepala halaman disembunyikan: dialognya sudah punya kepala sendiri, dan
+   * dua judul "Laporan Laba Rugi" bertumpuk membuat yang membukanya mencari
+   * apa bedanya.
+   */
+  readonly modeDialog = input(false);
+
+  readonly mengunduh = signal(false);
 
   readonly bulan = signal(new Date().getMonth() + 1);
   readonly tahun = signal(new Date().getFullYear());
@@ -174,6 +193,30 @@ export class LabaRugiComponent {
     const kunci = 'labaRugi.baris.' + (r?.kategori ?? '');
     const teks = this.translate.instant(kunci);
     return teks && teks !== kunci ? teks : r?.label || r?.kategori || '';
+  }
+
+  /**
+   * PDF untuk bulan & tahun yang SEDANG DITAMPILKAN.
+   *
+   * Tombolnya ada di sebelah pemilih periode, bukan di kaki dialog: yang
+   * dicetak harus jelas periode yang mana, dan periode itu tertulis tepat
+   * di sebelahnya. Tombol di tempat lain dapat dibaca sebagai "cetak bulan
+   * ini" padahal pemilihnya menunjuk bulan lain.
+   */
+  async unduhPdf(): Promise<void> {
+    if (this.mengunduh()) return;
+    this.mengunduh.set(true);
+    try {
+      await unduhPdfLabaRugi(this.http, this.bulan(), this.tahun());
+    } catch (e) {
+      this.snackBar.open(
+        this.pesanServer.terjemahkan(e, 'labaRugi.gagalPdf'),
+        this.translate.instant('common.close'),
+        { duration: 6000 },
+      );
+    } finally {
+      this.mengunduh.set(false);
+    }
   }
 
   async muat(): Promise<void> {

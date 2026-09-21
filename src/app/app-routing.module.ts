@@ -983,8 +983,23 @@ export const routes: Routes = [
        */
         {
           /*
-           * Pelamar ujian rekrutmen; anak dari Master, sama seperti bank
-           * soal — kartu di halaman Data Master menavigasi RELATIF.
+           * Pelamar ujian rekrutmen — rute AKAR (lihat komentar di atas),
+           * bukan anak Master. Keterangan lama di sini menyebutnya "anak dari
+           * Master"; itu sudah tidak benar sejak rutenya dipindah, dan justru
+           * menyesatkan saat mencari kenapa transisinya berperilaku begini.
+           *
+           * `transisiBersarang` — halaman ini MENGURUS TRANSISINYA SENDIRI.
+           *
+           * Menu samping kelompoknya menyimpan pilihan di parameter kueri
+           * (`?kelompok=submit`). Di luar subpohon bersarang, kunci transisi
+           * kerangka utama adalah URL PENUH termasuk kuerinya — jadi setiap
+           * klik kelompok menganimasikan SELURUH halaman: judul, menu
+           * samping, semuanya. Terbaca sebagai berpindah halaman, padahal
+           * yang berganti hanya isi daftarnya.
+           *
+           * Dengan penanda ini kuncinya berhenti di `/HrCandidate`, dan yang
+           * bergerak hanya daftarnya — lewat `appTransisiHalaman` di dalam
+           * komponennya, persis seperti Data Master menganimasikan outletnya.
            */
           path: 'HrCandidate',
           canActivate: [permissionGuard],
@@ -996,6 +1011,7 @@ export const routes: Routes = [
             title: 'Pelamar Rekrutmen',
             permission: 'hr_recruitment:read',
             panduan: 'pelamar',
+            transisiBersarang: true,
           },
         },
         {

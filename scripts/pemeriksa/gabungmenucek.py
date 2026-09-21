@@ -146,12 +146,31 @@ def periksa():
                 f"pintu keuangan"
             )
 
-    # 4. kartu laba rugi: ada, menunjuk benar, dan dijaga level
-    i = hal.find('routerLink="/Laporan/Laba-rugi"')
+    # 4. kartu laba rugi: ada, membuka laporannya, dan dijaga izin
+    #
+    # Kartunya kini membuka DIALOG (`bukaLabaRugi()`), bukan berpindah ke
+    # rute — kembali dari rute memuat ulang seluruh Status Keuangan. Yang
+    # dijaga tetap sama: ada jalan untuk membuka laba rugi, dan jalan itu
+    # hanya terlihat bagi yang berhak. Tautan rute lama tetap diterima
+    # supaya pemeriksa ini tidak merah bila suatu hari dikembalikan.
+    i = hal.find('(click)="bukaLabaRugi()"')
+    if i < 0:
+        i = hal.find('routerLink="/Laporan/Laba-rugi"')
     if i < 0:
         masalah.append(
-            "kartu tautan laba rugi hilang dari halaman — setelah entri "
+            "kartu laba rugi hilang dari halaman — setelah entri "
             "menunya dibuang, tidak ada jalan tersisa untuk membukanya"
+        )
+    elif (
+        '(click)="bukaLabaRugi()"' in hal
+        and "LabaRugiDialogComponent" not in open(
+            HAL.replace(".html", ".ts"), encoding="utf-8"
+        ).read()
+    ):
+        masalah.append(
+            "kartu laba rugi memanggil `bukaLabaRugi()`, tetapi komponennya "
+            "tidak membuka `LabaRugiDialogComponent` — tombolnya tidak "
+            "membuka apa pun"
         )
     elif "bolehLabaRugi()" not in hal[max(0, i - 500):i]:
         masalah.append(

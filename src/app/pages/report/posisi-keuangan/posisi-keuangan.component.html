@@ -1031,13 +1031,17 @@
     mereka, yang bukan keterangan yang perlu diberikan halaman ini.
   -->
   @if (bolehLabaRugi()) {
-    <a class="pkeu-tautan" routerLink="/Laporan/Laba-rugi">
+    <!--
+      TOMBOL yang membuka dialog, bukan tautan ke rute lain — lihat
+      `bukaLabaRugi()`. Bentuk kartunya dipertahankan persis.
+    -->
+    <button type="button" class="pkeu-tautan" (click)="bukaLabaRugi()">
       <mat-icon>summarize</mat-icon>
       <div class="pkeu-tautan__teks">
         <strong>{{ "posisiKeuangan.tautanLabaRugi" | translate }}</strong>
         <span>{{ "posisiKeuangan.tautanLabaRugiKet" | translate }}</span>
       </div>
-      <mat-icon class="pkeu-tautan__panah">chevron_right</mat-icon>
-    </a>
+      <mat-icon class="pkeu-tautan__panah">open_in_new</mat-icon>
+    </button>
   }
 </div>

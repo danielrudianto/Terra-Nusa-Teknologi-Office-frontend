@@ -27,6 +27,7 @@ import { KpiKinerjaComponent } from '../kpi/kinerja/kpi-kinerja.component';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { RasioDialogComponent } from './rasio-dialog/rasio-dialog.component';
+import { LabaRugiDialogComponent } from '../laba-rugi/laba-rugi-dialog/laba-rugi-dialog.component';
 import { pastikanChart, rupiah } from 'src/app/helpers/chart-dasar.helper';
 import { uangDokumen } from 'src/app/helpers/uang.helper';
 
@@ -185,6 +186,25 @@ export class PosisiKeuanganComponent {
   readonly bolehLabaRugi = computed<boolean>(() =>
     this.izin.can('laba_rugi', 'read'),
   );
+
+  /**
+   * Laba rugi dibuka sebagai DIALOG, bukan berpindah halaman.
+   *
+   * Berpindah ke rutenya lalu kembali memuat ulang seluruh halaman ini —
+   * rasio, grafik, panel KPI — hanya untuk melihat lagi yang baru saja
+   * ditinggalkan. Dialog membiarkan semuanya tetap di tempatnya.
+   *
+   * Lebar 1100px: lima kolom angka ratusan juta, dan rincian kategori
+   * yang namanya panjang. Lebih sempit dari itu kolom persennya terdesak
+   * ke baris berikutnya.
+   */
+  bukaLabaRugi(): void {
+    this.dialog.open(LabaRugiDialogComponent, {
+      width: '1100px',
+      maxWidth: '96vw',
+      autoFocus: false,
+    });
+  }
 
   /*
    * Dua panel KPI DIMUAT SAAT DIBUKA.

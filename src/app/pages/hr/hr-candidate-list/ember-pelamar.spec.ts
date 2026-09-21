@@ -166,3 +166,103 @@ describe('pencarian', () => {
     expect(d.muatDipanggil).toBe(1);
   });
 });
+
+describe('baris terhapus', () => {
+  /*
+   * MySQL mengirim `isDelete` sebagai 0/1, bukan true/false. Pemeriksaan
+   * `=== true` selalu salah untuk angka, dan menu baris terhapus lalu
+   * menawarkan tombol status yang pasti ditolak server.
+   */
+  it('1 dari MySQL dibaca terhapus', () => {
+    expect(panggil('terhapus', {}, { isDelete: 1 })).toBeTrue();
+  });
+
+  it('0 dari MySQL dibaca aktif', () => {
+    expect(panggil('terhapus', {}, { isDelete: 0 })).toBeFalse();
+  });
+
+  it('boolean tetap dibaca benar', () => {
+    expect(panggil('terhapus', {}, { isDelete: true })).toBeTrue();
+    expect(panggil('terhapus', {}, { isDelete: false })).toBeFalse();
+  });
+
+  it('tanpa medannya dibaca aktif, bukan terhapus', () => {
+    // Daftar lama tidak mengirim `isDelete`; barisnya jelas aktif.
+    expect(panggil('terhapus', {}, {})).toBeFalse();
+  });
+
+  it('teks "0" dibaca aktif', () => {
+    // `!!"0"` bernilai true — jebakan yang dihindari lewat Number().
+    expect(panggil('terhapus', {}, { isDelete: '0' })).toBeFalse();
+  });
+});
+
+describe('jawaban daftar yang datang tidak berurutan', () => {
+  /*
+   * Klik "Sudah mengirim" lalu "Ditolak" dengan cepat. Bila jawaban yang
+   * pertama lebih lambat, ia tiba TERAKHIR — dan tanpa pembatalan menimpa
+   * daftar dengan isi kelompok yang sudah ditinggalkan. Menu menyorot
+   * "Ditolak", daftarnya berisi yang sudah mengirim. Tidak ada galat.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { Subject } = require('rxjs');
+
+  function diriMuat() {
+    const antre: any[] = [];
+    return {
+      antre,
+      isLoading: false,
+      pelamar: [] as any[],
+      kunciDaftar: '',
+      emberTerpilih: 'submit',
+      ujianTerpilih: null,
+      cari: '',
+      muatBerjalan: null as any,
+      apiService: {
+        get: () => {
+          const s = new Subject();
+          antre.push(s);
+          return s;
+        },
+      },
+      snackBar: { open() {} },
+      serverMessage: { terjemahkan: () => '' },
+      translate: { instant: (k: string) => k },
+    };
+  }
+
+  it('hanya jawaban TERAKHIR yang ditampilkan', () => {
+    const d = diriMuat();
+    panggil('muat', d); // "submit"
+    d.emberTerpilih = 'ditolak';
+    panggil('muat', d); // "ditolak"
+
+    // Yang kedua tiba lebih dulu, yang pertama menyusul.
+    d.antre[1].next([{ id: 2, nama: 'ditolak' }]);
+    d.antre[1].complete();
+    d.antre[0].next([{ id: 1, nama: 'submit' }]);
+    d.antre[0].complete();
+
+    expect(d.pelamar).toEqual([{ id: 2, nama: 'ditolak' }]);
+    expect(d.kunciDaftar).toBe('ditolak');
+  });
+
+  it('memuat selesai hanya setelah permintaan terakhir tiba', () => {
+    const d = diriMuat();
+    panggil('muat', d);
+    panggil('muat', d);
+    expect(d.isLoading).toBeTrue();
+    d.antre[1].next([]);
+    d.antre[1].complete();
+    expect(d.isLoading).toBeFalse();
+  });
+
+  it('kunci transisi disetel saat jawaban TIBA, bukan saat diklik', () => {
+    const d = diriMuat();
+    d.emberTerpilih = 'wawancara';
+    panggil('muat', d);
+    expect(d.kunciDaftar).toBe(''); // belum tiba — daftar lama belum bergerak
+    d.antre[0].next([]);
+    expect(d.kunciDaftar).toBe('wawancara');
+  });
+});

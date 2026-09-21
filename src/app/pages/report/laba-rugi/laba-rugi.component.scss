@@ -17,6 +17,27 @@
   gap: 0.75rem;
   margin: 0.5rem 0 1rem;
 }
+/* Dorong tombol PDF ke kanan; di layar sempit ia turun sendiri ke baris
+   berikutnya karena toolbarnya `flex-wrap`. */
+.lr-spasi {
+  flex: 1 1 auto;
+}
+.lr-pdf {
+  align-self: center;
+  mat-icon {
+    /* Ikon di wadah flex tidak boleh menciut — lihat `ikonflexcek.py`. */
+    flex: 0 0 auto;
+  }
+}
+
+/* Di dalam dialog: lebar mengikuti dialognya, tanpa ruang bawah halaman.
+   `max-width` 1040px milik halaman membuat tabelnya tidak pernah mengisi
+   dialog selebar layar, dan sisa kanannya tampak seperti isi yang hilang. */
+.lr--dialog {
+  max-width: none;
+  padding-bottom: 0;
+}
+
 .lr-pilih {
   flex: 0 1 180px;
   min-width: 150px;

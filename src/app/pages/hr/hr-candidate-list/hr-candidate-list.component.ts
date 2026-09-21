@@ -1,5 +1,5 @@
 import { ServerMessageService } from 'src/app/services/server-message.service';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ApiService } from 'src/app/services/api.service';
@@ -21,6 +22,8 @@ import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmat
 import { HrNilaiDialogComponent } from '../hr-nilai-dialog/hr-nilai-dialog.component';
 import { CanDirective } from 'src/app/directives/can.directive';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
+import { SettingsService } from 'src/app/services/setting.service';
+import { TransisiHalamanDirective } from 'src/app/animations/transisi-halaman.directive';
 import { HrCandidateFormComponent } from '../hr-candidate-form/hr-candidate-form.component';
 
 interface Ujian {
@@ -83,6 +86,7 @@ interface Ringkasan {
     TranslatePipe,
     CanDirective,
     HeaderTitleComponent,
+    TransisiHalamanDirective,
   ],
   templateUrl: './hr-candidate-list.component.html',
   styleUrl: './hr-candidate-list.component.scss',
@@ -116,6 +120,10 @@ export class HrCandidateListComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly settings = inject(SettingsService);
+
+  /** Parameter transisi yang berlaku — sama dengan Data Master. */
+  readonly setelan = computed(() => this.settings.transisiParams());
 
   isLoading = false;
   ujian: Ujian[] = [];
@@ -178,10 +186,41 @@ export class HrCandidateListComponent implements OnInit {
    *
    * Tanpa ini setiap aksara mengirim satu permintaan: mengetik satu nama
    * berarti belasan permintaan yang seluruhnya kecuali yang terakhir sudah
-   * tidak diperlukan — dan jawaban yang datang tidak berurutan dapat
-   * menimpa hasil yang benar dengan hasil yang lebih lama.
+   * tidak diperlukan.
+   *
+   * Penunda ini MENGURANGI permintaan, tetapi TIDAK menjamin urutannya —
+   * dua ketikan yang terpisah lebih dari 300ms tetap menghasilkan dua
+   * permintaan, dan klik kelompok tidak ditunda sama sekali. Yang menjamin
+   * urutannya `muatBerjalan` di bawah. (Keterangan sebelumnya menyiratkan
+   * penunda ini sudah cukup; itu keliru.)
    */
   private jedaCari: any = null;
+
+  /**
+   * Permintaan daftar yang sedang berjalan — DIBATALKAN saat yang baru dimulai.
+   *
+   * Klik "Sudah mengirim" lalu "Ditolak" dengan cepat mengirim dua
+   * permintaan. Bila yang pertama kebetulan lebih lambat, jawabannya tiba
+   * TERAKHIR dan menimpa daftar dengan isi kelompok yang sudah ditinggalkan:
+   * menu menyorot "Ditolak", daftarnya berisi yang sudah mengirim. Tidak
+   * ada galat; yang melihatnya hanya menyimpulkan hal yang salah.
+   *
+   * Membatalkan yang lama menjamin hanya jawaban TERAKHIR yang ditampilkan.
+   */
+  private muatBerjalan: Subscription | null = null;
+
+  /**
+   * Kunci transisi DAFTARNYA — bukan halamannya.
+   *
+   * Disetel saat jawaban TIBA, bukan saat kelompok diklik. Menganimasikan
+   * pada saat klik berarti gerakannya dimainkan atas daftar LAMA, lalu isi
+   * barunya muncul tiba-tiba di tengah gerakan. Disetel saat tiba, yang
+   * bergerak masuk adalah daftar yang memang baru.
+   *
+   * Hanya kelompok yang menjadi kuncinya, bukan kata pencarian: setiap
+   * ketikan yang menganimasikan ulang daftar membuatnya berkedip.
+   */
+  kunciDaftar = '';
 
   private static readonly IKON: Record<string, string> = {
     terbit: 'send',
@@ -309,6 +348,78 @@ export class HrCandidateListComponent implements OnInit {
   }
 
 
+  /**
+   * Baris yang pelamarnya sudah dihapus.
+   *
+   * Server mengirim `isDelete` sebagai 0/1 dari MySQL, bukan boolean —
+   * `=== true` akan selalu salah, dan menu baris terhapus tetap menawarkan
+   * tombol status yang pasti ditolak.
+   */
+  terhapus(p: Pelamar): boolean {
+    return !!Number(p?.isDelete ?? 0);
+  }
+
+  /**
+   * Hapus pelamarnya — tautannya mati, ia pindah ke kelompok "Dihapus".
+   *
+   * Kalimat konfirmasinya menyebut TAUTANNYA secara tegas: bedanya dengan
+   * "hapus hasil" justru di sana. Yang menekan salah satu keduanya perlu
+   * tahu apakah pelamarnya masih dapat membuka ujiannya sesudah ini.
+   */
+  hapusPelamar(p: Pelamar): void {
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: this.translate.instant('hrCandidate.hapusPelamarJudul'),
+          prompt: this.translate.instant('hrCandidate.hapusPelamarPrompt', {
+            nama: p.name,
+          }),
+        },
+      })
+      .afterClosed()
+      .subscribe((setuju) => {
+        if (!setuju) return;
+        this.apiService.delete(`hr/candidates/${p.id}`).subscribe({
+          next: () => {
+            this.snackBar.open(
+              this.translate.instant('hrCandidate.pelamarDihapus'),
+              this.translate.instant('common.close'),
+              { duration: 2500 },
+            );
+            this.muatRingkasan();
+            this.muat();
+          },
+          error: (err) =>
+            this.snackBar.open(
+              this.serverMessage.terjemahkan(err),
+              this.translate.instant('common.close'),
+              { duration: 5000 },
+            ),
+        });
+      });
+  }
+
+  /** Kembalikan pelamar yang terhapus; tautan dan lembarnya utuh. */
+  pulihkan(p: Pelamar): void {
+    this.apiService.put(`hr/candidates/${p.id}/pulihkan`, {}).subscribe({
+      next: () => {
+        this.snackBar.open(
+          this.translate.instant('hrCandidate.pelamarDipulihkan'),
+          this.translate.instant('common.close'),
+          { duration: 2500 },
+        );
+        this.muatRingkasan();
+        this.muat();
+      },
+      error: (err) =>
+        this.snackBar.open(
+          this.serverMessage.terjemahkan(err),
+          this.translate.instant('common.close'),
+          { duration: 5000 },
+        ),
+    });
+  }
+
   ngOnInit(): void {
     const q = this.route.snapshot.queryParamMap;
     const k = (q.get('kelompok') || '').trim();
@@ -344,7 +455,12 @@ export class HrCandidateListComponent implements OnInit {
   }
 
   muat(): void {
+    // Dibatalkan LEBIH DULU: pembatalan menjalankan `.add()` milik yang
+    // lama, yang menyetel `isLoading = false` — baru sesudahnya yang baru
+    // menyetelnya kembali.
+    this.muatBerjalan?.unsubscribe();
     this.isLoading = true;
+    const ember = this.emberTerpilih;
 
     // Parameter kosong tidak dikirim: teks kosong bukan `None` bagi FastAPI,
     // dan ia menolak seluruh permintaan dengan 422 sebelum satu baris dibaca.
@@ -353,18 +469,21 @@ export class HrCandidateListComponent implements OnInit {
     if (this.emberTerpilih) param.ember = this.emberTerpilih;
     if (this.cari.trim()) param.cari = this.cari.trim();
 
-    this.apiService
+    this.muatBerjalan = this.apiService
       .get('hr/candidates', param)
       .subscribe({
-        next: (res: any) => (this.pelamar = res || []),
+        next: (res: any) => {
+          this.pelamar = res || [];
+          this.kunciDaftar = ember;
+        },
         error: (err) =>
           this.snackBar.open(
             this.serverMessage.terjemahkan(err, 'hrCandidate.gagalMuat'),
             this.translate.instant('common.close'),
             { duration: 4000 },
           ),
-      })
-      .add(() => (this.isLoading = false));
+      });
+    this.muatBerjalan.add(() => (this.isLoading = false));
   }
 
   /** Tautan pengerjaan untuk satu pelamar. */

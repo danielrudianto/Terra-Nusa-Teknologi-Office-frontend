@@ -125,6 +125,13 @@
     font-size: 0.72rem;
     color: var(--faint, #9aa0ab);
     line-height: 1.2;
+    /* SATU baris, seperti Data Master. Keterangan yang membungkus dua-tiga
+       baris membuat tiap butir menu berbeda tinggi, dan lencana di sebelah
+       kanannya tidak lagi sejajar. Kalimatnya dipendekkan supaya muat;
+       elipsis hanya jaring pengaman bagi terjemahan yang lebih panjang. */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* Lencana jumlah. Angka empat digit pun harus muat tanpa merusak

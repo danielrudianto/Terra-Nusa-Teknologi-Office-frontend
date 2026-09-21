@@ -1,8 +1,10 @@
-<div class="lr">
-  <app-header-title
-    [title]="'labaRugi.judul' | translate"
-    [description]="'labaRugi.subjudul' | translate"
-  ></app-header-title>
+<div class="lr" [class.lr--dialog]="modeDialog()">
+  @if (!modeDialog()) {
+    <app-header-title
+      [title]="'labaRugi.judul' | translate"
+      [description]="'labaRugi.subjudul' | translate"
+    ></app-header-title>
+  }
 
   <div class="lr-toolbar">
     <mat-form-field appearance="outline" class="lr-pilih">
@@ -22,6 +24,26 @@
         }
       </mat-select>
     </mat-form-field>
+
+    <span class="lr-spasi"></span>
+
+    <!--
+      Dinonaktifkan selama angkanya belum datang atau gagal dimuat.
+
+      PDF-nya disusun server dari angka yang sama, jadi secara teknis tetap
+      dapat diunduh. Tetapi mengunduh laporan yang tidak dapat dilihat di
+      layar berarti mencetak sesuatu yang belum diperiksa siapa pun.
+    -->
+    <button
+      mat-stroked-button
+      type="button"
+      class="lr-pdf"
+      [disabled]="mengunduh() || memuat() || !data()"
+      (click)="unduhPdf()"
+    >
+      <mat-icon>picture_as_pdf</mat-icon>
+      {{ (mengunduh() ? "labaRugi.menyiapkanPdf" : "labaRugi.unduhPdf") | translate }}
+    </button>
   </div>
 
   @if (memuat()) {
