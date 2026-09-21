@@ -186,6 +186,38 @@ html {
 
 @import "../node_modules/bootstrap/scss/bootstrap.scss";
 
+/* Barlow & Barlow Condensed — huruf situs alphakonstruksi.id, dipakai halaman
+   ujian pelamar supaya senada dengan situs perusahaan. Di-host sendiri
+   (OFL, dari @fontsource); baru diunduh bila dipakai. */
+@font-face {
+  font-family: "Barlow";
+  src: url("assets/fonts/Barlow/barlow-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Barlow";
+  src: url("assets/fonts/Barlow/barlow-latin-600-normal.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  src: url("assets/fonts/Barlow/barlow-condensed-latin-600-normal.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  src: url("assets/fonts/Barlow/barlow-condensed-latin-700-normal.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @font-face {
   font-family: "Montserrat";
   src: url("assets/fonts/Monsterrat/static/Montserrat-Regular.ttf")

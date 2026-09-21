@@ -5185,6 +5185,18 @@
     "warna": "\u989c\u8272",
     "warnaNama": { "akn": "AKN \u6a59", "biru": "\u84dd", "hijau": "\u7eff", "slate": "\u7070" },
     "departemen": "人力资源部",
+    "temaTerang": "浅色主题",
+    "temaGelap": "深色主题",
+    "panel": {
+      "judul": "岩土工程与钻孔灌注桩专家"
+    },
+    "kaki": {
+      "kantor": "办公室",
+      "jam": "营业时间",
+      "jamIsi": "周一至周五 10:00–17:00\n周六 10:00–12:00\n周日及法定节假日休息",
+      "surel": "电子邮件",
+      "telepon": "电话 / WhatsApp"
+    },
     "motoAwal": "我们坚信",
     "motoSatu": "敬业",
     "motoDua": "勤奋",

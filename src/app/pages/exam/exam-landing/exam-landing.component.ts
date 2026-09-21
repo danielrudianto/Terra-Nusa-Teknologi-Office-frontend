@@ -24,6 +24,9 @@ import { environment } from 'src/environments/environment';
  * WhatsApp, dan yang mengalaminya perlu jalan lain selain meminta tautan baru.
  */
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { AknLogoComponent } from '../bagian/akn-logo.component';
+import { TemaUjianComponent } from '../bagian/tema-ujian.component';
+import { KONTAK, KakiAknComponent } from '../bagian/kaki-akn.component';
 
 import {
   PALET,
@@ -45,6 +48,9 @@ import {
     MatProgressSpinnerModule,
     TranslateModule,
     MatTooltipModule,
+    AknLogoComponent,
+    TemaUjianComponent,
+    KakiAknComponent,
   ],
   templateUrl: './exam-landing.component.html',
   styleUrl: './exam-landing.component.scss',
@@ -53,6 +59,7 @@ export class ExamLandingComponent implements OnInit {
   private readonly paletSvc = inject(PaletUjianService);
 
   readonly paletPilihan = PALET;
+  readonly kontak = KONTAK;
   readonly paletAktif = this.paletSvc.palet;
 
   /**

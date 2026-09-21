@@ -1,4 +1,4 @@
-ikon di wadah flex: 161
+ikon di wadah flex: 160
 
   src/app/components/audit-trail/audit-trail.component.scss: `.at-selfapproved` wadah flex yang memuat `mat-icon`, tetapi ikonnya tidak ditahan `flex: 0 0 auto` — begitu teks di sebelahnya panjang, ikonnya menciut dan terpotong, tanpa galat apa pun
   src/app/components/audit-trail/audit-trail.component.scss: `.at-state` wadah flex yang memuat `mat-icon`, tetapi ikonnya tidak ditahan `flex: 0 0 auto` — begitu teks di sebelahnya panjang, ikonnya menciut dan terpotong, tanpa galat apa pun
@@ -24,7 +24,6 @@ ikon di wadah flex: 161
   src/app/mobile/beranda/agenda-ringkas/agenda-ringkas.component.scss: `.mag-baris` wadah flex yang memuat `mat-icon`, tetapi ikonnya tidak ditahan `flex: 0 0 auto` — begitu teks di sebelahnya panjang, ikonnya menciut dan terpotong, tanpa galat apa pun
   src/app/mobile/beranda/agenda-ringkas/agenda-ringkas.component.scss: `.mag-galat` wadah flex yang memuat `mat-icon`, tetapi ikonnya tidak ditahan `flex: 0 0 auto` — begitu teks di sebelahnya panjang, ikonnya menciut dan terpotong, tanpa galat apa pun
   src/app/mobile/hapus-pembelian/hapus-pembelian.component.scss: `.mhp-takBoleh` wadah flex yang memuat `mat-icon`, tetapi ikonnya tidak ditahan `flex: 0 0 auto` — begitu teks di sebelahnya panjang, ikonnya menciut dan terpotong, tanpa galat apa pun
-  src/app/pages/exam/exam-work/exam-work.component.scss: `.exw-bar__kiri` wadah flex yang memuat `mat-icon`, tetapi ikonnya tidak ditahan `flex: 0 0 auto` — begitu teks di sebelahnya panjang, ikonnya menciut dan terpotong, tanpa galat apa pun
   src/app/pages/exam/exam-work/exam-work.component.scss: `.exw-kirim__sisa` wadah flex yang memuat `mat-icon`, tetapi ikonnya tidak ditahan `flex: 0 0 auto` — begitu teks di sebelahnya panjang, ikonnya menciut dan terpotong, tanpa galat apa pun
   src/app/pages/exam/exam-work/exam-work.component.scss: `.exw-soal__unggah` wadah flex yang memuat `mat-icon`, tetapi ikonnya tidak ditahan `flex: 0 0 auto` — begitu teks di sebelahnya panjang, ikonnya menciut dan terpotong, tanpa galat apa pun
   src/app/pages/exam/exam-work/exam-work.component.scss: `.exw-tengah` wadah flex yang memuat `mat-icon`, tetapi ikonnya tidak ditahan `flex: 0 0 auto` — begitu teks di sebelahnya panjang, ikonnya menciut dan terpotong, tanpa galat apa pun

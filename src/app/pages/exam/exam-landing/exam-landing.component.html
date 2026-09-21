@@ -1,9 +1,17 @@
 <div class="exl">
+  <!--
+    Kolom kiri SAJA yang digulir; panel kanan diam di tempat. Halaman yang
+    seluruhnya ikut tergulir — panel hiasnya ikut naik — terasa murahan.
+  -->
   <div class="exl-kiri">
-    <div class="exl-merek">
-      <span class="exl-merek__pt">PT ALPHA KONSTRUKSI NUSANTARA</span>
-      <span class="exl-merek__dept">{{ "exam.departemen" | translate }}</span>
-    </div>
+   <div class="exl-isi">
+    <header class="exl-kepala">
+      <div class="exl-merek">
+        <app-akn-logo />
+        <span class="exl-merek__dept">{{ "exam.departemen" | translate }}</span>
+      </div>
+      <app-tema-ujian />
+    </header>
 
     <h1 class="exl-moto">
       {{ "exam.motoAwal" | translate }}<br />
@@ -240,7 +248,8 @@
       </div>
     }
 
-    <p class="exl-kaki">{{ "exam.hakCipta" | translate }}</p>
+   </div>
+    <app-kaki-akn [kontakSempitSaja]="true" />
   </div>
 
   <!--
@@ -250,18 +259,46 @@
     mendorong isian token ke bawah lipatan, dan yang membukanya harus
     menggulir sebelum menemukan hal yang ia datangi.
   -->
-  <div class="exl-kanan" aria-hidden="true">
-    <!--
-      Maskot yang SAMA dengan halaman login, dari berkas yang sama.
+  <!--
+    Panel kanan — pita gelap bergaya situs alphakonstruksi.id: pernyataan
+    perusahaan dan kontak kantor, di atas kisi garis tipis ala gambar kerja.
+    Menggantikan maskot kartun: halaman ini dibaca calon karyawan, dan yang
+    ingin ditampilkan adalah perusahaannya.
+  -->
+  <aside class="exl-kanan">
+    <svg class="exl-kanan__tanda" viewBox="0 0 52 38" aria-hidden="true">
+      <polygon points="26,1 22,6 30,6" />
+      <polygon points="17.5,11 23.5,11 23.5,28 0.5,36" />
+      <polygon points="28.5,11 34.5,11 51.5,36 28.5,28" />
+    </svg>
 
-      Pelamar yang nanti diterima akan melihat maskot ini lagi setiap kali
-      ia masuk; halaman ujian dengan bahasa rupa yang berbeda membuat
-      keduanya terasa seperti dua sistem yang tak berhubungan.
+    <div class="exl-kanan__isi">
+      <span class="exl-kanan__cap">PT Alpha Konstruksi Nusantara</span>
+      <p class="exl-kanan__judul">{{ "exam.panel.judul" | translate }}</p>
+      <p class="exl-kanan__lini">Bored pile · Soldier pile · Secant pile</p>
 
-      `aria-hidden` pada induknya: gambar ini hiasan, dan membacakannya
-      kepada pengguna pembaca layar hanya menyisipkan keterangan yang tidak
-      menolong siapa pun mengerjakan ujiannya.
-    -->
-    <img class="exl-maskot" src="/assets/images/login.png" alt="" />
-  </div>
+      <dl class="exl-info">
+        <div class="exl-info__item">
+          <dt>{{ "exam.kaki.kantor" | translate }}</dt>
+          <dd>{{ kontak.kantor }}</dd>
+        </div>
+        <div class="exl-info__item">
+          <dt>{{ "exam.kaki.jam" | translate }}</dt>
+          <dd>{{ "exam.kaki.jamIsi" | translate }}</dd>
+        </div>
+        <div class="exl-info__item">
+          <dt>{{ "exam.kaki.surel" | translate }}</dt>
+          <dd><a [href]="'mailto:' + kontak.surel">{{ kontak.surel }}</a></dd>
+        </div>
+        <div class="exl-info__item">
+          <dt>{{ "exam.kaki.telepon" | translate }}</dt>
+          <dd>
+            <a [href]="'https://wa.me/' + kontak.wa" target="_blank" rel="noopener">{{
+              kontak.telepon
+            }}</a>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </aside>
 </div>

@@ -35,6 +35,10 @@ interface SoalUjian {
  */
 import { PaletUjianService } from '../palet-ujian.service';
 
+import { AknLogoComponent } from '../bagian/akn-logo.component';
+import { TemaUjianComponent } from '../bagian/tema-ujian.component';
+import { KakiAknComponent } from '../bagian/kaki-akn.component';
+
 @Component({
   selector: 'app-exam-work',
   standalone: true,
@@ -47,6 +51,9 @@ import { PaletUjianService } from '../palet-ujian.service';
     MatIconModule,
     MatProgressSpinnerModule,
     TranslateModule,
+    AknLogoComponent,
+    TemaUjianComponent,
+    KakiAknComponent,
   ],
   templateUrl: './exam-work.component.html',
   styleUrl: './exam-work.component.scss',

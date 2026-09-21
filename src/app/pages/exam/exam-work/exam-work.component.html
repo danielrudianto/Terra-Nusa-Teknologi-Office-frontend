@@ -36,6 +36,7 @@
       [class.exw-bar--habis]="waktuHabis"
     >
       <div class="exw-bar__kiri">
+        <app-akn-logo class="exw-bar__logo" />
         <mat-icon>schedule</mat-icon>
         <span class="exw-bar__waktu">{{ waktuTeks }}</span>
         @if (waktuHabis) {
@@ -107,6 +108,7 @@
               | translate: { n: soal.length - belumDijawab.length, total: soal.length }
           }}
         </span>
+        <app-tema-ujian />
       </div>
     </div>
 
@@ -221,4 +223,6 @@
       </div>
     </div>
   }
+  <!-- Kaki bergaya situs perusahaan — kontak kantor & hak cipta. -->
+  <app-kaki-akn />
 </div>

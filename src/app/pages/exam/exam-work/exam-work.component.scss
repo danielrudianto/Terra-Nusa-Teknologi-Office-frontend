@@ -35,11 +35,40 @@
  * koneksi seadanya. Karena itu tata letaknya sederhana dan satu kolom: yang
  * mengerjakan sedang berpikir tentang soalnya, bukan tentang layarnya.
  */
+/* Teks aksen & token Material ikut palet; di tema gelap aksen dicampur
+   putih (lihat halaman depan). */
+:host {
+  display: block;
+  --akn-t: var(--akn-ink);
+  /* Huruf Barlow juga di dalam komponen Material. */
+  --mat-form-field-container-text-font: "Barlow", sans-serif;
+  --mat-form-field-outlined-label-text-font: "Barlow", sans-serif;
+  --mat-form-field-subscript-text-font: "Barlow", sans-serif;
+  --mat-select-trigger-text-font: "Barlow", sans-serif;
+  --mat-checkbox-label-text-font: "Barlow", sans-serif;
+  --mat-button-filled-label-text-font: "Barlow", sans-serif;
+  --mat-button-filled-container-color: var(--akn-dark);
+  --mat-button-filled-label-text-color: #fff;
+  --mat-button-filled-container-shape: 4px;
+  --mat-form-field-outlined-container-shape: 4px;
+  --mat-form-field-outlined-focus-outline-color: var(--akn-t);
+  --mat-form-field-outlined-focus-label-text-color: var(--akn-t);
+}
+:host-context(html[data-theme="dark"]) {
+  --akn-t: color-mix(in srgb, var(--akn) 70%, #fff);
+}
+
 .exw {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Barlow", "Montserrat", sans-serif;
   color: var(--ink, #16181d);
   min-height: 100vh;
   background: var(--surface-2, #f6f8ff);
+  /* Kaki selalu di dasar layar walau isinya pendek (layar selesai/galat). */
+  display: flex;
+  flex-direction: column;
+}
+.exw > app-kaki-akn {
+  margin-top: auto;
 }
 
 /* ---- keadaan tengah: memuat, selesai, galat ---- */
@@ -49,7 +78,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.85rem;
-  min-height: 100vh;
+  flex: 1 0 auto;
+  min-height: 60vh;
   padding: 2rem 1.25rem;
   text-align: center;
 }
@@ -164,6 +194,8 @@
 /* ---- isi ---- */
 .exw-isi {
   max-width: 780px;
+  width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
   padding: 1.25rem 1rem 3rem;
   display: flex;
@@ -173,9 +205,9 @@
 
 .exw-soal {
   padding: 1.1rem 1.25rem 0.35rem;
-  border-radius: 14px;
+  border-radius: 6px;
   background: var(--surface, #fff);
-  border: 0.5px solid var(--border, #e3e6eb);
+  border: 1px solid var(--border, #e3e6eb);
 }
 
 .exw-soal__kepala {
@@ -188,10 +220,10 @@
   flex: 0 0 auto;
   width: 28px;
   height: 28px;
-  border-radius: 9px;
+  border-radius: 4px;
   /* Ikut palet pilihan pelamar, bukan warna tetap TerraBot. */
-  background: color-mix(in srgb, var(--akn) 16%, #fff);
-  color: var(--akn-ink);
+  background: color-mix(in srgb, var(--akn) 16%, var(--surface, #fff));
+  color: var(--akn-t);
   display: grid;
   place-items: center;
   font-size: 0.82rem;
@@ -281,7 +313,7 @@
   flex-direction: column;
   gap: 0.85rem;
   padding: 1.25rem;
-  border-radius: 14px;
+  border-radius: 6px;
   background: var(--surface, #fff);
   border: 0.5px solid var(--border, #e3e6eb);
 }
@@ -290,7 +322,7 @@
   display: flex;
   gap: 0.6rem;
   padding: 0.85rem 1rem;
-  border-radius: 12px;
+  border-radius: 4px;
   background: var(--warn-bg, #fff4e5);
   font-size: 0.85rem;
 
@@ -401,5 +433,23 @@
   .exw-simpan__ulang {
     min-height: 44px;
     padding: 0.55rem 0.7rem;
+  }
+}
+
+
+/* ---- logo di bilah atas ---- */
+.exw-bar__logo {
+  font-size: 0.9rem;
+  margin-right: 0.5rem;
+  padding-right: 0.9rem;
+  border-right: 1px solid var(--border, #dfe3ea);
+}
+.exw-bar__kiri > .mat-icon {
+  flex: 0 0 auto;
+}
+@media (max-width: 560px) {
+  /* Ponsel: tanda saja, tanpa tulisan — waktu tetap yang terbesar. */
+  .exw-bar__logo ::ng-deep .akl-teks {
+    display: none;
   }
 }

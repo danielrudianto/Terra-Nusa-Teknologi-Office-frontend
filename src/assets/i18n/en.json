@@ -5185,6 +5185,18 @@
     "warna": "Colour",
     "warnaNama": { "akn": "AKN orange", "biru": "Blue", "hijau": "Green", "slate": "Slate" },
     "departemen": "Human Resource Department",
+    "temaTerang": "Light theme",
+    "temaGelap": "Dark theme",
+    "panel": {
+      "judul": "Geotechnical & bored pile specialists"
+    },
+    "kaki": {
+      "kantor": "Office",
+      "jam": "Office hours",
+      "jamIsi": "Mon–Fri 10:00–17:00\nSat 10:00–12:00\nClosed on Sundays & public holidays",
+      "surel": "Email",
+      "telepon": "Phone / WhatsApp"
+    },
     "motoAwal": "We believe in",
     "motoSatu": "Dedication",
     "motoDua": "Hard Work",

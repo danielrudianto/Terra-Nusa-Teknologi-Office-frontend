@@ -1,26 +1,47 @@
 /*
  * Halaman depan ujian rekrutmen.
  *
- * Dibuka pelamar di luar perusahaan, kerap dari ponsel. Dirancang berdiri
- * sendiri — tanpa navigasi samping, tanpa bilah atas — karena yang membukanya
- * tidak punya akun dan tidak ada halaman lain yang dapat ia tuju.
+ * Dibuka pelamar di luar perusahaan, kerap dari ponsel. Berdiri sendiri —
+ * tanpa navigasi aplikasi. Bahasa rupanya mengikuti situs alphakonstruksi.id:
+ * Barlow / Barlow Condensed kapital, sudut tegas, garis tipis.
  */
 :host {
   display: block;
-  min-height: 100dvh;
   background: var(--surface, #fff);
-  overflow-x: hidden;
+  color: var(--ink, #16181d);
+  font-family: "Barlow", "Montserrat", sans-serif;
 }
 
+/*
+ * Layar lebar: tinggi TEPAT satu layar; hanya kolom kiri yang digulir.
+ * Panel kanan diam — halaman yang seluruhnya tergulir terasa murahan.
+ */
 .exl {
   display: flex;
   min-height: 100dvh;
 }
+@media (min-width: 901px) {
+  .exl {
+    height: 100dvh;
+    overflow: hidden;
+  }
+  .exl-kiri {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
 
 .exl-kiri {
-  flex: 1 1 auto;
-  max-width: 720px;
-  padding: 3rem 2rem 2rem;
+  flex: 1 1 58%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.exl-isi {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: 760px;
+  padding: 1.75rem clamp(20px, 4vw, 56px) 3rem;
 }
 
 /*
@@ -60,75 +81,76 @@
   --akn-dark: #2b3648;
 }
 
-/*
- * Panel kanan — DISAMAKAN dengan halaman login.
- *
- * Maskot yang sama, perlakuan yang sama: gelap dengan pendar hangat di
- * belakangnya. Pelamar yang diterima akan melihat maskot itu lagi setiap
- * kali ia masuk, dan halaman ujian yang memakai bahasa rupa berbeda membuat
- * keduanya terasa seperti dua sistem yang tak berhubungan.
- *
- * Berkasnya yang SUDAH ADA (`login.png`) dipakai ulang, bukan disalin ke
- * nama baru: dua berkas dengan isi sama akan berpisah pada saat salah
- * satunya diperbarui, dan tidak ada yang akan menyadarinya.
- */
-.exl-kanan {
-  flex: 1 1 40%;
-  position: relative;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
-  background:
-    radial-gradient(
-      circle at 50% 46%,
-      color-mix(in srgb, var(--akn) 55%, transparent) 0%,
-      transparent 62%
-    ),
-    linear-gradient(160deg, var(--akn-dark) 0%, #14161b 100%);
+/* Warna teks aksen: `--akn-ink` di tema terang; di tema gelap aksen
+   dicampur putih 30% (kontras ≥ 5,6:1 pada permukaan gelap untuk keempat
+   palet — diukur). */
+:host {
+  --akn-t: var(--akn-ink);
+  /* Huruf Barlow juga di dalam komponen Material. */
+  --mat-form-field-container-text-font: "Barlow", sans-serif;
+  --mat-form-field-outlined-label-text-font: "Barlow", sans-serif;
+  --mat-form-field-subscript-text-font: "Barlow", sans-serif;
+  --mat-select-trigger-text-font: "Barlow", sans-serif;
+  --mat-checkbox-label-text-font: "Barlow", sans-serif;
+  --mat-button-filled-label-text-font: "Barlow", sans-serif;
+  --mat-button-filled-container-color: var(--akn-dark);
+  --mat-button-filled-label-text-color: #fff;
+  --mat-button-filled-container-shape: 4px;
+  --mat-form-field-outlined-container-shape: 4px;
+  --mat-form-field-outlined-focus-outline-color: var(--akn-t);
+  --mat-form-field-outlined-focus-label-text-color: var(--akn-t);
+  --mat-form-field-focus-select-arrow-color: var(--akn-t);
+  --mat-select-focused-arrow-color: var(--akn-t);
+  --mat-option-selected-state-label-text-color: var(--akn-t);
+  --mat-checkbox-selected-icon-color: var(--akn-t);
+  --mat-checkbox-selected-focus-icon-color: var(--akn-t);
+  --mat-checkbox-selected-hover-icon-color: var(--akn-t);
+  --mat-checkbox-selected-pressed-icon-color: var(--akn-t);
+}
+:host-context(html[data-theme="dark"]) {
+  --akn-t: color-mix(in srgb, var(--akn) 70%, #fff);
+  --mat-checkbox-selected-checkmark-color: #16181d;
 }
 
-.exl-maskot {
-  width: min(70%, 320px);
-  height: auto;
-  /* Berkasnya berlatar gelap dengan pendar; `mix-blend-mode: screen`
-     melarutkan kotak hitamnya ke dalam gradien alih-alih menampilkannya
-     sebagai persegi yang batasnya terlihat. */
-  mix-blend-mode: screen;
-  user-select: none;
-  pointer-events: none;
+/* --- kepala --- */
+.exl-kepala {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid var(--line, #e6e8ec);
 }
-
 .exl-merek {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-width: 0;
+  font-size: 1rem;
 }
-
-.exl-merek__pt {
-  display: block;
-  font-family: "Montserrat", sans-serif;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  color: var(--akn-ink);
-}
-
 .exl-merek__dept {
-  display: block;
-  margin-top: 0.15rem;
-  font-size: 0.74rem;
-  color: var(--muted, #8a90a0);
+  padding-left: 0.9rem;
+  border-left: 1px solid var(--border, #dfe3ea);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted, #6b7280);
 }
 
+/* Moto — kapital ala judul situs perusahaan. */
 .exl-moto {
-  margin: 2rem 0 1.5rem;
-  font-family: "Montserrat", sans-serif;
-  font-size: 1.9rem;
-  font-weight: 300;
-  line-height: 1.35;
+  margin: 2.5rem 0 1.75rem;
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-size: clamp(2rem, 3.6vw, 3rem);
+  font-weight: 600;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--ink, #16181d);
 
   span {
     font-weight: 700;
-    color: var(--akn-ink);
+    color: var(--akn-t);
   }
 }
 
@@ -138,29 +160,36 @@
 
 .exl-perkenalan {
   margin: 0.5rem 0 2rem;
-  font-size: 0.88rem;
+  max-width: 62ch;
+  font-size: 0.98rem;
   line-height: 1.7;
   color: var(--muted, #4b5563);
 }
 
-/* --- kartu --- */
+/* --- kartu: sudut tegas, garis tipis --- */
 .exl-kartu {
-  padding: 1.5rem;
-  border-radius: 16px;
-  background: var(--surface-2, #f7f8fa);
-  border: 0.5px solid var(--border, #e3e6eb);
+  padding: 1.75rem;
+  border-radius: 6px;
+  background: var(--surface, #fff);
+  border: 1px solid var(--border, #e3e6eb);
+  border-top: 3px solid var(--akn);
 }
 
 .exl-kartu__judul {
-  margin: 0 0 0.35rem;
-  font-family: "Montserrat", sans-serif;
-  font-size: 0.92rem;
+  margin: 1.25rem 0 0.35rem;
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-size: 1.15rem;
   font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.exl-kartu > .exl-kartu__judul:first-child {
+  margin-top: 0;
 }
 
 .exl-kartu__ket {
   margin: 0 0 1rem;
-  font-size: 0.82rem;
+  font-size: 0.88rem;
   line-height: 1.55;
   color: var(--muted, #6b7280);
 }
@@ -172,16 +201,16 @@
   gap: 0.6rem;
   flex-wrap: wrap;
 }
-
 .exl-token__isian {
   flex: 1 1 260px;
   min-width: 0;
 }
-
 .exl-token__btn {
   flex: 0 0 auto;
   height: 48px;
   margin-top: 0.35rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .exl-galat {
@@ -189,10 +218,11 @@
   align-items: center;
   gap: 0.35rem;
   margin: 0.5rem 0 0;
-  font-size: 0.82rem;
+  font-size: 0.86rem;
   color: var(--bad-fg);
 
   .mat-icon {
+    flex: 0 0 auto;
     width: 17px;
     height: 17px;
     font-size: 17px;
@@ -202,55 +232,47 @@
 /* --- setelah token dikenali --- */
 .exl-sapa {
   margin: 0 0 1.25rem;
-  font-size: 0.94rem;
+  font-size: 1rem;
 }
 
+/* Ringkasan: garis atas tipis seperti daftar info situs perusahaan. */
 .exl-ringkas {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
 }
-
 .exl-ringkas__item {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  padding: 0.75rem;
-  border-radius: 10px;
-  background: var(--surface, #fff);
+  gap: 0.25rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--akn);
 }
-
 .exl-ringkas__k {
   font-size: 0.7rem;
-  letter-spacing: 0.02em;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--muted, #9aa1b1);
+  color: var(--muted, #6b7280);
 }
-
 .exl-ringkas__v {
-  font-size: 0.94rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 600;
   word-break: break-word;
 }
 
-/*
- * Peringatan timer.
- *
- * Warna waspada, bukan sekadar teks: timer tidak dapat dihentikan setelah
- * berjalan, dan yang menyadarinya setelah menekan Mulai tidak punya jalan
- * kembali.
- */
 .exl-ingat {
   display: flex;
   align-items: flex-start;
   gap: 0.6rem;
   margin-bottom: 1.5rem;
   padding: 0.85rem 1rem;
-  border-radius: 10px;
+  border-radius: 4px;
+  border-left: 3px solid var(--warn-fg);
   background: var(--warn-bg);
   color: var(--warn-fg);
-  font-size: 0.82rem;
+  font-size: 0.86rem;
   line-height: 1.55;
 
   .mat-icon {
@@ -264,37 +286,131 @@
 mat-checkbox {
   display: block;
   margin-bottom: 0.35rem;
-  font-size: 0.86rem;
+  font-size: 0.9rem;
 }
 
 .exl-mulai {
   display: block;
   width: 100%;
-  height: 48px;
+  height: 50px;
   margin-top: 1.5rem;
-  font-size: 0.94rem;
+  font-size: 0.98rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.exl-kaki {
-  margin: 2.5rem 0 0;
-  font-size: 0.72rem;
-  color: var(--muted, #9aa1b1);
+/*
+ * Panel kanan — pita gelap situs perusahaan, di atas kisi garis tipis ala
+ * gambar kerja. Tidak ikut tergulir.
+ */
+.exl-kanan {
+  flex: 1 1 42%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  padding: clamp(32px, 5vw, 72px);
+  color: #fff;
+  background:
+    linear-gradient(0deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px) 0 0 / 48px 48px,
+    radial-gradient(circle at 80% 10%, color-mix(in srgb, var(--akn) 28%, transparent) 0%, transparent 55%),
+    linear-gradient(165deg, color-mix(in srgb, var(--akn-dark) 55%, #121316) 0%, #0f1012 100%);
+}
+
+/* Tanda logo besar dan samar — satu-satunya hiasan. */
+.exl-kanan__tanda {
+  position: absolute;
+  top: 12%;
+  right: -6%;
+  width: 62%;
+  max-width: 520px;
+  fill: color-mix(in srgb, var(--akn) 16%, transparent);
+  pointer-events: none;
+}
+
+.exl-kanan__isi {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+}
+
+.exl-kanan__cap {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--akn) 60%, #fff);
+}
+
+.exl-kanan__judul {
+  margin: 0.9rem 0 0.6rem;
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-size: clamp(2.2rem, 3.4vw, 3.6rem);
+  font-weight: 700;
+  line-height: 0.98;
+  text-transform: uppercase;
+}
+
+.exl-kanan__lini {
+  margin: 0 0 2.25rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.exl-info {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.75rem;
+  margin: 0;
+}
+.exl-info__item {
+  border-top: 1px solid color-mix(in srgb, var(--akn) 45%, transparent);
+  padding-top: 0.5rem;
+
+  dt {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--akn) 55%, #fff);
+  }
+  dd {
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    white-space: pre-line;
+  }
+  a {
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--akn) 45%, transparent);
+  }
+  a:hover {
+    border-bottom-color: #fff;
+  }
 }
 
 @media (max-width: 900px) {
   .exl-kanan {
     display: none;
   }
-
-  .exl-kiri {
-    max-width: none;
-    padding: 2rem 1.25rem;
+  .exl-isi {
+    padding: 1.25rem 1.25rem 2.5rem;
   }
-
+  .exl-merek__dept {
+    display: none;
+  }
   .exl-moto {
-    font-size: 1.5rem;
+    margin-top: 1.75rem;
+    font-size: 2rem;
   }
-
+  .exl-kartu {
+    padding: 1.25rem;
+  }
   .exl-token__btn {
     flex: 1 1 100%;
   }
@@ -362,7 +478,7 @@ mat-checkbox {
     0 0 0 3px rgba(255, 255, 255, 0.9);
 }
 .exl-palet__tombol:focus-visible {
-  outline: 2px solid var(--akn-ink);
+  outline: 2px solid var(--akn-t);
   outline-offset: 2px;
 }
 
@@ -381,4 +497,12 @@ mat-checkbox {
   /* Alamat memanjang; memaksanya satu kolom membuat isinya tergulir
      mendatar di dalam kotak yang sempit. */
   grid-column: 1 / -1;
+}
+
+/* Cincin pilihan warna di tema gelap: gelap-di-atas-gelap tak terlihat. */
+:host-context(html[data-theme="dark"]) .exl-palet__tombol--aktif .exl-palet__bulat {
+  border-color: var(--surface, #1a1d24);
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.85),
+    0 0 0 3px rgba(0, 0, 0, 0.6);
 }

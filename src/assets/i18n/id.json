@@ -5185,6 +5185,18 @@
     "warna": "Warna",
     "warnaNama": { "akn": "Oranye AKN", "biru": "Biru", "hijau": "Hijau", "slate": "Abu" },
     "departemen": "Human Resource Department",
+    "temaTerang": "Tema terang",
+    "temaGelap": "Tema gelap",
+    "panel": {
+      "judul": "Spesialis geoteknik & fondasi bor"
+    },
+    "kaki": {
+      "kantor": "Kantor",
+      "jam": "Jam operasional",
+      "jamIsi": "Senin–Jumat 10.00–17.00\nSabtu 10.00–12.00\nMinggu & hari libur nasional tutup",
+      "surel": "Surel",
+      "telepon": "Telepon / WhatsApp"
+    },
     "motoAwal": "We believe in",
     "motoSatu": "Dedication",
     "motoDua": "Hard Work",
