@@ -219,6 +219,97 @@ describe('geser sungguhan, bukan sekadar setelan', () => {
   });
 });
 
+describe('jendela awal 12 titik terakhir', () => {
+  function buat(n: number): any {
+    const k = kanvasLepas();
+    return new Chart(k, {
+      type: 'line',
+      data: {
+        labels: Array.from({ length: n }, (_, i) => `B${i + 1}`),
+        datasets: [{ data: Array.from({ length: n }, (_, i) => i) }],
+      },
+      options: { animation: false, responsive: false },
+    });
+  }
+  function buang(c: any) {
+    const k = c.canvas;
+    c.destroy();
+    k.remove();
+  }
+
+  it('24 bulan dibuka di 12 terakhir, dan tetap bisa digeser ke awal', () => {
+    const c = buat(24);
+    try {
+      expect(c.scales.x.min).toBe(12);
+      expect(c.scales.x.max).toBe(23);
+      c.pan({ x: 100000 }, undefined, 'none');
+      expect(c.scales.x.min).toBe(0);
+    } finally {
+      buang(c);
+    }
+  });
+
+  it('deret pendek tampil utuh', () => {
+    const c = buat(8);
+    try {
+      expect(c.scales.x.min).toBe(0);
+      expect(c.scales.x.max).toBe(7);
+    } finally {
+      buang(c);
+    }
+  });
+
+  it('klik dua kali kembali ke 12 terakhir', () => {
+    const c = buat(24);
+    try {
+      c.pan({ x: 100000 }, undefined, 'none');
+      c.canvas.dispatchEvent(new MouseEvent('dblclick'));
+      expect(c.scales.x.min).toBe(12);
+      expect(c.scales.x.max).toBe(23);
+    } finally {
+      buang(c);
+    }
+  });
+
+  it('grafik yang menolak jendela awal tampil utuh', () => {
+    const k = kanvasLepas();
+    const c: any = new Chart(k, {
+      type: 'line',
+      data: {
+        labels: Array.from({ length: 30 }, (_, i) => `H${i + 1}`),
+        datasets: [{ data: Array.from({ length: 30 }, (_, i) => i) }],
+      },
+      options: {
+        animation: false,
+        responsive: false,
+        plugins: { geserZoomAkn: { jendelaAwal: false } },
+      },
+    });
+    try {
+      expect(c.scales.x.min).toBe(0);
+      expect(c.scales.x.max).toBe(29);
+    } finally {
+      buang(c);
+    }
+  });
+
+  it('data dimuat ulang lebih panjang: bulan TERBARU tetap terjangkau', () => {
+    const c = buat(24);
+    try {
+      c.data.labels = Array.from({ length: 36 }, (_, i) => `B${i + 1}`);
+      c.data.datasets[0].data = Array.from({ length: 36 }, (_, i) => i);
+      c.update('none');
+      expect(c.scales.x.max).toBe(35);
+      c.pan({ x: 100000 }, undefined, 'none');
+      expect(c.scales.x.min).toBe(0);
+      c.pan({ x: -100000 }, undefined, 'none');
+      expect(c.scales.x.max).toBe(35);
+    } finally {
+      buang(c);
+    }
+  });
+});
+
 describe('Hammer', () => {
   it('termuat — tanpanya roda tetap memperbesar tetapi SERETAN tidak bereaksi', () => {
     // Uji geser di atas memakai `chart.pan()` yang tidak butuh Hammer; yang

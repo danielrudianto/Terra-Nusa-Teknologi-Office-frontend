@@ -1405,6 +1405,8 @@ export class PurchaseCreateComponent {
                   });
 
                   this.metaFormGroup.reset({
+                    // null = masa pajak mengikuti tanggal dokumen (bawaannya).
+                    taxPeriod: null,
                     invoiceName: '',
                     receiptName: '',
                     taxInvoiceName: '',
@@ -1522,6 +1524,8 @@ export class PurchaseCreateComponent {
             });
 
             this.metaFormGroup.reset({
+              // null = masa pajak mengikuti tanggal dokumen (bawaannya).
+              taxPeriod: null,
               invoiceName: '',
               receiptName: '',
               taxInvoiceName: '',

@@ -893,6 +893,8 @@ export class ProjectReportComponent implements OnInit {
     maintainAspectRatio: false,
     interaction: { mode: 'index', intersect: false },
     plugins: {
+      // Bentuk kurva S UTUH yang dibaca — tanpa jendela 12 titik.
+      geserZoomAkn: { jendelaAwal: false },
       /*
        * Legenda dengan kotak KECIL dan bergaya titik.
        *
@@ -1010,6 +1012,17 @@ export class ProjectReportComponent implements OnInit {
   readonly arusKasTerkunci = signal(false);
 
   /**
+   * Kas keluar yang DIHITUNG: pembelian internal (`jenis: 'internal'`,
+   * dianggap dibayar pada tanggal pembeliannya) hanya bila sakelar
+   * "sertakan internal" menyala — sama dengan bagian laporan lainnya.
+   */
+  readonly arusKasKeluarDihitung = computed(() =>
+    this.sertakanInternal()
+      ? this.arusKasKeluar()
+      : this.arusKasKeluar().filter((x: any) => x?.jenis !== 'internal'),
+  );
+
+  /**
    * Tab di DALAM kartu ini, terpisah dari bilah tab laporan di atas.
    *
    * Dua tingkat tab pada satu halaman perlu alasan. Alasannya: bilah atas
@@ -1086,7 +1099,7 @@ export class ProjectReportComponent implements OnInit {
         .filter((x: any) => sebelumTahun(x?.date, t))
         .reduce((a, x) => a + Math.abs(Number(x?.amount) || 0), 0);
 
-    return jumlah(this.arusKasMasuk()) - jumlah(this.arusKasKeluar());
+    return jumlah(this.arusKasMasuk()) - jumlah(this.arusKasKeluarDihitung());
   });
 
   /**
@@ -1130,7 +1143,7 @@ export class ProjectReportComponent implements OnInit {
 
     return titikKas(
       saring(this.arusKasMasuk()),
-      saring(this.arusKasKeluar()),
+      saring(this.arusKasKeluarDihitung()),
       this.kasDibawa(),
       this.satuanKas(),
     );
@@ -1518,6 +1531,8 @@ export class ProjectReportComponent implements OnInit {
     maintainAspectRatio: false,
     interaction: { mode: 'index', intersect: false },
     plugins: {
+      // Jendelanya diatur sendiri (30/60/90 hari) — bukan 12 titik bawaan.
+      geserZoomAkn: { jendelaAwal: false },
       // Sama seperti kurva S: legenda bertitik kecil supaya tidak membungkus
       // menjadi dua baris di layar sempit.
       legend: {

@@ -308,6 +308,12 @@
                 {{ uang(l.kewajibanLewat) }}
               </span>
             }
+            @if (l.angsuranPinjaman30) {
+              <span class="pkeu-alur__ket">
+                {{ "posisiKeuangan.termasukAngsuran" | translate }}
+                {{ uang(l.angsuranPinjaman30) }}
+              </span>
+            }
           </div>
 
           <span class="pkeu-alur__tanda">=</span>

@@ -1,4 +1,4 @@
-import { Chart, Plugin, registerables } from 'chart.js';
+import { Chart, ChartType, Plugin, registerables } from 'chart.js';
 // Plugin zoom membawa Hammer sendiri (dependensinya, bukan dependensi kita):
 // Hammer yang menangani SEMUA seretan — tetikus maupun jari. `hammerjs`
 // tercantum di `allowedCommonJsDependencies` karena paket itu bukan ESM.
@@ -138,7 +138,34 @@ function pasangGeserZoom(): void {
  */
 const PETUNJUK =
   'Seret untuk menggeser · Ctrl + gulir (atau cubit) untuk memperbesar · ' +
-  'klik dua kali untuk kembali';
+  'klik dua kali untuk kembali ke 12 terakhir';
+
+/**
+ * Deret panjang dibuka pada 12 titik TERAKHIR; sisanya tinggal digeser.
+ * Hanya untuk sumbu X kategori (bulan, minggu) — indeksnya jelas.
+ */
+export const JENDELA_AWAL = 12;
+
+/*
+ * Grafik yang MENGATUR JENDELANYA SENDIRI (mis. arus kas proyek: 30/60/90
+ * hari) atau yang bentuk utuhnya justru yang dibaca (kurva S) menolaknya:
+ *   plugins: { geserZoomAkn: { jendelaAwal: false } }
+ */
+declare module 'chart.js' {
+  interface PluginOptionsByType<TType extends ChartType> {
+    geserZoomAkn?: { jendelaAwal?: boolean };
+  }
+}
+const JENDELA = new WeakMap<object, number>();
+
+function pasangJendela(chart: any): void {
+  const n = chart.data?.labels?.length ?? 0;
+  if (n > JENDELA_AWAL) {
+    chart.zoomScale?.('x', { min: n - JENDELA_AWAL, max: n - 1 }, 'none');
+  } else {
+    chart.resetZoom?.('none');
+  }
+}
 
 const PENDENGAR = new WeakMap<
   object,
@@ -147,7 +174,7 @@ const PENDENGAR = new WeakMap<
 
 export const geserZoom: Plugin = {
   id: 'geserZoomAkn',
-  afterInit(chart) {
+  afterInit(chart, _args, opsi: any) {
     // HANYA MEMBACA setelan — tidak pernah menulis ke `chart.options`
     // (lihat `pasangGeserZoom`: proksinya menulis tembus ke bawaan global).
     //
@@ -164,9 +191,32 @@ export const geserZoom: Plugin = {
     kanvas.style.cursor = 'grab';
     if (!kanvas.title) kanvas.title = PETUNJUK;
 
-    const kembali = () => (chart as any).resetZoom?.();
+    // Klik ganda kembali ke jendela awal, bukan ke seluruh deret.
+    const kembali = () =>
+      opsi?.jendelaAwal === false ||
+      (chart as any).scales?.x?.type !== 'category'
+        ? (chart as any).resetZoom?.()
+        : pasangJendela(chart);
     kanvas.addEventListener('dblclick', kembali);
     PENDENGAR.set(chart, { kanvas, kembali });
+  },
+  /*
+   * Jendela awal dipasang setelah sumbunya jadi, dan diulang bila JUMLAH
+   * labelnya berubah (data dimuat ulang di tempat). `resetZoom` dulu, agar
+   * batas 'original' plugin zoom dicatat ulang dari data baru — tanpa itu
+   * batas geser tertinggal di rentang lama dan bulan terbaru tak terjangkau.
+   */
+  afterUpdate(chart, _args, opsi: any) {
+    if (JENIS_BUNDAR.includes((chart.config as any).type)) return;
+    if (opsi?.jendelaAwal === false) return;
+    const x: any = (chart as any).scales?.x;
+    if (!x || x.type !== 'category') return;
+    const n = chart.data?.labels?.length ?? 0;
+    const lama = JENDELA.get(chart);
+    if (lama === n) return;
+    JENDELA.set(chart, n);
+    if (lama !== undefined) (chart as any).resetZoom?.('none');
+    pasangJendela(chart);
   },
   // Kanvasnya DISIMPAN saat dipasang: pada `afterDestroy` chart.js sudah
   // mengosongkan `chart.canvas`, dan membuang pendengar dari `null` gagal

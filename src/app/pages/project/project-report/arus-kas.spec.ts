@@ -163,7 +163,7 @@ describe('ProjectReport — arus kas', () => {
       { date: '2026-02-10', amount: 300, jenis: 'reimbursement' },
     ],
     incoming: [{ date: '2026-03-05', amount: 500, jenis: 'faktur' }],
-    cakupanKeluar: ['pembelian', 'reimbursement'],
+    cakupanKeluar: ['pembelian', 'reimbursement', 'internal'],
   };
 
   function buat(arus: any | 'terlarang', progress: any[] | 'terlarang' = []) {
@@ -220,6 +220,25 @@ describe('ProjectReport — arus kas', () => {
     expect(t.map((x) => x.saldo)).toEqual([-400, -700, -200]);
     expect(f.componentInstance.saldoKasAkhir()).toBe(-200);
     expect(f.componentInstance.totalKasMasuk()).toBe(500);
+    expect(f.componentInstance.totalKasKeluar()).toBe(700);
+  }));
+
+  it('pembelian internal ikut hanya bila sakelar internal menyala', fakeAsync(() => {
+    const f = buat({
+      ...ARUS,
+      outgoing: [
+        ...ARUS.outgoing,
+        { date: '2026-02-20', amount: 250, jenis: 'internal' },
+      ],
+    });
+    f.componentInstance.muat('R501');
+    tick();
+    f.componentInstance.gantiSatuanKas('bulan');
+
+    expect(f.componentInstance.sertakanInternal()).toBeTrue();
+    expect(f.componentInstance.totalKasKeluar()).toBe(950);
+
+    f.componentInstance.sertakanInternal.set(false);
     expect(f.componentInstance.totalKasKeluar()).toBe(700);
   }));
 

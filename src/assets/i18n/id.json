@@ -504,6 +504,7 @@
     "kasHariIni": "Kas hari ini",
     "kewajiban30": "Jatuh tempo \u2264 30 hari",
     "termasukLewat": "termasuk sudah lewat",
+    "termasukAngsuran": "termasuk angsuran pinjaman",
     "setelahKewajiban": "Sisa setelah kewajiban",
     "likuiditasBannerJudul": "Piutang tidak ikut ditambahkan",
     "likuiditasBanner": "Faktur penjualan tidak menyimpan tanggal jatuh tempo, jadi tidak ada dasar untuk mengatakan sebuah faktur akan tertagih dalam 30 hari. Rencana kas juga tidak dijumlahkan di sini: sebuah rencana keluar kerap dibuat untuk pembelian yang sudah tercatat sebagai utang, dan tidak ada kolom yang menghubungkan keduanya sehingga tumpangnya tidak dapat dikurangkan.",
@@ -551,7 +552,7 @@
   "labaRugi": {
     "judul": "Laporan Laba Rugi",
     "subjudul": "Versi internal (basis akrual, konsolidasi perusahaan)",
-    "catatan": "Angka disusun berdasarkan tanggal dokumen (akrual) dan nilai DPP. PPN dikecualikan karena dapat dikreditkan, dan PPh dikecualikan karena bersifat pemotongan. Laporan ini untuk dicocokkan dengan pembukuan akuntan.",
+    "catatan": "Angka disusun berdasarkan tanggal dokumen (akrual) dan nilai DPP. PPN dikecualikan karena dapat dikreditkan, dan PPh dikecualikan karena bersifat pemotongan. Pendapatan hanya dari faktur penjualan yang sudah disetujui. Laporan ini untuk dicocokkan dengan pembukuan akuntan.",
     "catatanBedaJudul": "Kenapa bisa beda dengan laporan akuntan?",
     "catatanBeda": "Wajar bila sedikit berbeda dengan laporan akuntan — selisih di bawah ~3% masih masuk akal. Penyebab umum: (1) waktu pengakuan — biaya diakui pada tanggal dokumen, belum tentu dipasangkan dengan tagihannya (akuntan bisa menahannya sebagai proyek dalam pelaksanaan); (2) penyusutan — di sini semuanya masuk Beban Usaha, akuntan memisah penyusutan mesin ke HPP; (3) sebagian kategori dibatasi berbeda, mis. subkontraktor vs tenaga kerja proyek. Pembelian aset tidak dibebankan di sini melainkan disusutkan, sama seperti pembukuan akuntan.",
     "bulan": "Bulan",

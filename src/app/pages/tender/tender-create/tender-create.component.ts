@@ -59,6 +59,8 @@ export class TenderCreateComponent implements OnInit {
 
   /** Id tender yang sedang disunting; kosong berarti membuat baru. */
   tenderId: number | null = null;
+  /** Versi baris yang dibaca saat membuka — server menolak (409) bila sudah didahului. */
+  versiTender: number | null = null;
   isSubmitting = false;
 
   formGroup: FormGroup = this.formBuilder.group({
@@ -117,6 +119,7 @@ export class TenderCreateComponent implements OnInit {
     this.service.ambil(id).subscribe({
       next: (d: any) => {
         if (!d) return;
+        this.versiTender = typeof d.rowVersion === 'number' ? d.rowVersion : null;
         this.formGroup.patchValue({
           name: d.name,
           date: d.date ? new Date(d.date) : new Date(),
@@ -246,7 +249,10 @@ export class TenderCreateComponent implements OnInit {
 
     this.isSubmitting = true;
     const permintaan = this.tenderId
-      ? this.service.ubah(this.tenderId, muatan as any)
+      ? this.service.ubah(this.tenderId, {
+          ...muatan,
+          rowVersion: this.versiTender ?? undefined,
+        } as any)
       : this.service.buat(muatan as any);
 
     permintaan.subscribe({

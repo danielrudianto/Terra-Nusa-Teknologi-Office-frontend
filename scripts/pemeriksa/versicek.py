@@ -44,6 +44,8 @@ LAYAR = {
         "certificate-of-payment-create.component.ts"
     ),
     "Beban": "pages/expense/expense-create/expense-create.component.ts",
+    "Pembelian": "pages/purchase/purchase-update/purchase-update.component.ts",
+    "Tender": "pages/tender/tender-create/tender-create.component.ts",
 }
 
 
