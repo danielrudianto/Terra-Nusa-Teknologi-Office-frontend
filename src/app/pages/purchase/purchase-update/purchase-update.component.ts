@@ -182,6 +182,9 @@ export class PurchaseUpdateComponent {
     this.fetchData(this.data.id);
   }
 
+  /** Versi pembelian saat dibuka; null bila server tidak menyebutkannya. */
+  versiPembelian: number | null = null;
+
   fetchData(id: number) {
     this.apiService.get('purchases/' + id, {}).subscribe({
       next: (resp: any) => {
@@ -196,6 +199,11 @@ export class PurchaseUpdateComponent {
          * pembeliannya, bukan ke pembungkusnya.
          */
         const data: any = resp?.purchase ?? resp;
+        // Versi baris yang DIBACA saat membuka — dikirim kembali saat
+        // menyimpan supaya server menolak (409) bila orang lain sudah
+        // mengubah pembelian ini lebih dulu. Lihat `utils/kunci_optimistik.py`.
+        this.versiPembelian =
+          typeof data?.rowVersion === 'number' ? data.rowVersion : null;
         if (data.isInternal == false) {
           this.snackBar.open(
       this.translate.instant('notify.notInternalData'), 'Close', {
@@ -323,6 +331,7 @@ export class PurchaseUpdateComponent {
     this.apiService
       .put('purchases/update', {
         id: this.metaFormGroup.value.id,
+        rowVersion: this.versiPembelian ?? undefined,
         invoiceName: this.metaFormGroup.controls['invoiceName'].value,
         receiptName: this.metaFormGroup.controls['receiptName'].value,
         taxInvoiceName:
