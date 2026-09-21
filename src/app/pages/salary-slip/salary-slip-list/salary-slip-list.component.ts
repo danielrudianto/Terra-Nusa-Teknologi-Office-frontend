@@ -30,6 +30,8 @@ import {
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SalarySlipHelper } from 'src/app/helpers/salary-slip.helper';
 import { SettingsService } from '../../../services/setting.service';
@@ -71,6 +73,8 @@ export const MY_FORMATS = {
     TranslatePipe,
     RefreshButtonComponent,
     MatChipsModule,
+    MatCheckboxModule,
+    MatTooltipModule,
   ],
   templateUrl: './salary-slip-list.component.html',
   styleUrl: './salary-slip-list.component.scss',
@@ -155,6 +159,7 @@ export class SalarySlipListComponent {
   /** Nilai awal dari pengaturan pengguna; tetap bisa diubah per halaman. */
   pageSize: number = this.settings.pageSize;
   displayedColumns = [
+    'pilih',
     'name',
     'month',
     'year',
@@ -313,6 +318,7 @@ export class SalarySlipListComponent {
       .subscribe((response: any) => {
         this.dataSource = response.data;
         this.dataCount = response.count;
+        this.rapikanPilihan();
       });
   }
 
@@ -429,41 +435,105 @@ export class SalarySlipListComponent {
   isSendingBulk = false;
 
   /**
-   * Slip pada halaman ini yang dapat dikirim.
+   * Boleh dikirim atau tidak — SATU aturan untuk centang, tombol, dan kirim.
    *
-   * Alamat surel diperiksa bila memang ikut terkirim dari server. Bila
-   * kolomnya tidak ada sama sekali — misalnya pada versi backend yang belum
-   * menyertakannya — seluruh slip dianggap dapat dikirim, dan server yang
-   * memutuskan mana yang gagal.
+   * Slip yang DIHAPUS tidak pernah dikirim. Sebelumnya aturan ini tidak
+   * ada di mana pun: pada tampilan "Semua", tombol kirim ikut menyertakan
+   * slip yang sudah dicabut. Server kini juga menolaknya (409
+   * `SALARY_SLIP_DELETED`); yang di sini supaya kotaknya mati lebih dulu,
+   * bukan gagal sesudah dikonfirmasi.
    *
-   * Menonaktifkan tombol karena kolom yang tidak ada berarti fitur ini mati
-   * tanpa satu pun penjelasan, dan itu lebih membingungkan daripada
-   * kegagalan yang disebutkan.
+   * Alamat surel diperiksa bila kolomnya memang terkirim dari server. Bila
+   * kolomnya tidak ada sama sekali, server yang memutuskan — menonaktifkan
+   * seluruh centang karena kolom yang tidak dikirim akan mematikan fiturnya
+   * tanpa satu pun penjelasan.
    */
+  bolehDikirim(x: any): boolean {
+    if (!x || this.terhapus(x)) return false;
+    return x.email === undefined ? true : !!x.email;
+  }
+
+  /** Kunci terjemahan sebab sebuah slip tidak dapat dicentang; kosong bila bisa. */
+  alasanTakTerkirim(x: any): string {
+    if (this.terhapus(x)) return 'salarySlip.takTerkirimDihapus';
+    if (x?.email !== undefined && !x?.email) return 'salarySlip.takTerkirimSurel';
+    return '';
+  }
+
+  /** `isDelete` dari MySQL dapat berupa 1/0, bukan true/false. */
+  private terhapus(x: any): boolean {
+    return !!Number(x?.isDelete ?? 0);
+  }
+
+  /** Slip pada halaman ini yang dapat dikirim. */
   get slipDapatDikirim(): any[] {
-    const data = this.dataSource || [];
-    const adaKolomEmail = data.some((x) => x?.email !== undefined);
-    return adaKolomEmail ? data.filter((x) => !!x?.email) : data;
+    return (this.dataSource || []).filter((x) => this.bolehDikirim(x));
+  }
+
+  /** Id slip yang dicentang. */
+  terpilih = new Set<number>();
+
+  get jumlahTerpilih(): number {
+    return this.terpilih.size;
+  }
+
+  /** Semua yang DAPAT dipilih sudah terpilih — bukan semua baris. */
+  get semuaTerpilih(): boolean {
+    const bisa = this.slipDapatDikirim;
+    return bisa.length > 0 && bisa.every((x) => this.terpilih.has(x.id));
+  }
+
+  get sebagianTerpilih(): boolean {
+    return this.jumlahTerpilih > 0 && !this.semuaTerpilih;
+  }
+
+  pilih(x: any, nyala: boolean): void {
+    if (!this.bolehDikirim(x)) return;
+    const baru = new Set(this.terpilih);
+    if (nyala) baru.add(x.id);
+    else baru.delete(x.id);
+    this.terpilih = baru;
+  }
+
+  pilihSemua(nyala: boolean): void {
+    this.terpilih = nyala
+      ? new Set(this.slipDapatDikirim.map((x) => x.id))
+      : new Set();
   }
 
   /**
-   * Kirim seluruh slip pada halaman ini.
+   * Setelah daftar dimuat ulang, pilihan yang TIDAK LAGI TERLIHAT dilepas.
    *
-   * Dikonfirmasi lebih dulu karena surel tidak dapat ditarik kembali —
-   * dan yang dikirim adalah dokumen gaji, yang keliru alamat berarti orang
-   * lain membaca gaji seseorang.
-   *
-   * Yang dikirim hanya slip pada halaman yang sedang tampil, mengikuti
-   * penyaring bulan dan pencarian. Dengan begitu "kirim semua" selalu
-   * berarti "kirim yang terlihat", bukan sesuatu yang lebih luas dari yang
-   * sedang dilihat.
+   * Berpindah halaman, bulan, atau pencarian mengganti isi tabel. Centang
+   * yang menempel pada baris yang sudah tidak tampil berarti tombol
+   * "Kirim (3)" akan mengirim slip yang tidak dapat dilihat siapa pun saat
+   * menekannya. Yang masih tampil tetap tercentang — memuat ulang halaman
+   * yang sama tidak menghapus pilihan yang sedang disusun.
    */
-  kirimSemua(): void {
-    const slip = this.slipDapatDikirim;
-    if (!slip.length) {
+  rapikanPilihan(): void {
+    const tampil = new Set(this.slipDapatDikirim.map((x) => x.id));
+    this.terpilih = new Set([...this.terpilih].filter((id) => tampil.has(id)));
+  }
+
+  /**
+   * Kirim slip yang DICENTANG.
+   *
+   * Dikonfirmasi lebih dulu karena surel tidak dapat ditarik kembali — dan
+   * yang dikirim dokumen gaji, yang keliru alamat berarti orang lain
+   * membaca gaji seseorang.
+   *
+   * Sesudah dikirim, yang BERHASIL dilepas centangnya; yang GAGAL tetap
+   * tercentang. Mengirim ulang cukup satu tekan, dan tidak ada yang
+   * menerima surel yang sama dua kali.
+   */
+  kirimTerpilih(): void {
+    const ids = this.slipDapatDikirim
+      .filter((x) => this.terpilih.has(x.id))
+      .map((x) => x.id);
+    if (!ids.length) {
       this.snackBar.open(
         this.translate.instant('salarySlip.noneToSend'),
-        'Close',
+        this.translate.instant('common.close'),
         { duration: 3000 },
       );
       return;
@@ -474,7 +544,7 @@ export class SalarySlipListComponent {
         data: {
           title: this.translate.instant('salarySlip.sendAllTitle'),
           prompt: this.translate.instant('salarySlip.sendAllPrompt', {
-            count: slip.length,
+            count: ids.length,
           }),
           confirmLabel: this.translate.instant('salarySlip.sendAllConfirm'),
           isDestructive: false,
@@ -486,11 +556,12 @@ export class SalarySlipListComponent {
         this.isSendingBulk = true;
 
         this.apiService
-          .post('salary-slips/send-bulk', { ids: slip.map((x) => x.id) })
+          .post('salary-slips/send-bulk', { ids })
           .subscribe({
             next: (r: any) => {
               const terkirim = r?.sent ?? 0;
               const gagal = r?.failed ?? 0;
+              this.lepasYangTerkirim(r?.sentIds);
 
               // Kegagalan disebut jumlahnya, bukan disembunyikan: yang
               // mengirim perlu tahu ada yang harus diulang.
@@ -503,20 +574,31 @@ export class SalarySlipListComponent {
                   : this.translate.instant('salarySlip.sendAllDone', {
                       sent: terkirim,
                     }),
-                'Close',
+                this.translate.instant('common.close'),
                 { duration: gagal ? 6000 : 4000 },
               );
 
               if (gagal) console.warn('[Slip gaji] gagal dikirim:', r?.failures);
             },
             error: (e) => {
-              this.snackBar.open(this.serverMessage.terjemahkan(e), 'Close', {
-                duration: 4000,
-              });
+              this.snackBar.open(
+                this.serverMessage.terjemahkan(e),
+                this.translate.instant('common.close'),
+                { duration: 4000 },
+              );
             },
           })
           .add(() => (this.isSendingBulk = false));
       });
+  }
+
+  /** Lepas centang slip yang berhasil terkirim; yang gagal dibiarkan. */
+  lepasYangTerkirim(sentIds: unknown): void {
+    if (!Array.isArray(sentIds)) return;
+    const terkirim = new Set(sentIds.map((x) => Number(x)));
+    this.terpilih = new Set(
+      [...this.terpilih].filter((id) => !terkirim.has(Number(id))),
+    );
   }
 
   generateSalarySlip(data: any) {

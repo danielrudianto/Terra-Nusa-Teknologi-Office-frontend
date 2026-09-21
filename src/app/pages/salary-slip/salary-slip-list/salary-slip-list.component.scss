@@ -41,13 +41,34 @@
   margin otomatis, dan dorongannya tidak berpengaruh apa pun sekalipun
   aturannya tertulis jelas.
 */
+/* Pendorong kelompok kanan. Dulu `margin-left: auto` dipasang pada
+   pencarian sendiri, sehingga periode tertinggal di kiri dan pencarian
+   terdorong sendirian ke tepi kanan — dua penyaring untuk satu pertanyaan
+   terpisah selebar layar. Pendorongnya kini elemen tersendiri, dan
+   periode–pencarian–muat ulang bergerak sebagai satu kelompok. */
+.ssl-spacer {
+  flex: 1 1 auto;
+}
 .ssl-search {
-  flex: 0 1 400px;
+  flex: 0 1 340px;
   min-width: 220px;
-  margin-left: auto;
 }
 .ssl-month {
-  width: 210px;
+  flex: 0 0 180px;
+}
+
+/* Kolom centang: sempit dan tetap, supaya nama tidak bergeser saat
+   centangnya muncul atau hilang. */
+.ssl-pilih {
+  width: 52px;
+  padding-left: 16px !important;
+  padding-right: 0 !important;
+}
+/* Baris tercentang ditandai latar lembut — tanpa itu, yang memilih
+   belasan baris harus menelusuri kotak kecil satu per satu untuk tahu
+   mana yang sudah dipilih. */
+:host ::ng-deep tr.ssl-row--pilih td {
+  background: var(--brand-soft, #eef2fe);
 }
 :host ::ng-deep .ssl-toolbar .mat-mdc-text-field-wrapper {
   border-radius: 14px;
@@ -328,6 +349,15 @@
     margin-left: 0;
     width: 100%;
     justify-content: center;
+  }
+  /* Di ponsel kelompok kanan turun ke baris sendiri, dan tiap kotaknya
+     mengisi lebar — periode dan pencarian bertumpuk, bukan terjepit. */
+  .ssl-spacer {
+    display: none;
+  }
+  .ssl-month,
+  .ssl-search {
+    flex: 1 1 100%;
   }
   .ssl-add {
     margin-left: 0;

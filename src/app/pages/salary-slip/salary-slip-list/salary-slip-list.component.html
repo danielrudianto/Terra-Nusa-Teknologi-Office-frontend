@@ -48,40 +48,51 @@
       }}</mat-chip-option>
     </mat-chip-listbox>
 
-    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="ssl-month">
-      <mat-label>{{ "table.monthAndYear" | translate }}</mat-label>
-      <input matInput [matDatepicker]="dp" [formControl]="date" />
-      <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
-      <mat-datepicker
-        #dp
-        startView="multi-year"
-        (monthSelected)="setMonthAndYear($event, dp)"
-        panelClass="example-month-picker"
-      ></mat-datepicker>
-    </mat-form-field>
 
     <!--
-      Kirim seluruh slip yang sedang tampil.
+      Kirim slip yang DICENTANG — bukan seluruh yang tampil.
 
-      Diletakkan sebelum tombol buat: yang satu menyelesaikan pekerjaan yang
-      sudah ada, yang lain memulai yang baru.
+      Sebelumnya satu tombol mengirim semua slip di halaman. Surel slip gaji
+      tidak dapat ditarik kembali, dan "semua" kerap lebih banyak dari yang
+      dimaksud: satu karyawan yang slipnya masih salah ikut menerima.
+      Mencentang dulu membuat yang terkirim selalu yang memang dipilih.
+
+      Mengirim semua tetap dua gerakan: centang di kepala tabel, lalu kirim.
+      Jumlahnya tertulis di tombol, jadi yang menekan tahu berapa surel yang
+      akan berangkat sebelum dikonfirmasi.
     -->
     <button
       type="button"
       class="ssl-send"
       *appCan="'salary_slip:create'"
-      [disabled]="isSendingBulk || !slipDapatDikirim.length"
-      (click)="kirimSemua()"
+      [disabled]="isSendingBulk || !jumlahTerpilih"
+      [matTooltip]="
+        jumlahTerpilih ? '' : ('salarySlip.pilihDulu' | translate)
+      "
+      (click)="kirimTerpilih()"
     >
       <mat-icon>forward_to_inbox</mat-icon>
       <span>
         {{
           isSendingBulk
             ? ("salarySlip.sending" | translate)
-            : ("salarySlip.sendAll" | translate)
+            : jumlahTerpilih
+              ? ("salarySlip.kirimTerpilih" | translate: { n: jumlahTerpilih })
+              : ("salarySlip.kirimSlip" | translate)
         }}
       </span>
     </button>
+
+    <!--
+      Periode, pencarian, dan muat ulang BERDAMPINGAN di kanan.
+
+      Periode dulu berdiri di kiri dan pencarian di ujung kanan — dua
+      penyaring untuk satu pertanyaan ("slip siapa, bulan apa") dipisahkan
+      selebar layar, dengan tombol di antaranya. Kini ketiganya satu
+      kelompok, dibaca kiri ke kanan: bulan, nama, segarkan.
+    -->
+    <span class="ssl-spacer"></span>
+
 
     <!--
       Buat slip langsung dari sini, tanpa lewat Data Master → Karyawan.
@@ -99,6 +110,18 @@
       paling kiri sementara muat ulang di ujung kanan, terpisah
       selebar layar.
     -->
+    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="ssl-month">
+      <mat-label>{{ "table.monthAndYear" | translate }}</mat-label>
+      <input matInput [matDatepicker]="dp" [formControl]="date" />
+      <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
+      <mat-datepicker
+        #dp
+        startView="multi-year"
+        (monthSelected)="setMonthAndYear($event, dp)"
+        panelClass="example-month-picker"
+      ></mat-datepicker>
+    </mat-form-field>
+
     <mat-form-field subscriptSizing="dynamic" appearance="outline" class="ssl-search">
       <mat-icon matPrefix>search</mat-icon>
       <mat-label>{{ "common.search" | translate }}</mat-label>
@@ -120,6 +143,47 @@
   <div class="ssl-card">
     <div class="table-responsive">
       <table mat-table [dataSource]="dataSource">
+        <!--
+          CENTANG untuk memilih slip yang dikirim.
+
+          Sel ini MENAHAN klik: tanpa `stopPropagation`, mencentang juga
+          membuka dialog slipnya, dan yang sedang memilih sepuluh baris
+          harus menutup sepuluh dialog.
+
+          Slip yang tidak dapat dikirim — sudah dihapus, atau karyawannya
+          tanpa surel — tetap bercentang, tetapi MATI, dengan keterangan
+          sebabnya. Menyembunyikan kotaknya membuat yang mencari tidak tahu
+          kenapa baris itu tidak dapat dipilih.
+        -->
+        <ng-container matColumnDef="pilih">
+          <th mat-header-cell *matHeaderCellDef class="ssl-pilih">
+            <mat-checkbox
+              color="primary"
+              [checked]="semuaTerpilih"
+              [indeterminate]="sebagianTerpilih"
+              [disabled]="!slipDapatDikirim.length"
+              [attr.aria-label]="'salarySlip.pilihSemua' | translate"
+              [matTooltip]="'salarySlip.pilihSemua' | translate"
+              (change)="pilihSemua($event.checked)"
+            ></mat-checkbox>
+          </th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            class="ssl-pilih"
+            (click)="$event.stopPropagation()"
+          >
+            <mat-checkbox
+              color="primary"
+              [checked]="terpilih.has(element.id)"
+              [disabled]="!bolehDikirim(element)"
+              [matTooltip]="alasanTakTerkirim(element) | translate"
+              [attr.aria-label]="element.name"
+              (change)="pilih(element, $event.checked)"
+            ></mat-checkbox>
+          </td>
+        </ng-container>
+
         <!-- Name -->
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('name')">
@@ -372,6 +436,7 @@
         <tr
           mat-row
           *matRowDef="let row; columns: displayedColumns"
+          [class.ssl-row--pilih]="terpilih.has(row.id)"
           (click)="viewSalarySlip(row.id)"
         ></tr>
         <tr class="mat-row ssl-norow" *matNoDataRow>
