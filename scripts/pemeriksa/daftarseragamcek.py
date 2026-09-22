@@ -113,10 +113,18 @@ def periksa(html: str, scss: str, nama: str) -> list[str]:
     # harus ikut: tanpa itu sebuah bilah alat berisi pencarian, dua tombol,
     # lalu muat ulang terbaca seolah pencarian dan muat ulang berdampingan
     # — dan susunan yang keliru lolos tanpa satu pun keluhan.
+    #
+    # Isi `mat-form-field` dibuang lebih dulu: tombol `matSuffix` (mis.
+    # tombol kosongkan pencarian) berada DI DALAM isiannya, bukan saudara
+    # di bilah alat, dan tidak memisahkan pencarian dari muat ulang.
+    blok_datar = re.sub(
+        r"(<mat-form-field\b)[\s\S]*?</mat-form-field>", r"\1>", blok
+    )
     urut_penuh = [
         x.group(1)
         for x in re.finditer(
-            r"<(mat-chip-listbox|mat-form-field|app-refresh-button|button)\b", blok
+            r"<(mat-chip-listbox|mat-form-field|app-refresh-button|button)\b",
+            blok_datar,
         )
     ]
     ada_tombol_lain = "button" in urut_penuh

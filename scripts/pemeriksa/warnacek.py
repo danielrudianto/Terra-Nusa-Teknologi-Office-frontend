@@ -48,6 +48,10 @@ def periksa(akar: str = FE) -> list[str]:
     terlihat: set[str] = set()
     for p in sorted(glob(f'{akar}/app/**/*.scss', recursive=True)):
         s = open(p, errors='ignore').read()
+        # Komentar dibuang: `var(--x)` yang hanya disebut dalam penjelasan
+        # bukan pemakaian, dan tidak boleh dilaporkan sebagai temuan.
+        s = re.sub(r'/\*[\s\S]*?\*/', '', s)
+        s = re.sub(r'(?m)^\s*//.*$', '', s)
         for m in re.finditer(r'var\((--[\w-]+)', s):
             nama = m.group(1)
             if nama in didefinisikan or nama in terlihat:

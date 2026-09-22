@@ -89,10 +89,12 @@ html {
   --mat-slide-toggle-selected-focus-track-color: var(--brand-strong);
   --mat-slide-toggle-selected-pressed-track-color: var(--brand-strong);
   --mat-slide-toggle-selected-track-outline-color: var(--brand);
-  --mat-slide-toggle-selected-handle-color: #fff;
-  --mat-slide-toggle-selected-hover-handle-color: #fff;
-  --mat-slide-toggle-selected-focus-handle-color: #fff;
-  --mat-slide-toggle-selected-pressed-handle-color: #fff;
+  /* Kenop ikut `--on-brand`, bukan #fff: di tema gelap aksennya terang,
+     dan kenop putih di atas lintasan biru muda nyaris tak terlihat. */
+  --mat-slide-toggle-selected-handle-color: var(--on-brand);
+  --mat-slide-toggle-selected-hover-handle-color: var(--on-brand);
+  --mat-slide-toggle-selected-focus-handle-color: var(--on-brand);
+  --mat-slide-toggle-selected-pressed-handle-color: var(--on-brand);
   --mat-slide-toggle-selected-icon-color: var(--brand);
   --mat-slide-toggle-selected-focus-state-layer-color: var(--brand);
   --mat-slide-toggle-selected-hover-state-layer-color: var(--brand);
@@ -309,6 +311,12 @@ html {
   --warn-soft: var(--warn-bg);
   --warn-border: var(--warn-fg);
   --bg-soft: var(--surface-2, var(--hover));
+  /* `--bad` dipakai lima layar sebagai nama pendek; alias, bukan warna baru. */
+  --bad: var(--bad-fg);
+  /* Nama lama untuk teks di atas latar halaman/sidebar. */
+  --on-base-color: var(--ink);
+  --on-primary-color: var(--ink);
+  --background-color: var(--surface);
   /* semantic surface / text / lines used by our custom components */
   --surface: #ffffff;
   --surface-2: #fafbfc;
@@ -403,18 +411,10 @@ html {
   --snackbar-background-color: rgb(43, 43, 43);
   --on-snackbar-color: rgba(255, 255, 255, 0.92);
   --snackbar-action-color: rgb(150, 180, 255);
-  --stepper-icon-background: rgba(0, 0, 0, 0);
-  --stepper-icon-border: rgba(193, 205, 223, 1);
-  --stepper-icon-background-selected: rgba(0, 0, 0, 1);
-  --stepper-icon-border-selected: rgba(0, 0, 0, 1);
-  --stepper-icon-background-disabled: rgba(0, 0, 0, 0.1);
-  --stepper-icon-border-disabled: rgba(0, 0, 0, 1);
-  --paginator-button-background: transparent;
-  --paginator-button-border-color: rgba(232, 232, 232, 1);
-  --paginator-button-background-disabled: transparent;
-  --paginator-button-border-color-disabled: rgba(232, 232, 232, 1);
 
   --heading-text-color: rgba(0, 0, 0, 1);
+  /* Tirai di belakang lembar/dialog buatan sendiri. */
+  --scrim: rgba(0, 0, 0, 0.4);
 
   /* text scale (driven by SettingsService) */
   --app-text-scale: 1;
@@ -493,7 +493,12 @@ html[data-theme="dark"] {
   --surface-color: #1a1d24;
   --disabled-color: #6b7280;
   --heading-text-color: #e7e9ee;
-  --paginator-button-border-color: #2f3540;
+  /* Tirai sedikit lebih pekat: 40% hitam di atas halaman gelap hampir
+     tidak terlihat memisahkan lembarnya. */
+  --scrim: rgba(0, 0, 0, 0.6);
+  /* Banner SENGAJA sama di kedua tema — warna pekat, teks putih.
+     SettingsService menimpanya dengan warna aksen pilihan pengguna. */
+  --banner-background-color: rgba(21, 77, 236, 1);
 }
 
 /* ===================================================================

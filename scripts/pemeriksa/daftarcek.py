@@ -82,6 +82,10 @@ def gerakan_dipakai(css: str) -> set[str]:
                 continue
             if kata.startswith("var(") or kata.startswith("--"):
                 continue
+            # `animation: none !important` (mis. untuk prefers-reduced-motion
+            # di `_mobile.scss`) — `!important` bukan nama gerakan.
+            if kata.startswith("!"):
+                continue
             dipakai.add(kata)
     return dipakai
 
