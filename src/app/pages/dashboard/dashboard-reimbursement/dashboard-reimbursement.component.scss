@@ -10,6 +10,10 @@
   padding: 1.75rem 1.75rem 1.25rem;
   box-sizing: border-box;
   height: 100%;
+  /* Kolom: kepala tetap, daftar mengisi dan digulir bila melebihi kartu. */
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .dr__head {
@@ -80,6 +84,8 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .dr__row {
   display: flex;
@@ -172,8 +178,9 @@
   min-height: 0;
 }
 .dr__showmore {
+  flex: none;
   width: 100%;
-  margin-top: auto;
+  margin-top: 0.6rem;
   border: none;
   background: var(--surface-2, #f3f5f9);
   color: var(--brand, #154dec);

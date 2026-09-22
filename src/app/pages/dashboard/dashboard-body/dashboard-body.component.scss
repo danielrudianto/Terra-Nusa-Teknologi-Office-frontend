@@ -202,13 +202,22 @@ $faint: var(--faint, #9aa0ab);
     flex: 1 1 auto;
   }
 
-  /* Kolom kanan: AGENDA yang memanjang, reimbursement setinggi isinya. */
+  /*
+   * Kolom kanan: agenda dan reimbursement BERBAGI RATA tinggi kolom.
+   *
+   * `flex-basis: 0` membuat keduanya tidak ikut menentukan tinggi kolom —
+   * tingginya mengikuti kartu tenggat di sebelah — lalu masing-masing
+   * mendapat separuh. Isi yang lebih panjang dari separuhnya digulir di
+   * dalam kartunya sendiri, jadi berapa pun jumlah reimbursement, kedua
+   * kolom tetap berakhir sejajar.
+   */
   &--agenda {
-    > :last-child {
-      flex: 0 0 auto;
-    }
-    > :first-child {
-      flex: 1 1 auto;
+    > * {
+      flex: 1 1 0;
+      min-height: 250px;
+      /* Isi kartu TIDAK ikut menentukan tinggi kolom (tanpa ini tujuh
+         reimbursement memanjangkan kolomnya melewati kartu tenggat). */
+      contain: size;
     }
   }
   > * > * {
@@ -320,6 +329,11 @@ $faint: var(--faint, #9aa0ab);
   .db-kolom {
     flex: 0 0 100%;
     max-width: 100%;
+  }
+  /* Bertumpuk di layar sempit: tiap kartu kembali setinggi isinya. */
+  .db-kolom--agenda > * {
+    contain: none;
+    min-height: 0;
   }
   .db-rightcol {
     gap: 1rem;

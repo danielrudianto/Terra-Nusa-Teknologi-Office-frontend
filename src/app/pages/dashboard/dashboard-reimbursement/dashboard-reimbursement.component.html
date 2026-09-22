@@ -79,9 +79,15 @@
         </div>
         <span class="dr__amount">{{ formatIDR(it.amount) }}</span>
       </div>
-      <button class="dr__showmore" (click)="openList()">
-        Lihat semua ({{ hiddenCount }} lagi)
-      </button>
     </div>
   </div>
+
+  <!-- Di LUAR daftar yang digulir: tombolnya selalu terlihat di dasar kartu. -->
+  <button
+    class="dr__showmore"
+    *ngIf="!isLoading && !errorMsg && hiddenCount > 0"
+    (click)="openList()"
+  >
+    Lihat semua ({{ hiddenCount }} lagi)
+  </button>
 </div>
