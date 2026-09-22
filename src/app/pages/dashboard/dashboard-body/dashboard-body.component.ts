@@ -1,4 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+import { AccountService } from '../../../services/account.service';
+import { HitungNaikDirective } from '../../../directives/hitung-naik.directive';
+import { MejaAntreanComponent } from '../meja/meja-antrean.component';
+import { MejaTenggatComponent } from '../meja/meja-tenggat.component';
+import { DIVISI } from '../meja/meja';
 import { PermissionService } from '../../../services/permission.service';
 import { AgendaComponent } from '../agenda/agenda.component';
 import { CanDirective } from '../../../directives/can.directive';
@@ -25,11 +31,49 @@ import { ProjectMarginComponent } from '../project-margin/project-margin.compone
     CashPositionComponent,
     DashboardReimbursementComponent,
     ProjectMarginComponent,
+    MatIconModule,
+    HitungNaikDirective,
+    MejaAntreanComponent,
+    MejaTenggatComponent,
   ],
 })
 export class DashboardBodyComponent {
 
   private readonly permission = inject(PermissionService);
+  private readonly akun = inject(AccountService);
+
+  readonly hariIni = new Date();
+
+  /** Ringkasan dari kartu antrean & tenggat, untuk petak angka di puncak. */
+  readonly ringkasAntrean = signal<{ menunggu: number; tertahan: number; tertuaHari: number } | null>(null);
+  readonly ringkasTenggat = signal<{ jumlah: number; lewat: number } | null>(null);
+
+  get namaDepan(): string {
+    return String(this.akun.displayName || '').trim().split(/\s+/)[0] || '';
+  }
+
+  /** Salam menurut jam setempat. */
+  get salam(): string {
+    const jam = new Date().getHours();
+    if (jam < 11) return 'meja.salamPagi';
+    if (jam < 15) return 'meja.salamSiang';
+    if (jam < 18) return 'meja.salamSore';
+    return 'meja.salamMalam';
+  }
+
+  get level(): number {
+    return this.permission.level();
+  }
+
+  /** Divisi pengguna yang dikenal dasbor (konsultan tidak punya meja sendiri). */
+  // `computed`, bukan getter: larik baru tiap putaran deteksi perubahan
+  // pernah membekukan menu samping (lihat side-nav `hasilMaster`).
+  readonly divisiSayaSig = computed(() => {
+    const dikenal = new Set(DIVISI.map((d) => d.kode as string));
+    return (this.permission.departments() ?? [])
+      .map((d) => String(d).toLowerCase())
+      .filter((d) => dikenal.has(d));
+  });
 
   /**
    * Boleh membuka generator invoice.

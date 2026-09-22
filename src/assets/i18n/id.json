@@ -2337,6 +2337,61 @@
     "accountsSelected": "Rekening Dipilih",
     "selectTitle": "Pilih rekening bank"
   },
+  "meja": {
+    "salamPagi": "Selamat pagi, {{nama}}",
+    "salamSiang": "Selamat siang, {{nama}}",
+    "salamSore": "Selamat sore, {{nama}}",
+    "salamMalam": "Selamat malam, {{nama}}",
+    "level": "Level {{n}}",
+    "alat": "Alat",
+    "divisiAnda": "Divisi Anda",
+    "divisi": {
+      "procurement": "Purchasing",
+      "engineering": "Engineering",
+      "fat": "Finance",
+      "hrd": "HRD",
+      "lainnya": "Lainnya",
+      "konsultan": "Konsultan"
+    },
+    "petakMenunggu": "Dokumen menunggu",
+    "petakMenungguKet": "di tahap yang Anda pegang",
+    "petakTertahan": "Tertahan ≥ 15 hari",
+    "petakTertahanKet": "tidak ada yang tertahan",
+    "petakTertuaKet": "tertua {{n}} hari",
+    "petakTenggat": "Tenggat 7 hari",
+    "petakTenggatKet": "jatuh tempo minggu ini",
+    "petakLewat": "Terlewat",
+    "petakLewatKet": "belum ditindaklanjuti",
+    "antreanJudul": "Antrean pekerjaan",
+    "antreanSub": "Dokumen yang tertahan di tiap tahap, beserta umur tunggu tertuanya.",
+    "papanLengkap": "Papan lengkap",
+    "antreanTanpaTahap": "Tidak ada tahap persetujuan yang Anda pegang.",
+    "semuaBeres": "Semua antrean kosong — tidak ada yang menunggu.",
+    "tertua": "tertua {{n}} hari",
+    "tahapGagal": "gagal dimuat",
+    "gagalJudul": "Data tidak dapat dimuat",
+    "gagalIsi": "Coba muat ulang halaman. Angka tidak ditampilkan daripada ditampilkan nol.",
+    "tenggatJudul": "Tenggat 7 hari",
+    "tenggatSub": "Yang jatuh tempo minggu ini, dan yang terlewat tetapi masih menggantung.",
+    "terlewat": "Terlewat",
+    "sejak": "sejak {{tgl}}",
+    "tanpaTenggat": "Tidak ada tenggat dalam 7 hari ke depan.",
+    "sebagianGagal": "Sebagian tenggat gagal dimuat:",
+    "hariIni": "Hari ini",
+    "besok": "Besok",
+    "tenggat": {
+      "rencanaKeluar": "Rencana pembayaran keluar",
+      "pembayaranTerjadwal": "Pembayaran belum disetujui",
+      "hutangJatuhTempo": "Pembelian jatuh tempo, belum lunas",
+      "tenderTutup": "Batas penawaran tender",
+      "pajak": "Pajak masa"
+    },
+    "pajak": {
+      "pphSetor": "Setor PPh masa {{masa}}",
+      "pphLapor": "Lapor SPT Masa PPh {{masa}}",
+      "ppnSetorLapor": "Setor & lapor PPN masa {{masa}}"
+    }
+  },
   "dashboard": {
     "dalam30Hari": "dalam 30 hari",
     "title": "Dashboard",
@@ -5026,6 +5081,10 @@
     "berikutnya": "Berikutnya"
   },
   "projectMargin": {
+    "biayaTerpakai": "Biaya terpakai",
+    "kemajuan": "Kemajuan pekerjaan",
+    "kemajuanKosong": "belum dicatat",
+    "biayaMendahului": "Biaya mendahului kemajuan",
     "judul": "Margin proyek",
     "sub": "Margin atas pekerjaan yang sudah ditagihkan",
     "kontrak": "Kontrak",

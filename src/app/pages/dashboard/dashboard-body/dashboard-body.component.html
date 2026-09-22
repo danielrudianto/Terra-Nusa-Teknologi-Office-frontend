@@ -1,133 +1,83 @@
 <div class="dashboard-body__wrapper">
   <div class="container">
-    <div class="row akn-berurutan">
-      <div class="col-12">
-        <h1 class="db-title">{{ "dashboard.title" | translate }}</h1>
-        <p class="db-subtitle mb-4">{{ "dashboard.tasksSub" | translate }}</p>
-      </div>
-
+    <div class="row">
       <!--
-        Hero: alat dokumen (gabung & pisah PDF).
+        KEPALA: siapa, hari apa, divisi apa — lalu alat kecil di kanan.
 
-        Alat kerja internal, tidak ditawarkan kepada pihak luar — lihat
-        `bolehPakaiAlatDokumen`.
+        Kartu besar "Gabung PDF" dan "Invoice" dulu menempati tempat paling
+        atas; sekarang tempat itu untuk pekerjaan yang menunggu, dan alatnya
+        menjadi tombol kecil (keputusan Daniel, 22 Sep 2026).
       -->
-      @if (bolehPakaiAlatDokumen) {
-      <div class="col-8">
-        <a class="hero hero--pdf" [routerLink]="'/PDF'">
-          <div class="hero__content">
-            <span class="hero__eyebrow">{{
-              "dashboard.documentTools" | translate
-            }}</span>
-            <h2 class="hero__title">{{ "dashboard.mergePdf" | translate }}</h2>
-            <p class="hero__desc">{{ "dashboard.pdfSub" | translate }}</p>
-            <span class="hero__cta">
-              {{ "dashboard.getStarted" | translate }}
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
-            </span>
+      <div class="col-12">
+        <header class="db-kepala">
+          <div class="db-kepala__teks">
+            <span class="db-tanggal">{{ hariIni | date: "EEEE, d MMMM y" }}</span>
+            <h1 class="db-title">{{ salam | translate: { nama: namaDepan } }}</h1>
+            <div class="db-divisi">
+              @for (d of divisiSayaSig(); track d) {
+                <span class="db-divisi__chip">{{ "meja.divisi." + d | translate }}</span>
+              }
+              <span class="db-divisi__chip db-divisi__chip--level">{{ "meja.level" | translate: { n: level } }}</span>
+            </div>
           </div>
-          <svg
-            class="hero__art"
-            viewBox="0 0 120 120"
-            fill="none"
-            aria-hidden="true"
-          >
-            <rect
-              x="30"
-              y="20"
-              width="52"
-              height="66"
-              rx="7"
-              fill="rgba(255,255,255,0.16)"
-            />
-            <rect
-              x="44"
-              y="34"
-              width="52"
-              height="66"
-              rx="7"
-              fill="rgba(255,255,255,0.28)"
-            />
-            <path
-              d="M58 60h26M58 72h18"
-              stroke="rgba(255,255,255,0.85)"
-              stroke-width="3.4"
-              stroke-linecap="round"
-            />
-          </svg>
-        </a>
+          <nav class="db-alat" [attr.aria-label]="'meja.alat' | translate">
+            @if (bolehPakaiAlatDokumen) {
+              <a class="db-alat__tombol" routerLink="/PDF">
+                <mat-icon>picture_as_pdf</mat-icon>{{ "dashboard.mergePdf" | translate }}
+              </a>
+            }
+            @if (bolehBuatInvoice) {
+              <a class="db-alat__tombol" routerLink="/Certificate-of-payment">
+                <mat-icon>receipt_long</mat-icon>{{ "dashboard.invoiceGenerator" | translate }}
+              </a>
+            }
+          </nav>
+        </header>
       </div>
-      }
 
-      <!-- Hero: Invoice generator -->
-      <div class="col-4">
-        <!--
-          Generator invoice: bagian keuangan, atau akses 4 ke atas.
-          Bukan sekadar "boleh melihat sales invoice" — menerbitkan tagihan
-          ke klien adalah pekerjaan satu bagian, dan pengguna tanpa divisi
-          yang levelnya menengah lolos pemeriksaan izin biasa tanpa menjadi
-          bagian itu.
-        -->
-        @if (bolehBuatInvoice) {
-          <a class="hero hero--invoice" [routerLink]="'/Certificate-of-payment'">
-          <div class="hero__content">
-            <span class="hero__eyebrow">{{
-              "dashboard.automation" | translate
-            }}</span>
-            <h2 class="hero__title">
-              {{ "dashboard.invoiceGenerator" | translate }}
-            </h2>
-            <p class="hero__desc">{{ "dashboard.invoiceDesc" | translate }}</p>
-            <span class="hero__cta">
-              {{ "dashboard.create" | translate }}
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
+      <!-- Petak angka: jawaban cepat sebelum membaca rinciannya. -->
+      <div class="col-12">
+        <div class="db-petak akn-berurutan">
+          <div class="db-petak__isi">
+            <span class="db-petak__label">{{ "meja.petakMenunggu" | translate }}</span>
+            <span class="db-petak__angka" [appHitungNaik]="ringkasAntrean()?.menunggu ?? null" hnDigit="1.0-0"></span>
+            <span class="db-petak__ket">{{ "meja.petakMenungguKet" | translate }}</span>
+          </div>
+          <div class="db-petak__isi" [class.db-petak__isi--buruk]="(ringkasAntrean()?.tertahan ?? 0) > 0">
+            <span class="db-petak__label">{{ "meja.petakTertahan" | translate }}</span>
+            <span class="db-petak__angka" [appHitungNaik]="ringkasAntrean()?.tertahan ?? null" hnDigit="1.0-0"></span>
+            <span class="db-petak__ket">
+              @if (ringkasAntrean()?.tertuaHari) {
+                {{ "meja.petakTertuaKet" | translate: { n: ringkasAntrean()?.tertuaHari } }}
+              } @else {
+                {{ "meja.petakTertahanKet" | translate }}
+              }
             </span>
           </div>
-          <svg
-            class="hero__art"
-            viewBox="0 0 120 120"
-            fill="none"
-            aria-hidden="true"
-          >
-            <rect
-              x="36"
-              y="18"
-              width="56"
-              height="72"
-              rx="7"
-              fill="rgba(255,255,255,0.14)"
-            />
-            <path
-              d="M48 38h32M48 52h32M48 66h20"
-              stroke="rgba(120,160,255,0.9)"
-              stroke-width="3.4"
-              stroke-linecap="round"
-            />
-          </svg>
-        </a>
-        }
+          <div class="db-petak__isi">
+            <span class="db-petak__label">{{ "meja.petakTenggat" | translate }}</span>
+            <span class="db-petak__angka" [appHitungNaik]="ringkasTenggat()?.jumlah ?? null" hnDigit="1.0-0"></span>
+            <span class="db-petak__ket">{{ "meja.petakTenggatKet" | translate }}</span>
+          </div>
+          <div class="db-petak__isi" [class.db-petak__isi--buruk]="(ringkasTenggat()?.lewat ?? 0) > 0">
+            <span class="db-petak__label">{{ "meja.petakLewat" | translate }}</span>
+            <span class="db-petak__angka" [appHitungNaik]="ringkasTenggat()?.lewat ?? null" hnDigit="1.0-0"></span>
+            <span class="db-petak__ket">{{ "meja.petakLewatKet" | translate }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Antrean pekerjaan per divisi. -->
+      <div class="col-12 mt-3">
+        <app-meja-antrean [divisiSaya]="divisiSayaSig()" (ringkasan)="ringkasAntrean.set($event)" />
+      </div>
+
+      <!-- Tenggat 7 hari + agenda. -->
+      <div class="col-7 mt-3">
+        <app-meja-tenggat (ringkasan)="ringkasTenggat.set($event)" />
+      </div>
+      <div class="col-5 mt-3 db-rightcol">
+        <app-agenda></app-agenda>
       </div>
 
       <!-- Today's payment (component) -->
@@ -141,12 +91,8 @@
         kartu di sebelah kiri — sebelumnya keduanya berdiri sendiri dan
         salah satunya selalu tampak menggantung.
       -->
-      <div class="col-6 mt-3 db-rightcol">
-        <app-agenda></app-agenda>
-
-        <div class="db-rightcol__rest" *appCan="'reimbursement:read'">
-          <app-dashboard-reimbursement></app-dashboard-reimbursement>
-        </div>
+      <div class="col-6 mt-3" *appCan="'reimbursement:read'">
+        <app-dashboard-reimbursement></app-dashboard-reimbursement>
       </div>
 
       <!-- Cash position (component) -->

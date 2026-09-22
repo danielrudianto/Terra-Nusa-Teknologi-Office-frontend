@@ -1,0 +1,92 @@
+<section class="mj-kartu mj-kartu--penuh">
+  <header class="mj-kepala">
+    <div>
+      <h2 class="mj-judul">{{ "meja.tenggatJudul" | translate }}</h2>
+      <p class="mj-sub">{{ "meja.tenggatSub" | translate }}</p>
+    </div>
+  </header>
+
+  @if (memuat()) {
+    <span class="mj-kilau" style="width: 60%"></span>
+    <span class="mj-kilau" style="width: 85%"></span>
+    <span class="mj-kilau" style="width: 70%"></span>
+  } @else if (gagalMuat()) {
+    <div class="pou-banner">
+      <mat-icon>error_outline</mat-icon>
+      <div>
+        <strong>{{ "meja.gagalJudul" | translate }}</strong>
+        <p>{{ "meja.gagalIsi" | translate }}</p>
+      </div>
+    </div>
+  } @else {
+    @if (sumberGagal().length) {
+      <div class="pou-banner">
+        <mat-icon>warning_amber</mat-icon>
+        <div>
+          <strong>{{ "meja.sebagianGagal" | translate }}</strong>
+          <p>
+            @for (s of sumberGagal(); track s) {
+              {{ "meja.tenggat." + s | translate }}{{ $last ? "" : ", " }}
+            }
+          </p>
+        </div>
+      </div>
+    }
+
+    @if (lewatPerJenis().length) {
+      <div class="mj-lewat">
+        <div class="mj-lewat__judul">
+          <mat-icon>error</mat-icon>{{ "meja.terlewat" | translate }}
+        </div>
+        @for (x of lewatPerJenis(); track x.jenis) {
+          <a class="mj-tg" [routerLink]="rute[x.jenis]">
+            <mat-icon class="mj-tg__ikon">{{ ikon[x.jenis] }}</mat-icon>
+            <span class="mj-tg__teks">
+              {{ "meja.tenggat." + x.jenis | translate }}
+              <small>{{ "meja.sejak" | translate: { tgl: (x.tertua | date: "d MMM") } }}</small>
+            </span>
+            <span class="mj-tg__jumlah">{{ x.jumlah }}</span>
+            @if (x.nilai) {
+              <span class="mj-tg__nilai"><app-rupiah [nilai]="x.nilai" /></span>
+            }
+          </a>
+        }
+      </div>
+    }
+
+    @if (!perTanggal().length && !lewatPerJenis().length) {
+      <div class="mj-beres">
+        <mat-icon>event_available</mat-icon>
+        <span>{{ "meja.tanpaTenggat" | translate }}</span>
+      </div>
+    }
+
+    @for (g of perTanggal(); track g.tanggal) {
+      <div class="mj-hari">
+        <div class="mj-hari__tgl">
+          <strong>{{ g.tanggal | date: "EEE, d MMM" }}</strong>
+          @if (labelTanggal(g.tanggal); as l) {
+            <span class="mj-chip">{{ l | translate }}</span>
+          }
+        </div>
+        @for (x of g.isi; track $index) {
+          <a class="mj-tg" [routerLink]="rute[x.jenis]">
+            <mat-icon class="mj-tg__ikon">{{ ikon[x.jenis] }}</mat-icon>
+            <span class="mj-tg__teks">
+              {{ uraian(x) | translate: { masa: x.masa ? ((x.masa + '-01') | date: 'MMMM y') : '' } }}
+              @if (x.judul) {
+                <small>{{ x.judul }}</small>
+              }
+            </span>
+            @if (x.jenis !== "pajak" && x.jenis !== "tenderTutup") {
+              <span class="mj-tg__jumlah">{{ x.jumlah }}</span>
+            }
+            @if (x.nilai) {
+              <span class="mj-tg__nilai"><app-rupiah [nilai]="x.nilai" /></span>
+            }
+          </a>
+        }
+      </div>
+    }
+  }
+</section>

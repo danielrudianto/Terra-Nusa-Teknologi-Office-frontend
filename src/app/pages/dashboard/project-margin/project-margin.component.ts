@@ -21,7 +21,13 @@ interface BarisMargin {
   reimbursement: number;
   marginInternalMasuk: number;
   marginInternalKeluar: number;
+  /** Kemajuan terakhir (persen kumulatif); null = belum pernah dicatat. */
+  kemajuan?: number | null;
+  kemajuanTanggal?: string | null;
 }
+
+/** Selisih (poin persen) biaya mendahului kemajuan yang mulai ditandai. */
+export const AMBANG_BIAYA_MENDAHULUI = 10;
 
 /**
  * Ikhtisar margin per proyek, hanya untuk dibaca.
@@ -206,5 +212,34 @@ export class ProjectMarginComponent implements OnInit {
   /** Lebar bilah margin, dibatasi agar tidak melebihi kolomnya. */
   lebarBilah(p: BarisMargin): number {
     return Math.min(100, Math.max(0, this.persen(p)));
+  }
+
+  /**
+   * Biaya terpakai sebagai persen NILAI KONTRAK — pembanding kemajuan.
+   *
+   * Bukan terhadap yang sudah ditagih: kemajuan menyatakan bagian pekerjaan
+   * dari seluruh kontrak, jadi pembandingnya bagian biaya dari seluruh
+   * kontrak juga. Biaya 60% dengan kemajuan 60% sehat; dengan kemajuan 30%
+   * tidak — dan tanpa kemajuan, keduanya terbaca sama.
+   */
+  biayaPersen(p: BarisMargin): number | null {
+    const k = Number(p.kontrak) || 0;
+    if (k <= 0) return null;
+    return (this.biaya(p) / k) * 100;
+  }
+
+  punyaKemajuan(p: BarisMargin): boolean {
+    return p.kemajuan !== null && p.kemajuan !== undefined;
+  }
+
+  /** Biaya mendahului kemajuan lebih dari ambang — tanda perlu dilihat. */
+  biayaMendahului(p: BarisMargin): boolean {
+    const b = this.biayaPersen(p);
+    if (b === null || !this.punyaKemajuan(p)) return false;
+    return b - Number(p.kemajuan) > AMBANG_BIAYA_MENDAHULUI;
+  }
+
+  lebarPersen(v: number | null | undefined): number {
+    return Math.min(100, Math.max(0, Number(v) || 0));
   }
 }

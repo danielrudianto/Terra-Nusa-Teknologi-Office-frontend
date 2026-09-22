@@ -172,3 +172,57 @@
 .pm-rugi {
   color: var(--danger-fg, #c0392b);
 }
+
+/* Biaya terpakai vs kemajuan — dua batang pada sumbu persen kontrak. */
+.pm-banding {
+  margin-top: 0.55rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--line, #e6e9ef);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+
+  &__baris {
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted, #6b7280);
+
+    span:last-child {
+      color: var(--ink, #16181d);
+      font-weight: 600;
+    }
+  }
+  &__kosong {
+    font-weight: 400 !important;
+    color: var(--faint, #9aa0ab) !important;
+  }
+  &__awas {
+    margin-top: 0.2rem;
+    font-weight: 700;
+    color: var(--bad-fg, #b42318);
+  }
+}
+.pm-mini {
+  height: 5px;
+  border-radius: 5px;
+  background: var(--line, #e6e9ef);
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+
+  i {
+    display: block;
+    height: 100%;
+    border-radius: 5px;
+  }
+  &__biaya {
+    background: var(--muted, #6b7280);
+  }
+  &__maju {
+    background: var(--brand, #154dec);
+  }
+}
+.pm-banding--awas .pm-mini__biaya {
+  background: var(--bad-fg, #d92d20);
+}

@@ -1,0 +1,88 @@
+<section class="mj-kartu">
+  <header class="mj-kepala">
+    <div>
+      <h2 class="mj-judul">{{ "meja.antreanJudul" | translate }}</h2>
+      <p class="mj-sub">{{ "meja.antreanSub" | translate }}</p>
+    </div>
+    <a class="mj-tautan" routerLink="/Laporan/Status-keuangan">{{ "meja.papanLengkap" | translate }}</a>
+  </header>
+
+  @if (memuat()) {
+    <div class="mj-grid-divisi">
+      @for (i of [1, 2]; track i) {
+        <div class="mj-divisi">
+          <span class="mj-kilau" style="width: 40%"></span>
+          <span class="mj-kilau" style="width: 90%"></span>
+          <span class="mj-kilau" style="width: 75%"></span>
+        </div>
+      }
+    </div>
+  } @else if (gagal()) {
+    <div class="pou-banner">
+      <mat-icon>error_outline</mat-icon>
+      <div>
+        <strong>{{ "meja.gagalJudul" | translate }}</strong>
+        <p>{{ "meja.gagalIsi" | translate }}</p>
+      </div>
+    </div>
+  } @else if (kosong()) {
+    <p class="mj-kosong">{{ "meja.antreanTanpaTahap" | translate }}</p>
+  } @else {
+    @if (semuaBeres()) {
+      <div class="mj-beres">
+        <mat-icon>task_alt</mat-icon>
+        <span>{{ "meja.semuaBeres" | translate }}</span>
+      </div>
+    }
+    <div class="mj-grid-divisi akn-berurutan" [attr.data-n]="susunan().kelompok.length + (susunan().lainnya.length ? 1 : 0)">
+      @for (d of susunan().kelompok; track d.kode) {
+        <div class="mj-divisi" [class.mj-divisi--saya]="d.milikSaya">
+          <div class="mj-divisi__kepala">
+            <mat-icon>{{ d.ikon }}</mat-icon>
+            <span class="mj-divisi__nama">{{ d.judul | translate }}</span>
+            @if (d.milikSaya) {
+              <span class="mj-chip">{{ "meja.divisiAnda" | translate }}</span>
+            }
+            <span class="mj-divisi__total">{{ d.jumlah }}</span>
+          </div>
+          @for (t of d.baris; track t.kode) {
+            <a class="mj-baris" [routerLink]="rute[t.kode]" [class.mj-baris--nol]="!t.jumlah">
+              <span class="mj-baris__label">{{ "kpi.tahap." + t.kode | translate }}</span>
+              @if (t.gagal || t.jumlah === null) {
+                <span class="mj-baris__gagal">{{ "meja.tahapGagal" | translate }}</span>
+              } @else {
+                <span class="mj-baris__jumlah">{{ t.jumlah }}</span>
+                <span class="mj-baris__umur mj-umur--{{ tingkat(t.tertuaHari) }}">
+                  @if (t.jumlah) {
+                    {{ "meja.tertua" | translate: { n: t.tertuaHari } }}
+                  } @else {
+                    —
+                  }
+                </span>
+                <span class="mj-sebaran" [attr.aria-hidden]="true">
+                  @for (k of ember; track k) {
+                    <i class="mj-sebaran__{{ $index }}" [style.width.%]="lebar(t, k)"></i>
+                  }
+                </span>
+              }
+            </a>
+          }
+        </div>
+      }
+      @if (susunan().lainnya.length) {
+        <div class="mj-divisi">
+          <div class="mj-divisi__kepala">
+            <mat-icon>more_horiz</mat-icon>
+            <span class="mj-divisi__nama">{{ "meja.divisi.lainnya" | translate }}</span>
+          </div>
+          @for (t of susunan().lainnya; track t.kode) {
+            <div class="mj-baris">
+              <span class="mj-baris__label">{{ "kpi.tahap." + t.kode | translate }}</span>
+              <span class="mj-baris__jumlah">{{ t.jumlah ?? "—" }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</section>

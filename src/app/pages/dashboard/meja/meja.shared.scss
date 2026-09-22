@@ -1,0 +1,380 @@
+/*
+ * Gaya "meja kerja" dasbor — dipakai antrean dan tenggat.
+ *
+ * Nada yang dicari: laporan kerja, bukan brosur. Kartu putih bergaris tipis,
+ * sudut 16px (bukan 27px), label kecil berhuruf kapital, angka berlebar
+ * seragam. Warna hanya untuk MAKNA (umur tunggu, terlewat), tidak untuk hiasan.
+ */
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.mj-kartu {
+  height: 100%;
+  background: var(--surface, #fff);
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 16px;
+  padding: 1.1rem 1.25rem 1.2rem;
+  font-family: "Montserrat", sans-serif;
+  color: $ink;
+  font-variant-numeric: tabular-nums;
+}
+
+.mj-kepala {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+.mj-judul {
+  font-size: 0.98rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.mj-sub {
+  font-size: 0.76rem;
+  color: $muted;
+  margin: 0.15rem 0 0;
+}
+.mj-tautan {
+  flex: none;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: $brand;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.mj-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.12rem 0.45rem;
+  border-radius: 6px;
+  background: var(--brand-soft, #eef2fe);
+  color: $brand;
+}
+
+/* ---------- antrean per divisi ---------- */
+.mj-grid-divisi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 0.9rem;
+
+  /* Empat kartu: 2 × 2, bukan 3 + 1 yang menyisakan satu kartu yatim. */
+  &[data-n="4"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 860px) {
+  .mj-grid-divisi[data-n="4"] {
+    grid-template-columns: 1fr;
+  }
+}
+.mj-divisi {
+  border: 1px solid $line;
+  border-radius: 12px;
+  padding: 0.7rem 0.8rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+
+  &--saya {
+    border-color: color-mix(in srgb, var(--brand, #154dec) 35%, transparent);
+    box-shadow: inset 3px 0 0 var(--brand, #154dec);
+  }
+
+  &__kepala {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.15rem 0.2rem 0.45rem;
+    border-bottom: 1px solid $line;
+    margin-bottom: 0.2rem;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: $muted;
+    }
+  }
+  &__nama {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: $muted;
+  }
+  &__total {
+    margin-left: auto;
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+}
+
+.mj-baris {
+  display: grid;
+  grid-template-columns: 1fr auto 7.2rem;
+  grid-template-areas:
+    "label jumlah umur"
+    "bar   bar    bar";
+  align-items: center;
+  column-gap: 0.7rem;
+  row-gap: 0.3rem;
+  padding: 0.5rem 0.2rem;
+  border-radius: 8px;
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.15s ease;
+
+  & + & {
+    border-top: 1px dashed $line;
+  }
+  &:hover {
+    background: var(--hover, #f6f8ff);
+  }
+  &--nol {
+    color: $faint;
+  }
+
+  &__label {
+    grid-area: label;
+    font-size: 0.82rem;
+    line-height: 1.3;
+  }
+  &__jumlah {
+    grid-area: jumlah;
+    font-size: 1rem;
+    font-weight: 700;
+    min-width: 1.6rem;
+    text-align: right;
+  }
+  &__umur {
+    grid-area: umur;
+    font-size: 0.72rem;
+    text-align: right;
+    white-space: nowrap;
+  }
+  &__gagal {
+    grid-column: 2 / 4;
+    font-size: 0.74rem;
+    color: var(--bad-fg, #b42318);
+    text-align: right;
+  }
+}
+.mj-umur--aman {
+  color: $muted;
+}
+.mj-umur--waspada {
+  color: var(--warn-fg, #b54708);
+  font-weight: 600;
+}
+.mj-umur--tertahan {
+  color: var(--bad-fg, #b42318);
+  font-weight: 700;
+}
+
+/* Sebaran umur: empat ruas, dari muda (pucat) ke tertahan (merah). */
+.mj-sebaran {
+  grid-area: bar;
+  display: flex;
+  height: 4px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: $line;
+
+  i {
+    display: block;
+    height: 100%;
+  }
+  &__0 {
+    background: color-mix(in srgb, var(--brand, #154dec) 35%, transparent);
+  }
+  &__1 {
+    background: var(--brand, #154dec);
+  }
+  &__2 {
+    background: var(--warn-fg, #d97706);
+  }
+  &__3 {
+    background: var(--bad-fg, #d92d20);
+  }
+}
+.mj-baris--nol .mj-sebaran {
+  display: none;
+}
+
+.mj-beres {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.84rem;
+  color: var(--ok-fg, #067647);
+  padding: 0.6rem 0.2rem 0.9rem;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+.mj-kosong {
+  font-size: 0.82rem;
+  color: $muted;
+  margin: 0;
+}
+
+/* ---------- tenggat ---------- */
+.mj-lewat {
+  border: 1px solid color-mix(in srgb, var(--bad-fg, #d92d20) 30%, transparent);
+  background: color-mix(in srgb, var(--bad-fg, #d92d20) 5%, transparent);
+  border-radius: 12px;
+  padding: 0.5rem 0.6rem;
+  margin-bottom: 0.8rem;
+
+  &__judul {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--bad-fg, #b42318);
+    padding: 0.2rem 0.3rem 0.3rem;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+.mj-hari {
+  & + & {
+    margin-top: 0.55rem;
+  }
+  &__tgl {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.74rem;
+    color: $muted;
+    padding: 0.25rem 0.3rem;
+
+    strong {
+      color: $ink;
+      font-weight: 700;
+    }
+  }
+}
+
+.mj-tg {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.45rem 0.35rem;
+  border-radius: 8px;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    background: var(--hover, #f6f8ff);
+  }
+  &__ikon {
+    flex: none;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: $muted;
+  }
+  &__teks {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.82rem;
+    display: flex;
+    flex-direction: column;
+
+    small {
+      font-size: 0.72rem;
+      color: $muted;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+  &__jumlah {
+    flex: none;
+    font-weight: 700;
+    font-size: 0.86rem;
+    min-width: 1.4rem;
+    text-align: right;
+  }
+  &__nilai {
+    flex: none;
+    font-size: 0.8rem;
+    min-width: 8.5rem;
+    text-align: right;
+  }
+}
+
+/* ---------- kerangka ---------- */
+.mj-kilau {
+  display: block;
+  height: 12px;
+  border-radius: 6px;
+  margin: 0.55rem 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ink) 6%, transparent) 0%,
+    color-mix(in srgb, var(--ink) 13%, transparent) 50%,
+    color-mix(in srgb, var(--ink) 6%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  animation: mj-kilau 1.4s ease-in-out infinite;
+}
+@keyframes mj-kilau {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+:host-context(html[data-gerak="mati"]) .mj-kilau {
+  animation: none;
+}
+
+@media (max-width: 600px) {
+  .mj-tg__nilai {
+    min-width: 0;
+  }
+  .mj-baris {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "label jumlah"
+      "umur  umur"
+      "bar   bar";
+  }
+  .mj-baris__umur {
+    text-align: left;
+  }
+}

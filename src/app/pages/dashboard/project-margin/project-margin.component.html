@@ -78,6 +78,30 @@
                 >Rp {{ margin(p) | number: "1.2-2" }}</span
               >
             </div>
+
+            <!--
+              Biaya terpakai vs kemajuan pekerjaan, pada sumbu yang sama
+              (persen kontrak). Jarak keduanya itulah jawabannya.
+            -->
+            <div class="pm-banding" [class.pm-banding--awas]="biayaMendahului(p)">
+              <div class="pm-banding__baris">
+                <span>{{ "projectMargin.biayaTerpakai" | translate }}</span>
+                <span>{{ (biayaPersen(p) ?? 0) | number: "1.0-1" }}%</span>
+              </div>
+              <div class="pm-mini"><i class="pm-mini__biaya" [style.width.%]="lebarPersen(biayaPersen(p))"></i></div>
+              <div class="pm-banding__baris">
+                <span>{{ "projectMargin.kemajuan" | translate }}</span>
+                @if (punyaKemajuan(p)) {
+                  <span [matTooltip]="(p.kemajuanTanggal | date: 'd MMM y') ?? ''">{{ p.kemajuan | number: "1.0-1" }}%</span>
+                } @else {
+                  <span class="pm-banding__kosong">{{ "projectMargin.kemajuanKosong" | translate }}</span>
+                }
+              </div>
+              <div class="pm-mini"><i class="pm-mini__maju" [style.width.%]="lebarPersen(p.kemajuan)"></i></div>
+              @if (biayaMendahului(p)) {
+                <span class="pm-banding__awas">{{ "projectMargin.biayaMendahului" | translate }}</span>
+              }
+            </div>
           }
         </div>
       }

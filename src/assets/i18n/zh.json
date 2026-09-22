@@ -2337,6 +2337,61 @@
     "accountsSelected": "个银行账户已选",
     "selectTitle": "选择银行账户"
   },
+  "meja": {
+    "salamPagi": "早上好，{{nama}}",
+    "salamSiang": "中午好，{{nama}}",
+    "salamSore": "下午好，{{nama}}",
+    "salamMalam": "晚上好，{{nama}}",
+    "level": "等级 {{n}}",
+    "alat": "工具",
+    "divisiAnda": "您的部门",
+    "divisi": {
+      "procurement": "采购",
+      "engineering": "工程",
+      "fat": "财务",
+      "hrd": "人事",
+      "lainnya": "其他",
+      "konsultan": "顾问"
+    },
+    "petakMenunggu": "待处理单据",
+    "petakMenungguKet": "您负责的环节",
+    "petakTertahan": "滞留 ≥ 15 天",
+    "petakTertahanKet": "无滞留",
+    "petakTertuaKet": "最久 {{n}} 天",
+    "petakTenggat": "7 天内到期",
+    "petakTenggatKet": "本周到期",
+    "petakLewat": "已逾期",
+    "petakLewatKet": "尚未处理",
+    "antreanJudul": "工作队列",
+    "antreanSub": "各环节滞留的单据及其最长等待时间。",
+    "papanLengkap": "完整看板",
+    "antreanTanpaTahap": "您没有负责的审批环节。",
+    "semuaBeres": "所有队列均为空——没有待处理事项。",
+    "tertua": "最久 {{n}} 天",
+    "tahapGagal": "加载失败",
+    "gagalJudul": "无法加载数据",
+    "gagalIsi": "请刷新页面。数字不显示，而不是显示为零。",
+    "tenggatJudul": "7 天内到期",
+    "tenggatSub": "本周到期的事项，以及已逾期但仍未处理的事项。",
+    "terlewat": "已逾期",
+    "sejak": "自 {{tgl}}",
+    "tanpaTenggat": "未来 7 天没有到期事项。",
+    "sebagianGagal": "部分到期事项加载失败：",
+    "hariIni": "今天",
+    "besok": "明天",
+    "tenggat": {
+      "rencanaKeluar": "计划付款",
+      "pembayaranTerjadwal": "未审批的付款",
+      "hutangJatuhTempo": "采购到期未付",
+      "tenderTutup": "招标报价截止",
+      "pajak": "月度税务"
+    },
+    "pajak": {
+      "pphSetor": "缴纳 {{masa}} 所得税",
+      "pphLapor": "申报 {{masa}} 所得税月报",
+      "ppnSetorLapor": "缴纳并申报 {{masa}} 增值税"
+    }
+  },
   "dashboard": {
     "dalam30Hari": "30 天内",
     "title": "仪表板",
@@ -5026,6 +5081,10 @@
     "berikutnya": "下一页"
   },
   "projectMargin": {
+    "biayaTerpakai": "已用成本",
+    "kemajuan": "工程进度",
+    "kemajuanKosong": "未记录",
+    "biayaMendahului": "成本超前于进度",
     "judul": "项目毛利",
     "sub": "已开票工作的毛利",
     "kontrak": "合同",

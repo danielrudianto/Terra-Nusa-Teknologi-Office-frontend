@@ -2337,6 +2337,61 @@
     "accountsSelected": "Bank Account(s) Selected",
     "selectTitle": "Select bank account"
   },
+  "meja": {
+    "salamPagi": "Good morning, {{nama}}",
+    "salamSiang": "Good afternoon, {{nama}}",
+    "salamSore": "Good afternoon, {{nama}}",
+    "salamMalam": "Good evening, {{nama}}",
+    "level": "Level {{n}}",
+    "alat": "Tools",
+    "divisiAnda": "Your division",
+    "divisi": {
+      "procurement": "Purchasing",
+      "engineering": "Engineering",
+      "fat": "Finance",
+      "hrd": "HR",
+      "lainnya": "Other",
+      "konsultan": "Consultant"
+    },
+    "petakMenunggu": "Documents waiting",
+    "petakMenungguKet": "in stages you handle",
+    "petakTertahan": "Stuck ≥ 15 days",
+    "petakTertahanKet": "nothing stuck",
+    "petakTertuaKet": "oldest {{n}} days",
+    "petakTenggat": "Due in 7 days",
+    "petakTenggatKet": "falling due this week",
+    "petakLewat": "Overdue",
+    "petakLewatKet": "not yet handled",
+    "antreanJudul": "Work queue",
+    "antreanSub": "Documents held at each stage, with the oldest waiting time.",
+    "papanLengkap": "Full board",
+    "antreanTanpaTahap": "You handle no approval stages.",
+    "semuaBeres": "All queues are empty — nothing is waiting.",
+    "tertua": "oldest {{n}} days",
+    "tahapGagal": "failed to load",
+    "gagalJudul": "Data could not be loaded",
+    "gagalIsi": "Try reloading the page. Numbers are hidden rather than shown as zero.",
+    "tenggatJudul": "Due in 7 days",
+    "tenggatSub": "What falls due this week, and what is overdue but still open.",
+    "terlewat": "Overdue",
+    "sejak": "since {{tgl}}",
+    "tanpaTenggat": "Nothing due in the next 7 days.",
+    "sebagianGagal": "Some deadlines failed to load:",
+    "hariIni": "Today",
+    "besok": "Tomorrow",
+    "tenggat": {
+      "rencanaKeluar": "Planned outgoing payment",
+      "pembayaranTerjadwal": "Payment not yet approved",
+      "hutangJatuhTempo": "Purchase due, unpaid",
+      "tenderTutup": "Tender bid deadline",
+      "pajak": "Monthly tax"
+    },
+    "pajak": {
+      "pphSetor": "Pay income tax for {{masa}}",
+      "pphLapor": "File income tax return for {{masa}}",
+      "ppnSetorLapor": "Pay & file VAT for {{masa}}"
+    }
+  },
   "dashboard": {
     "dalam30Hari": "in 30 days",
     "title": "Dashboard",
@@ -5026,6 +5081,10 @@
     "berikutnya": "Next"
   },
   "projectMargin": {
+    "biayaTerpakai": "Cost used",
+    "kemajuan": "Work progress",
+    "kemajuanKosong": "not recorded",
+    "biayaMendahului": "Cost ahead of progress",
     "judul": "Project margin",
     "sub": "Margin on work already invoiced",
     "kontrak": "Contract",
