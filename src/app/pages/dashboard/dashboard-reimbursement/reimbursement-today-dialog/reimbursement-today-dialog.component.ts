@@ -1,3 +1,4 @@
+import { DialogGeserDirective } from 'src/app/directives/dialog-geser.directive';
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -23,7 +24,7 @@ export interface ReimbursementTodayDialogData {
 @Component({
   selector: 'app-reimbursement-today-dialog',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, TranslatePipe],
+  imports: [CommonModule, MatDialogModule, TranslatePipe, DialogGeserDirective],
   templateUrl: './reimbursement-today-dialog.component.html',
   styleUrl: './reimbursement-today-dialog.component.scss',
 })

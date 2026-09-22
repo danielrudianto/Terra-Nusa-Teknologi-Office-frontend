@@ -111,6 +111,10 @@
   flex: 1 1 auto;
   overflow-y: auto;
   overflow-x: hidden;
+  /* Ruang bilah gulir selalu disediakan. Tanpa ini, saat grup dibuka dan
+     isinya mulai melebihi tinggi layar, bilah gulir muncul di tengah
+     animasi dan seluruh menu tergeser ke kiri — "kasar". */
+  scrollbar-gutter: stable;
   padding-right: 4px;
   margin-top: 2px;
 
@@ -212,18 +216,58 @@
   }
 }
 
-/* collapsible items */
-.snav-group__items {
-  overflow: hidden;
-  max-height: 1200px;
-  opacity: 1;
-  transition:
-    max-height 0.28s ease,
-    opacity 0.2s ease;
+/*
+ * Grup menu yang dapat dilipat.
+ *
+ * Dulu `max-height: 0 <-> 1200px`. Karena isinya jauh lebih pendek dari
+ * 1200px, saat MEMBUKA seluruh isinya sudah tampil di awal transisi (terasa
+ * tanpa animasi), dan saat MENUTUP ada jeda sebelum tingginya mulai turun.
+ * `grid-template-rows: 1fr <-> 0fr` menganimasikan tinggi yang sebenarnya.
+ */
+.snav-group__items--lipat {
+  display: grid;
+  grid-template-rows: 1fr;
+  /* Membuka: mulai pelan dan berhenti pelan (standard easing). Kurva
+     "ease-out" sebelumnya melesat di awal — itu yang terasa menyentak. */
+  transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &.is-collapsed {
-    max-height: 0;
-    opacity: 0;
+    grid-template-rows: 0fr;
+    /* Menutup: lebih singkat — yang ditutup tidak perlu ditonton. */
+    transition: grid-template-rows 0.22s cubic-bezier(0.4, 0, 1, 1);
+  }
+}
+.snav-group__isi {
+  min-height: 0;
+  overflow: hidden;
+
+  > app-side-nav-item {
+    display: block;
+    opacity: 1;
+    /* Hanya memudar — tanpa geser. Geseran kecil per baris di atas tinggi
+       yang sedang bertambah membuat gerakannya tampak bergetar. */
+    transition: opacity 0.22s ease;
+
+    /* Menu tampil berurutan saat grup dibuka. */
+    @for $i from 1 through 12 {
+      &:nth-of-type(#{$i}) {
+        transition-delay: #{($i - 1) * 0.02 + 0.06}s;
+      }
+    }
+  }
+}
+.snav-group__items--lipat.is-collapsed .snav-group__isi > app-side-nav-item {
+  opacity: 0;
+  /* Menutup serentak, tanpa jeda berurutan. */
+  transition: opacity 0.14s ease;
+  transition-delay: 0s;
+}
+
+:host-context(html[data-gerak="mati"]) {
+  .snav-group__items--lipat,
+  .snav-group__isi > app-side-nav-item,
+  .snav-group__chev {
+    transition: none;
   }
 }
 

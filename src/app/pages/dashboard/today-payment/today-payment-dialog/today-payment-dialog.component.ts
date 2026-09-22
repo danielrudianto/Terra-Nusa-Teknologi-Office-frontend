@@ -1,3 +1,4 @@
+import { DialogGeserDirective } from 'src/app/directives/dialog-geser.directive';
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -42,7 +43,7 @@ interface BankGroup {
 @Component({
   selector: 'app-today-payment-dialog',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, TranslatePipe],
+  imports: [CommonModule, MatDialogModule, TranslatePipe, DialogGeserDirective],
   templateUrl: './today-payment-dialog.component.html',
   styleUrl: './today-payment-dialog.component.scss',
 })

@@ -143,3 +143,50 @@
   font-weight: 700;
   color: var(--ink, #16181d);
 }
+
+/* ---------- kepala: bentuk baku dialog (acuan `bank-create`) ---------- */
+.rtd__head {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  text-align: left;
+  background: linear-gradient(135deg, var(--brand-soft, #eef2fe) 0%, var(--hover, #f6f8ff) 100%);
+  border-bottom: 1px solid var(--line, #e4e9fb);
+
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+}
+.rtd__head-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+.rtd__badge {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--surface, #ffffff);
+  color: var(--brand, #154dec);
+  box-shadow: 0 2px 6px rgba(21, 77, 236, 0.14);
+}
+.rtd__title {
+  font-size: 1.05rem !important;
+  line-height: 1.2;
+  margin: 0 !important;
+}
+.rtd__sub {
+  font-size: 0.76rem !important;
+}
+.rtd__close {
+  align-self: center;
+  background: var(--surface, #fff) !important;
+}

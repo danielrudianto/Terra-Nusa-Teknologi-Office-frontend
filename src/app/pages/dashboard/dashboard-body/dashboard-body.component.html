@@ -87,6 +87,15 @@
         </div>
       </div>
 
+      <!--
+        Posisi kas tepat di bawah sapaan dan petak angka: angka pertama yang
+        dibaca pemilik setiap pagi. Memuat angka bank, jadi bukan wilayah
+        semua orang.
+      -->
+      <div class="col-12 mt-3" *appCan="'bank:read'" appMunculGulir>
+        <app-cash-position></app-cash-position>
+      </div>
+
       <!-- Antrean pekerjaan per divisi. -->
       <div class="col-12 mt-3" #antreanEl appMunculGulir>
         <app-meja-antrean [divisiSaya]="divisiSayaSig()" (ringkasan)="ringkasAntrean.set($event)" />
@@ -118,33 +127,6 @@
       <div class="col-12 mt-3" *appCan="'payment_outgoing:read'" appMunculGulir [mgJeda]="60">
         <app-today-payment></app-today-payment>
       </div>
-
-      <!-- Cash position (component) -->
-      <!-- Posisi kas memuat angka bank; bukan wilayah semua orang. -->
-      <div class="col-12 mt-3" *appCan="'bank:read'" appMunculGulir>
-        <app-cash-position></app-cash-position>
-      </div>
-
-      <!--
-        Ikhtisar margin proyek.
-
-        LEVEL 4 KE ATAS, dan sengaja BUKAN `project:read`. Izin itu terbuka
-        pada level 1 karena kode proyek dipakai hampir di setiap layar,
-        sehingga memakainya di sini praktis berarti "semua orang" —
-        pembelian, lapangan, dan pihak luar sekalipun. Yang dinyatakan kartu
-        ini adalah berapa yang DIPEROLEH perusahaan atas tiap pekerjaan.
-
-        Rutenya di server menegakkan batas yang sama; yang di sini hanya
-        menghindarkan kartu yang pasti gagal memuat.
-
-        Selebar penuh karena kartunya bergulir mendatar; setengah lebar hanya
-        memuat dua proyek sekaligus dan memaksa menggulir sejak awal.
-      -->
-      @if (bolehLihatMargin) {
-        <div class="col-12 mt-3" appMunculGulir>
-          <app-project-margin></app-project-margin>
-        </div>
-      }
     </div>
   </div>
 </div>

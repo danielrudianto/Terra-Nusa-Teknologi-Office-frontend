@@ -5081,17 +5081,10 @@
     "berikutnya": "下一页"
   },
   "projectMargin": {
-    "biayaTerpakai": "已用成本",
-    "kemajuan": "工程进度",
-    "kemajuanKosong": "未记录",
-    "biayaMendahului": "成本超前于进度",
-    "judul": "项目毛利",
-    "sub": "已开票工作的毛利",
     "kontrak": "合同",
     "biaya": "成本",
     "margin": "已开票毛利",
     "selesai": "已结束",
-    "tanpaKontrak": "尚未开票",
     "kosong": "暂无项目。",
     "gagal": "加载毛利概览失败。",
     "judulHalaman": "项目报告",

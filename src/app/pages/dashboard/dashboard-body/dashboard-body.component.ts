@@ -15,7 +15,6 @@ import { RouterModule } from '@angular/router';
 import { TodayPaymentComponent } from '../today-payment/today-payment/today-payment.component';
 import { CashPositionComponent } from '../cash-position/cash-position.component';
 import { DashboardReimbursementComponent } from '../dashboard-reimbursement/dashboard-reimbursement.component';
-import { ProjectMarginComponent } from '../project-margin/project-margin.component';
 
 @Component({
   selector: 'app-dashboard-body',
@@ -31,7 +30,6 @@ import { ProjectMarginComponent } from '../project-margin/project-margin.compone
     TodayPaymentComponent,
     CashPositionComponent,
     DashboardReimbursementComponent,
-    ProjectMarginComponent,
     MatIconModule,
     HitungNaikDirective,
     MejaAntreanComponent,
@@ -128,21 +126,6 @@ export class DashboardBodyComponent {
     return !this.pihakLuar;
   }
 
-  /**
-   * Boleh melihat ikhtisar MARGIN proyek.
-   *
-   * Level 4 ke atas, dan sengaja BUKAN `project:read`: modul proyek terbuka
-   * pada level 1 karena kodenya dipakai hampir setiap layar, sehingga izin
-   * itu praktis berarti "semua orang". Yang dinyatakan kartu ini adalah
-   * berapa yang diperoleh perusahaan atas tiap pekerjaan — angka pemilik
-   * dan general manager, bukan angka yang dilewati sambil lalu.
-   *
-   * Rutenya di server menegakkan batas yang sama. Yang di sini hanya
-   * menghindarkan kartu yang pasti gagal memuat.
-   */
-  get bolehLihatMargin(): boolean {
-    return this.permission.level() >= 4;
-  }
   /*
    * Komponen ini TIDAK mengambil data apa pun.
    *

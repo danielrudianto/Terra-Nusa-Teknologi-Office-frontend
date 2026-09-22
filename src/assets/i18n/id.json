@@ -5081,17 +5081,10 @@
     "berikutnya": "Berikutnya"
   },
   "projectMargin": {
-    "biayaTerpakai": "Biaya terpakai",
-    "kemajuan": "Kemajuan pekerjaan",
-    "kemajuanKosong": "belum dicatat",
-    "biayaMendahului": "Biaya mendahului kemajuan",
-    "judul": "Margin proyek",
-    "sub": "Margin atas pekerjaan yang sudah ditagihkan",
     "kontrak": "Kontrak",
     "biaya": "Biaya",
     "margin": "Margin atas tagihan",
     "selesai": "SELESAI",
-    "tanpaKontrak": "Belum ada tagihan",
     "kosong": "Belum ada proyek.",
     "gagal": "Gagal memuat ikhtisar margin.",
     "judulHalaman": "Laporan Proyek",

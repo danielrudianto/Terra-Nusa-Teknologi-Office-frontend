@@ -1,6 +1,21 @@
 <div class="tpd">
-  <div class="tpd__head">
-    <div>
+  <div class="tpd__head" mat-dialog-title appDialogGeser>
+    <span class="tpd__badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+          <rect x="2" y="5" width="20" height="14" rx="2" />
+          <path d="M2 10h20M6 15h4" />
+      </svg>
+    </span>
+    <div class="tpd__head-text">
       <h2 class="tpd__title">{{ "todayPayment.title" | translate }}</h2>
       <span class="tpd__sub"
         >{{ data.dateLabel }} · {{ data.items.length }} transaksi</span

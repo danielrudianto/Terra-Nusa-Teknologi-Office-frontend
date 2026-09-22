@@ -5081,17 +5081,10 @@
     "berikutnya": "Next"
   },
   "projectMargin": {
-    "biayaTerpakai": "Cost used",
-    "kemajuan": "Work progress",
-    "kemajuanKosong": "not recorded",
-    "biayaMendahului": "Cost ahead of progress",
-    "judul": "Project margin",
-    "sub": "Margin on work already invoiced",
     "kontrak": "Contract",
     "biaya": "Cost",
     "margin": "Margin on billed",
     "selesai": "CLOSED",
-    "tanpaKontrak": "Nothing billed yet",
     "kosong": "No projects yet.",
     "gagal": "Failed to load the margin overview.",
     "judulHalaman": "Project Reports",
