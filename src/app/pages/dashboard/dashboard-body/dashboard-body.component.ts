@@ -4,7 +4,8 @@ import { AccountService } from '../../../services/account.service';
 import { HitungNaikDirective } from '../../../directives/hitung-naik.directive';
 import { MejaAntreanComponent } from '../meja/meja-antrean.component';
 import { MejaTenggatComponent } from '../meja/meja-tenggat.component';
-import { DIVISI } from '../meja/meja';
+import { DIVISI, RUTE_TAHAP, RUTE_TENGGAT, RingkasanAntrean } from '../meja/meja';
+import { MunculGulirDirective } from '../../../directives/muncul-gulir.directive';
 import { PermissionService } from '../../../services/permission.service';
 import { AgendaComponent } from '../agenda/agenda.component';
 import { CanDirective } from '../../../directives/can.directive';
@@ -35,6 +36,7 @@ import { ProjectMarginComponent } from '../project-margin/project-margin.compone
     HitungNaikDirective,
     MejaAntreanComponent,
     MejaTenggatComponent,
+    MunculGulirDirective,
   ],
 })
 export class DashboardBodyComponent {
@@ -45,8 +47,29 @@ export class DashboardBodyComponent {
   readonly hariIni = new Date();
 
   /** Ringkasan dari kartu antrean & tenggat, untuk petak angka di puncak. */
-  readonly ringkasAntrean = signal<{ menunggu: number; tertahan: number; tertuaHari: number } | null>(null);
-  readonly ringkasTenggat = signal<{ jumlah: number; lewat: number } | null>(null);
+  readonly ringkasAntrean = signal<RingkasanAntrean | null>(null);
+  readonly ringkasTenggat = signal<{ jumlah: number; lewat: number; lewatJenis: string | null } | null>(null);
+
+  /** Halaman tahap yang memegang dokumen tertua; papan lengkap bila tidak ada. */
+  readonly ruteTertahan = computed(() => {
+    const k = this.ringkasAntrean()?.tertuaKode;
+    return (k && RUTE_TAHAP[k]) || '/Laporan/Status-keuangan';
+  });
+
+  /** Halaman jenis tenggat terlewat yang tertua; kalender bila tidak ada. */
+  readonly ruteTerlewat = computed(() => {
+    const j = this.ringkasTenggat()?.lewatJenis;
+    return (j && RUTE_TENGGAT[j]) || '/Calendar';
+  });
+
+  /** Gulir ke kartu di halaman ini, lalu sorot sebentar supaya terlihat. */
+  gulirKe(el: HTMLElement): void {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    el.classList.remove('db-sorot');
+    void el.offsetWidth;
+    el.classList.add('db-sorot');
+    setTimeout(() => el.classList.remove('db-sorot'), 1600);
+  }
 
   get namaDepan(): string {
     return String(this.akun.displayName || '').trim().split(/\s+/)[0] || '';

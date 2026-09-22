@@ -122,20 +122,29 @@ export function kelompokkan(
 }
 
 /** Ringkasan untuk petak angka di puncak dasbor. */
-export function ringkasAntrean(tahap: TahapAntrean[]): {
+export interface RingkasanAntrean {
   menunggu: number;
   tertahan: number;
   tertuaHari: number;
-} {
+  /** Tahap yang memegang dokumen TERTUA — tujuan petak "tertahan". */
+  tertuaKode: string | null;
+}
+
+export function ringkasAntrean(tahap: TahapAntrean[]): RingkasanAntrean {
   let menunggu = 0;
   let tertahan = 0;
   let tertuaHari = 0;
+  let tertuaKode: string | null = null;
   for (const t of tahap) {
     menunggu += Number(t.jumlah) || 0;
     tertahan += Number(t.ember?.['15+']) || 0;
-    tertuaHari = Math.max(tertuaHari, Number(t.tertuaHari) || 0);
+    const h = Number(t.tertuaHari) || 0;
+    if ((Number(t.jumlah) || 0) > 0 && h > tertuaHari) {
+      tertuaHari = h;
+      tertuaKode = t.kode;
+    }
   }
-  return { menunggu, tertahan, tertuaHari };
+  return { menunggu, tertahan, tertuaHari, tertuaKode };
 }
 
 /** Tingkat umur: warna baris. */

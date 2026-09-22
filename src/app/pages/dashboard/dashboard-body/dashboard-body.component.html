@@ -30,69 +30,96 @@
         </header>
       </div>
 
-      <!-- Petak angka: jawaban cepat sebelum membaca rinciannya. -->
+      <!--
+        Petak angka — masing-masing MENGANTAR ke tempat angkanya berasal:
+          menunggu  -> kartu antrean di bawah (digulir);
+          tertahan  -> halaman tahap yang memegang dokumen tertua;
+          tenggat   -> kartu tenggat di bawah (digulir);
+          terlewat  -> halaman jenis tenggat terlewat yang tertua.
+      -->
       <div class="col-12">
         <div class="db-petak akn-berurutan">
-          <div class="db-petak__isi">
+          <button type="button" class="db-petak__isi" (click)="gulirKe(antreanEl)">
             <span class="db-petak__label">{{ "meja.petakMenunggu" | translate }}</span>
             <span class="db-petak__angka" [appHitungNaik]="ringkasAntrean()?.menunggu ?? null" hnDigit="1.0-0"></span>
             <span class="db-petak__ket">{{ "meja.petakMenungguKet" | translate }}</span>
-          </div>
-          <div class="db-petak__isi" [class.db-petak__isi--buruk]="(ringkasAntrean()?.tertahan ?? 0) > 0">
+            <mat-icon class="db-petak__panah">south</mat-icon>
+          </button>
+          <a
+            class="db-petak__isi"
+            [class.db-petak__isi--buruk]="(ringkasAntrean()?.tertahan ?? 0) > 0"
+            [routerLink]="ruteTertahan()"
+          >
             <span class="db-petak__label">{{ "meja.petakTertahan" | translate }}</span>
             <span class="db-petak__angka" [appHitungNaik]="ringkasAntrean()?.tertahan ?? null" hnDigit="1.0-0"></span>
             <span class="db-petak__ket">
-              @if (ringkasAntrean()?.tertuaHari) {
-                {{ "meja.petakTertuaKet" | translate: { n: ringkasAntrean()?.tertuaHari } }}
+              @if (ringkasAntrean()?.tertuaKode; as k) {
+                {{ "meja.petakTertuaKet" | translate: { n: ringkasAntrean()?.tertuaHari } }} ·
+                {{ "kpi.tahap." + k | translate }}
               } @else {
                 {{ "meja.petakTertahanKet" | translate }}
               }
             </span>
-          </div>
-          <div class="db-petak__isi">
+            <mat-icon class="db-petak__panah">arrow_forward</mat-icon>
+          </a>
+          <button type="button" class="db-petak__isi" (click)="gulirKe(tenggatEl)">
             <span class="db-petak__label">{{ "meja.petakTenggat" | translate }}</span>
             <span class="db-petak__angka" [appHitungNaik]="ringkasTenggat()?.jumlah ?? null" hnDigit="1.0-0"></span>
             <span class="db-petak__ket">{{ "meja.petakTenggatKet" | translate }}</span>
-          </div>
-          <div class="db-petak__isi" [class.db-petak__isi--buruk]="(ringkasTenggat()?.lewat ?? 0) > 0">
+            <mat-icon class="db-petak__panah">south</mat-icon>
+          </button>
+          <a
+            class="db-petak__isi"
+            [class.db-petak__isi--buruk]="(ringkasTenggat()?.lewat ?? 0) > 0"
+            [routerLink]="ruteTerlewat()"
+          >
             <span class="db-petak__label">{{ "meja.petakLewat" | translate }}</span>
             <span class="db-petak__angka" [appHitungNaik]="ringkasTenggat()?.lewat ?? null" hnDigit="1.0-0"></span>
-            <span class="db-petak__ket">{{ "meja.petakLewatKet" | translate }}</span>
-          </div>
+            <span class="db-petak__ket">
+              @if (ringkasTenggat()?.lewatJenis; as j) {
+                {{ "meja.tenggat." + j | translate }}
+              } @else {
+                {{ "meja.petakLewatKet" | translate }}
+              }
+            </span>
+            <mat-icon class="db-petak__panah">arrow_forward</mat-icon>
+          </a>
         </div>
       </div>
 
       <!-- Antrean pekerjaan per divisi. -->
-      <div class="col-12 mt-3">
+      <div class="col-12 mt-3" #antreanEl appMunculGulir>
         <app-meja-antrean [divisiSaya]="divisiSayaSig()" (ringkasan)="ringkasAntrean.set($event)" />
       </div>
 
-      <!-- Tenggat 7 hari + agenda. -->
-      <div class="col-7 mt-3">
-        <app-meja-tenggat (ringkasan)="ringkasTenggat.set($event)" />
-      </div>
-      <div class="col-5 mt-3 db-rightcol">
-        <app-agenda></app-agenda>
-      </div>
-
-      <!-- Today's payment (component) -->
-      <div class="col-6 mt-3" *appCan="'payment_outgoing:read'">
-        <app-today-payment></app-today-payment>
-      </div>
-
       <!--
-        Kolom kanan: agenda di atas, reimbursement mengisi sisa ruang.
-        Disusun sebagai kolom fleks agar tingginya berakhir sama dengan
-        kartu di sebelah kiri — sebelumnya keduanya berdiri sendiri dan
-        salah satunya selalu tampak menggantung.
+        DUA KOLOM YANG BERDIRI SENDIRI, bukan baris-baris berpasangan.
+
+        Dipasangkan per baris (tenggat | agenda, pembayaran | reimbursement),
+        kartu yang pendek menyisakan lubang di bawahnya setiap kali
+        pasangannya panjang. Sebagai dua kolom, kartu terakhir tiap kolom
+        memanjang mengisi sisanya — kedua kolom selalu berakhir sejajar.
       -->
-      <div class="col-6 mt-3" *appCan="'reimbursement:read'">
-        <app-dashboard-reimbursement></app-dashboard-reimbursement>
+      <div class="col-7 mt-3 db-kolom">
+        <div #tenggatEl appMunculGulir>
+          <app-meja-tenggat (ringkasan)="ringkasTenggat.set($event)" />
+        </div>
+        <div class="db-kolom__isi" *appCan="'payment_outgoing:read'" appMunculGulir [mgJeda]="60">
+          <app-today-payment></app-today-payment>
+        </div>
+      </div>
+      <div class="col-5 mt-3 db-kolom">
+        <div class="db-kolom__isi" appMunculGulir="kanan" [mgJeda]="80">
+          <app-agenda></app-agenda>
+        </div>
+        <div class="db-kolom__isi" *appCan="'reimbursement:read'" appMunculGulir="kanan" [mgJeda]="140">
+          <app-dashboard-reimbursement></app-dashboard-reimbursement>
+        </div>
       </div>
 
       <!-- Cash position (component) -->
       <!-- Posisi kas memuat angka bank; bukan wilayah semua orang. -->
-      <div class="col-12 mt-3" *appCan="'bank:read'">
+      <div class="col-12 mt-3" *appCan="'bank:read'" appMunculGulir>
         <app-cash-position></app-cash-position>
       </div>
 
@@ -112,7 +139,7 @@
         memuat dua proyek sekaligus dan memaksa menggulir sejak awal.
       -->
       @if (bolehLihatMargin) {
-        <div class="col-12 mt-3">
+        <div class="col-12 mt-3" appMunculGulir>
           <app-project-margin></app-project-margin>
         </div>
       }

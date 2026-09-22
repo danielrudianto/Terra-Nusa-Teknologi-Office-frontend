@@ -53,7 +53,7 @@ const IKON: Record<string, string> = {
 export class MejaTenggatComponent {
   private readonly api = inject(ApiService);
 
-  readonly ringkasan = output<{ jumlah: number; lewat: number }>();
+  readonly ringkasan = output<{ jumlah: number; lewat: number; lewatJenis: string | null }>();
 
   readonly memuat = signal(true);
   readonly gagalMuat = signal(false);
@@ -107,9 +107,12 @@ export class MejaTenggatComponent {
     } finally {
       this.memuat.set(false);
       const semua = this.item();
+      // Jenis yang memegang tenggat terlewat TERTUA — tujuan petak "terlewat".
+      const lewat = semua.filter((x) => x.lewat).sort((a, b) => a.tanggal.localeCompare(b.tanggal));
       this.ringkasan.emit({
         jumlah: semua.filter((x) => !x.lewat).length,
-        lewat: semua.filter((x) => x.lewat).length,
+        lewat: lewat.length,
+        lewatJenis: lewat[0]?.jenis ?? null,
       });
     }
   }

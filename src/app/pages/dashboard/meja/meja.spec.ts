@@ -21,7 +21,7 @@ describe('meja kerja dasbor', () => {
   });
 
   it('ringkasan: jumlah menunggu, yang tertahan ≥15 hari, dan yang tertua', () => {
-    expect(ringkasAntrean(tahap)).toEqual({ menunggu: 7, tertahan: 2, tertuaHari: 18 });
+    expect(ringkasAntrean(tahap)).toEqual({ menunggu: 7, tertahan: 2, tertuaHari: 18, tertuaKode: 'poPeriksa' });
   });
 
   it('tahap gagal (jumlah null) tidak terhitung sebagai nol yang menenangkan di baris, tapi tidak merusak ringkasan', () => {

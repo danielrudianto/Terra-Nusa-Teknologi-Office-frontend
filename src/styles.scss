@@ -1921,3 +1921,38 @@ html[data-gerak="mati"] {
     animation: none !important;
   }
 }
+
+/*
+ * Muncul saat digulir (`appMunculGulir`). Kelasnya baru dipasang direktif
+ * bila gerak menyala, jadi tanpa JavaScript atau dengan sakelar mati isinya
+ * selalu terlihat.
+ */
+.akn-mg {
+  opacity: 0;
+  transition:
+    opacity 0.6s cubic-bezier(0.2, 0.7, 0.3, 1),
+    transform 0.6s cubic-bezier(0.2, 0.7, 0.3, 1);
+  transition-delay: var(--akn-mg-jeda, 0ms);
+  will-change: opacity, transform;
+}
+.akn-mg--naik {
+  transform: translateY(22px);
+}
+.akn-mg--kiri {
+  transform: translateX(-22px);
+}
+.akn-mg--kanan {
+  transform: translateX(22px);
+}
+.akn-mg--skala {
+  transform: scale(0.96);
+}
+.akn-mg.akn-mg--tampil {
+  opacity: 1;
+  transform: none;
+}
+html[data-gerak="mati"] .akn-mg {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
