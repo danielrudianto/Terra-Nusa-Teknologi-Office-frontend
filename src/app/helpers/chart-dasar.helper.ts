@@ -161,15 +161,55 @@ function pasangGeserZoom(): void {
  *   dimatikan lewat `Chart.overrides` di `pasangGeserZoom`.
  * - Kursor tangan (`grab`) memberi tahu bahwa grafiknya dapat diseret;
  *   tanpa itu fiturnya ada tetapi tidak ditemukan siapa pun.
- * - Petunjuk cara pakainya lewat `title` kanvas — muncul saat kursor diam
- *   di atas grafik, tanpa menambah satu baris pun di halaman.
+ * - Petunjuk cara pakainya berupa KETERANGAN KECIL DI BAWAH grafik, dan
+ *   hanya bila sebagian deretnya memang tersembunyi di luar jendela.
+ *   Dulu lewat `title` kanvas: tooltip bawaan peramban itu muncul setiap
+ *   kali kursor diam, menutupi label sumbu dan tooltip nilai grafiknya
+ *   sendiri — persis yang sedang dibaca.
  * - Klik ganda mengembalikan tampilan semula. Pendengarnya DIBUANG saat
  *   grafiknya dihancurkan, supaya kanvas yang dipakai ulang tidak menumpuk
  *   pendengar lama.
  */
-const PETUNJUK =
-  'Seret untuk menggeser · Ctrl + gulir (atau cubit) untuk memperbesar · ' +
-  'klik dua kali untuk kembali ke tampilan awal';
+const PETUNJUK: Record<string, string> = {
+  id: 'Seret grafik untuk melihat tanggal lain · Ctrl + gulir untuk memperbesar · klik dua kali untuk kembali',
+  en: 'Drag the chart to see other dates · Ctrl + scroll to zoom · double-click to reset',
+  zh: '拖动图表查看其他日期 · Ctrl + 滚轮缩放 · 双击恢复',
+};
+
+/** Teks petunjuk dalam bahasa aplikasi (kunci yang sama dengan LanguageService). */
+export function teksPetunjuk(): string {
+  let lang = 'id';
+  try {
+    lang = localStorage.getItem('app_lang') || 'id';
+  } catch {
+    /* penyimpanan diblokir — pakai bawaan */
+  }
+  return PETUNJUK[lang] ?? PETUNJUK['id'];
+}
+
+const KETERANGAN = new WeakMap<object, HTMLElement>();
+
+/**
+ * Keterangan di bawah WADAH kanvas, bukan di dalamnya: wadah grafik biasanya
+ * bertinggi tetap (`maintainAspectRatio: false`), dan baris tambahan di
+ * dalamnya akan meluap atau memeras grafiknya.
+ */
+function aturKeterangan(chart: any, tampil: boolean): void {
+  let el = KETERANGAN.get(chart);
+  if (!tampil) {
+    el?.remove();
+    KETERANGAN.delete(chart);
+    return;
+  }
+  if (el) return;
+  const wadah = chart.canvas?.parentElement;
+  if (!wadah?.parentElement) return;
+  el = document.createElement('div');
+  el.className = 'akn-petunjuk-grafik';
+  el.textContent = teksPetunjuk();
+  wadah.insertAdjacentElement('afterend', el);
+  KETERANGAN.set(chart, el);
+}
 
 /**
  * Deret panjang dibuka pada 12 titik TERAKHIR; sisanya tinggal digeser.
@@ -239,7 +279,6 @@ export const geserZoom: Plugin = {
 
     const kanvas = chart.canvas;
     kanvas.style.cursor = 'grab';
-    if (!kanvas.title) kanvas.title = PETUNJUK;
 
     // Klik ganda kembali ke jendela awal, bukan ke seluruh deret.
     const kembali = () =>
@@ -267,6 +306,8 @@ export const geserZoom: Plugin = {
     JENDELA.set(chart, n);
     if (lama !== undefined) (chart as any).resetZoom?.('none');
     pasangJendela(chart, opsi?.jendelaAwal);
+    // Petunjuk hanya bila ADA yang tersembunyi — deret pendek tidak perlu.
+    aturKeterangan(chart, !!rentangJendela(n, opsi?.jendelaAwal));
   },
   // Kanvasnya DISIMPAN saat dipasang: pada `afterDestroy` chart.js sudah
   // mengosongkan `chart.canvas`, dan membuang pendengar dari `null` gagal
@@ -275,6 +316,7 @@ export const geserZoom: Plugin = {
     const p = PENDENGAR.get(chart);
     if (p) p.kanvas.removeEventListener('dblclick', p.kembali);
     PENDENGAR.delete(chart);
+    aturKeterangan(chart, false);
   },
 };
 

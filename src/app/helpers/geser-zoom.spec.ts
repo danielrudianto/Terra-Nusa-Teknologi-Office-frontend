@@ -66,10 +66,40 @@ describe('geser & zoom grafik', () => {
     expect(z.limits.x.max).toBe('original');
   });
 
-  it('kursor tangan dan petunjuk cara pakai terpasang', () => {
+  it('kursor tangan terpasang; TIDAK ada tooltip title yang menutupi label', () => {
     const c = garis();
     expect(c.canvas.style.cursor).toBe('grab');
-    expect(c.canvas.title).toContain('Seret');
+    expect(c.canvas.title).toBe('');
+  });
+
+  it('keterangan di bawah grafik hanya bila sebagian deret tersembunyi', () => {
+    const wadah = (n: number) => {
+      const luar = document.createElement('div');
+      const dalam = document.createElement('div');
+      const k = document.createElement('canvas');
+      dalam.appendChild(k);
+      luar.appendChild(dalam);
+      document.body.appendChild(luar);
+      const c = new Chart(k, {
+        type: 'line',
+        data: {
+          labels: Array.from({ length: n }, (_, i) => String(i)),
+          datasets: [{ data: Array.from({ length: n }, (_, i) => i) }],
+        },
+        options: { animation: false, responsive: false },
+      });
+      dibuat.push(c);
+      return luar;
+    };
+    const panjang = wadah(40);
+    expect(panjang.querySelector('.akn-petunjuk-grafik')?.textContent).toContain('Seret');
+    const pendek = wadah(6);
+    expect(pendek.querySelector('.akn-petunjuk-grafik')).toBeNull();
+    dibuat.pop()!.destroy();
+    dibuat.pop()!.destroy();
+    expect(panjang.querySelector('.akn-petunjuk-grafik')).toBeNull();
+    panjang.remove();
+    pendek.remove();
   });
 
   it('klik dua kali mengembalikan tampilan semula', () => {

@@ -121,6 +121,10 @@
       <mat-icon>person_add</mat-icon>
       {{ "hrCandidate.daftarkan" | translate }}
     </button>
+
+    <!-- Muat ulang DATANYA saja (daftar + hitungan ember), seperti daftar
+         lain; Ctrl+R mengembalikan penyaring ke awal. -->
+    <app-refresh-button [memuat]="isLoading" (muatUlang)="segarkan()" />
   </div>
 
   <!--
@@ -257,7 +261,7 @@
           </button>
         }
       } @else {
-      @for (st of statusManual; track st) {
+      @for (st of statusBoleh(p); track st) {
         <button
           mat-menu-item
           [disabled]="p.status === st"
@@ -268,7 +272,9 @@
               ? "task_alt"
               : st === "ditolak"
                 ? "cancel"
-                : "record_voice_over"
+                : st === "gagal_wawancara"
+                  ? "person_off"
+                  : "record_voice_over"
           }}</mat-icon>
           <span>{{ "hrCandidate.status_" + st | translate }}</span>
         </button>

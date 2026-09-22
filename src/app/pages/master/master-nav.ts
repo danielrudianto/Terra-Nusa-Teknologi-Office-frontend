@@ -16,6 +16,8 @@ export interface MasterNavItem {
   name: string;
   route: string;
   icon: string;
+  /** Ikon SVG (assets/vector) untuk menu samping, yang tidak memakai mat-icon. */
+  svg: string;
   description: string;
 }
 
@@ -23,6 +25,7 @@ export const MASTER_NAV: MasterNavItem[] = [
   {
     name: 'masterNav.equipment',
     route: 'Equipment',
+    svg: 'asset.svg',
     modul: 'master_equipment',
     icon: 'construction',
     description: 'masterNav.equipmentDesc',
@@ -30,6 +33,7 @@ export const MASTER_NAV: MasterNavItem[] = [
   {
     name: 'masterNav.item',
     route: 'Item',
+    svg: 'product.svg',
     modul: 'master_item',
     icon: 'inventory_2',
     description: 'masterNav.itemDesc',
@@ -37,6 +41,7 @@ export const MASTER_NAV: MasterNavItem[] = [
   {
     name: 'masterNav.expenseOpponent',
     route: 'Expense-opponent',
+    svg: 'expense-type.svg',
     modul: 'expense_opponent',
     icon: 'groups',
     description: 'masterNav.expenseOpponentDesc',
@@ -44,6 +49,7 @@ export const MASTER_NAV: MasterNavItem[] = [
   {
     name: 'masterNav.supplier',
     route: 'Supplier',
+    svg: 'supplier.svg',
     modul: 'supplier',
     icon: 'local_shipping',
     description: 'masterNav.supplierDesc',
@@ -51,6 +57,7 @@ export const MASTER_NAV: MasterNavItem[] = [
   {
     name: 'masterNav.client',
     route: 'Client',
+    svg: 'customer.svg',
     modul: 'client',
     icon: 'handshake',
     description: 'masterNav.clientDesc',
@@ -58,6 +65,7 @@ export const MASTER_NAV: MasterNavItem[] = [
   {
     name: 'masterNav.employee',
     route: 'Employee',
+    svg: 'user.svg',
     modul: 'employees',
     icon: 'badge',
     description: 'masterNav.employeeDesc',

@@ -330,9 +330,20 @@
     color: var(--ok-fg);
   }
 
-  &.is-ditolak {
+  &.is-ditolak,
+  &.is-gagal_wawancara {
     background: var(--bad-bg);
     color: var(--bad-fg);
+  }
+
+  &.is-diwawancara {
+    background: var(--info-bg);
+    color: var(--info-fg);
+  }
+
+  &.is-dinilai {
+    background: var(--checked-bg);
+    color: var(--checked-fg);
   }
 
   &.is-mengerjakan {

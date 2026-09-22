@@ -131,6 +131,23 @@
           </div>
         </div>
       </ng-container>
+
+      <!-- Halaman di dalam Data Master, hanya saat mencari menu. -->
+      <div class="snav-group" *ngIf="hasilMaster.length">
+        <button class="snav-group__header" type="button" disabled>
+          <span class="snav-group__name">{{ "nav.masterData" | translate }}</span>
+          <span class="snav-group__count">{{ hasilMaster.length }}</span>
+        </button>
+        <div class="snav-group__items">
+          <app-side-nav-item
+            *ngFor="let i of hasilMaster"
+            [label]="i.name"
+            [routerLink]="i.route"
+            [icon]="i.icon"
+            [showPin]="false"
+          />
+        </div>
+      </div>
     </div>
 
     <!-- bottom fixed group (Settings & Logout) -->

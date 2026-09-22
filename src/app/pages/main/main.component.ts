@@ -440,7 +440,8 @@ export class MainComponent implements OnDestroy {
       children: [
         {
           name: 'nav.purchaseDraft',
-          icon: 'purchase-invoice.svg',
+          // Dokumen berpensil: masih DRAF. Pembelian tetap memakai faktur.
+          icon: 'purchase-draft.svg',
           route: '/Purchase-draft',
         },
         {
@@ -542,7 +543,7 @@ export class MainComponent implements OnDestroy {
            * levelnya hanya disebut sekali — di matriks izin server.
            */
           name: 'nav.statusKeuangan',
-          icon: 'income.svg',
+          icon: 'finance-status.svg',
           route: '/Laporan/Status-keuangan',
         },
       ],
@@ -589,7 +590,7 @@ export class MainComponent implements OnDestroy {
       children: [
         {
           name: 'nav.hrCandidate',
-          icon: 'user.svg',
+          icon: 'candidate.svg',
           route: '/HrCandidate',
         },
         {

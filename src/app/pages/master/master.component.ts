@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -67,6 +67,21 @@ export class MasterComponent {
   }
 
   navItems: MasterNavItem[] = MASTER_NAV;
+
+  /*
+   * Kunci transisi disimpan sebagai SIGNAL yang diisi saat outlet
+   * mengaktifkan halaman, BUKAN dihitung dari outlet di dalam templat.
+   *
+   * Outlet baru aktif SESUDAH templat ini diperiksa, jadi `getRouteState`
+   * yang dipanggil dari templat membaca 'empty' lalu 'Client' dalam satu
+   * putaran — NG0100 (ExpressionChangedAfterItHasBeenChecked) di mode
+   * pengembangan. Signal yang berubah memicu pemeriksaan ulang yang sah.
+   */
+  readonly kunciRute = signal('empty');
+
+  catatRute(outlet: RouterOutlet): void {
+    this.kunciRute.set(this.getRouteState(outlet));
+  }
 
   // key unik per route -> animasi ter-trigger tiap ganti halaman
   getRouteState(outlet: RouterOutlet): string {

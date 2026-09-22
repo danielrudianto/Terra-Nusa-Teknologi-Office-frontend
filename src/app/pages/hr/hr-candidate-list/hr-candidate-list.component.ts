@@ -27,6 +27,7 @@ import { HeaderTitleComponent } from 'src/app/components/header-title/header-tit
 import { SettingsService } from 'src/app/services/setting.service';
 import { TransisiHalamanDirective } from 'src/app/animations/transisi-halaman.directive';
 import { HrCandidateFormComponent } from '../hr-candidate-form/hr-candidate-form.component';
+import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 interface Ujian {
   id: number;
@@ -75,6 +76,7 @@ interface Ringkasan {
   selector: 'app-hr-candidate-list',
   standalone: true,
   imports: [
+    RefreshButtonComponent,
     CommonModule,
     FormsModule,
     MatFormFieldModule,
@@ -159,7 +161,27 @@ export class HrCandidateListComponent implements OnInit {
    * yang dicabut. Menawarkannya sebagai tombol berarti daftar dapat
    * menyatakan "sudah dinilai" atas lembar yang belum disentuh siapa pun.
    */
-  readonly statusManual = ['diwawancara', 'diterima', 'ditolak'];
+  readonly statusManual = ['diwawancara', 'diterima', 'ditolak', 'gagal_wawancara'];
+
+  /**
+   * Pilihan status MENURUT TAHAPNYA — tangga lamarannya:
+   *
+   *   belum dikerjakan → sedang dikerjakan → sudah mengirim → sudah diperiksa
+   *     → gagal                      (sebelum wawancara: `ditolak`)
+   *     → diwawancara → gagal saat diwawancara (`gagal_wawancara`)
+   *                   → berhasil     (`diterima`)
+   *
+   * Sebelum wawancara yang ditawarkan hanya "Diwawancara" dan "Gagal";
+   * sesudahnya "Gagal saat diwawancara" dan "Berhasil". Menawarkan keempatnya
+   * sekaligus membuat "gagal" dan "gagal saat diwawancara" tertukar dengan
+   * satu klik yang salah.
+   */
+  statusBoleh(p: { status?: string }): string[] {
+    const sesudahWawancara = ['diwawancara', 'gagal_wawancara', 'diterima'];
+    return sesudahWawancara.includes(p?.status ?? '')
+      ? sesudahWawancara
+      : ['diwawancara', 'ditolak'];
+  }
 
   /**
    * ENAM EMBER di menu samping — urut perjalanan lamaran, bukan abjad.
@@ -443,6 +465,12 @@ export class HrCandidateListComponent implements OnInit {
    * menghitungnya dari `pelamar` hanya akan menampilkan jumlah baris yang
    * kebetulan sedang tampil, dan lima lencana lainnya menjadi nol.
    */
+  /** Tombol muat ulang: daftar DAN hitungan ember di menu samping. */
+  segarkan(): void {
+    this.muatRingkasan();
+    this.muat();
+  }
+
   muatRingkasan(): void {
     const param: any = {};
     if (this.ujianTerpilih) param.testID = this.ujianTerpilih;

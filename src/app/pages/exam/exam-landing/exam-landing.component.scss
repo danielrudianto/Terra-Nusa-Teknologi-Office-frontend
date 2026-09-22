@@ -49,11 +49,12 @@
  *
  * Halaman ini dibaca PELAMAR, yang tidak tahu dan tidak perlu tahu apa itu
  * TerraBot. Yang mengundangnya adalah AKN, dan halamannya harus terlihat
- * seperti AKN. Oranyenya DIAMBIL dari kop surat resmi
- * (`templates/pdf/assets/kop.png`), bukan dikira-kira: #dd8840.
+ * seperti AKN. Emasnya DIAMBIL dari berkas logo resmi (Logo 20x20.pdf),
+ * bukan dikira-kira: #bd925b — sama dengan tanda pada `app-akn-logo`.
+ * (Dulu oranye #dd8840 dari kop surat; logo resminya ternyata emas.)
  *
  * TIGA nilai per palet, bukan satu. Warna yang enak sebagai isian belum
- * tentu terbaca sebagai teks: oranye AKN berkontras hanya 2,74:1 dengan
+ * tentu terbaca sebagai teks: emas AKN berkontras hanya 2,83:1 dengan
  * putih, jauh di bawah syarat WCAG AA. Jadi `--akn` tidak pernah dipakai
  * sebagai warna teks — itu tugas `--akn-ink`.
  *
@@ -61,9 +62,9 @@
  * sepakat, dan `scripts/pemeriksa/paletujiancek.py` yang memaksanya.
  */
 :host {
-  --akn: #dd8840;
-  --akn-ink: #9c5715;
-  --akn-dark: #7a4319;
+  --akn: #bd925b;
+  --akn-ink: #7f5d33;
+  --akn-dark: #5e4424;
 }
 :host([data-palet='biru']) {
   --akn: #3b6fe0;

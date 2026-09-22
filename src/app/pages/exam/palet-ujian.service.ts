@@ -4,8 +4,8 @@ import { Injectable, signal } from '@angular/core';
  * Satu palet warna halaman ujian.
  *
  * Tiga nilai, bukan satu: warna aksen saja tidak cukup karena warna yang
- * enak dipandang sebagai isian belum tentu terbaca sebagai teks. Oranye AKN
- * (#dd8840) berkontras hanya 2,74:1 dengan putih — jauh di bawah syarat
+ * enak dipandang sebagai isian belum tentu terbaca sebagai teks. Emas AKN
+ * (#bd925b, dari logo resmi) berkontras hanya 2,83:1 dengan putih — jauh di bawah syarat
  * WCAG AA 4,5:1 — jadi ia dipakai sebagai aksen, dan teksnya memakai nilai
  * `ink` yang lebih gelap.
  */
@@ -28,7 +28,7 @@ export interface Palet {
  * memamerkan kerapian. Empat palet di bawah SELURUHNYA diukur:
  *
  *   palet             ink/putih   gelap/putih
- *   AKN oranye           5,54:1        7,94:1
+ *   AKN emas             5,97:1        9,02:1
  *   TerraBot biru        7,62:1       12,51:1
  *   Hijau lapangan       6,51:1       10,70:1
  *   Slate netral         7,58:1       12,18:1
@@ -38,7 +38,7 @@ export interface Palet {
  * memenuhi.
  */
 export const PALET: Palet[] = [
-  { kode: 'akn', aksen: '#dd8840', ink: '#9c5715', gelap: '#7a4319' },
+  { kode: 'akn', aksen: '#bd925b', ink: '#7f5d33', gelap: '#5e4424' },
   { kode: 'biru', aksen: '#3b6fe0', ink: '#1f4bb8', gelap: '#12306f' },
   { kode: 'hijau', aksen: '#2f9e63', ink: '#1a6b41', gelap: '#12472c' },
   { kode: 'slate', aksen: '#64748b', ink: '#475569', gelap: '#2b3648' },

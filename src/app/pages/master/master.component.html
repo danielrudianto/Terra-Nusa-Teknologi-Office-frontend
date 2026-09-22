@@ -52,11 +52,15 @@
     -->
     <div
       class="master-anim"
-      [appTransisiHalaman]="getRouteState(outlet)"
+      [appTransisiHalaman]="kunciRute()"
       [transisiSetelan]="setelan()"
       [transisiLewatiPertama]="true"
     >
-      <router-outlet #outlet="outlet"></router-outlet>
+      <router-outlet
+        #outlet="outlet"
+        (activate)="catatRute(outlet)"
+        (deactivate)="kunciRute.set('empty')"
+      ></router-outlet>
     </div>
   </section>
 </div>

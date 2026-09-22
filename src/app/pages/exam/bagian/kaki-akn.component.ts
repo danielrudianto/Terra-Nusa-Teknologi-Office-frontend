@@ -66,9 +66,9 @@ export const KONTAK = {
         display: block;
       }
       .kka {
-        --kka-bg: color-mix(in srgb, var(--akn-dark, #7a4319) 30%, #111214);
-        --kka-garis: color-mix(in srgb, var(--akn, #dd8840) 45%, transparent);
-        --kka-label: color-mix(in srgb, var(--akn, #dd8840) 55%, #fff);
+        --kka-bg: color-mix(in srgb, var(--akn-dark, #5e4424) 30%, #111214);
+        --kka-garis: color-mix(in srgb, var(--akn, #bd925b) 45%, transparent);
+        --kka-label: color-mix(in srgb, var(--akn, #bd925b) 55%, #fff);
         font-family: 'Barlow', 'Montserrat', sans-serif;
         background: var(--kka-bg);
         color: #fff;

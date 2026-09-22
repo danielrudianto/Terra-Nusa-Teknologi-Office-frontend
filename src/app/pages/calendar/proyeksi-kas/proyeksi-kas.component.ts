@@ -35,6 +35,44 @@ import {
  */
 pastikanChart();
 
+/**
+ * Jawaban `calendar/terjadwal` -> baris berbentuk rencana, supaya ikut
+ * `titikProyeksi` dengan aturan yang sama.
+ *
+ * ------------------------------------------------------------------
+ * KENAPA PEMBAYARAN IKUT, BUKAN HANYA RENCANA
+ * ------------------------------------------------------------------
+ *
+ * Kas hari ini datang dari view `mutation`, yang hanya memuat pembayaran
+ * DISETUJUI bertanggal sampai hari ini. Pembayaran yang sudah diinput
+ * untuk tanggal sesudahnya — disetujui atau belum — karena itu tidak ada
+ * di mana pun di garis ini. Contoh 22 Sep 2026: pembayaran 23 Sep–31 Okt
+ * sebesar 1.048 jt tidak ikut, dan proyeksi 31 Oktober terbaca 1.209 jt
+ * padahal kalender dan unduhan Excel sama-sama menyebut 161 jt.
+ *
+ *   `bawaan` — BELUM disetujui, bertanggal sebelum `mulai` (= besok).
+ *              Dibebankan ke hari ini, yang oleh `titikProyeksi` dipindah
+ *              ke titik pertama sesudah hari ini — sama seperti rencana
+ *              yang terlewat. Kas hari ini tetap dapat dicocokkan.
+ *   `harian` — seluruh pembayaran per tanggal mulai besok.
+ */
+export function barisTerjadwal(res: any, hariIni: string): any[] {
+  if (!res) return [];
+  const baris: any[] = [];
+  const dorong = (date: string, planType: 'masuk' | 'keluar', n: any) => {
+    const amount = Number(n) || 0;
+    if (amount) baris.push({ status: 'rencana', terjadwal: true, date, planType, amount });
+  };
+  dorong(hariIni, 'keluar', res.bawaanKeluar);
+  dorong(hariIni, 'masuk', res.bawaanMasuk);
+  for (const h of res.harian ?? []) {
+    const tgl = String(h?.tanggal ?? '').slice(0, 10);
+    dorong(tgl, 'keluar', h?.keluar);
+    dorong(tgl, 'masuk', h?.masuk);
+  }
+  return baris;
+}
+
 /** Satu titik pada garis proyeksi. */
 export interface TitikProyeksi {
   /**
@@ -274,6 +312,8 @@ export class ProyeksiKasComponent implements OnChanges {
 
   readonly saldoSekarang = signal<number | null>(null);
   readonly rencana = signal<any[]>([]);
+  /** Pembayaran yang sudah diinput — lihat `barisTerjadwal`. */
+  readonly terjadwal = signal<any[]>([]);
   readonly memuat = signal(false);
 
   /**
@@ -375,6 +415,7 @@ export class ProyeksiKasComponent implements OnChanges {
       this.tanpaRekening.set(true);
       this.saldoSekarang.set(null);
       this.rencana.set([]);
+      this.terjadwal.set([]);
       this.memuat.set(false);
       return;
     }
@@ -408,7 +449,14 @@ export class ProyeksiKasComponent implements OnChanges {
          */
         .rentang(seninPekan(mulai), akhir, '', idRekening)
         .pipe(catchError(() => of({ data: [] }))),
-    }).subscribe(({ posisi, rencana }: any) => {
+      terjadwal: this.api
+        .get('calendar/terjadwal', {
+          mulai: tambahHari(mulai, 1),
+          akhir,
+          bankAccounts: idRekening,
+        })
+        .pipe(catchError(() => of(null))),
+    }).subscribe(({ posisi, rencana, terjadwal }: any) => {
       if (posisi?.__galat) {
         this.terkunci.set(posisi.status === 403);
         this.saldoSekarang.set(null);
@@ -418,21 +466,24 @@ export class ProyeksiKasComponent implements OnChanges {
       }
 
       this.rencana.set(Array.isArray(rencana?.data) ? rencana.data : []);
+      this.terjadwal.set(barisTerjadwal(terjadwal, mulai));
       this.memuat.set(false);
     });
   }
 
   readonly titik = computed<TitikProyeksi[]>(() =>
     titikProyeksi(
-      this.rencana(),
+      [...this.rencana(), ...this.terjadwal()],
       this.saldoSekarang() ?? 0,
       this.hariIni(),
       this.PEKAN,
     ),
   );
 
-  readonly adaRencana = computed(() =>
-    this.rencana().some((r) => r?.status === 'rencana'),
+  readonly adaRencana = computed(
+    () =>
+      this.terjadwal().length > 0 ||
+      this.rencana().some((r) => r?.status === 'rencana'),
   );
 
   readonly totalKeluar = computed(() =>

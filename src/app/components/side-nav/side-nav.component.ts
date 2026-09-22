@@ -8,6 +8,8 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LogoComponent } from '../logo/logo.component';
 import { VersiService } from 'src/app/services/versi.service';
 import { MatIconModule } from '@angular/material/icon';
+import { PermissionService } from '../../services/permission.service';
+import { MASTER_NAV } from '../../pages/master/master-nav';
 
 @Component({
   selector: 'app-side-nav',
@@ -34,6 +36,7 @@ export class SideNavComponent implements OnInit {
    * hanya diam-diam berhenti muncul di satu menu.
    */
   readonly lencana = inject(LencanaService);
+  private readonly izin = inject(PermissionService);
 
   readonly versi = inject(VersiService);
 
@@ -194,6 +197,29 @@ export class SideNavComponent implements OnInit {
     const key = item?.name || '';
     const label = this.translate.instant(key) || key;
     return String(label).toLowerCase().includes(q);
+  }
+
+  /**
+   * Halaman DI DALAM Data Master yang cocok dengan pencarian menu.
+   *
+   * Klien, Pemasok, Karyawan, dan lainnya tidak punya butir sendiri di menu
+   * samping — mereka tersarang di bawah "Data Master". Tanpa ini, mengetik
+   * "klien" di kotak cari menu tidak menemukan apa pun. Daftarnya sama
+   * dengan pencarian global (MASTER_NAV), dan hanya yang boleh dibuka.
+   */
+  get hasilMaster(): { name: string; route: string; icon: string }[] {
+    if (!this.isFiltering) return [];
+    const adaMaster = (this.items || []).some((g: any) =>
+      (g.children || []).some((c: any) => c.route === '/Master'),
+    );
+    if (!adaMaster) return [];
+    const q = this.filter.trim().toLowerCase();
+    return MASTER_NAV.filter((m) => this.izin.canRead(m.modul))
+      .filter((m) => {
+        const label = String(this.translate.instant(m.name) || m.name).toLowerCase();
+        return label.includes(q) || m.route.toLowerCase().includes(q);
+      })
+      .map((m) => ({ name: m.name, route: '/Master/' + m.route, icon: m.svg }));
   }
 
   groupHasMatch(group: any): boolean {

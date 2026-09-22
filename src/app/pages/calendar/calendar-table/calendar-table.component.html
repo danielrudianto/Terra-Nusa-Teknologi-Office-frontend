@@ -169,6 +169,25 @@
   </div>
 
   <!--
+    Pembayaran belum disetujui dari sebelum bulan ini. Saldo awal hanya
+    memuat yang sudah disetujui, jadi tanpa baris ini saldo rencana bulan
+    berikutnya lebih tinggi sebesar pembayaran yang masih menunggu.
+  -->
+  <div
+    class="cal-plan-total"
+    *ngIf="viewMode === 'balance-plan' && pembayaranBawaan.jumlah"
+  >
+    <mat-icon>pending_actions</mat-icon>
+    <span>{{ "rencana.bayarBawaan" | translate }}</span>
+    <span class="cal-plan-total__rinci">{{
+      "rencana.bayarBawaanKet" | translate: { n: pembayaranBawaan.jumlah }
+    }}</span>
+    <strong [class.masuk]="nilaiPembayaranBawaan >= 0">{{
+      nilaiPembayaranBawaan | shortCurrency: "Rp. "
+    }}</strong>
+  </div>
+
+  <!--
     Total rencana bulan ini, dipisah menurut arahnya.
 
     Di kaki, bukan di dalam sel: yang perlu diketahui sebelum menutup

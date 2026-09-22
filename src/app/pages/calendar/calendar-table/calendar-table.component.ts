@@ -316,6 +316,7 @@ export class CalendarTableComponent {
         if (ke === this.muatanRencana) this.rencana = [];
       },
     });
+    this.muatPembayaranBawaan(awal, rekening, ke);
     this.planService
       .rentang(...rentangBawaan(awal), '', rekening)
       .subscribe({
@@ -329,6 +330,44 @@ export class CalendarTableComponent {
           if (ke === this.muatanRencana) this.rencanaBawaan = [];
         },
       });
+  }
+
+  /**
+   * Pembayaran BELUM DISETUJUI bertanggal sebelum bulan ini.
+   *
+   * Saldo awal bulan datang dari view `mutation`, yang hanya memuat
+   * pembayaran yang SUDAH disetujui. Pembayaran 24–30 September yang masih
+   * menunggu persetujuan karena itu hilang begitu kalender dibuka di
+   * Oktober: tidak ada di saldo awal, tidak ada di daftar bulan ini. Saldo
+   * rencana Oktober jadi lebih tinggi persis sebesar jumlahnya.
+   *
+   * Dibawa masuk sebagai satu suku di awal bulan, sama seperti rencana
+   * bawaan, dan hanya pada mode saldo rencana.
+   */
+  pembayaranBawaan = { keluar: 0, masuk: 0, jumlah: 0 };
+
+  private muatPembayaranBawaan(awal: string, rekening: number[], ke: number): void {
+    this.apiService
+      .get('calendar/terjadwal', { mulai: awal, bankAccounts: rekening })
+      .subscribe({
+        next: (res: any) => {
+          if (ke !== this.muatanRencana) return;
+          this.pembayaranBawaan = {
+            keluar: Number(res?.bawaanKeluar) || 0,
+            masuk: Number(res?.bawaanMasuk) || 0,
+            jumlah: Number(res?.bawaanJumlah) || 0,
+          };
+        },
+        error: () => {
+          if (ke === this.muatanRencana)
+            this.pembayaranBawaan = { keluar: 0, masuk: 0, jumlah: 0 };
+        },
+      });
+  }
+
+  /** Nilai bersih pembayaran bawaan: masuk (+), keluar (−). */
+  get nilaiPembayaranBawaan(): number {
+    return this.pembayaranBawaan.masuk - this.pembayaranBawaan.keluar;
   }
 
   /** Nilai bersih rencana bawaan: masuk (+), keluar (−). */
@@ -765,9 +804,35 @@ export class CalendarTableComponent {
       if (sampai(x.date)) saldo += Number(x.amount) || 0;
     }
 
+    /*
+     * Transfer antar rekening yang MELINTASI saringan rekening.
+     *
+     * Dulu tidak dihitung sama sekali. Transfer antara dua rekening yang
+     * sama-sama dicentang memang saling meniadakan, tetapi transfer ke
+     * rekening yang DIKECUALIKAN (atau yang tidak dicentang) adalah uang
+     * yang benar-benar keluar dari kalender — dan sebaliknya. Saldo awal
+     * bulan berikutnya (view `mutation`) sudah memperhitungkannya, unduhan
+     * Excel juga (`mutasiInterpayment`); hanya kisi ini yang tidak, sehingga
+     * sepanjang sisa bulan saldonya lebih tinggi sebesar transfer keluar itu.
+     */
+    const dicentang = new Set<number>(
+      this.bankAccounts.filter((x) => x.selected).map((x) => Number(x.id)),
+    );
+    for (const t of this.interpayments ?? []) {
+      if (!sampai(t.date) || t.isDelete) continue;
+      const n = Math.abs(Number(t.amount) || 0);
+      const asal = dicentang.has(Number(t.bankAccountIDOrigin));
+      const tujuan = dicentang.has(Number(t.bankAccountIDDestination));
+      if (asal && !tujuan) saldo -= n;
+      else if (tujuan && !asal) saldo += n;
+    }
+
     if (ikutRencana) {
       // Rencana menunggu dari bulan-bulan sebelumnya — semuanya sebelum `tgl`.
       saldo += this.nilaiBawaan;
+      // Pembayaran belum disetujui dari sebelum bulan ini — lihat
+      // `pembayaranBawaan`.
+      saldo += this.nilaiPembayaranBawaan;
       for (const r of this.rencanaMenunggu) {
         if (!sampai(r.date)) continue;
         const n = Number(r.amount) || 0;
@@ -939,8 +1004,14 @@ export class CalendarTableComponent {
       bawaan: this.planService
         .rentang(...rentangBawaan(mulaiDiminta), '', rekening)
         .pipe(catchError(() => of({ data: [] }))),
+      // Pembayaran BELUM disetujui dari sebelum rentangnya — sama dengan
+      // layar (`pembayaranBawaan`). Saldo awal berkas juga dari view
+      // `mutation`, yang hanya memuat yang sudah disetujui.
+      terjadwal: this.apiService
+        .get('calendar/terjadwal', { mulai: mulaiDiminta, bankAccounts: rekening })
+        .pipe(catchError(() => of(null))),
     }).subscribe({
-      next: ({ data, rencana, bawaan }: any) => {
+      next: ({ data, rencana, bawaan, terjadwal }: any) => {
         /*
          * Rentangnya diambil dari JAWABAN SERVER, bukan dari yang dikirim.
          *
@@ -1052,7 +1123,41 @@ export class CalendarTableComponent {
             date: mulai,
             description: `(${String(r.date).slice(0, 10)}) ${r.description ?? ''}`.trim(),
           }));
-        const semuaRencana: any[] = [...dibawa, ...(rencana?.data ?? [])];
+        /*
+         * Pembayaran belum disetujui dari sebelum rentangnya, PER REKENING,
+         * dicatat pada tanggal pertama rentang dengan bentuk baris rencana —
+         * supaya kisi rekening dan ringkasan harian membawanya dengan aturan
+         * yang sama. Ditandai `terjadwal` dan TIDAK ikut ke lembar rencana:
+         * ini pembayaran yang sudah diinput, bukan rencana kas.
+         */
+        const bayarDibawa: any[] = [];
+        for (const b of terjadwal?.bawaan ?? []) {
+          const ket = this.translate.instant('rencana.bayarBawaanBaris', {
+            n: b.jumlah,
+            tanggal: mulai,
+          });
+          for (const [planType, n] of [
+            ['keluar', b.keluar],
+            ['masuk', b.masuk],
+          ] as const) {
+            const amount = Number(n) || 0;
+            if (!amount) continue;
+            bayarDibawa.push({
+              status: 'rencana',
+              terjadwal: true,
+              date: mulai,
+              planType,
+              amount,
+              bankAccountID: b.bankAccountID,
+              description: ket,
+            });
+          }
+        }
+        const semuaRencana: any[] = [
+          ...bayarDibawa,
+          ...dibawa,
+          ...(rencana?.data ?? []),
+        ];
         const rencanaPerTanggal: Record<string, any[]> = Object.create(null);
         for (const r of ikutRencana
           ? semuaRencana.filter((r: any) => r.status === 'rencana')
@@ -1181,7 +1286,9 @@ export class CalendarTableComponent {
           }
         }
 
-        const rencanaRekap: RencanaRekap[] = semuaRencana.map((r: any) => ({
+        const rencanaRekap: RencanaRekap[] = semuaRencana
+          .filter((r: any) => !r.terjadwal)
+          .map((r: any) => ({
           date: String(r.date).slice(0, 10),
           arah: r.planType === 'masuk' ? 'masuk' : 'keluar',
           keterangan: r.description ?? '',

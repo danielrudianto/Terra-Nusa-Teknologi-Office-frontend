@@ -1699,3 +1699,16 @@ html[data-gerak="mati"] .akn-panel-samping .mat-mdc-dialog-surface {
     border-radius: 0 !important;
   }
 }
+
+/*
+ * Petunjuk geser grafik — dipasang `chart-dasar.helper` DI BAWAH wadah
+ * grafik, hanya bila sebagian deretnya tersembunyi. Menggantikan `title`
+ * kanvas, yang tooltipnya menutupi label sumbu.
+ */
+.akn-petunjuk-grafik {
+  margin-top: 6px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--muted, #6b7280);
+  text-align: center;
+}
