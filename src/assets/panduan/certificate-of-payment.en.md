@@ -150,3 +150,31 @@ many-columned budget table cannot be filled correctly on the move.
 A CoP that is **approved and not yet billed** appears in the **Purchase** form
 as a billing basis. One CoP may be the basis of only ONE active purchase —
 deleting its purchase reopens the CoP by itself.
+
+
+## Labour invoice & receipt (work order D)
+
+For workers and foremen without their own letterhead, the invoice and
+receipt are printed from the CoP — replacing the retired **Invoice
+Generator**.
+
+1. Open an **approved** CoP and press **Print invoice**.
+2. The lines come from the CoP: volumes and prices from the certificate and
+   its work order (daily wage, overtime, drilling incentive). **Additions**
+   such as a bonus and **deductions** appear as their own lines. Lines cannot
+   be edited — if something is wrong, fix the CoP.
+3. Fill in the invoice date, city and bank account. The account is filled
+   from the one the supplier used last — check it before printing.
+4. Tick **Payment Transfer Letter** if payment is redirected.
+5. **Preview** or **Download**, then **Create purchase**: the invoice number is
+   carried into the purchase form, so the supplier's document and the
+   purchase that records it share one number.
+
+The invoice total always equals the **CoP net amount**, which is also the
+purchase's tax base. A bonus is entered by the CoP checker as an **addition —
+cost outside the contract**, so it does not use the work order's ceiling.
+
+Invoice numbers keep the previous format:
+`{cut-off day}-{supplier id}-INV-{project code}-{month}-{year}`, plus `(B)`
+when a drilling incentive is present. The cut-off date is the end of the CoP
+period. Once the purchase exists, reprints use the recorded number.

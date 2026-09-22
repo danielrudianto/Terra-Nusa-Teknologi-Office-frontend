@@ -606,6 +606,18 @@
         Membuat pembelian: hanya untuk yang SUDAH disetujui dan BELUM
         ditagihkan. Cerminan aturan server; yang menegakkan tetap server.
       -->
+      <!--
+        Invoice & kuitansi tenaga kerja (SPK D) — menggantikan Generator
+        Invoice. Tetap tersedia sesudah ditagihkan, untuk mencetak ulang
+        dengan nomor yang sudah tercatat.
+      -->
+      @if (bolehCetakInvoice) {
+        <button mat-stroked-button (click)="cetakInvoice()">
+          <mat-icon>receipt_long</mat-icon>
+          {{ "cop.cetakInvoice" | translate }}
+        </button>
+      }
+
       @if (bolehBuatPembelian) {
         <button mat-flat-button color="primary" (click)="buatPembelian()">
           <mat-icon>request_quote</mat-icon>

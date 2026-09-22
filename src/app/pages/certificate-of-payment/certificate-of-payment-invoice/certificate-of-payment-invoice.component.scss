@@ -1,0 +1,181 @@
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$line: var(--line, #eef0f3);
+
+/* Pola kepala & kaki dialog mengikuti dialog tambah rekening (bank-create). */
+.ci {
+  font-family: "Montserrat", sans-serif;
+  width: min(760px, 96vw);
+  box-sizing: border-box;
+  color: $ink;
+}
+.ci *,
+.ci *::before,
+.ci *::after {
+  box-sizing: border-box;
+}
+
+.ci-head {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  text-align: left;
+  background: linear-gradient(135deg, var(--brand-soft, #eef2fe) 0%, var(--hover, #f6f8ff) 100%);
+  border-bottom: 1px solid var(--line, #e4e9fb);
+
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+}
+.ci-badge {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--surface, #ffffff);
+  color: $brand;
+  box-shadow: 0 2px 6px rgba(21, 77, 236, 0.14);
+}
+.ci-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+}
+.ci-sub {
+  font-size: 0.76rem;
+  color: $muted;
+}
+
+.ci-content {
+  padding: 1.25rem 1.5rem !important;
+  overflow-x: hidden;
+}
+.ci-muat {
+  display: grid;
+  place-items: center;
+  min-height: 160px;
+}
+
+.ci-nomor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.9rem;
+  margin: 0.25rem 0 0.9rem;
+
+  strong {
+    font-size: 1rem;
+    letter-spacing: 0.01em;
+  }
+}
+.ci-label,
+.ci-bagian {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $muted;
+}
+.ci-bagian {
+  margin-top: 1rem;
+}
+.ci-ket {
+  font-size: 0.78rem;
+  color: $muted;
+  margin: 0.2rem 0 0.6rem;
+}
+
+.ci-tabel {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  font-variant-numeric: tabular-nums;
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: $muted;
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid $line;
+  }
+  td {
+    padding: 0.55rem 0.6rem;
+    border-bottom: 1px solid $line;
+  }
+  .kanan {
+    text-align: right;
+    white-space: nowrap;
+  }
+  tfoot td {
+    border-bottom: 0;
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+  }
+}
+.ci-minus td {
+  color: var(--bad-fg, #b42318);
+}
+.ci-bayar td {
+  font-weight: 700;
+  font-size: 0.95rem;
+  border-top: 1px solid $line;
+}
+
+.ci-dua {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 0.8rem;
+}
+@media (max-width: 600px) {
+  .ci-dua {
+    grid-template-columns: 1fr;
+  }
+}
+:host ::ng-deep .ci-form .mat-mdc-form-field {
+  width: 100%;
+  --mdc-outlined-text-field-container-shape: 12px;
+}
+
+.ci-actions {
+  padding: 1rem 1.5rem 1.25rem !important;
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top: 1px solid $line;
+}
+.ci-spasi {
+  flex: 1;
+}
+.ci-cancel {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border: none;
+  border-radius: 11px;
+  padding: 0.6rem 1.1rem;
+  background: transparent;
+  color: $muted;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-2, #f3f5f9);
+    color: $ink;
+  }
+}

@@ -1,0 +1,142 @@
+<div class="ci">
+  <div class="ci-head" mat-dialog-title appDialogGeser>
+    <span class="ci-badge"><mat-icon>receipt_long</mat-icon></span>
+    <div class="ci-head__text">
+      <h2 class="ci-title">{{ "cop.invoiceJudul" | translate }}</h2>
+      <span class="ci-sub">{{ data.cop.name }} · {{ namaPemasok || "—" }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="ci-content">
+    @if (memuat()) {
+      <div class="ci-muat"><mat-spinner diameter="28" /></div>
+    } @else {
+      <div class="pou-banner pou-banner--adendum">
+        <mat-icon>info_outline</mat-icon>
+        <div>
+          <strong>{{ "cop.invoiceDariCopJudul" | translate }}</strong>
+          <p>{{ "cop.invoiceDariCopIsi" | translate }}</p>
+        </div>
+      </div>
+
+      @if (selisih !== 0) {
+        <div class="pou-banner">
+          <mat-icon>warning_amber</mat-icon>
+          <div>
+            <strong>{{ "cop.invoiceSelisihJudul" | translate }}</strong>
+            <p>{{ "cop.invoiceSelisihIsi" | translate: { rp: (selisih | number: "1.2-2") } }}</p>
+          </div>
+        </div>
+      }
+
+      <div class="ci-nomor">
+        <span class="ci-label">{{ "invoiceGen.documentNumber" | translate }}</span>
+        <strong>{{ nomorInvoice || "—" }}</strong>
+        <span class="ci-ket">{{ periodeTeks }}</span>
+      </div>
+
+      <!-- Baris: dibaca dari CoP, tidak dapat disunting. -->
+      <table class="ci-tabel">
+        <thead>
+          <tr>
+            <th>{{ "invoiceGen.items" | translate }}</th>
+            <th class="kanan">{{ "invoiceGen.quantity" | translate }}</th>
+            <th class="kanan">{{ "invoiceGen.price" | translate }}</th>
+            <th class="kanan">{{ "invoiceGen.total" | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (b of baris; track $index) {
+            <tr [class.ci-minus]="b.price < 0">
+              <td>{{ b.name }}</td>
+              <td class="kanan">{{ b.quantity | number: "1.0-4" }} {{ b.unit }}</td>
+              <td class="kanan"><app-rupiah [nilai]="b.price" /></td>
+              <td class="kanan"><app-rupiah [nilai]="b.quantity * b.price" /></td>
+            </tr>
+          }
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" class="kanan">{{ "invoiceGen.dpp" | translate }}</td>
+            <td class="kanan"><app-rupiah [nilai]="total" /></td>
+          </tr>
+          @if (pphPersen) {
+            <tr>
+              <td colspan="3" class="kanan">{{ "invoiceGen.pphCut" | translate }} ({{ pphPersen }}%)</td>
+              <td class="kanan"><app-rupiah [nilai]="-pphNilai" /></td>
+            </tr>
+          }
+          <tr class="ci-bayar">
+            <td colspan="3" class="kanan">{{ "invoiceGen.netTotal" | translate }}</td>
+            <td class="kanan"><app-rupiah [nilai]="dibayarkan" /></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <form [formGroup]="formGroup" class="ci-form">
+        <div class="ci-dua">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "invoiceGen.invoiceDate" | translate }}</mat-label>
+            <input matInput [matDatepicker]="pilihTanggal" formControlName="date" />
+            <mat-datepicker-toggle matIconSuffix [for]="pilihTanggal" />
+            <mat-datepicker #pilihTanggal />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "invoiceGen.city" | translate }}</mat-label>
+            <input matInput formControlName="city" [placeholder]="'invoiceGen.cityPlaceholder' | translate" />
+          </mat-form-field>
+        </div>
+
+        <div class="ci-bagian">{{ "invoiceGen.bank" | translate }}</div>
+        <p class="ci-ket">{{ "invoiceGen.bankHint" | translate }}</p>
+        <div class="ci-dua">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "invoiceGen.bankName" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="bankName"
+              [matAutocomplete]="bankAuto"
+              (input)="filterBanks($event)"
+              (focus)="filterBanks()"
+              [placeholder]="'invoiceGen.selectBank' | translate"
+            />
+            <mat-autocomplete requireSelection #bankAuto="matAutocomplete">
+              @for (b of filteredBanks; track b.name) {
+                <mat-option [value]="b.name">{{ b.name }}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "invoiceGen.bankAccountNumber" | translate }}</mat-label>
+            <input matInput formControlName="bankAccountNumber" />
+          </mat-form-field>
+        </div>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ "invoiceGen.bankAccountName" | translate }}</mat-label>
+          <input matInput formControlName="bankAccountName" />
+        </mat-form-field>
+
+        <mat-checkbox formControlName="proxyPayment">{{ "invoiceGen.proxyPayment" | translate }}</mat-checkbox>
+        <p class="ci-ket">{{ "invoiceGen.proxyPaymentHint" | translate }}</p>
+      </form>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="ci-actions">
+    <button type="button" class="ci-cancel" (click)="tutup()">
+      {{ "common.close" | translate }}
+    </button>
+    <span class="ci-spasi"></span>
+    <button mat-stroked-button type="button" [disabled]="!bisaCetak || mencetak()" (click)="cetak('open')">
+      <mat-icon>visibility</mat-icon>{{ "cop.invoiceBuka" | translate }}
+    </button>
+    <button mat-stroked-button type="button" [disabled]="!bisaCetak || mencetak()" (click)="cetak('download')">
+      <mat-icon>download</mat-icon>{{ "invoiceGen.download" | translate }}
+    </button>
+    @if (data.bolehBuatPembelian) {
+      <button mat-flat-button color="primary" type="button" [disabled]="!bisaCetak" (click)="lanjutPembelian()">
+        <mat-icon>request_quote</mat-icon>{{ "cop.buatPembelian" | translate }}
+      </button>
+    }
+  </mat-dialog-actions>
+</div>

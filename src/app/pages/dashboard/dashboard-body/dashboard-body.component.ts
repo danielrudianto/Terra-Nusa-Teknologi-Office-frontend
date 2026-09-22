@@ -43,6 +43,9 @@ export class DashboardBodyComponent {
    */
   get bolehBuatInvoice(): boolean {
     if (!this.permission.can('sales_invoice', 'create')) return false;
+    // Invoice tenaga kerja dicetak dari CoP (Generator Invoice dipensiunkan),
+    // jadi kartunya hanya berguna bagi yang dapat membuka CoP.
+    if (!this.permission.canRead('certificate_of_payment')) return false;
     return this.permission.level() >= 4 || this.permission.inDepartment('fat');
   }
 

@@ -36,6 +36,12 @@ import {
 import { PermissionService } from 'src/app/services/permission.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { CanDirective } from 'src/app/directives/can.directive';
+import { spkTenagaKerja } from 'src/app/helpers/invoice-tenaga.helper';
+import {
+  CertificateOfPaymentInvoiceComponent,
+  DataInvoiceCop,
+  HasilInvoiceCop,
+} from '../certificate-of-payment-invoice/certificate-of-payment-invoice.component';
 
 /**
  * Layar baca Certificate of Payment — sekaligus tempat memeriksa & menyetujui.
@@ -201,18 +207,56 @@ export class CertificateOfPaymentViewComponent implements OnInit {
   }
 
   /**
+   * Invoice & kuitansi tenaga kerja dapat dicetak dari CoP ini?
+   *
+   * Hanya SPK D (tenaga kerja): tukang dan mandor tidak punya kop surat, jadi
+   * invoicenya kita yang membuatkan — dulu lewat Generator Invoice. Subkon
+   * berbadan usaha menerbitkan invoicenya sendiri. Rupiah hanya untuk yang
+   * boleh melihat nilai, dan CoP-nya harus sudah disetujui: sebelum itu
+   * nilainya masih dapat berubah.
+   */
+  get bolehCetakInvoice(): boolean {
+    const c: any = this.cop();
+    if (!c || !this.bolehLihatNilai() || !c.isApproved) return false;
+    const jenis = String(c.purchaseType ?? '').trim().toUpperCase();
+    return jenis ? jenis === 'D' : spkTenagaKerja(c.purchaseOrderName);
+  }
+
+  cetakInvoice(): void {
+    const c = this.cop();
+    if (!c) return;
+    const data: DataInvoiceCop = {
+      cop: c,
+      nomorTerbit: this.tagihan()?.pembelian?.invoiceName ?? null,
+      bolehBuatPembelian: this.bolehBuatPembelian,
+    };
+    this.dialog
+      .open(CertificateOfPaymentInvoiceComponent, {
+        data,
+        maxWidth: '96vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((h: HasilInvoiceCop | undefined) => {
+        if (h?.lanjutPembelian) this.buatPembelian(h.nomorInvoice);
+      });
+  }
+
+  /**
    * Menuju formulir pembelian dengan CoP ini sebagai dasarnya.
    *
    * Lewat parameter rute, bukan dengan menyalin isian ke sana: formulir
    * pembelian yang membaca sendiri dari server mendapat angka TERKINI, dan
    * tidak ada salinan yang dapat basi di antara dua layar.
    */
-  buatPembelian(): void {
+  buatPembelian(nomorInvoice?: string): void {
     const c = this.cop();
     if (!c) return;
     this.dialogRef?.close(this.adaPerubahan);
     this.router.navigate(['/Purchase/Create'], {
-      queryParams: { cop: c.id },
+      // Nomor invoice yang baru dicetak ikut, supaya pembeliannya tercatat
+      // dengan nomor yang SAMA dengan dokumen di tangan pemasok.
+      queryParams: nomorInvoice ? { cop: c.id, invoice: nomorInvoice } : { cop: c.id },
     });
   }
 

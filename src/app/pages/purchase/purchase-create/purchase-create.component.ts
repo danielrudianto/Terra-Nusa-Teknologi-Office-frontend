@@ -549,6 +549,18 @@ export class PurchaseCreateComponent {
     const dariCop = Number(this.route.snapshot.queryParamMap.get('cop'));
     if (dariCop) void this.muatDariCop(dariCop);
 
+    /*
+     * Nomor invoice dari "Cetak invoice" di CoP (tenaga kerja).
+     *
+     * Invoice yang di tangan pemasok dan pembelian yang mencatatnya harus
+     * bernomor SAMA — dulu Generator Invoice menjaganya dengan membuat
+     * keduanya sekaligus. Diisikan hanya bila kotaknya masih kosong.
+     */
+    const nomorInvoice = (this.route.snapshot.queryParamMap.get('invoice') || '').trim();
+    if (nomorInvoice && !this.metaFormGroup.controls['invoiceName'].value) {
+      this.metaFormGroup.controls['invoiceName'].setValue(nomorInvoice.slice(0, 100));
+    }
+
     this.filteredOptions = this.options.slice();
     this.fetchBankAccounts();
 

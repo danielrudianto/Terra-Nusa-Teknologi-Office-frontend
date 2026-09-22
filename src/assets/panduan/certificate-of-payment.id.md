@@ -152,3 +152,30 @@ CoP yang **sudah disetujui dan belum ditagihkan** muncul di formulir
 **Pembelian** sebagai dasar tagihan. Satu CoP hanya boleh menjadi dasar SATU
 pembelian yang aktif — menghapus pembeliannya membuka kembali CoP-nya dengan
 sendirinya.
+
+
+## Invoice & kuitansi tenaga kerja (SPK D)
+
+Untuk tukang dan mandor yang tidak punya kop surat, invoice dan kuitansinya
+dicetak dari CoP — menggantikan **Generator Invoice** yang sudah dipensiunkan.
+
+1. Buka CoP yang **sudah disetujui**, lalu tekan **Cetak invoice**.
+2. Baris invoice diambil dari CoP: volume dan harga dari berita acara dan
+   SPK-nya (upah harian, lembur, insentif bor). **Tambahan** seperti bonus
+   dan **potongan** ikut sebagai baris sendiri. Barisnya tidak dapat
+   disunting — bila ada yang keliru, perbaiki CoP-nya.
+3. Isi tanggal invoice, kota, dan rekening. Rekening terisi otomatis dari
+   rekening yang terakhir dipakai pemasok — periksa lagi sebelum mencetak.
+4. Centang **Surat Pengalihan Pembayaran** bila pembayarannya dialihkan.
+5. **Pratinjau** atau **Unduh**, lalu **Buat pembelian**: nomor invoicenya
+   ikut terisi di formulir pembelian, sehingga dokumen di tangan pemasok dan
+   pembelian yang mencatatnya bernomor sama.
+
+Total invoice selalu sama dengan **nilai bersih CoP**, yang juga menjadi DPP
+pembeliannya. Bonus dicatat pemeriksa CoP sebagai **tambahan — biaya di luar
+kontrak**, jadi tidak memakan pagu SPK.
+
+Nomor invoice memakai format yang sama seperti sebelumnya:
+`{tgl cut-off}-{id pemasok}-INV-{kode proyek}-{bulan}-{tahun}`, ditambah
+`(B)` bila ada insentif bor. Tanggal cut-off adalah akhir periode CoP.
+Setelah pembeliannya dibuat, mencetak ulang memakai nomor yang sudah tercatat.

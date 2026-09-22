@@ -154,15 +154,13 @@ export const routes: Routes = [
           ),
         data: { title: 'PDF' },
       },
-      {
-        path: 'Invoice',
-        canActivate: [permissionGuard],
-        loadComponent: () =>
-          import('./pages/invoice/invoice.component').then(
-            (m) => m.InvoiceComponent,
-          ),
-        data: { title: 'Invoice Generator', permission: 'sales_invoice:read' , panduan: 'generator-invoice' },
-      },
+      /*
+       * Generator Invoice DIPENSIUNKAN — invoice & kuitansi tenaga kerja
+       * sekarang dicetak dari CoP yang sudah disetujui (tombol "Cetak
+       * invoice"), sehingga baris dan pagunya satu sumber dengan berita
+       * acaranya. Tautan lama diarahkan ke daftar CoP.
+       */
+      { path: 'Invoice', redirectTo: 'Certificate-of-payment', pathMatch: 'full' },
       {
         path: 'Purchase',
         canActivate: [permissionGuard],
