@@ -114,8 +114,12 @@
   padding-right: 4px;
   margin-top: 2px;
 
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.16) transparent;
+  // Tanpa `scrollbar-width`: di Chrome/Edge sifat itu membuat seluruh
+  // ::-webkit-scrollbar di bawah diabaikan, dan yang tampil bilah klasik
+  // lengkap dengan panah atas-bawah. Firefox diatur di styles.scss.
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -250,7 +254,6 @@
     background: rgba(255, 255, 255, 0.09);
   }
   .side-nav__scroll {
-    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
     &::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.18);
     }

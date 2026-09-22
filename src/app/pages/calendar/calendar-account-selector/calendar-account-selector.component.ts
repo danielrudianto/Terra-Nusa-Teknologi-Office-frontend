@@ -71,6 +71,10 @@ export class CalendarAccountSelectorComponent {
       this.translate.instant('notify.loadFailed'), 'Close', {
           duration: 3000,
         });
+        // Tetap memancarkan (daftar kosong = seluruh rekening, seperti
+        // sebelumnya): kalender menunggu pancaran ini sebelum memuat, dan
+        // tanpa pancaran ia berkilau selamanya.
+        this.bankAccountChanges.emit([]);
       },
     });
   }

@@ -240,7 +240,7 @@
                       -->
                       <div class="tv-qhead__baris">
                         <span class="tv-qhead__nama">
-                          {{ q.supplierPrefix }} {{ q.supplierName }}
+                          <app-nama-badan [nama]="q.supplierName" [bentuk]="q.supplierPrefix" />
                         </span>
                         <button
                           mat-icon-button
@@ -595,7 +595,7 @@
           <div class="tv-menang">
             <span class="tv-menang__ikon"><mat-icon>emoji_events</mat-icon></span>
             <div class="tv-menang__teks">
-              <strong>{{ pemenang.supplierPrefix }} {{ pemenang.supplierName }}</strong>
+              <strong><app-nama-badan [nama]="pemenang.supplierName" [bentuk]="pemenang.supplierPrefix" /></strong>
               @if (pemenang.quotationNumber) {
                 <span class="tv-menang__nomor">{{ pemenang.quotationNumber }}</span>
               }

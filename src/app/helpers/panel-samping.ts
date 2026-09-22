@@ -27,6 +27,10 @@ export function panelSamping<D = any>(config: MatDialogConfig<D> = {}): MatDialo
     height: '100vh',
     maxHeight: '100vh',
     position: { top: '0', right: '0' },
+    // Selaras dengan keyframe `akn-panel-masuk` dan transisi keluar di
+    // styles.scss: Material menunggu selama ini sebelum membuang panelnya.
+    enterAnimationDuration: config.enterAnimationDuration ?? 340,
+    exitAnimationDuration: config.exitAnimationDuration ?? 220,
     panelClass: [...kelas, 'akn-panel-samping'],
   };
 }

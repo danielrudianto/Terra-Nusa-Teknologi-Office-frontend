@@ -704,21 +704,6 @@ mat-sidenav-content,
   color: var(--ink);
 }
 
-/* nicer scrollbars in dark */
-html[data-theme="dark"] ::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
-}
-html[data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: #333a46;
-  border-radius: 8px;
-  border: 3px solid transparent;
-  background-clip: content-box;
-}
-html[data-theme="dark"] ::-webkit-scrollbar-track {
-  background: transparent;
-}
-
 .loading-spinner {
   position: relative;
   left: 50%;
@@ -1681,18 +1666,90 @@ html[data-gerak="mati"] {
    =================================================================== */
 .akn-panel-samping .mat-mdc-dialog-surface {
   border-radius: 18px 0 0 18px !important;
-  transform: translateX(56px);
   box-shadow: -12px 0 40px rgba(16, 24, 40, 0.16) !important;
+  /* Yang menggulir hanya badannya — lihat tata letak di bawah. */
+  overflow: hidden;
 }
-.akn-panel-samping .mdc-dialog--open .mat-mdc-dialog-surface,
-.akn-panel-samping .mdc-dialog--closing .mat-mdc-dialog-surface {
+
+/*
+ * GERAK: meluncur penuh dari tepi kanan, bukan geser 56px.
+ *
+ * Material hanya memberi transisi skala/opasitas singkat, dan geser kecil
+ * di atasnya terbaca sebagai panel yang "nongol". Masuk memakai keyframe
+ * sendiri (tetap jalan walau Material mematikan transisinya); keluar
+ * mengikuti kelas `mdc-dialog--closing`, yang durasinya dari
+ * `exitAnimationDuration` di `panelSamping`.
+ */
+@keyframes akn-panel-masuk {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+.akn-panel-samping .mdc-dialog--open .mat-mdc-dialog-surface {
   transform: none;
+  animation: akn-panel-masuk 340ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.akn-panel-samping .mdc-dialog--closing .mat-mdc-dialog-surface {
+  transform: translateX(100%);
+  transition: transform var(--mat-dialog-transition-duration, 200ms)
+    cubic-bezier(0.4, 0, 1, 1);
+}
+/* Isinya menyusul sedikit sesudah panelnya, supaya tidak terbaca kaku. */
+@keyframes akn-panel-isi {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.akn-panel-samping .mdc-dialog--open .mat-mdc-dialog-content > * {
+  animation: akn-panel-isi 320ms 120ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/*
+ * TATA LETAK: kepala di atas, tombol di bawah — keduanya TETAP; hanya
+ * badannya yang menggulir.
+ *
+ *   permukaan > komponen > pembungkus (.rv, .lv, ...) > judul | isi | tombol
+ *
+ * Setiap tingkat dijadikan kolom flex setinggi panel; isi `flex: 1` dan
+ * `max-height` bawaan Material (65vh) dilepas. Tanpa itu tombolnya
+ * menggantung tepat di bawah isi dengan ruang kosong di bawahnya.
+ */
+.akn-panel-samping .mat-mdc-dialog-surface > *,
+.akn-panel-samping .mat-mdc-dialog-surface > * > *:has(> .mat-mdc-dialog-content) {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.akn-panel-samping .mat-mdc-dialog-title,
+.akn-panel-samping .mat-mdc-dialog-actions {
+  flex: 0 0 auto;
+}
+.akn-panel-samping .mat-mdc-dialog-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none !important;
+  overflow-y: auto;
+}
+.akn-panel-samping .mat-mdc-dialog-actions {
+  border-top: 1px solid var(--border, rgba(0, 0, 0, 0.08));
 }
 .akn-panel-samping .mat-mdc-dialog-container {
   --mat-dialog-container-max-width: 100vw;
 }
-html[data-gerak="mati"] .akn-panel-samping .mat-mdc-dialog-surface {
-  transform: none;
+html[data-gerak="mati"] .akn-panel-samping .mat-mdc-dialog-surface,
+html[data-gerak="mati"] .akn-panel-samping .mat-mdc-dialog-content > * {
+  transform: none !important;
+  animation: none !important;
+  transition: none !important;
 }
 @media (max-width: 600px) {
   .akn-panel-samping .mat-mdc-dialog-surface {
@@ -1711,4 +1768,48 @@ html[data-gerak="mati"] .akn-panel-samping .mat-mdc-dialog-surface {
   line-height: 1.4;
   color: var(--muted, #6b7280);
   text-align: center;
+}
+
+/*
+ * Akhiran bentuk badan usaha (", PT.") — `app-nama-badan`. Redup dan tidak
+ * tebal, sama seperti daftar klien.
+ */
+.nb__bentuk {
+  color: var(--faint, #9aa0ab);
+  font-weight: 400;
+}
+
+/*
+ * Bilah gulir minimalis — tipis, tanpa panah, tanpa jalur; jempolnya baru
+ * jelas saat disentuh. Berlaku untuk seluruh aplikasi.
+ */
+/* Firefox saja: di Chrome/Edge, `scrollbar-width` membuat ::-webkit-* diabaikan. */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(120, 128, 140, 0.35) transparent;
+  }
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+*::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(120, 128, 140, 0.35);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 128, 140, 0.6);
+  background-clip: padding-box;
 }

@@ -169,7 +169,11 @@
             <div class="pol-sup">
               <span class="pol-avatar">{{ inisialPemasok(po) }}</span>
               <div class="pol-sup__text">
-                <span class="pol-primary">{{ supplierLabel(po) }}</span>
+                <span class="pol-primary"
+                  ><app-nama-badan
+                    [nama]="po.supplierName ?? po.supplier_name"
+                    [bentuk]="po.supplierPrefix ?? po.supplier_prefix"
+                /></span>
               </div>
             </div>
           </td>

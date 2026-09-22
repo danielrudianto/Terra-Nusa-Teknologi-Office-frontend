@@ -99,15 +99,14 @@
           <td mat-cell *matCellDef="let purchase">
             <div class="pdl-supplier">
               <span class="pdl-avatar">{{
-                (purchase.supplier?.name || "?").charAt(0)
+                inisialBadan(purchase.supplier?.name, purchase.supplier?.prefix)
               }}</span>
               <div class="pdl-supplier__text">
-                <span class="pdl-primary">{{
-                  purchase.supplier?.name || "—"
-                }}</span>
-                <span class="pdl-secondary" *ngIf="purchase.supplier?.prefix">{{
-                  purchase.supplier?.prefix
-                }}</span>
+                <span class="pdl-primary"
+                  ><app-nama-badan
+                    [nama]="purchase.supplier?.name"
+                    [bentuk]="purchase.supplier?.prefix"
+                /></span>
               </div>
             </div>
           </td>

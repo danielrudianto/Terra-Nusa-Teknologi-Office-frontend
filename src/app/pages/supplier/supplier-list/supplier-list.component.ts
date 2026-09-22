@@ -27,10 +27,12 @@ import { SupplierCreateComponent } from '../supplier-create/supplier-create.comp
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { SupplierReportComponent } from '../supplier-report/supplier-report.component';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
+import { NamaBadanComponent, inisialBadan } from '../../../components/nama-badan/nama-badan.component';
 
 @Component({
   selector: 'app-supplier-list',
   imports: [
+    NamaBadanComponent,
     KerangkaTabelDirective,
     CanDirective,
     CommonModule,
@@ -55,6 +57,9 @@ import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.direc
   standalone: true,
 })
 export class SupplierListComponent {
+  /** Huruf lencana dari NAMA pemasok, bukan dari bentuk badan usahanya. */
+  readonly inisialBadan = inisialBadan;
+
   private readonly hapusTunda = inject(HapusTundaService);
   private readonly ruteCari = inject(ActivatedRoute, { optional: true });
   private readonly serverMessage = inject(ServerMessageService);

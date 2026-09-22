@@ -80,6 +80,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { NumberFormatInputPipe } from './pipes/number-format-input.pipe';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ChunkErrorHandler } from './services/chunk-error.handler';
+import { MediaMatcher } from '@angular/cdk/layout';
+import { MediaGerakMatcher } from './services/media-gerak';
 
 export const MY_FORMATS = {
   parse: {
@@ -159,6 +161,8 @@ export const MY_FORMATS = {
     }),
   ],
   providers: [
+    // Gerak dialog mengikuti sakelar aplikasi, bukan OS — lihat `MediaGerakMatcher`.
+    { provide: MediaMatcher, useClass: MediaGerakMatcher },
     // Judul tab mengikuti halaman + jumlah yang menunggu persetujuan.
     { provide: TitleStrategy, useExisting: JudulTabStrategy },
     /*

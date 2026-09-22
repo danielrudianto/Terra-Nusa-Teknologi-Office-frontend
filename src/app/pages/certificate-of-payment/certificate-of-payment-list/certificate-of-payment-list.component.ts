@@ -37,6 +37,7 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
 import { CanDirective } from 'src/app/directives/can.directive';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
+import { NamaBadanComponent, inisialBadan } from '../../../components/nama-badan/nama-badan.component';
 
 /**
  * Daftar Certificate of Payment.
@@ -50,6 +51,7 @@ import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
   selector: 'app-certificate-of-payment-list',
   standalone: true,
   imports: [
+    NamaBadanComponent,
     RupiahComponent,
     KerangkaTabelDirective,
     CanDirective,
@@ -290,8 +292,7 @@ export class CertificateOfPaymentListComponent implements OnInit {
 
   /** Huruf pertama nama pemasok; "?" bila tidak ada. */
   inisialPemasok(c: CertificateOfPayment): string {
-    const nama = (c.supplierName || '').trim();
-    return nama ? nama.charAt(0).toUpperCase() : '?';
+    return inisialBadan(c.supplierName, c.supplierPrefix);
   }
 
   /** Keadaan dokumen, untuk lencana. */

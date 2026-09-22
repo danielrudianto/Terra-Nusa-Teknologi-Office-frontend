@@ -37,10 +37,12 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
 import { ShortCurrencyPipe } from 'src/app/pipes/short-currency.pipe';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
+import { NamaBadanComponent, inisialBadan } from '../../../components/nama-badan/nama-badan.component';
 
 @Component({
   selector: 'app-purchase-list',
   imports: [
+    NamaBadanComponent,
     RupiahComponent,
     KerangkaTabelDirective,
     CanDirective,
@@ -67,6 +69,9 @@ import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
   standalone: true,
 })
 export class PurchaseListComponent {
+  /** Huruf lencana dari NAMA pemasok, bukan dari bentuk badan usahanya. */
+  readonly inisialBadan = inisialBadan;
+
   /** track by id: hindari render ulang seluruh baris saat data berubah. */
   trackById = (_: number, row: any): any => row?.id ?? _;
 

@@ -149,9 +149,27 @@ export class CalendarTableComponent {
   balance: number = 0;
   isDownloading: boolean = false;
 
-  ngOnInit() {
-    this.generateCalendar();
-  }
+  /*
+   * TIDAK ada `ngOnInit` yang memuat lagi.
+   *
+   * Seluruh input kalender terikat dari induknya, jadi `ngOnChanges` sudah
+   * menyala SEBELUM `ngOnInit` pada pemasangan pertama. Memuat di keduanya
+   * berarti setiap pembukaan kalender menarik semuanya dua kali.
+   */
+
+  /**
+   * Daftar rekening sudah datang dari pemilih rekening.
+   *
+   * Sebelum itu `bankAccounts` kosong, dan daftar kosong dikirim sebagai
+   * parameter yang hilang — server membacanya sebagai SELURUH rekening,
+   * termasuk yang dikecualikan. Hasilnya dibuang begitu daftarnya datang,
+   * jadi angkanya tetap benar; yang terbuang waktunya: satu putaran penuh
+   * permintaan kalender, rencana, dan ringkasan yang tidak pernah dipakai.
+   *
+   * Bawaannya `true` supaya pemakai lain komponen ini tetap memuat seperti
+   * biasa.
+   */
+  @Input('rekeningSiap') rekeningSiap = true;
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.hasOwnProperty('selectedDay')) {
@@ -169,17 +187,20 @@ export class CalendarTableComponent {
   }
 
   generateCalendar() {
-    // Rencana ikut dimuat ulang setiap bulannya berganti.
-    //
-    // Dipasang di sini, bukan di `ngOnInit` saja: bulan diganti lewat
-    // `@Input`, dan pemuatan yang hanya sekali membuat rencana bulan
-    // pertama terus ditampilkan pada bulan mana pun.
-    this.muatRencana();
-    // Yang tertunda tidak bergantung pada bulan yang dilihat — ia menyangkut
-    // seluruh yang lewat — tetapi dimuat di sini supaya menyegar bersama
-    // saringan rekeningnya.
-    this.muatTertunda();
-    this.muatRingkasan();
+    const siap = this.rekeningSiap;
+    if (siap) {
+      // Rencana ikut dimuat ulang setiap bulannya berganti.
+      //
+      // Dipasang di sini, bukan di `ngOnInit` saja: bulan diganti lewat
+      // `@Input`, dan pemuatan yang hanya sekali membuat rencana bulan
+      // pertama terus ditampilkan pada bulan mana pun.
+      this.muatRencana();
+      // Yang tertunda tidak bergantung pada bulan yang dilihat — ia
+      // menyangkut seluruh yang lewat — tetapi dimuat di sini supaya
+      // menyegar bersama saringan rekeningnya.
+      this.muatTertunda();
+      this.muatRingkasan();
+    }
 
     this.weeks = [];
     const firstDay = new Date(this.year, this.month, 1);
@@ -210,6 +231,12 @@ export class CalendarTableComponent {
       }
     }
 
+    // Kisinya tetap digambar (kerangka berkilau) selagi menunggu rekening.
+    if (!siap) {
+      this.memuat = true;
+      this.muncul = false;
+      return;
+    }
     this.fetchData();
   }
 

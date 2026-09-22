@@ -167,6 +167,7 @@ export interface CertificateOfPayment {
   purchaseOrderID: number;
   purchaseOrderName?: string;
   supplierName?: string | null;
+  supplierPrefix?: string | null;
   supplierAddress?: string | null;
   projectName: string;
   date: string;
@@ -447,10 +448,12 @@ export class CertificateOfPaymentService {
    * belum ditagihkan. Jalan keluarnya SAMA dengan daftar pemilihnya, supaya
    * peringatan tidak pernah menyebut dokumen yang tidak ada di daftar itu.
    */
-  siapTagih(keyword?: string, purchaseOrderID?: number) {
+  siapTagih(keyword?: string, purchaseOrderID?: number, copID?: number) {
     const params: Record<string, string> = {};
     if (keyword) params['keyword'] = keyword;
     if (purchaseOrderID) params['purchaseOrderID'] = String(purchaseOrderID);
+    // SATU CoP — tanpa ini yang dicari hanya 30 baris terbaru.
+    if (copID) params['id'] = String(copID);
     return this.api.get(
       `${CertificateOfPaymentService.JALUR}/siap-tagih`,
       params,

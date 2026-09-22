@@ -42,11 +42,13 @@ import {
   tidakLengkap as tidakLengkapRekap,
   unduhRekapTenderExcel,
 } from 'src/app/helpers/tender-rekap.helper';
+import { NamaBadanComponent } from '../../../components/nama-badan/nama-badan.component';
 
 @Component({
   selector: 'app-tender-view',
   standalone: true,
   imports: [
+    NamaBadanComponent,
     CommonModule,
     MatIconModule,
     MatButtonModule,

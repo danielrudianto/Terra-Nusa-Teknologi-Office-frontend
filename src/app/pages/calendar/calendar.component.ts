@@ -106,7 +106,11 @@ export class CalendarComponent {
     this.year = event.year;
   }
 
+  /** Pemilih rekening sudah memancarkan daftarnya — lihat `CalendarTableComponent.rekeningSiap`. */
+  rekeningSiap = false;
+
   onBankAccountChanges(event: any) {
     this.bankAccounts = event;
+    this.rekeningSiap = true;
   }
 }

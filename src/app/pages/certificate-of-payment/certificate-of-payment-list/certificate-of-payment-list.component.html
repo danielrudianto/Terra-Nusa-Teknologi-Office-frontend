@@ -127,7 +127,9 @@
           <div class="cl-supplier">
             <span class="cl-avatar">{{ inisialPemasok(c) }}</span>
             <div class="cl-supplier__text">
-              <span class="cl-primary">{{ c.supplierName || "—" }}</span>
+              <span class="cl-primary"
+                ><app-nama-badan [nama]="c.supplierName" [bentuk]="c.supplierPrefix"
+              /></span>
             </div>
           </div>
         </td>

@@ -61,10 +61,10 @@
               <span
                 class="sl-avatar"
                 [class.is-blacklist]="element.isBlacklist"
-                >{{ (element.name || "?").charAt(0) }}</span
+                >{{ inisialBadan(element.name, element.prefix) }}</span
               >
               <span class="sl-primary">
-                {{ element.name || "—" }}
+                <app-nama-badan [nama]="element.name" [bentuk]="element.prefix" />
                 <span
                   class="sl-blacklist"
                   *ngIf="element.isBlacklist"

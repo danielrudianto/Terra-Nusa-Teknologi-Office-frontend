@@ -67,11 +67,13 @@ import { PurchaseOrderFilterComponent } from './purchase-order-filter/purchase-o
 import { SetujuiPoDialogComponent } from '../setujui-po-dialog/setujui-po-dialog.component';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
+import { NamaBadanComponent, inisialBadan } from '../../../components/nama-badan/nama-badan.component';
 
 @Component({
   selector: 'app-purchase-order-list',
   standalone: true,
   imports: [
+    NamaBadanComponent,
     RupiahComponent,
     KerangkaTabelDirective,
     CanDirective,
@@ -408,8 +410,12 @@ export class PurchaseOrderListComponent {
    * sebelahnya terbaca dengan benar, atau sebaliknya.
    */
   inisialPemasok(po: any): string {
-    const nama = this.supplierLabel(po);
-    return nama === '—' ? '?' : nama.charAt(0).toUpperCase();
+    // Dari NAMA-nya, bukan dari bentuk badan usahanya: dulu lencananya
+    // "P" untuk setiap PT dan "C" untuk setiap CV.
+    return inisialBadan(
+      po?.supplierName ?? po?.supplier_name,
+      po?.supplierPrefix ?? po?.supplier_prefix,
+    );
   }
 
   /**

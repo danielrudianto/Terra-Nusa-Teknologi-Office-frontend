@@ -27,10 +27,12 @@ import { PurchaseDraftCreateComponent } from '../purchase-draft-create/purchase-
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
+import { NamaBadanComponent, inisialBadan } from '../../../components/nama-badan/nama-badan.component';
 
 @Component({
   selector: 'app-purchase-draft-list',
   imports: [
+    NamaBadanComponent,
     RupiahComponent,
     KerangkaTabelDirective,
     CanDirective,
@@ -56,6 +58,9 @@ import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
   standalone: true,
 })
 export class PurchaseDraftListComponent {
+  /** Huruf lencana dari NAMA pemasok, bukan dari bentuk badan usahanya. */
+  readonly inisialBadan = inisialBadan;
+
   private readonly serverMessage = inject(ServerMessageService);
   constructor(
     private apiService: ApiService,

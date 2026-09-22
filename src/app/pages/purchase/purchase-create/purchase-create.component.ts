@@ -431,7 +431,7 @@ export class PurchaseCreateComponent {
   private async muatDariCop(copId: number): Promise<void> {
     try {
       const daftar = (await firstValueFrom(
-        this.layananCop.siapTagih(),
+        this.layananCop.siapTagih(undefined, undefined, copId),
       )) as CoPSiapTagih[];
       const c = (daftar || []).find((x) => x.id === copId);
       if (!c) {
