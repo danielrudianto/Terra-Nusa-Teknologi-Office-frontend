@@ -75,23 +75,6 @@ export class DashboardBodyComponent {
       .filter((d) => dikenal.has(d));
   });
 
-  /**
-   * Boleh membuka generator invoice.
-   *
-   * Bagian keuangan, atau akses 4 ke atas. Sengaja tidak memakai
-   * `sales_invoice:read` saja: pengguna tanpa divisi tidak dibatasi wilayah,
-   * sehingga seorang akses 3 tanpa divisi lolos pemeriksaan itu tanpa
-   * menjadi bagian keuangan — padahal menerbitkan tagihan ke klien adalah
-   * pekerjaan satu bagian, bukan sesuatu yang terbuka bagi yang kebetulan
-   * dapat melihatnya.
-   */
-  get bolehBuatInvoice(): boolean {
-    if (!this.permission.can('sales_invoice', 'create')) return false;
-    // Invoice tenaga kerja dicetak dari CoP (Generator Invoice dipensiunkan),
-    // jadi kartunya hanya berguna bagi yang dapat membuka CoP.
-    if (!this.permission.canRead('certificate_of_payment')) return false;
-    return this.permission.level() >= 4 || this.permission.inDepartment('fat');
-  }
 
   /**
    * Divisi yang berasal dari LUAR perusahaan.
