@@ -145,7 +145,7 @@
             {{ "table.date" | translate }}
           </th>
           <td mat-cell *matCellDef="let e" class="al-when">
-            {{ e.createdAt | date: "dd MMM yyyy HH:mm" }}
+            <span [title]="e.createdAt | date: 'dd MMM yyyy HH:mm'">{{ e.createdAt | waktuRelatif }}</span>
           </td>
         </ng-container>
 

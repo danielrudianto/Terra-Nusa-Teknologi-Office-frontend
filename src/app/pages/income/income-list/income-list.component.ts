@@ -35,10 +35,12 @@ import { DeleteConfirmationComponent } from '../../../components/delete-confirma
 import { RouterModule } from '@angular/router';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
+import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
 
 @Component({
   selector: 'app-income-list',
   imports: [
+    RupiahComponent,
     KerangkaTabelDirective,
     MatDatepickerModule,
     CanDirective,

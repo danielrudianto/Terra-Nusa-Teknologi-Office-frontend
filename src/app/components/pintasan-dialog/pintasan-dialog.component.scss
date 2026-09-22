@@ -1,0 +1,97 @@
+/* Kepala dan kaki disalin dari dialog Tambah Rekening (bank-create). */
+.pd {
+  font-family: "Montserrat", sans-serif;
+  width: min(420px, 94vw);
+  color: var(--ink);
+}
+.pd-head {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  background: linear-gradient(135deg, var(--brand-soft) 0%, var(--hover) 100%);
+  border-bottom: 1px solid var(--line);
+
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+}
+.pd-badge {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  color: var(--brand);
+  box-shadow: 0 2px 6px rgba(21, 77, 236, 0.14);
+}
+h2.pd-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+}
+.pd-sub {
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+.pd-content {
+  padding: 0.75rem 1.5rem !important;
+}
+.pd-baris {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.88rem;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+.pd-tombol {
+  display: inline-flex;
+  gap: 4px;
+}
+kbd {
+  min-width: 28px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  background: var(--surface-2);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-align: center;
+}
+.pd-actions {
+  padding: 1rem 1.5rem 1.25rem !important;
+  display: flex !important;
+  justify-content: flex-end;
+  border-top: 1px solid var(--line);
+}
+.pd-cancel {
+  height: 40px;
+  padding: 0 1.1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}

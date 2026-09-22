@@ -1,0 +1,18 @@
+<div class="td">
+  <div class="td-kartu">
+    <span class="td-angka" aria-hidden="true">404</span>
+    <h1 class="td-judul">{{ "tidakDitemukan.judul" | translate }}</h1>
+    <p class="td-isi">{{ "tidakDitemukan.isi" | translate }}</p>
+    <code class="td-alamat">{{ alamat }}</code>
+    <div class="td-aksi">
+      <button type="button" class="td-kedua" (click)="kembali()">
+        <mat-icon>arrow_back</mat-icon>
+        {{ "tidakDitemukan.kembali" | translate }}
+      </button>
+      <a class="td-utama" routerLink="/">
+        <mat-icon>space_dashboard</mat-icon>
+        {{ "tidakDitemukan.keDashboard" | translate }}
+      </a>
+    </div>
+  </div>
+</div>

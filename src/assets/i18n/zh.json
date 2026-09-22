@@ -1324,6 +1324,21 @@
     "total": "总计",
     "empty": "没有待处理的报销。"
   },
+  "pintasan": {
+    "judul": "键盘快捷键",
+    "sub": "无需鼠标，更快完成工作",
+    "cari": "聚焦搜索框",
+    "baru": "在此页面新增",
+    "tutup": "关闭对话框",
+    "bantuan": "显示此列表",
+    "tutupTombol": "关闭"
+  },
+  "tidakDitemukan": {
+    "judul": "找不到页面",
+    "isi": "此地址不存在，或页面已移动。",
+    "kembali": "返回",
+    "keDashboard": "前往仪表板"
+  },
   "client": {
     "title": "客户",
     "subtitle": "管理公司客户数据",

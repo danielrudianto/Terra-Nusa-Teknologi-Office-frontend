@@ -174,9 +174,10 @@
           <th
             mat-header-cell
             *matHeaderCellDef
+            class="pl-num"
             (click)="changeSortBy('amount')"
           >
-            <div class="d-flex d-align-items-center">
+            <div class="d-flex d-align-items-center pl-num__kepala">
               <span>{{ "table.amount" | translate }}</span>
               <mat-icon *ngIf="sortBy == 'amount' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
@@ -188,8 +189,8 @@
               >
             </div>
           </th>
-          <td mat-cell *matCellDef="let payment">
-            {{ payment.amount | currency: "Rp. " }}
+          <td mat-cell *matCellDef="let payment" class="pl-num">
+            <app-rupiah [nilai]="payment.amount" digit="1.2-2" />
           </td>
         </ng-container>
 

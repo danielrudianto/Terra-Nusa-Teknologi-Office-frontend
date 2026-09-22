@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ApiService } from '../../services/api.service';
 import { AvatarComponent } from '../avatar/avatar.component';
+import { WaktuRelatifPipe } from '../../pipes/waktu-relatif.pipe';
 
 /**
  * Satu baris perubahan yang ditampilkan.
@@ -47,7 +48,8 @@ interface AuditEntry {
 @Component({
   selector: 'app-audit-trail',
   standalone: true,
-  imports: [AuditLabelPipe, 
+  imports: [
+    WaktuRelatifPipe, AuditLabelPipe, 
     CommonModule,
     MatIconModule,
     MatProgressSpinnerModule,

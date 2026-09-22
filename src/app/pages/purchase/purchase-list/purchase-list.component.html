@@ -358,15 +358,13 @@
             </span>
           </th>
           <td mat-cell *matCellDef="let purchase" class="pl-num">
-            <span class="pl-total">{{
-              purchase.dpp +
+            <span class="pl-total"><app-rupiah [nilai]="purchase.dpp +
                 (purchase.ppn * purchase.dpp) / 100 +
                 purchase.otherValue +
-                purchase.pbbkb | currency: "Rp " : "symbol" : "1.2-2"
-            }}</span>
+                purchase.pbbkb" digit="1.2-2" /></span>
             <span class="pl-secondary"
               >DPP
-              {{ purchase.dpp | currency: "Rp " : "symbol" : "1.2-2" }}</span
+              <app-rupiah [nilai]="purchase.dpp" digit="1.2-2" /></span
             >
           </td>
         </ng-container>

@@ -1,3 +1,4 @@
+import { kosongkanCacheDaftar } from './cache-daftar.interceptor';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { PermissionService } from './permission.service';
@@ -70,6 +71,8 @@ export class AuthService {
   }
 
   logout() {
+    // Daftar milik pengguna ini tidak boleh tampil sekejap untuk yang masuk berikutnya.
+    kosongkanCacheDaftar();
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');

@@ -1,0 +1,86 @@
+.td {
+  min-height: 70vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem 1rem;
+  font-family: "Montserrat", sans-serif;
+}
+.td-kartu {
+  width: min(520px, 100%);
+  text-align: center;
+  padding: 2.5rem 2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--card-shadow);
+}
+.td-angka {
+  display: block;
+  font-size: 4.5rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-strong) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.td-judul {
+  margin: 1rem 0 0.4rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.td-isi {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.td-alamat {
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.td-aksi {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+.td-utama,
+.td-kedua {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 42px;
+  padding: 0 1.1rem;
+  border-radius: 10px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+.td-utama {
+  border: none;
+  background: var(--brand);
+  color: var(--on-brand);
+}
+.td-kedua {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink);
+}

@@ -27,10 +27,12 @@ import { LoanPaymentCreateComponent } from '../../../components/payment-create/l
 import { LoansViewComponent } from '../loans-view/loans-view.component';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
+import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
 
 @Component({
   selector: 'app-loans-list',
   imports: [
+    RupiahComponent,
     KerangkaTabelDirective,
     CanDirective,
     TranslatePipe,

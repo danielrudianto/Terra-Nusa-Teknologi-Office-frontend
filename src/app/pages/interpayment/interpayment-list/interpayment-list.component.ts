@@ -32,10 +32,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { SettingsService } from '../../../services/setting.service';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
+import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
 
 @Component({
   selector: 'app-interpayment-list',
   imports: [
+    RupiahComponent,
     KerangkaTabelDirective,
     MatDatepickerModule,
     HeaderTitleComponent,

@@ -184,9 +184,7 @@
             </span>
           </th>
           <td mat-cell *matCellDef="let element" class="al-num">
-            <span class="al-amount">{{
-              element.value | currency: "Rp " : "symbol" : "1.0-0"
-            }}</span>
+            <span class="al-amount"><app-rupiah [nilai]="element.value" digit="1.0-0" /></span>
           </td>
         </ng-container>
 

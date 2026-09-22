@@ -24,10 +24,12 @@ import { AssetUpdateComponent } from '../asset-update/asset-update.component';
 import { AssetViewComponent } from '../asset-view/asset-view.component';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
+import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
 
 @Component({
   selector: 'app-asset-list',
   imports: [
+    RupiahComponent,
     KerangkaTabelDirective,
     CanDirective,
     TranslatePipe,

@@ -35,10 +35,12 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { CanDirective } from '../../../directives/can.directive';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
+import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
 
 @Component({
   selector: 'app-expense-list',
   imports: [
+    RupiahComponent,
     KerangkaTabelDirective,
     MatDatepickerModule,
     CommonModule,

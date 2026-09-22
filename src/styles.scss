@@ -1321,10 +1321,32 @@ body.mobile-app *::-webkit-scrollbar {
    (lihat `animations/gerak.ts`). Angka yang menghitung naik dan grafik
    yang tumbuh mematuhi saklar yang sama dari TypeScript.
    =================================================================== */
-@keyframes akn-muncul {
+/*
+ * Baris masuk DARI ATAS (−6px), bukan dari bawah.
+ *
+ * Tabel duduk di dalam `.table-responsive { overflow-x: auto }`, dan
+ * overflow-x selain `visible` memaksa overflow-y ikut `auto`. Baris yang
+ * masuk dari BAWAH (+6px) menjorok melewati tepi bawah pembungkusnya selama
+ * animasi — muncul batang gulir vertikal yang berkedip. Luapan ke ATAS
+ * tidak pernah dapat digulir, jadi tidak memunculkan batang gulir apa pun.
+ */
+@keyframes akn-muncul-baris {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Kartu: skala, bukan geser — tidak pernah keluar dari kotaknya sendiri,
+   jadi aman di dalam wadah yang bergulir (mis. kartu margin proyek). */
+@keyframes akn-muncul-kartu {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
   }
   to {
     opacity: 1;
@@ -1353,7 +1375,7 @@ body.mobile-app *::-webkit-scrollbar {
  * bukan kesan mahal, melainkan kesan lambat.
  */
 .mat-mdc-table tbody:not(.akn-kerangka) > tr.mat-mdc-row {
-  animation: akn-muncul 0.32s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation: akn-muncul-baris 0.32s cubic-bezier(0.2, 0.7, 0.3, 1) both;
   animation-delay: calc(var(--akn-urut, 12) * 26ms);
 }
 @for $i from 1 through 12 {
@@ -1364,7 +1386,7 @@ body.mobile-app *::-webkit-scrollbar {
 
 /* Kartu (ringkasan angka, kartu proyek) muncul berurutan. */
 .akn-berurutan > * {
-  animation: akn-muncul 0.42s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation: akn-muncul-kartu 0.42s cubic-bezier(0.2, 0.7, 0.3, 1) both;
   animation-delay: calc(var(--akn-urut, 8) * 55ms);
 }
 @for $i from 1 through 8 {
@@ -1453,4 +1475,24 @@ html[data-gerak="mati"] {
   .akn-berurutan > * {
     animation: none !important;
   }
+}
+
+/* ===================================================================
+   NOMINAL RUPIAH DI TABEL (`<app-rupiah>`)
+   Angka berlebar seragam agar ribuan sejajar satu kolom; "Rp" kecil dan
+   redup supaya mata langsung ke angkanya. Warnanya mewarisi induk — nilai
+   merah/hijau tetap merah/hijau, hanya simbolnya yang meredup.
+   =================================================================== */
+.mat-mdc-table .mat-mdc-cell,
+.rp {
+  font-variant-numeric: tabular-nums;
+}
+.rp {
+  white-space: nowrap;
+}
+.rp__sym {
+  font-size: 0.78em;
+  font-weight: 500;
+  opacity: 0.62;
+  margin-right: 0.28em;
 }

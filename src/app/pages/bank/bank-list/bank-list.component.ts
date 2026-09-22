@@ -24,10 +24,12 @@ import { MatChipsModule } from '@angular/material/chips';
 import { TranslateService } from '@ngx-translate/core';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
+import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
 
 @Component({
   selector: 'app-bank-list',
   imports: [
+    RupiahComponent,
     KerangkaTabelDirective,
     CanDirective,
     TranslatePipe,

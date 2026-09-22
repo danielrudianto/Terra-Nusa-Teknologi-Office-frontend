@@ -2,6 +2,9 @@ import { NgModule, ErrorHandler, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { TitleStrategy } from '@angular/router';
+import { JudulTabStrategy } from './services/judul-tab.strategy';
+import { CacheDaftarInterceptor } from './services/cache-daftar.interceptor';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import {
   provideHttpClient,
@@ -156,6 +159,8 @@ export const MY_FORMATS = {
     }),
   ],
   providers: [
+    // Judul tab mengikuti halaman + jumlah yang menunggu persetujuan.
+    { provide: TitleStrategy, useExisting: JudulTabStrategy },
     /*
      * Dialog muncul sedikit lebih lambat daripada bawaan Material (150ms)
      * supaya skalanya terbaca sebagai gerakan, bukan kedipan; kurvanya
@@ -216,6 +221,16 @@ export const MY_FORMATS = {
      * ngx-mask: decimalMarker ['.', ','], sengaja tidak diubah).
      */
     provideNgxMask({ thousandSeparator: ' ' }),
+    /*
+     * Simpanan daftar DIDAFTARKAN LEBIH DULU: ia yang paling luar, jadi isi
+     * lama dapat dipancarkan tanpa menunggu apa pun, sementara permintaan
+     * ke server tetap melewati AuthInterceptor seperti biasa.
+     */
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: CacheDaftarInterceptor,
+      multi: true,
+    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

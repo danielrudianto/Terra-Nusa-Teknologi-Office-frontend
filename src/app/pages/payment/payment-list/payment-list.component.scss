@@ -336,3 +336,11 @@
   flex: 0 0 auto;
   margin-left: auto;
 }
+
+/* Nominal rata kanan, seperti kolom uang di daftar lain. */
+.pl-num {
+  text-align: right;
+}
+.pl-num__kepala {
+  justify-content: flex-end;
+}

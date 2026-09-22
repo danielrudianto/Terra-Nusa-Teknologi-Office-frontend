@@ -26,10 +26,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { DeleteConfirmationComponent } from '../../../components/delete-confirmation/delete-confirmation.component';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
+import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
 
 @Component({
   selector: 'app-payment-list',
   imports: [
+    RupiahComponent,
     KerangkaTabelDirective,
     CanDirective,
     TranslatePipe,

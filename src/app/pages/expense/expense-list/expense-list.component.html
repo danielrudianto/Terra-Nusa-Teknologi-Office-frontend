@@ -210,13 +210,16 @@
               saja. PPh (dipotong) tidak dikurangkan di sini; yang ditransfer
               (setelah PPh) terlihat di dialog pembayaran.
             -->
-            <span class="ex-amount">{{
-              purchase.dpp +
-                ((purchase.ppn || 0) * purchase.dpp) / 100 +
-                (purchase.pbbkb || 0) | currency: "Rp " : "symbol" : "1.2-2"
-            }}</span>
+            <span class="ex-amount"
+              ><app-rupiah
+                [nilai]="
+                  purchase.dpp +
+                  ((purchase.ppn || 0) * purchase.dpp) / 100 +
+                  (purchase.pbbkb || 0)
+                "
+            /></span>
             <span class="ex-secondary" *ngIf="purchase.ppn"
-              >DPP {{ purchase.dpp | currency: "Rp " : "symbol" : "1.2-2" }}</span
+              >DPP <app-rupiah [nilai]="purchase.dpp" digit="1.2-2" /></span
             >
           </td>
         </ng-container>

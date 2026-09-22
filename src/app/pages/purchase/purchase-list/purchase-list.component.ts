@@ -36,10 +36,12 @@ import { PermissionService } from '../../../services/permission.service';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { ShortCurrencyPipe } from 'src/app/pipes/short-currency.pipe';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
+import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
 
 @Component({
   selector: 'app-purchase-list',
   imports: [
+    RupiahComponent,
     KerangkaTabelDirective,
     CanDirective,
     CommonModule,

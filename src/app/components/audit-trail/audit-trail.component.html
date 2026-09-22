@@ -41,7 +41,7 @@
               }
             </div>
             <div class="at-item__time">
-              {{ e.createdAt | date: "dd MMM yyyy HH:mm" }}
+              <span [title]="e.createdAt | date: 'dd MMM yyyy HH:mm'">{{ e.createdAt | waktuRelatif }}</span>
             </div>
 
             <!--

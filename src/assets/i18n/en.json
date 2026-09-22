@@ -1324,6 +1324,21 @@
     "total": "Total",
     "empty": "No pending reimbursements."
   },
+  "pintasan": {
+    "judul": "Keyboard shortcuts",
+    "sub": "Work faster without the mouse",
+    "cari": "Focus the search box",
+    "baru": "Add new on this page",
+    "tutup": "Close dialog",
+    "bantuan": "Show this list",
+    "tutupTombol": "Close"
+  },
+  "tidakDitemukan": {
+    "judul": "Page not found",
+    "isi": "This address does not exist, or the page has moved.",
+    "kembali": "Go back",
+    "keDashboard": "Go to Dashboard"
+  },
   "client": {
     "title": "Client",
     "subtitle": "Manage company client data",

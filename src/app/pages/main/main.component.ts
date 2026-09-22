@@ -1,4 +1,9 @@
-import { Component, computed, HostListener, inject, signal } from '@angular/core';
+import { Component, computed, effect, HostListener, inject, OnDestroy, signal } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { LencanaService } from '../../services/lencana.service';
+import { JudulTabStrategy } from '../../services/judul-tab.strategy';
+import { aksiDari, cariKotakPencarian, cariTombolBaru } from '../../services/pintasan';
+import { PintasanDialogComponent } from '../../components/pintasan-dialog/pintasan-dialog.component';
 import { PermissionService } from '../../services/permission.service';
 import { SideNavComponent } from '../../components/side-nav/side-nav.component';
 import { PanduanPanelComponent } from '../../components/panduan/panduan-panel/panduan-panel.component';
@@ -46,8 +51,54 @@ import {
    * aplikasinya makin lambat setiap perpindahan.
    */
 })
-export class MainComponent {
+export class MainComponent implements OnDestroy {
   readonly versi = inject(VersiService);
+
+  private readonly dialog = inject(MatDialog);
+  private readonly lencana = inject(LencanaService);
+  private readonly judulTab = inject(JudulTabStrategy);
+
+  /*
+   * Jumlah yang menunggu persetujuan ikut tampil di judul tab. Dikirim
+   * dari sini — kerangka yang hanya ada saat sudah masuk — lihat
+   * JudulTabStrategy tentang alasannya.
+   */
+  private readonly _judulMenunggu = effect(() => {
+    const n = Object.values(this.lencana.semua()).reduce<number>(
+      (a, x) => a + (typeof x === 'number' && x > 0 ? x : 0),
+      0,
+    );
+    this.judulTab.setMenunggu(n);
+  });
+
+  ngOnDestroy(): void {
+    this.judulTab.setMenunggu(0);
+  }
+
+  /** Pintasan papan ketik — logikanya di `services/pintasan.ts`. */
+  @HostListener('document:keydown', ['$event'])
+  pintasan(ev: KeyboardEvent): void {
+    const aksi = aksiDari(ev, this.dialog.openDialogs.length > 0);
+    if (!aksi) return;
+    if (aksi === 'bantuan') {
+      ev.preventDefault();
+      this.dialog.open(PintasanDialogComponent);
+      return;
+    }
+    const isi = document.querySelector('.mat-drawer-content') ?? document;
+    if (aksi === 'cari') {
+      const kotak = cariKotakPencarian(isi);
+      if (!kotak) return;
+      ev.preventDefault();
+      kotak.focus();
+      kotak.select();
+      return;
+    }
+    const tombol = cariTombolBaru(isi);
+    if (!tombol) return;
+    ev.preventDefault();
+    tombol.click();
+  }
 
   constructor(
     private permissionService: PermissionService,

@@ -1,3 +1,4 @@
+import { MuatSenggangStrategy } from './services/muat-senggang.strategy';
 import { NgModule } from '@angular/core';
 import { authGuard } from './guards/auth.guard';
 import { permissionGuard } from './guards/permission.guard';
@@ -1153,12 +1154,31 @@ export const routes: Routes = [
           panduan: 'pengaturan',
         },
       },
+      /*
+       * PENANGKAP — HARUS tetap yang TERAKHIR.
+       *
+       * Alamat yang tidak cocok dengan rute mana pun dulu menghasilkan
+       * halaman kosong. Diletakkan di dalam kerangka utama supaya menu
+       * samping tetap ada, dan kerangka ini sendiri rute tingkat atas yang
+       * terakhir, jadi tidak ada rute lain yang terbayangi.
+       */
+      {
+        path: '**',
+        loadComponent: () =>
+          import('./pages/tidak-ditemukan/tidak-ditemukan.component').then(
+            (m) => m.TidakDitemukanComponent,
+          ),
+        data: { title: '404' },
+      },
     ],
   },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [
+    // Halaman lain diunduh di latar saat senggang — lihat MuatSenggangStrategy.
+    RouterModule.forRoot(routes, { preloadingStrategy: MuatSenggangStrategy }),
+  ],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

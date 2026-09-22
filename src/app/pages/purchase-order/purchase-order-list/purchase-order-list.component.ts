@@ -66,11 +66,13 @@ import { PurchaseOrderRekapComponent } from '../purchase-order-rekap/purchase-or
 import { PurchaseOrderFilterComponent } from './purchase-order-filter/purchase-order-filter.component';
 import { SetujuiPoDialogComponent } from '../setujui-po-dialog/setujui-po-dialog.component';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
+import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
 
 @Component({
   selector: 'app-purchase-order-list',
   standalone: true,
   imports: [
+    RupiahComponent,
     KerangkaTabelDirective,
     CanDirective,
     MatProgressSpinnerModule,

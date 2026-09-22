@@ -1324,6 +1324,21 @@
     "total": "Total",
     "empty": "Tidak ada reimbursement tertunda."
   },
+  "pintasan": {
+    "judul": "Pintasan papan ketik",
+    "sub": "Bekerja lebih cepat tanpa tetikus",
+    "cari": "Fokus ke kotak pencarian",
+    "baru": "Tambah data baru di halaman ini",
+    "tutup": "Tutup dialog",
+    "bantuan": "Tampilkan daftar ini",
+    "tutupTombol": "Tutup"
+  },
+  "tidakDitemukan": {
+    "judul": "Halaman tidak ditemukan",
+    "isi": "Alamat ini tidak ada, atau halamannya sudah dipindah.",
+    "kembali": "Kembali",
+    "keDashboard": "Ke Dashboard"
+  },
   "client": {
     "title": "Klien",
     "subtitle": "Kelola data klien perusahaan",
