@@ -140,7 +140,7 @@
         </button>
         <div class="snav-group__items">
           <app-side-nav-item
-            *ngFor="let i of hasilMaster"
+            *ngFor="let i of hasilMaster; trackBy: lacakRute"
             [label]="i.name"
             [routerLink]="i.route"
             [icon]="i.icon"

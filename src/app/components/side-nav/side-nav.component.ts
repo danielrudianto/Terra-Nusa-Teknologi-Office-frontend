@@ -11,6 +11,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { PermissionService } from '../../services/permission.service';
 import { MASTER_NAV } from '../../pages/master/master-nav';
 
+/** Larik kosong yang TETAP — lihat `hasilMaster`. */
+const KOSONG: { name: string; route: string; icon: string }[] = [];
+
 @Component({
   selector: 'app-side-nav',
   imports: [
@@ -208,19 +211,46 @@ export class SideNavComponent implements OnInit {
    * dengan pencarian global (MASTER_NAV), dan hanya yang boleh dibuka.
    */
   get hasilMaster(): { name: string; route: string; icon: string }[] {
-    if (!this.isFiltering) return [];
+    if (!this.isFiltering) return KOSONG;
     const adaMaster = (this.items || []).some((g: any) =>
       (g.children || []).some((c: any) => c.route === '/Master'),
     );
-    if (!adaMaster) return [];
+    if (!adaMaster) return KOSONG;
     const q = this.filter.trim().toLowerCase();
-    return MASTER_NAV.filter((m) => this.izin.canRead(m.modul))
+    const boleh = MASTER_NAV.filter((m) => this.izin.canRead(m.modul));
+
+    /*
+     * LARIK YANG SAMA dikembalikan selama masukannya sama.
+     *
+     * Getter ini dibaca setiap putaran deteksi perubahan. Dulu ia membuat
+     * larik dan objek BARU tiap kali, sehingga `*ngFor` membuang dan membuat
+     * ulang seluruh `app-side-nav-item`. Tiap butir baru memasang
+     * `routerLinkActive`, yang menjadwalkan pembaruannya di microtask —
+     * microtask itu memicu deteksi perubahan lagi, getter membuat larik baru
+     * lagi, butirnya dibuat ulang lagi... tanpa ujung. Halamannya membeku
+     * begitu satu huruf diketik, dan tombol muat ulang pun tidak sempat
+     * dilayani karena antrean microtask tidak pernah kosong.
+     */
+    const kunci = [q, this.translate.currentLang, ...boleh.map((m) => m.route)].join('|');
+    if (this.cacheMaster?.kunci === kunci) return this.cacheMaster.hasil;
+
+    const hasil = boleh
       .filter((m) => {
         const label = String(this.translate.instant(m.name) || m.name).toLowerCase();
         return label.includes(q) || m.route.toLowerCase().includes(q);
       })
       .map((m) => ({ name: m.name, route: '/Master/' + m.route, icon: m.svg }));
+    this.cacheMaster = { kunci, hasil };
+    return hasil;
   }
+
+  private cacheMaster?: {
+    kunci: string;
+    hasil: { name: string; route: string; icon: string }[];
+  };
+
+  /** Butir menu dikenali dari rutenya — lihat `hasilMaster`. */
+  readonly lacakRute = (_: number, i: { route: string }) => i.route;
 
   groupHasMatch(group: any): boolean {
     if (!this.isFiltering) return true;
