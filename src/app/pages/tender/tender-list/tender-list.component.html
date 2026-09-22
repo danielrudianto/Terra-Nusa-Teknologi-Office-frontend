@@ -286,7 +286,7 @@
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="kolom; sticky: true"></tr>
-        <tr
+        <tr class="clickable-row"
           mat-row
           *matRowDef="let row; columns: kolom"
           (click)="buka(row.id)"

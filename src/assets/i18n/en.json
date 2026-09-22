@@ -1,5 +1,6 @@
 {
   "common": {
+    "lihatDetail": "View details",
     "search": "Search",
     "create": "Create",
     "edit": "Edit",
@@ -1836,7 +1837,7 @@
     "documentData": "Document Data",
     "tanggalBayar": "Payment date",
     "nominal": "Nominal",
-    "deleteInterpayment": "Delete interpayment",
+    "deleteInterpayment": "Delete transfer",
     "selectPageOfPayments": "Select page of payments",
     "sudahLunasBanner": "This document is fully paid. There is nothing left to pay."
   },

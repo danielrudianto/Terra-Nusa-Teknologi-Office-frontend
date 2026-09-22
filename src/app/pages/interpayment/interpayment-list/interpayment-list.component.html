@@ -195,15 +195,33 @@
             *matCellDef="let payment"
             (click)="$event.stopPropagation()"
           >
+            <!--
+              Titik tiga, bukan tombol hapus telanjang: tombol merah di tiap
+              baris mudah tersentuh saat maksudnya membuka baris, dan
+              polanya sama dengan daftar Lawan Transaksi.
+            -->
             <button
               mat-icon-button
-              class="ip-delete"
-              (click)="$event.stopPropagation(); delete(payment.id)"
-              [disabled]="isDisabled(payment.id)"
-              [attr.aria-label]="'payment.deleteInterpayment' | translate"
+              [matMenuTriggerFor]="menuBaris"
+              [attr.aria-label]="'common.rowActions' | translate"
             >
-              <mat-icon>delete</mat-icon>
+              <mat-icon>more_horiz</mat-icon>
             </button>
+            <mat-menu #menuBaris="matMenu" xPosition="before">
+              <button mat-menu-item (click)="viewInterpayment(payment.id)">
+                <mat-icon>visibility</mat-icon>
+                <span>{{ "common.lihatDetail" | translate }}</span>
+              </button>
+              <button
+                mat-menu-item
+                class="ip-menu-hapus"
+                [disabled]="isDisabled(payment.id)"
+                (click)="delete(payment.id)"
+              >
+                <mat-icon>delete</mat-icon>
+                <span>{{ "payment.deleteInterpayment" | translate }}</span>
+              </button>
+            </mat-menu>
           </td>
         </ng-container>
 
@@ -214,6 +232,7 @@
         <tr
           mat-row
           *matRowDef="let row; columns: displayedColumns"
+          class="clickable-row"
           (click)="viewInterpayment(row.id)"
         ></tr>
         <tr class="mat-row ip-norow" *matNoDataRow>

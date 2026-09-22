@@ -177,7 +177,7 @@
           </th>
           <td mat-cell *matCellDef="let p" class="num">
             <span class="prl-uang" *ngIf="p.contractCount > 0">
-              {{ p.contractValue | number: "1.2-2" }}
+              <app-rupiah [nilai]="p.contractValue" />
             </span>
             <span class="prl-kosong" *ngIf="p.contractCount === 0">
               {{ "project.noContract" | translate }}
@@ -244,7 +244,7 @@
           mat-header-row
           *matHeaderRowDef="displayedColumns; sticky: true"
         ></tr>
-        <tr
+        <tr class="clickable-row"
           mat-row
           *matRowDef="let row; columns: displayedColumns"
           (click)="lihatProyek(row)"

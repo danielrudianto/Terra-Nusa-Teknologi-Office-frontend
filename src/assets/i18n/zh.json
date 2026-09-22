@@ -1,5 +1,6 @@
 {
   "common": {
+    "lihatDetail": "查看详情",
     "search": "搜索",
     "create": "创建",
     "edit": "编辑",
@@ -1836,7 +1837,7 @@
     "documentData": "单据信息",
     "tanggalBayar": "付款日期",
     "nominal": "金额",
-    "deleteInterpayment": "删除内部转账",
+    "deleteInterpayment": "删除转账",
     "selectPageOfPayments": "选择本页全部付款",
     "sudahLunasBanner": "此单据已付清，没有可支付的余额。"
   },

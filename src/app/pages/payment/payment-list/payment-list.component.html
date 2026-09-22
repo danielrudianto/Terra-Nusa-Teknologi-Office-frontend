@@ -111,8 +111,14 @@
           <th mat-header-cell *matHeaderCellDef>
             {{ "table.bankAccount" | translate }}
           </th>
+          <!-- Nama tebal, nomor di bawahnya — sama dengan Transfer Antar Rekening. -->
           <td mat-cell *matCellDef="let payment">
-            {{ payment.bankAccountName }} -- {{ payment.bankAccountNumber }}
+            <div class="pl-acct">
+              <span class="pl-acct__nama">{{ payment.bankAccountName || "—" }}</span>
+              @if (payment.bankAccountNumber) {
+                <span class="pl-acct__nomor">{{ payment.bankAccountNumber }}</span>
+              }
+            </div>
           </td>
         </ng-container>
 

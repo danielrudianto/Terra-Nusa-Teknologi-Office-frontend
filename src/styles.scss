@@ -1496,3 +1496,9 @@ html[data-gerak="mati"] {
   opacity: 0.62;
   margin-right: 0.28em;
 }
+
+/* Baris tabel yang dapat diklik terlihat dapat diklik: kursor tangan.
+   Kelasnya dipasang pada setiap `<tr mat-row (click)=...>`. */
+.mat-mdc-row.clickable-row {
+  cursor: pointer;
+}

@@ -309,7 +309,7 @@
           mat-header-row
           *matHeaderRowDef="displayedColumns; sticky: true"
         ></tr>
-        <tr
+        <tr class="clickable-row"
           mat-row
           *matRowDef="let row; columns: displayedColumns"
           (click)="viewSalesInvoice(row.id)"

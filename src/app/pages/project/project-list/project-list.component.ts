@@ -28,6 +28,7 @@ import { Project, keadaanProyek } from '../project.model';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { ProjectMarginListComponent } from '../project-margin-list/project-margin-list.component';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
+import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
 
 /** Dua wajah satu halaman: daftar proyek biasa, atau daftar marginnya. */
 type ModeProyek = 'proyek' | 'laporan';
@@ -54,6 +55,7 @@ const BAWAAN = 'berjalan';
   selector: 'app-project-list',
   standalone: true,
   imports: [
+    RupiahComponent,
     KerangkaTabelDirective,
     CommonModule,
     FormsModule,

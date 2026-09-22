@@ -36,6 +36,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SalarySlipHelper } from 'src/app/helpers/salary-slip.helper';
 import { SettingsService } from '../../../services/setting.service';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
+import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
 
 const moment = _rollupMoment || _moment;
 
@@ -57,6 +58,7 @@ export const MY_FORMATS = {
   selector: 'app-salary-slip-list',
   providers: [provideMomentDateAdapter(MY_FORMATS)],
   imports: [
+    RupiahComponent,
     CanDirective,
     CommonModule,
     FormsModule,

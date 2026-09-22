@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, ViewChild, OnInit, inject } from '@angular/core';
+import { MatMenuModule } from '@angular/material/menu';
 import {
   FormControl,
   FormGroup,
@@ -53,6 +54,7 @@ import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
     TranslatePipe,
     RefreshButtonComponent,
     MatSelectModule,
+    MatMenuModule,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './interpayment-list.component.html',

@@ -209,7 +209,7 @@
             </span>
           </th>
           <td mat-cell *matCellDef="let c" class="cl-num">
-            {{ c.netAmount | number: "1.2-2" }}
+            <app-rupiah [nilai]="c.netAmount" />
           </td>
         </ng-container>
       }
@@ -230,7 +230,7 @@
           (click)="$event.stopPropagation()"
         >
           <button mat-icon-button class="cl-open" [matMenuTriggerFor]="menu">
-            <mat-icon>more_vert</mat-icon>
+            <mat-icon>more_horiz</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
             <!-- Menyunting hanya SELAMA BAP belum disetujui: setelah itu
@@ -305,7 +305,7 @@
       <tr
         mat-row
         *matRowDef="let row; columns: kolom"
-        class="cl-baris"
+        class="clickable-row cl-baris"
         tabindex="0"
         (click)="buka(row)"
         (keydown.enter)="buka(row)"

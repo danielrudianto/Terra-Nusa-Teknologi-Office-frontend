@@ -254,9 +254,7 @@
             </span>
           </th>
           <td mat-cell *matCellDef="let element" class="ssl-num">
-            <span class="ssl-amount">{{
-              element.basicSalary | number: "1.2-2"
-            }}</span>
+            <span class="ssl-amount"><app-rupiah [nilai]="element.basicSalary" /></span>
           </td>
         </ng-container>
 
@@ -266,9 +264,7 @@
             {{ "table.transportation" | translate }}
           </th>
           <td mat-cell *matCellDef="let element" class="ssl-num">
-            <span class="ssl-money">{{
-              element.transportation | number: "1.2-2"
-            }}</span>
+            <span class="ssl-money"><app-rupiah [nilai]="element.transportation" /></span>
           </td>
         </ng-container>
 
@@ -278,9 +274,7 @@
             {{ "table.overtime" | translate }}
           </th>
           <td mat-cell *matCellDef="let element" class="ssl-num">
-            <span class="ssl-money">{{
-              element.overtime | number: "1.2-2"
-            }}</span>
+            <span class="ssl-money"><app-rupiah [nilai]="element.overtime" /></span>
           </td>
         </ng-container>
 
@@ -290,7 +284,7 @@
             {{ "table.meal" | translate }}
           </th>
           <td mat-cell *matCellDef="let element" class="ssl-num">
-            <span class="ssl-money">{{ element.meal | number: "1.2-2" }}</span>
+            <span class="ssl-money"><app-rupiah [nilai]="element.meal" /></span>
           </td>
         </ng-container>
 
@@ -301,7 +295,7 @@
           </th>
           <td mat-cell *matCellDef="let element" class="ssl-num">
             <span class="ssl-money ssl-money--pos"
-              >+ {{ element.allowance ?? 0 | number: "1.2-2" }}</span
+              >+ <app-rupiah [nilai]="element.allowance ?? 0" /></span
             >
           </td>
         </ng-container>
@@ -313,7 +307,7 @@
           </th>
           <td mat-cell *matCellDef="let element" class="ssl-num">
             <span class="ssl-money ssl-money--neg"
-              >− {{ element.deduction ?? 0 | number: "1.2-2" }}</span
+              >− <app-rupiah [nilai]="element.deduction ?? 0" /></span
             >
           </td>
         </ng-container>
@@ -323,7 +317,7 @@
           <th mat-header-cell *matHeaderCellDef class="ssl-num">PPh</th>
           <td mat-cell *matCellDef="let element" class="ssl-num">
             <span class="ssl-money ssl-money--neg"
-              >− {{ element.taxAmount | number: "1.2-2" }}</span
+              >− <app-rupiah [nilai]="element.taxAmount" /></span
             >
           </td>
         </ng-container>
@@ -433,7 +427,7 @@
           mat-header-row
           *matHeaderRowDef="displayedColumns; sticky: true"
         ></tr>
-        <tr
+        <tr class="clickable-row"
           mat-row
           *matRowDef="let row; columns: displayedColumns"
           [class.ssl-row--pilih]="terpilih.has(row.id)"

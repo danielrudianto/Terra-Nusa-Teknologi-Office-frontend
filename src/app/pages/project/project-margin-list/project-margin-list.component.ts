@@ -11,6 +11,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { debounceTime } from 'rxjs';
 
 import { ApiService } from '../../../services/api.service';
+import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
 
 interface BarisMargin {
   id: number;
@@ -53,6 +54,7 @@ type Urut =
   selector: 'app-project-margin-list',
   standalone: true,
   imports: [
+    RupiahComponent,
     CommonModule,
     ReactiveFormsModule,
     RouterModule,

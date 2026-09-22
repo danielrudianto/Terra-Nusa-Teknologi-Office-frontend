@@ -1,5 +1,6 @@
 {
   "common": {
+    "lihatDetail": "Lihat detail",
     "search": "Cari",
     "create": "Buat",
     "edit": "Ubah",
@@ -150,7 +151,7 @@
     "changeLanguage": "Change language",
     "appName": "TERRABOT",
     "account": "Account",
-    "rowActions": "Row actions",
+    "rowActions": "Aksi baris",
     "toggle": "Buka/tutup",
     "add": "Tambah",
     "refresh": "Muat ulang",
@@ -1836,7 +1837,7 @@
     "documentData": "Document Data",
     "tanggalBayar": "Tanggal bayar",
     "nominal": "Nominal",
-    "deleteInterpayment": "Delete interpayment",
+    "deleteInterpayment": "Hapus transfer",
     "selectPageOfPayments": "Select page of payments",
     "sudahLunasBanner": "Dokumen ini sudah lunas. Tidak ada sisa tagihan yang dapat dibayarkan."
   },

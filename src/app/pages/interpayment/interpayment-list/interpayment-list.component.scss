@@ -494,3 +494,11 @@
   color: var(--muted, #6b7280);
   font-size: 0.84rem;
 }
+
+/* Aksi hapus di menu baris tetap terbaca sebagai aksi berbahaya. */
+::ng-deep .ip-menu-hapus:not([disabled]) {
+  color: var(--bad-fg);
+  .mat-icon {
+    color: var(--bad-fg);
+  }
+}
