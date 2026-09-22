@@ -19,7 +19,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { SupplierUpdateComponent } from '../supplier-update/supplier-update.component';
 import { SupplierBlacklistDialogComponent } from '../supplier-blacklist-dialog/supplier-blacklist-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -55,6 +55,7 @@ import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.direc
   standalone: true,
 })
 export class SupplierListComponent {
+  private readonly ruteCari = inject(ActivatedRoute, { optional: true });
   private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   constructor(
@@ -78,6 +79,10 @@ export class SupplierListComponent {
   activeFilter: 'all' | 'active' | 'blacklist' = 'all';
 
   ngOnInit(): void {
+    // Dibuka dari pencarian global (Ctrl+K) dengan `?search=` — kotaknya
+    // terisi lebih dulu, jadi pemuatan pertama sudah tersaring.
+    const dariAlamat = this.ruteCari?.snapshot?.queryParamMap?.get('search');
+    if (dariAlamat) this.formControl.setValue(dariAlamat, { emitEvent: false });
     this.fetchSuppliers();
 
     this.formControl.valueChanges.pipe(debounceTime(500)).subscribe((_) => {

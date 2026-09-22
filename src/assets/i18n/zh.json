@@ -1326,6 +1326,7 @@
     "empty": "没有待处理的报销。"
   },
   "pintasan": {
+    "cariGlobal": "全局搜索",
     "judul": "键盘快捷键",
     "sub": "无需鼠标，更快完成工作",
     "cari": "聚焦搜索框",
@@ -1339,6 +1340,37 @@
     "isi": "此地址不存在，或页面已移动。",
     "kembali": "返回",
     "keDashboard": "前往仪表板"
+  },
+  "lencana": {
+    "ket": {
+      "purchase_order": "{{n}} 个采购订单等待您审核或批准",
+      "tender": "{{n}} 个招标等待您决定",
+      "reimbursement": "{{n}} 个报销等待您批准",
+      "certificate_of_payment": "{{n}} 个付款证书等待您处理",
+      "payment_plan": "{{n}} 个到期（今天或已逾期）且尚未标记为已使用或已取消的付款计划"
+    }
+  },
+  "cariGlobal": {
+    "tombol": "搜索…",
+    "placeholder": "搜索菜单、客户、项目、采购订单、发票…",
+    "petunjuk": "输入至少 2 个字符以搜索菜单、客户、供应商、员工、项目、招标、采购订单、采购和销售发票。",
+    "tidakAda": "没有与“{{q}}”匹配的结果。",
+    "pilih": "选择",
+    "buka": "打开",
+    "tutup": "关闭",
+    "menu": "菜单",
+    "proyek": "项目",
+    "klien": "客户",
+    "pemasok": "供应商",
+    "purchaseOrder": "采购订单",
+    "pembelian": "采购",
+    "fakturPenjualan": "销售发票",
+    "tender": "招标",
+    "karyawan": "员工"
+  },
+  "notifikasi": {
+    "judul": "等待您处理",
+    "kosong": "没有等待您处理的事项。一切就绪！"
   },
   "client": {
     "title": "客户",
@@ -2300,6 +2332,7 @@
     "selectTitle": "选择银行账户"
   },
   "dashboard": {
+    "dalam30Hari": "30 天内",
     "title": "仪表板",
     "documentTools": "文档工具",
     "mergePdf": "合并、拆分和保存PDF",

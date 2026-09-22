@@ -1502,3 +1502,10 @@ html[data-gerak="mati"] {
 .mat-mdc-row.clickable-row {
   cursor: pointer;
 }
+
+/* Pencarian global (Ctrl+K): dialog di atas, bukan di tengah — seperti
+   palet perintah pada umumnya, supaya hasil yang memanjang tumbuh ke bawah. */
+.akn-cari-global .mat-mdc-dialog-surface {
+  border-radius: 16px !important;
+  overflow: hidden;
+}

@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from 'src/app/services/api.service';
 import { HitungNaikDirective } from '../../../directives/hitung-naik.directive';
+import { GarisMiniComponent } from '../../../components/garis-mini/garis-mini.component';
 
 interface CashAccount {
   bankAccountID: number;
@@ -35,6 +36,7 @@ interface CashPositionResponse {
   styleUrls: ['./cash-position.component.scss'],
   standalone: true,
   imports: [
+    GarisMiniComponent,
     HitungNaikDirective, TranslatePipe, CommonModule],
 })
 export class CashPositionComponent implements OnInit {
@@ -87,7 +89,31 @@ export class CashPositionComponent implements OnInit {
     this.fetch();
   }
 
+  /** Total saldo harian 30 hari terakhir — kosong bila gagal dimuat. */
+  readonly tren = signal<number[]>([]);
+  readonly selisihTren = computed(() => {
+    const t = this.tren();
+    return t.length > 1 ? t[t.length - 1] - t[0] : 0;
+  });
+  /** Null bila saldo awalnya nol: persen dari nol tidak bermakna. */
+  readonly persenTren = computed(() => {
+    const t = this.tren();
+    if (t.length < 2 || Math.abs(t[0]) < 0.005) return null;
+    return (Math.abs(this.selisihTren()) / Math.abs(t[0])) * 100;
+  });
+  abs(n: number): number {
+    return Math.abs(n);
+  }
+
+  private muatTren(): void {
+    this.apiService.get('dashboard/cash-trend', { days: 30 }).subscribe({
+      next: (r: any) => this.tren.set((r?.titik ?? []).map((x: any) => Number(x.saldo) || 0)),
+      error: () => this.tren.set([]),
+    });
+  }
+
   fetch(): void {
+    this.muatTren();
     this.isLoading = true;
     this.errorMsg = '';
     this.apiService.get('dashboard/cash-position', {}).subscribe({

@@ -1,4 +1,5 @@
-import { Component, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Component, ViewChild, inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ClientUpdateComponent } from '../client-update/client-update.component';
@@ -41,6 +42,7 @@ import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.direc
   ],
 })
 export class ClientListComponent {
+  private readonly ruteCari = inject(ActivatedRoute, { optional: true });
   constructor(
     private dialog: MatDialog,
     private apiService: ApiService,
@@ -57,6 +59,10 @@ export class ClientListComponent {
   displayedColumns: string[] = ['name', 'address', 'city', 'npwp'];
 
   ngOnInit(): void {
+    // Dibuka dari pencarian global (Ctrl+K) dengan `?search=` — kotaknya
+    // terisi lebih dulu, jadi pemuatan pertama sudah tersaring.
+    const dariAlamat = this.ruteCari?.snapshot?.queryParamMap?.get('search');
+    if (dariAlamat) this.formControl.setValue(dariAlamat, { emitEvent: false });
     this.fetchClients();
 
     this.formControl.valueChanges.pipe(debounceTime(500)).subscribe(() => {

@@ -345,3 +345,34 @@ $negative: var(--bad-fg, #ca2929);
     }
   }
 }
+
+/* Tren 30 hari di bawah Total Saldo. */
+.cp-tren {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+.cp-tren__garis {
+  width: 160px;
+  height: 34px;
+  flex: 0 0 auto;
+}
+.cp-tren__ket {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+
+  &--naik {
+    color: var(--ok-fg);
+  }
+  &--turun {
+    color: var(--bad-fg);
+  }
+}
+.cp-tren__periode {
+  font-weight: 500;
+  color: var(--faint);
+  margin-left: 2px;
+}

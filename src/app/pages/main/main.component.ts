@@ -4,6 +4,7 @@ import { LencanaService } from '../../services/lencana.service';
 import { JudulTabStrategy } from '../../services/judul-tab.strategy';
 import { aksiDari, cariKotakPencarian, cariTombolBaru } from '../../services/pintasan';
 import { PintasanDialogComponent } from '../../components/pintasan-dialog/pintasan-dialog.component';
+import { CariGlobalComponent } from '../../components/cari-global/cari-global.component';
 import { PermissionService } from '../../services/permission.service';
 import { SideNavComponent } from '../../components/side-nav/side-nav.component';
 import { PanduanPanelComponent } from '../../components/panduan/panduan-panel/panduan-panel.component';
@@ -75,9 +76,30 @@ export class MainComponent implements OnDestroy {
     this.judulTab.setMenunggu(0);
   }
 
+  /** Pencarian global — Ctrl+K atau tombol "Cari…" di kepala halaman. */
+  bukaCari(): void {
+    const menu = this.sideNavItems().flatMap((g: any) =>
+      (g.children || []).map((c: any) => ({ ...c, grup: g.name })),
+    );
+    this.dialog.open(CariGlobalComponent, {
+      data: { menu },
+      panelClass: 'akn-cari-global',
+      position: { top: '12vh' },
+      autoFocus: false,
+      maxWidth: '94vw',
+    });
+  }
+
   /** Pintasan papan ketik — logikanya di `services/pintasan.ts`. */
   @HostListener('document:keydown', ['$event'])
   pintasan(ev: KeyboardEvent): void {
+    // Ctrl+K / ⌘K berlaku DI MANA PUN, termasuk sambil mengetik di kotak
+    // lain — itu memang gunanya — kecuali ada dialog terbuka.
+    if ((ev.ctrlKey || ev.metaKey) && !ev.altKey && (ev.key === 'k' || ev.key === 'K')) {
+      ev.preventDefault();
+      if (!this.dialog.openDialogs.length) this.bukaCari();
+      return;
+    }
     const aksi = aksiDari(ev, this.dialog.openDialogs.length > 0);
     if (!aksi) return;
     if (aksi === 'bantuan') {

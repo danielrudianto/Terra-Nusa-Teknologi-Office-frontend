@@ -21,6 +21,7 @@ import { uangDokumen } from 'src/app/helpers/uang.helper';
 import { ApiService } from 'src/app/services/api.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { HitungNaikDirective } from '../../../../directives/hitung-naik.directive';
+import { GarisMiniComponent } from '../../../../components/garis-mini/garis-mini.component';
 
 /*
  * chart.js v4 tidak mendaftarkan apa pun sendiri, dan pendaftarannya dipanggil
@@ -58,6 +59,7 @@ export function titikMarjin(deret: any[], kunci: string): (number | null)[] {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    GarisMiniComponent,
     HitungNaikDirective,
     CommonModule,
     MatFormFieldModule,
@@ -115,6 +117,11 @@ export class KpiKinerjaComponent {
   // ------------------------------------------------------------------
 
   readonly deret = computed<any[]>(() => this.data()?.bulan ?? []);
+
+  /** Deret satu bidang untuk garis tren di kartunya (12 bulan terakhir). */
+  garis(kunci: string): (number | null)[] {
+    return this.deret().map((x) => (x?.[kunci] ?? null));
+  }
 
   /** Bulan paling akhir — yang dicetak besar di baris KPI. */
   readonly terkini = computed<any>(() => {

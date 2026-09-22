@@ -1,6 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { debounceTime, filter } from 'rxjs/operators';
+import { dataBerubah$ } from './cache-daftar.interceptor';
 
 import { ApiService } from './api.service';
 
@@ -65,6 +66,11 @@ export class LencanaService {
   private sedangMuat = false;
 
   constructor() {
+    // Perubahan data di halaman yang sama juga menyegarkan lencana — lihat
+    // `dataBerubah$`. Ditunda sebentar: menyetujui sepuluh PO sekaligus
+    // cukup memicu satu permintaan, bukan sepuluh.
+    dataBerubah$.pipe(debounceTime(600)).subscribe(() => this.segarkan());
+
     /*
      * Disegarkan pada tiap perpindahan halaman, BUKAN dengan polling.
      *
@@ -98,6 +104,13 @@ export class LencanaService {
 
   segarkan(): void {
     if (this.sedangMuat) return;
+    // Tanpa sesi tidak ada yang "menunggu saya" — dan permintaan tanpa token
+    // dibalas 401 yang mengalihkan ke halaman masuk.
+    try {
+      if (!localStorage.getItem('access_token')) return;
+    } catch {
+      return;
+    }
     this.sedangMuat = true;
 
     this.api.get('dashboard/lencana', {}).subscribe({
@@ -126,6 +139,19 @@ export class LencanaService {
    * tidak ada yang perlu digambar. Lencana "0" hanya menambah keramaian pada
    * menu yang justru sedang bersih.
    */
+  /**
+   * Kunci terjemahan yang MENJELASKAN apa yang dihitung lencana sebuah rute.
+   *
+   * Lencana Kalender menghitung RENCANA pembayaran yang jatuh tempo, bukan
+   * pembayaran yang menunggu dikonfirmasi — dan keduanya tampil di layar yang
+   * sama. Tanpa keterangan, angka "3" sesudah seluruh pembayaran dikonfirmasi
+   * terbaca sebagai lencana yang rusak.
+   */
+  keteranganRute(rute?: string | null): string | null {
+    const kunci = rute ? RUTE_LENCANA[rute] : undefined;
+    return kunci ? `lencana.ket.${kunci}` : null;
+  }
+
   untukRute(rute?: string | null): number | null {
     const kunci = rute ? RUTE_LENCANA[rute] : undefined;
     if (!kunci) return null;

@@ -14,6 +14,7 @@ import { SettingsService } from '../../services/setting.service';
 import { AccountService } from '../../services/account.service';
 import { AvatarComponent } from '../avatar/avatar.component';
 import { CanDirective } from '../../directives/can.directive';
+import { LencanaService, RUTE_LENCANA, HitunganLencana } from '../../services/lencana.service';
 
 @Component({
   selector: 'app-top-navigation',
@@ -40,6 +41,49 @@ export class TopNavigationComponent {
   @Input('label') label!: string;
   @Output('onBookmarkClicked') onBookmarkClicked: EventEmitter<void> =
     new EventEmitter<void>();
+  /** Tombol "Cari…" — MainComponent membuka pencarian global (Ctrl+K). */
+  @Output() cari = new EventEmitter<void>();
+
+  readonly lencana = inject(LencanaService);
+
+  /** ⌘ di Mac, Ctrl di tempat lain — yang tertulis harus yang ditekan. */
+  readonly tombolPintas =
+    typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform)
+      ? '⌘'
+      : 'Ctrl';
+
+  private static readonly IKON: Record<keyof HitunganLencana, string> = {
+    purchase_order: 'receipt_long',
+    tender: 'gavel',
+    reimbursement: 'receipt',
+    certificate_of_payment: 'verified',
+    payment_plan: 'event',
+  };
+
+  /**
+   * Isi lonceng: satu baris per jenis yang MENUNGGU, dari hitungan yang sama
+   * dengan lencana menu samping. Tidak ada sumber kedua — lonceng dan menu
+   * samping tidak mungkin berselisih angka.
+   */
+  get notifikasi(): { rute: string; ikon: string; ket: string; n: number }[] {
+    const semua = this.lencana.semua();
+    return Object.entries(RUTE_LENCANA)
+      .map(([rute, kunci]) => ({
+        rute,
+        ikon: TopNavigationComponent.IKON[kunci],
+        ket: `lencana.ket.${kunci}`,
+        n: Number(semua[kunci]) || 0,
+      }))
+      .filter((x) => x.n > 0);
+  }
+
+  get totalNotifikasi(): number {
+    return this.notifikasi.reduce((a, x) => a + x.n, 0);
+  }
+
+  bukaNotifikasi(rute: string): void {
+    this.router.navigateByUrl(rute);
+  }
 
   private settings = inject(SettingsService);
   private account = inject(AccountService);

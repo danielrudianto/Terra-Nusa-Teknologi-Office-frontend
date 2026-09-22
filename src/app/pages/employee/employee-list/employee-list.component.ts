@@ -1,3 +1,4 @@
+import { ActivatedRoute } from '@angular/router';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, inject } from '@angular/core';
 import { CanDirective } from '../../../directives/can.directive';
@@ -54,6 +55,7 @@ import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.direc
   standalone: true,
 })
 export class EmployeeListComponent {
+  private readonly ruteCari = inject(ActivatedRoute, { optional: true });
   private readonly serverMessage = inject(ServerMessageService);
 
   private readonly snackBar = inject(MatSnackBar);
@@ -127,6 +129,10 @@ export class EmployeeListComponent {
   }
 
   ngOnInit(): void {
+    // Dibuka dari pencarian global (Ctrl+K) dengan `?search=` — kotaknya
+    // terisi lebih dulu, jadi pemuatan pertama sudah tersaring.
+    const dariAlamat = this.ruteCari?.snapshot?.queryParamMap?.get('search');
+    if (dariAlamat) this.formControl.setValue(dariAlamat, { emitEvent: false });
     this.fetchEmployees();
 
     this.formControl.valueChanges.pipe(debounceTime(500)).subscribe(() => {

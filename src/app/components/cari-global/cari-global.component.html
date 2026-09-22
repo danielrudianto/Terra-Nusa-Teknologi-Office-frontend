@@ -1,0 +1,65 @@
+<div class="cg" (keydown)="tombol($event)">
+  <div class="cg-kepala">
+    <mat-icon class="cg-kepala__ikon">search</mat-icon>
+    <input
+      #kotak
+      class="cg-kotak"
+      type="text"
+      autocomplete="off"
+      spellcheck="false"
+      [placeholder]="'cariGlobal.placeholder' | translate"
+      [ngModel]="q()"
+      (ngModelChange)="ubah($event)"
+      [attr.aria-label]="'cariGlobal.placeholder' | translate"
+    />
+    <kbd class="cg-esc">Esc</kbd>
+  </div>
+  @if (memuat()) {
+    <div class="cg-muat"><span></span></div>
+  }
+
+  <div class="cg-isi" role="listbox">
+    @for (b of bagian(); track b.label) {
+      <div class="cg-bagian">{{ b.label | translate }}</div>
+      @for (r of b.baris; track $index) {
+        <button
+          type="button"
+          role="option"
+          class="cg-baris"
+          [class.cg-baris--aktif]="indeks(r) === aktif()"
+          [attr.aria-selected]="indeks(r) === aktif()"
+          (mousemove)="aktif.set(indeks(r))"
+          (click)="r.buka()"
+        >
+          <span class="cg-baris__ikon"><mat-icon>{{ r.ikon }}</mat-icon></span>
+          <span class="cg-baris__teks">
+            <span class="cg-baris__judul">{{ r.judul }}</span>
+            @if (r.sub) {
+              <span class="cg-baris__sub">{{ r.sub }}</span>
+            }
+          </span>
+          @if (r.tanggal) {
+            <span class="cg-baris__tgl">{{ r.tanggal | date: "dd MMM yyyy" }}</span>
+          }
+          <mat-icon class="cg-baris__enter">keyboard_return</mat-icon>
+        </button>
+      }
+    } @empty {
+      <div class="cg-kosong">
+        @if (q().trim().length < 2) {
+          <mat-icon>travel_explore</mat-icon>
+          <span>{{ "cariGlobal.petunjuk" | translate }}</span>
+        } @else if (!memuat()) {
+          <mat-icon>search_off</mat-icon>
+          <span>{{ "cariGlobal.tidakAda" | translate: { q: q() } }}</span>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="cg-kaki">
+    <span><kbd>↑</kbd><kbd>↓</kbd> {{ "cariGlobal.pilih" | translate }}</span>
+    <span><kbd>Enter</kbd> {{ "cariGlobal.buka" | translate }}</span>
+    <span><kbd>Esc</kbd> {{ "cariGlobal.tutup" | translate }}</span>
+  </div>
+</div>

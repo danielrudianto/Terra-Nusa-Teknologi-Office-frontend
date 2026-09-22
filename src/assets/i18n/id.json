@@ -1326,6 +1326,7 @@
     "empty": "Tidak ada reimbursement tertunda."
   },
   "pintasan": {
+    "cariGlobal": "Pencarian global",
     "judul": "Pintasan papan ketik",
     "sub": "Bekerja lebih cepat tanpa tetikus",
     "cari": "Fokus ke kotak pencarian",
@@ -1339,6 +1340,37 @@
     "isi": "Alamat ini tidak ada, atau halamannya sudah dipindah.",
     "kembali": "Kembali",
     "keDashboard": "Ke Dashboard"
+  },
+  "lencana": {
+    "ket": {
+      "purchase_order": "{{n}} purchase order menunggu pemeriksaan atau persetujuan Anda",
+      "tender": "{{n}} tender menunggu keputusan Anda",
+      "reimbursement": "{{n}} reimbursement menunggu persetujuan Anda",
+      "certificate_of_payment": "{{n}} CoP menunggu tindakan Anda",
+      "payment_plan": "{{n}} rencana pembayaran keluar jatuh tempo (hari ini atau terlewat) yang belum ditandai terpakai atau dibatalkan"
+    }
+  },
+  "cariGlobal": {
+    "tombol": "Cari…",
+    "placeholder": "Cari menu, klien, proyek, PO, faktur…",
+    "petunjuk": "Ketik minimal 2 huruf untuk mencari menu, klien, pemasok, karyawan, proyek, tender, PO, pembelian, dan faktur penjualan.",
+    "tidakAda": "Tidak ada yang cocok dengan \"{{q}}\".",
+    "pilih": "pilih",
+    "buka": "buka",
+    "tutup": "tutup",
+    "menu": "Menu",
+    "proyek": "Proyek",
+    "klien": "Klien",
+    "pemasok": "Pemasok",
+    "purchaseOrder": "Purchase Order",
+    "pembelian": "Pembelian",
+    "fakturPenjualan": "Faktur penjualan",
+    "tender": "Tender",
+    "karyawan": "Karyawan"
+  },
+  "notifikasi": {
+    "judul": "Menunggu Anda",
+    "kosong": "Tidak ada yang menunggu Anda. Semua beres!"
   },
   "client": {
     "title": "Klien",
@@ -2300,6 +2332,7 @@
     "selectTitle": "Pilih rekening bank"
   },
   "dashboard": {
+    "dalam30Hari": "dalam 30 hari",
     "title": "Dashboard",
     "documentTools": "Alat dokumen",
     "mergePdf": "Gabung, pisah & simpan PDF",

@@ -12,6 +12,7 @@ import { DialogGeserDirective } from '../../directives/dialog-geser.directive';
 })
 export class PintasanDialogComponent {
   readonly daftar = [
+    { tombol: ['Ctrl', 'K'], label: 'pintasan.cariGlobal' },
     { tombol: ['/'], label: 'pintasan.cari' },
     { tombol: ['N'], label: 'pintasan.baru' },
     { tombol: ['Esc'], label: 'pintasan.tutup' },

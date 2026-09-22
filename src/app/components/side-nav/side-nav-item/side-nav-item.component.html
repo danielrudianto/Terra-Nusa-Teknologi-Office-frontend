@@ -33,8 +33,12 @@
     <span
       *ngIf="badge !== null && badge > 0"
       class="snav-badge"
+      [matTooltip]="badgeKet ? (badgeKet | translate: { n: badge }) : ''"
+      matTooltipPosition="right"
       [attr.aria-label]="
-        ('sidenav.menungguAnda' | translate) + ': ' + badgeText
+        badgeKet
+          ? (badgeKet | translate: { n: badge })
+          : ('sidenav.menungguAnda' | translate) + ': ' + badgeText
       "
       >{{ badgeText }}</span
     >

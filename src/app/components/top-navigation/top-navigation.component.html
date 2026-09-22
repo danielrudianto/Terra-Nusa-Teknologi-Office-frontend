@@ -6,6 +6,46 @@
 
   <div class="spacer"></div>
 
+  <!-- Pencarian global: tombol yang terlihat untuk Ctrl+K. -->
+  <button type="button" class="tn-cari" (click)="cari.emit()">
+    <mat-icon>search</mat-icon>
+    <span class="tn-cari__teks">{{ "cariGlobal.tombol" | translate }}</span>
+    <span class="tn-cari__kbd"><kbd>{{ tombolPintas }}</kbd><kbd>K</kbd></span>
+  </button>
+
+  <!--
+    Lonceng: yang menunggu Anda, dirinci per jenis. Angkanya jumlah seluruh
+    lencana menu samping — satu sumber, jadi keduanya selalu sepakat.
+  -->
+  <button
+    type="button"
+    class="tn-icon-btn tn-lonceng"
+    [matMenuTriggerFor]="menuLonceng"
+    [attr.aria-label]="'notifikasi.judul' | translate"
+    [matTooltip]="'notifikasi.judul' | translate"
+  >
+    <mat-icon>{{ totalNotifikasi ? "notifications_active" : "notifications" }}</mat-icon>
+    @if (totalNotifikasi) {
+      <span class="tn-lonceng__angka">{{ totalNotifikasi > 99 ? "99+" : totalNotifikasi }}</span>
+    }
+  </button>
+  <mat-menu #menuLonceng="matMenu" class="tn-lonceng-menu" xPosition="before">
+    <div class="tn-lonceng-menu__kepala" (click)="$event.stopPropagation()">
+      {{ "notifikasi.judul" | translate }}
+    </div>
+    @for (x of notifikasi; track x.rute) {
+      <button mat-menu-item class="tn-lonceng-menu__baris" (click)="bukaNotifikasi(x.rute)">
+        <mat-icon>{{ x.ikon }}</mat-icon>
+        <span>{{ x.ket | translate: { n: x.n } }}</span>
+      </button>
+    } @empty {
+      <div class="tn-lonceng-menu__kosong" (click)="$event.stopPropagation()">
+        <mat-icon>task_alt</mat-icon>
+        <span>{{ "notifikasi.kosong" | translate }}</span>
+      </div>
+    }
+  </mat-menu>
+
   <!-- dark mode toggle -->
   <button
     type="button"

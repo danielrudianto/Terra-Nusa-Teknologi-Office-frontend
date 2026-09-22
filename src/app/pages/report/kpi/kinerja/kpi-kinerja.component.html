@@ -32,6 +32,7 @@
     <div class="kpi-kartu">
       <span class="kpi-kartu__cap">{{ "kpi.pendapatan" | translate }}</span>
       <span class="kpi-kartu__nilai" [appHitungNaik]="t.pendapatan" [hnFormat]="uang"></span>
+      <app-garis-mini class="kpi-kartu__garis" [nilai]="garis('pendapatan')" />
       <span class="kpi-kartu__ket" [class.kpi-naik]="arah(selisih('pendapatan','bulanLalu')) === 'naik'" [class.kpi-turun]="arah(selisih('pendapatan','bulanLalu')) === 'turun'">
         <mat-icon>{{ ikonArah(selisih("pendapatan", "bulanLalu")) }}</mat-icon>
         @if (selisih("pendapatan", "bulanLalu") !== null) {
@@ -46,6 +47,7 @@
     <div class="kpi-kartu">
       <span class="kpi-kartu__cap">{{ "kpi.labaKotor" | translate }}</span>
       <span class="kpi-kartu__nilai" [appHitungNaik]="t.labaKotor" [hnFormat]="uang"></span>
+      <app-garis-mini class="kpi-kartu__garis" [nilai]="garis('labaKotor')" />
       <span class="kpi-kartu__ket">
         {{ "kpi.hpp" | translate }} {{ uang(t.hpp) }}
       </span>
@@ -54,6 +56,7 @@
     <div class="kpi-kartu">
       <span class="kpi-kartu__cap">{{ "kpi.labaSebelumPajak" | translate }}</span>
       <span class="kpi-kartu__nilai" [class.kpi-turun]="t.labaSebelumPajak < 0" [appHitungNaik]="t.labaSebelumPajak" [hnFormat]="uang"></span>
+      <app-garis-mini class="kpi-kartu__garis" [nilai]="garis('labaSebelumPajak')" />
       <span class="kpi-kartu__ket">
         {{ "kpi.bebanUsaha" | translate }} {{ uang(t.bebanUsaha) }}
       </span>

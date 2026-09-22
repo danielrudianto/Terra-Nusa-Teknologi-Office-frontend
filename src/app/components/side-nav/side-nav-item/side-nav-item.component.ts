@@ -1,3 +1,4 @@
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import { RouterModule } from '@angular/router';
@@ -6,7 +7,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-side-nav-item',
-  imports: [TranslatePipe, CommonModule, RouterModule],
+  imports: [TranslatePipe, CommonModule, RouterModule, MatTooltipModule],
   templateUrl: './side-nav-item.component.html',
   styleUrl: './side-nav-item.component.scss',
 })
@@ -34,6 +35,8 @@ export class SideNavItemComponent {
    * menambah keramaian pada menu yang justru sedang bersih.
    */
   @Input('badge') badge: number | null = null;
+  /** Kunci terjemahan yang menjelaskan apa yang dihitung lencananya. */
+  @Input() badgeKet: string | null = null;
 
   /** Lebih dari 99 ditulis "99+"; tiga angka merusak lebar menunya. */
   get badgeText(): string {

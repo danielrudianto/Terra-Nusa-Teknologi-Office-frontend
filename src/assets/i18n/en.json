@@ -1326,6 +1326,7 @@
     "empty": "No pending reimbursements."
   },
   "pintasan": {
+    "cariGlobal": "Global search",
     "judul": "Keyboard shortcuts",
     "sub": "Work faster without the mouse",
     "cari": "Focus the search box",
@@ -1339,6 +1340,37 @@
     "isi": "This address does not exist, or the page has moved.",
     "kembali": "Go back",
     "keDashboard": "Go to Dashboard"
+  },
+  "lencana": {
+    "ket": {
+      "purchase_order": "{{n}} purchase orders awaiting your check or approval",
+      "tender": "{{n}} tenders awaiting your decision",
+      "reimbursement": "{{n}} reimbursements awaiting your approval",
+      "certificate_of_payment": "{{n}} CoPs awaiting your action",
+      "payment_plan": "{{n}} outgoing payment plans due (today or overdue) not yet marked used or cancelled"
+    }
+  },
+  "cariGlobal": {
+    "tombol": "Search…",
+    "placeholder": "Search menus, clients, projects, POs, invoices…",
+    "petunjuk": "Type at least 2 letters to search menus, clients, suppliers, employees, projects, tenders, POs, purchases, and sales invoices.",
+    "tidakAda": "Nothing matches \"{{q}}\".",
+    "pilih": "select",
+    "buka": "open",
+    "tutup": "close",
+    "menu": "Menu",
+    "proyek": "Projects",
+    "klien": "Clients",
+    "pemasok": "Suppliers",
+    "purchaseOrder": "Purchase orders",
+    "pembelian": "Purchases",
+    "fakturPenjualan": "Sales invoices",
+    "tender": "Tenders",
+    "karyawan": "Employees"
+  },
+  "notifikasi": {
+    "judul": "Waiting for you",
+    "kosong": "Nothing is waiting for you. All clear!"
   },
   "client": {
     "title": "Client",
@@ -2300,6 +2332,7 @@
     "selectTitle": "Select bank account"
   },
   "dashboard": {
+    "dalam30Hari": "in 30 days",
     "title": "Dashboard",
     "documentTools": "Document tools",
     "mergePdf": "Merge, split & save PDF",

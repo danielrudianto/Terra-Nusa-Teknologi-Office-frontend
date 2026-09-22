@@ -6,7 +6,7 @@ import {
   HttpRequest,
   HttpResponse,
 } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, Subject, tap } from 'rxjs';
 
 /**
  * KEMBALI KE DAFTAR TERASA SEKETIKA — stale-while-revalidate untuk halaman
@@ -40,6 +40,16 @@ interface Entri {
 
 const simpanan = new Map<string, Entri>();
 
+/**
+ * Berbunyi setiap kali sebuah perubahan data (POST/PUT/PATCH/DELETE) BERHASIL.
+ *
+ * Dipakai LencanaService: menandai rencana terpakai atau menyetujui PO di
+ * sebuah halaman tidak berpindah halaman, jadi lencananya dulu baru
+ * terbarui pada perpindahan berikutnya — angka yang tertinggal itu
+ * terbaca sebagai pekerjaan yang belum selesai.
+ */
+export const dataBerubah$ = new Subject<void>();
+
 export function kosongkanCacheDaftar(): void {
   simpanan.clear();
 }
@@ -62,7 +72,10 @@ export class CacheDaftarInterceptor implements HttpInterceptor {
       kosongkanCacheDaftar();
       return next.handle(req).pipe(
         tap((ev) => {
-          if (ev instanceof HttpResponse) kosongkanCacheDaftar();
+          if (ev instanceof HttpResponse) {
+            kosongkanCacheDaftar();
+            dataBerubah$.next();
+          }
         }),
       );
     }

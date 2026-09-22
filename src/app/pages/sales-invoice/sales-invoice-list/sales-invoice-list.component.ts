@@ -12,7 +12,7 @@ import { debounceTime } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
@@ -54,6 +54,7 @@ import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
   standalone: true,
 })
 export class SalesInvoiceListComponent {
+  private readonly ruteCari = inject(ActivatedRoute, { optional: true });
   /** track by id: hindari render ulang seluruh baris saat data berubah. */
   trackById = (_: number, row: any): any => row?.id ?? _;
 
@@ -166,6 +167,10 @@ export class SalesInvoiceListComponent {
   ];
 
   ngOnInit(): void {
+    // Dibuka dari pencarian global (Ctrl+K) dengan `?search=` — kotaknya
+    // terisi lebih dulu, jadi pemuatan pertama sudah tersaring.
+    const dariAlamat = this.ruteCari?.snapshot?.queryParamMap?.get('search');
+    if (dariAlamat) this.searchFormControl.setValue(dariAlamat, { emitEvent: false });
     this.fetchData();
 
     this.searchFormControl.valueChanges

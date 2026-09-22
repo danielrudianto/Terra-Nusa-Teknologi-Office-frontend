@@ -145,7 +145,7 @@ mat-toolbar {
   }
 
   /* hamburger / menu icon button (contains a <mat-icon>) */
-  button:has(mat-icon):not(.tn-icon-btn):not(.tn-account) {
+  button:has(mat-icon):not(.tn-icon-btn):not(.tn-account):not(.tn-cari) {
     height: 42px !important;
     width: 42px;
     padding: 0;
@@ -276,5 +276,117 @@ mat-toolbar {
   .tn-menu-item--keluar:hover {
     background-color: color-mix(in srgb, var(--bad-fg, #d5303e) 8%, transparent);
     color: var(--bad-fg, #d5303e);
+  }
+}
+
+/* ---- Tombol "Cari…" (Ctrl+K) ---- */
+.tn-cari {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  min-width: 220px;
+  padding: 0 8px 0 12px;
+  margin-right: 6px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--faint);
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+
+  mat-icon {
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+  }
+  &__teks {
+    flex: 1;
+    text-align: left;
+  }
+  &__kbd {
+    display: inline-flex;
+    gap: 3px;
+  }
+  kbd {
+    padding: 1px 6px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 0.68rem;
+    font-weight: 600;
+  }
+  &:hover {
+    border-color: var(--brand);
+    color: var(--brand);
+  }
+}
+@media (max-width: 900px) {
+  .tn-cari {
+    min-width: 0;
+    width: 42px;
+    padding: 0;
+    justify-content: center;
+    border: none;
+    background: none;
+    &__teks,
+    &__kbd {
+      display: none;
+    }
+  }
+}
+
+/* ---- Lonceng ---- */
+.tn-lonceng {
+  position: relative;
+}
+.tn-lonceng__angka {
+  position: absolute;
+  top: 5px;
+  right: 4px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--bad-fg);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 17px;
+  text-align: center;
+  box-shadow: 0 0 0 2px var(--surface);
+}
+::ng-deep .tn-lonceng-menu {
+  min-width: 320px !important;
+  max-width: 380px !important;
+}
+::ng-deep .tn-lonceng-menu__kepala {
+  padding: 10px 16px 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+::ng-deep .tn-lonceng-menu__baris .mdc-list-item__primary-text {
+  white-space: normal;
+  line-height: 1.35;
+  font-size: 0.85rem;
+  padding: 4px 0;
+}
+::ng-deep .tn-lonceng-menu__kosong {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 16px;
+  color: var(--muted);
+  font-size: 0.85rem;
+
+  .mat-icon {
+    color: var(--ok-fg);
   }
 }
