@@ -135,14 +135,9 @@ export class HrCandidateListComponent implements OnInit {
 
   ujianTerpilih: number | null = null;
 
-  /** Pelamar yang pratinjau pesannya sedang dibuka. */
-  intip: number | null = null;
 
   readonly kolom = ['nama', 'status', 'ujian', 'aksi'];
-  readonly kolomPratinjau = ['pratinjau'];
   trackById = (_: number, p: any) => p?.id ?? _;
-  /** Baris pratinjau pesan hanya untuk pelamar yang sedang diintip. */
-  sedangDiintip = (_: number, p: any) => this.intip === p?.id;
   /*
    * Penyaring status yang lama DIBUANG, bukan disembunyikan.
    *

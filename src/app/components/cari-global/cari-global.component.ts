@@ -108,7 +108,7 @@ export class CariGlobalComponent implements AfterViewInit, OnDestroy {
           jenis: 'menu',
           // Ikon yang SAMA dengan menu samping: butir menu di sini dikenali
           // dari bentuk yang sudah dilihat setiap hari.
-          ikon: 'arrow_forward',
+          ikon: m.icon && !/\.svg$/.test(m.icon) ? m.icon : 'arrow_forward',
           svg: m.icon && /\.svg$/.test(m.icon) ? `/assets/vector/${m.icon}` : undefined,
           judul: this.translate.instant(m.name),
           sub: m.grup ? this.translate.instant(m.grup) : null,

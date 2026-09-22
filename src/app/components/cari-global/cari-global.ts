@@ -90,6 +90,11 @@ export function cocokkanMenu(
     if (t.startsWith(kata)) return 0;
     if (t.split(/\s+/).some((w) => w.startsWith(kata))) return 1;
     if (t.includes(kata)) return 2;
+    // Nama rutenya juga dicocokkan: "client" menemukan "Klien", "supplier"
+    // menemukan "Pemasok" — orang kerap mengetik nama yang tertulis di
+    // alamat, atau istilah Inggrisnya, apa pun bahasa tampilannya.
+    const rute = (b.route || '').toLowerCase().replace(/[/-]+/g, ' ');
+    if (rute.split(/\s+/).some((w) => w.startsWith(kata))) return 3;
     return -1;
   };
   return menu

@@ -145,7 +145,6 @@
         mat-table
         [dataSource]="pelamar"
         [appKerangka]="isLoading"
-        multiTemplateDataRows
         [trackBy]="trackById"
       >
         <ng-container matColumnDef="nama">
@@ -214,14 +213,6 @@
                 >
                   <mat-icon>chat</mat-icon>
                   {{ "hrCandidate.salinPesan" | translate }}
-                </button>
-                <button
-                  type="button"
-                  class="hcl-intip"
-                  [attr.aria-label]="'hrCandidate.lihatPesan' | translate"
-                  (click)="intip = intip === p.id ? null : p.id"
-                >
-                  <mat-icon>{{ intip === p.id ? "expand_less" : "expand_more" }}</mat-icon>
                 </button>
               }
               <!-- Nilai DI LUAR penjaga kedaluwarsa: pemeriksaan kerap
@@ -312,24 +303,12 @@
           </td>
         </ng-container>
 
-        <!-- Pratinjau pesan — baris kedua di bawah pelamarnya. Yang
-             mengirimnya perlu membaca sebelum menempel ke WhatsApp. -->
-        <ng-container matColumnDef="pratinjau">
-          <td mat-cell *matCellDef="let p" [attr.colspan]="kolom.length" class="hcl-pratinjau-sel">
-            <pre class="hcl-pratinjau">{{ pesanUndangan(p) }}</pre>
-          </td>
-        </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="kolom"></tr>
         <tr
           mat-row
           *matRowDef="let p; columns: kolom"
           [class.hcl-baris--habis]="kedaluwarsa(p)"
-        ></tr>
-        <tr
-          mat-row
-          *matRowDef="let p; columns: kolomPratinjau; when: sedangDiintip"
-          class="hcl-baris-pratinjau"
         ></tr>
         <tr class="mat-row hcl-norow" *matNoDataRow>
           <td class="mat-cell" [attr.colspan]="kolom.length">

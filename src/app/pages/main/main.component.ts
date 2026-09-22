@@ -5,6 +5,7 @@ import { JudulTabStrategy } from '../../services/judul-tab.strategy';
 import { aksiDari, cariKotakPencarian, cariTombolBaru } from '../../services/pintasan';
 import { PintasanDialogComponent } from '../../components/pintasan-dialog/pintasan-dialog.component';
 import { CariGlobalComponent } from '../../components/cari-global/cari-global.component';
+import { MASTER_NAV } from '../master/master-nav';
 import { PermissionService } from '../../services/permission.service';
 import { SideNavComponent } from '../../components/side-nav/side-nav.component';
 import { PanduanPanelComponent } from '../../components/panduan/panduan-panel/panduan-panel.component';
@@ -78,9 +79,21 @@ export class MainComponent implements OnDestroy {
 
   /** Pencarian global — Ctrl+K atau tombol "Cari…" di kepala halaman. */
   bukaCari(): void {
-    const menu = this.sideNavItems().flatMap((g: any) =>
+    const menu: any[] = this.sideNavItems().flatMap((g: any) =>
       (g.children || []).map((c: any) => ({ ...c, grup: g.name })),
     );
+    /*
+     * Halaman di DALAM Data Master (Klien, Pemasok, Karyawan, …) tidak ada
+     * di menu samping, jadi ditambahkan di sini — hanya yang boleh dibuka:
+     * halaman Data Master sendiri dijaga `master_item:read`, lalu tiap
+     * halamannya dijaga modulnya masing-masing.
+     */
+    if (this.permissionService.can('master_item', 'read')) {
+      for (const m of MASTER_NAV) {
+        if (!this.permissionService.canRead(m.modul)) continue;
+        menu.push({ name: m.name, route: '/Master/' + m.route, icon: m.icon, grup: 'nav.masterData' });
+      }
+    }
     this.dialog.open(CariGlobalComponent, {
       data: { menu },
       panelClass: 'akn-cari-global',

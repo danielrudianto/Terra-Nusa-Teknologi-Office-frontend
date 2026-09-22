@@ -20,6 +20,10 @@ describe('cari-global', () => {
     ]);
     expect(cocokkanMenu(menu, 'KLI', terjemah).map((m) => m.route)).toEqual(['/Master/Client']);
     expect(cocokkanMenu(menu, '  ', terjemah)).toEqual([]);
+    // Nama rute ikut dicocokkan (istilah Inggris).
+    expect(cocokkanMenu(menu, 'client', terjemah).map((m) => m.route)).toEqual(['/Master/Client']);
+    // Butir tanpa rute (mis. Keluar) tidak boleh menjatuhkan pencarian.
+    expect(() => cocokkanMenu([{ name: 'nav.keluar' } as any, ...menu], 'zz', terjemah)).not.toThrow();
   });
 
   it('tujuan: rinci untuk proyek/tender, ?open untuk PO, ?search untuk daftar', () => {
