@@ -89,6 +89,8 @@ export class ExamWorkComponent implements OnInit, OnDestroy {
   durasiMenit = 0;
 
   mengirim = false;
+  /** Kirim otomatis hanya dicoba SEKALI — gagal berulang tiap detik memicu pembatas laju. */
+  private kirimOtomatisDicoba = false;
   terkirim = false;
 
   /**
@@ -243,13 +245,27 @@ export class ExamWorkComponent implements OnInit, OnDestroy {
     this.jam = setInterval(() => {
       if (this.sisaDetik > 0) this.sisaDetik--;
       /*
-       * Habisnya waktu TIDAK mengirim otomatis.
+       * Waktu habis = DIKIRIM OTOMATIS.
        *
-       * Yang sedang mengetik saat detik terakhir akan kehilangan kalimatnya
-       * bila layarnya berpindah sendiri. Jawaban terakhir sudah tersimpan
-       * berkala, dan tombol Kirim tetap dapat ditekan — servernya yang
-       * memutuskan apakah masih diterima.
+       * Kiriman membawa seluruh jawaban yang ada di layar, termasuk kalimat
+       * yang sedang diketik di detik terakhir; server masih menerimanya
+       * selama `TENGGANG_KIRIM_DETIK`. Dulu layar hanya berhenti dan
+       * menunggu tombol Kirim ditekan — pelamar yang menutup halamannya
+       * tertinggal "sedang mengerjakan" selamanya.
+       *
+       * Yang layarnya sudah tertutup ditangani server sendiri
+       * (`tutup_yang_habis_waktu`).
        */
+      if (
+        this.waktuHabis &&
+        !this.terkirim &&
+        !this.mengirim &&
+        !this.kirimOtomatisDicoba &&
+        this.soal.length
+      ) {
+        this.kirimOtomatisDicoba = true;
+        this.kirim();
+      }
     }, 1000);
   }
 
@@ -377,6 +393,15 @@ export class ExamWorkComponent implements OnInit, OnDestroy {
         },
         error: (e) => {
           this.mengirim = false;
+          // Sudah terkirim (mis. ditutup server karena waktunya habis):
+          // bukan kegagalan — pekerjaannya sudah aman.
+          if (e?.status === 409) {
+            this.terkirim = true;
+            this.kotor = false;
+            if (this.jam) clearInterval(this.jam);
+            if (this.detak) clearInterval(this.detak);
+            return;
+          }
           this.galat =
             e?.error?.detail || this.translate.instant('examWork.gagalKirim');
         },

@@ -28,6 +28,18 @@
     0 0;
 }
 
+/*
+ * Lebar minimum isi.
+ *
+ * Di bawah 1024px tata letak desktop (tabel, kartu dasbor dua kolom) mulai
+ * saling tindih. Lebih baik halamannya digulir mendatar daripada hancur;
+ * ponsel memakai aplikasi mobile tersendiri. Bilah atas ikut, supaya
+ * lebarnya selalu sama dengan isinya.
+ */
+.dashboard__container__content > * {
+  min-width: 1024px;
+}
+
 .dashboard__container__router {
   width: 100%;
   padding: 2rem;

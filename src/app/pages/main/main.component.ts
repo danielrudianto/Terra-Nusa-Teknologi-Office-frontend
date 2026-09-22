@@ -162,10 +162,12 @@ export class MainComponent implements OnDestroy {
    * `mode="side"` yang tetap, sidenav memakan 250px dan padding halaman
    * 64px — pada ponsel 390px hanya tersisa 76px untuk seluruh isi.
    *
-   * 900px dipilih karena di bawah itu tabel-tabel mulai perlu ruang penuh;
-   * di atasnya sidenav yang selalu terbuka justru membantu.
+   * 1280px: selebar TABLET (termasuk iPad lanskap 1024–1194px) sidenav
+   * disembunyikan dan dibuka sebagai lapisan (`over`). Dulu 900px — di
+   * tablet lanskap sidenav 250px tetap mendorong isi, dan tabel serta kartu
+   * dasbor terhimpit berantakan.
    */
-  private readonly AMBANG_SEMPIT = 900;
+  private readonly AMBANG_SEMPIT = 1280;
 
   /** `over` menutupi isi; `side` mendorongnya. */
   modeSidenav: 'side' | 'over' = 'side';
