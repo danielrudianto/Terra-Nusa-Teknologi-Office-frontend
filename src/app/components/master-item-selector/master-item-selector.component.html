@@ -19,9 +19,13 @@
     </span>
     <div class="mis-head__text">
       <h2 class="mis-title">{{ "masterItem.chooseItem" | translate }}</h2>
-      <span class="mis-sub"
-        >Katalog tersedia untuk tipe {{ purchaseType }}</span
-      >
+      <span class="mis-sub">
+        @if (semuaTipe) {
+          {{ "masterItem.seluruhKatalog" | translate }}
+        } @else {
+          Katalog tersedia untuk tipe {{ purchaseType }}
+        }
+      </span>
     </div>
   </div>
 
@@ -101,7 +105,11 @@
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.3-4.3" />
         </svg>
-        <span>Tidak ada barang tipe {{ purchaseType }} yang cocok.</span>
+        @if (semuaTipe) {
+          <span>{{ "masterItem.tidakAdaCocok" | translate }}</span>
+        } @else {
+          <span>Tidak ada barang tipe {{ purchaseType }} yang cocok.</span>
+        }
       </div>
     </div>
   </mat-dialog-content>

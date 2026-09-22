@@ -93,28 +93,30 @@
       </div>
 
       <!--
-        DUA KOLOM YANG BERDIRI SENDIRI, bukan baris-baris berpasangan.
+        Tenggat | agenda + reimbursement, lalu pembayaran hari ini SELEBAR
+        HALAMAN di bawahnya.
 
-        Dipasangkan per baris (tenggat | agenda, pembayaran | reimbursement),
-        kartu yang pendek menyisakan lubang di bawahnya setiap kali
-        pasangannya panjang. Sebagai dua kolom, kartu terakhir tiap kolom
-        memanjang mengisi sisanya — kedua kolom selalu berakhir sejajar.
+        Di kolom kanan yang memanjang mengisi sisa tinggi adalah AGENDA
+        (daftarnya memang bisa bertambah), bukan reimbursement: kartu
+        reimbursement yang ditarik setinggi kolom tenggat hanya menyisakan
+        ruang kosong di bawah satu-dua barisnya.
       -->
       <div class="col-7 mt-3 db-kolom">
         <div #tenggatEl appMunculGulir>
           <app-meja-tenggat (ringkasan)="ringkasTenggat.set($event)" />
         </div>
-        <div class="db-kolom__isi" *appCan="'payment_outgoing:read'" appMunculGulir [mgJeda]="60">
-          <app-today-payment></app-today-payment>
-        </div>
       </div>
-      <div class="col-5 mt-3 db-kolom">
+      <div class="col-5 mt-3 db-kolom db-kolom--agenda">
         <div class="db-kolom__isi" appMunculGulir="kanan" [mgJeda]="80">
           <app-agenda></app-agenda>
         </div>
         <div class="db-kolom__isi" *appCan="'reimbursement:read'" appMunculGulir="kanan" [mgJeda]="140">
           <app-dashboard-reimbursement></app-dashboard-reimbursement>
         </div>
+      </div>
+
+      <div class="col-12 mt-3" *appCan="'payment_outgoing:read'" appMunculGulir [mgJeda]="60">
+        <app-today-payment></app-today-payment>
       </div>
 
       <!-- Cash position (component) -->

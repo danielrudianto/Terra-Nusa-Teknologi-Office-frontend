@@ -8,6 +8,11 @@ import {
   TodayPaymentItem,
   PaymentType,
 } from '../today-payment-dialog/today-payment-dialog.component';
+import {
+  BagianPembayaran,
+  RingkasanPembayaran,
+  ringkasPembayaran,
+} from './ringkas-pembayaran';
 
 @Component({
   selector: 'app-today-payment',
@@ -21,6 +26,7 @@ export class TodayPaymentComponent implements OnInit {
 
   items: TodayPaymentItem[] = [];
   total = 0;
+  ringkas: RingkasanPembayaran = ringkasPembayaran([]);
   isLoading = false;
   errorMsg = '';
 
@@ -28,7 +34,7 @@ export class TodayPaymentComponent implements OnInit {
    * Tiga baris menyisakan ruang kosong besar pada kartu setinggi kolom
    * sebelah. Lima mengisinya tanpa membuat daftar terasa panjang.
    */
-  readonly maxVisible = 5;
+  readonly maxVisible = 6;
   readonly skeletonRows = [1, 2, 3];
 
   private banks = new Map<number, any>();
@@ -82,7 +88,8 @@ export class TodayPaymentComponent implements OnInit {
           .sort(
             (a: TodayPaymentItem, b: TodayPaymentItem) => b.amount - a.amount,
           );
-        this.total = this.items.reduce((s, i) => s + i.amount, 0);
+        this.ringkas = ringkasPembayaran(this.items);
+        this.total = this.ringkas.total;
         this.isLoading = false;
       },
       error: (err) => {
@@ -186,6 +193,10 @@ export class TodayPaymentComponent implements OnInit {
       maxWidth: '96vw',
       autoFocus: false,
     });
+  }
+
+  trackByKunci(_: number, b: BagianPembayaran): string {
+    return b.kunci;
   }
 
   trackById(_: number, it: TodayPaymentItem): number {

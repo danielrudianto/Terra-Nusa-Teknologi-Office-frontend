@@ -123,12 +123,22 @@
               <mat-label>
                 {{ (isJasa ? "tender.uraianJasa" : "tender.namaBarang") | translate }}
               </mat-label>
+              <!--
+                Barang TIDAK diketik bebas: namanya hanya dari katalog.
+                Barang yang belum ada didaftarkan dulu di Master Barang —
+                nama bebas memecah satu barang jadi beberapa ejaan dan
+                penawarannya tidak dapat dibandingkan.
+              -->
               <input
                 matInput
                 autocomplete="off"
                 formControlName="name"
+                [readonly]="!isJasa"
+                [class.tc-katalog-input]="!isJasa"
+                (click)="!isJasa && pilihBarang(i)"
+                (keydown.enter)="!isJasa && pilihBarang(i); !isJasa && $event.preventDefault()"
                 [placeholder]="
-                  (isJasa ? 'tender.uraianJasaPlaceholder' : 'tender.namaBarangPlaceholder')
+                  (isJasa ? 'tender.uraianJasaPlaceholder' : 'tender.pilihDariKatalog')
                     | translate
                 "
               />
@@ -151,6 +161,14 @@
                 </button>
               }
             </mat-form-field>
+
+            @if (!isJasa && barisAt(i).hasError("bukanKatalog") && barisAt(i).get("name")?.value) {
+              <!-- Baris lama yang diketik bebas: harus dipilih ulang. -->
+              <p class="tc-galat">
+                <mat-icon>error_outline</mat-icon>
+                {{ "tender.wajibKatalog" | translate }}
+              </p>
+            }
 
             <mat-form-field appearance="outline" class="tc-baris__spec">
               <mat-label>{{ "tender.spesifikasi" | translate }}</mat-label>

@@ -51,37 +51,90 @@
   </div>
 
   <!-- data -->
-  <div class="tp__list" *ngIf="!isLoading && !errorMsg">
-    <div class="tp__row" *ngFor="let it of visibleItems; trackBy: trackById">
-      <span class="tp__dot" [style.background]="it.color"></span>
-      <div class="tp__info">
-        <span class="tp__row-title">
-          {{ it.title }}
-          <span class="tp__pending" *ngIf="!it.isApprove">pending</span>
-        </span>
-        <span class="tp__row-sub">{{ it.bankLabel }}</span>
+  <div class="tp__badan" *ngIf="!isLoading && !errorMsg">
+    <!--
+      Rincian di kiri: berapa yang sudah pasti keluar (disetujui) dan berapa
+      yang masih menunggu, lalu ke mana saja dan dari rekening mana.
+    -->
+    <aside class="tp__ringkas" *ngIf="items.length > 0">
+      <div class="tp__status">
+        <div class="tp__stat tp__stat--ok">
+          <span class="tp__stat-label">{{ "dashboard.tpDisetujui" | translate }}</span>
+          <strong>{{ formatIDR(ringkas.disetujui) }}</strong>
+          <small>{{ items.length - ringkas.jumlahMenunggu }} {{ "dashboard.paymentTransactions" | translate }}</small>
+        </div>
+        <div class="tp__stat" [class.tp__stat--tunggu]="ringkas.jumlahMenunggu > 0">
+          <span class="tp__stat-label">{{ "dashboard.tpMenunggu" | translate }}</span>
+          <strong>{{ formatIDR(ringkas.menunggu) }}</strong>
+          <small>{{ ringkas.jumlahMenunggu }} {{ "dashboard.paymentTransactions" | translate }}</small>
+        </div>
       </div>
-      <span class="tp__amount">{{ formatIDR(it.amount) }}</span>
-    </div>
 
-    <div class="tp__empty" *ngIf="items.length === 0">
-      {{ "dashboard.noPaymentToday" | translate }}
-    </div>
+      <div class="tp__bagian">
+        <span class="tp__bagian-judul">{{ "dashboard.tpPerJenis" | translate }}</span>
+        <div class="tp__bilah">
+          <i
+            *ngFor="let j of ringkas.perJenis; trackBy: trackByKunci"
+            [style.width.%]="j.persen"
+            [style.background]="j.warna"
+            [title]="j.label"
+          ></i>
+        </div>
+        <div class="tp__legenda" *ngFor="let j of ringkas.perJenis; trackBy: trackByKunci">
+          <span class="tp__dot" [style.background]="j.warna"></span>
+          <span class="tp__legenda-label">{{ j.label }} <small>· {{ j.jumlah }}</small></span>
+          <span class="tp__legenda-nilai">{{ formatIDR(j.nilai) }}</span>
+        </div>
+      </div>
 
-    <!-- faded peek of the next hidden row + show more -->
-    <div class="tp__more" *ngIf="hiddenCount > 0">
-      <div class="tp__row faded" *ngFor="let it of [items[maxVisible]]">
+      <div class="tp__bagian">
+        <span class="tp__bagian-judul">{{ "dashboard.tpPerRekening" | translate }}</span>
+        <div class="tp__rek" *ngFor="let r of ringkas.perRekening; trackBy: trackByKunci">
+          <div class="tp__legenda">
+            <span class="tp__legenda-label">{{ r.label }} <small>· {{ r.jumlah }}</small></span>
+            <span class="tp__legenda-nilai">{{ formatIDR(r.nilai) }}</span>
+          </div>
+          <div class="tp__rek-bilah"><i [style.width.%]="r.persen"></i></div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="tp__list">
+      <div class="tp__row" *ngFor="let it of visibleItems; trackBy: trackById">
         <span class="tp__dot" [style.background]="it.color"></span>
         <div class="tp__info">
-          <span class="tp__row-title">{{ it.title }}</span>
-          <span class="tp__row-sub">{{ it.bankLabel }}</span>
+          <span class="tp__row-title">
+            {{ it.title }}
+            <span class="tp__pending" *ngIf="!it.isApprove">pending</span>
+          </span>
+          <span class="tp__row-sub">
+            {{ it.typeLabel }}<ng-container *ngIf="it.subtitle"> · {{ it.subtitle }}</ng-container>
+          </span>
         </div>
+        <span class="tp__row-bank" [title]="it.bankLabel">{{ it.bankLabel }}</span>
         <span class="tp__amount">{{ formatIDR(it.amount) }}</span>
       </div>
-      <button class="tp__showmore" (click)="openAll()">
-        {{ "dashboard.seeAll" | translate }} ({{ hiddenCount }}
-        {{ "dashboard.more" | translate }})
-      </button>
+
+      <div class="tp__empty" *ngIf="items.length === 0">
+        {{ "dashboard.noPaymentToday" | translate }}
+      </div>
+
+      <!-- faded peek of the next hidden row + show more -->
+      <div class="tp__more" *ngIf="hiddenCount > 0">
+        <div class="tp__row faded" *ngFor="let it of [items[maxVisible]]">
+          <span class="tp__dot" [style.background]="it.color"></span>
+          <div class="tp__info">
+            <span class="tp__row-title">{{ it.title }}</span>
+            <span class="tp__row-sub">{{ it.typeLabel }}</span>
+          </div>
+          <span class="tp__row-bank">{{ it.bankLabel }}</span>
+          <span class="tp__amount">{{ formatIDR(it.amount) }}</span>
+        </div>
+        <button class="tp__showmore" (click)="openAll()">
+          {{ "dashboard.seeAll" | translate }} ({{ hiddenCount }}
+          {{ "dashboard.more" | translate }})
+        </button>
+      </div>
     </div>
   </div>
 </div>

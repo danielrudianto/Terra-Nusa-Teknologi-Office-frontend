@@ -12,12 +12,37 @@
     <div class="dz-inner">
       <span class="dz-icon">
         <svg
-          width="26"
-          height="26"
+          width="28"
+          height="28"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="1.8"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <path d="M14 2v6h6" />
+          <path d="M12 18v-6" />
+          <path d="m9 15 3-3 3 3" />
+        </svg>
+      </span>
+      <p class="dz-title">{{ "pdf.dragDropPdfDiSini" | translate }}</p>
+      <p class="dz-sub">{{ "pdf.mendukungBanyakFilePdfSekaligus" | translate }}</p>
+
+      <div class="dz-atau">
+        <span>{{ "pdf.atau" | translate }}</span>
+      </div>
+      <!-- Hanya tampilan: input berkas menutupi seluruh area, jadi klik di
+           mana pun — termasuk di sini — membuka pemilih berkas. -->
+      <span class="dz-tombol">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
         >
@@ -25,10 +50,13 @@
           <path d="M17 8l-5-5-5 5" />
           <path d="M12 3v12" />
         </svg>
+        {{ "pdf.pilihBerkas" | translate }}
       </span>
-      <p class="dz-title">{{ "pdf.dragDropPdfDiSini" | translate }}</p>
-      <p class="dz-sub">atau <b>browse</b> dari komputer</p>
-      <span class="dz-hint">{{ "pdf.mendukungBanyakFilePdfSekaligus" | translate }}</span>
+
+      <!-- Tempat halaman induk menaruh ringkasan kemampuan. -->
+      <div class="dz-ekstra">
+        <ng-content />
+      </div>
     </div>
   </div>
 

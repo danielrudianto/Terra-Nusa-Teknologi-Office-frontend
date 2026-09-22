@@ -7,6 +7,8 @@ import {
   FormGroup,
   ReactiveFormsModule,
   Validators,
+  AbstractControl,
+  ValidationErrors,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -161,6 +163,10 @@ export class TenderCreateComponent implements OnInit {
        */
       quantity: [v.quantity ?? null],
       unit: [v.unit ?? ''],
+    }, {
+      // Tender barang: baris wajib dari katalog (server memeriksa hal yang sama).
+      validators: (g: AbstractControl): ValidationErrors | null =>
+        !this.isJasa && !g.get('itemID')?.value ? { bukanKatalog: true } : null,
     });
   }
 
@@ -190,7 +196,8 @@ export class TenderCreateComponent implements OnInit {
   pilihBarang(i: number): void {
     this.dialog
       .open(MasterItemSelectorComponent, {
-        data: {},
+        // Tender belum bertipe PO — seluruh katalog boleh dipilih.
+        data: { semuaTipe: true },
         width: '560px',
         maxWidth: '94vw',
         autoFocus: false,

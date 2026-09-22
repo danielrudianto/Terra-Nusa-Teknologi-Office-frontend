@@ -234,3 +234,26 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* Nama barang hanya dari katalog: bidangnya dibaca saja, diklik membuka katalog. */
+.tc-katalog-input {
+  cursor: pointer;
+}
+
+.tc-galat {
+  grid-column: 1 / -1;
+  order: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: -0.6rem 0 0.6rem;
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--bad-fg, #b3322f);
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}

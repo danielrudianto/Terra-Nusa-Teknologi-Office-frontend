@@ -38,7 +38,16 @@ export class MasterItemSelectorComponent {
   constructor(
     private apiService: ApiService,
     private dialogRef: MatDialogRef<MasterItemSelectorComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { purchaseType?: string },
+    @Inject(MAT_DIALOG_DATA)
+    public data: {
+      purchaseType?: string;
+      /**
+       * Seluruh katalog, tanpa saringan tipe pembelian. Dipakai tender:
+       * tender belum punya tipe PO, dan saringan bawaan `G` membuat barang
+       * tipe lain (C, F, 5.1.x, …) tidak dapat dipilih sama sekali.
+       */
+      semuaTipe?: boolean;
+    },
   ) {}
 
   searchControl: FormControl = new FormControl('');
@@ -47,6 +56,10 @@ export class MasterItemSelectorComponent {
 
   get purchaseType(): string {
     return this.data?.purchaseType || 'G';
+  }
+
+  get semuaTipe(): boolean {
+    return !!this.data?.semuaTipe;
   }
 
   ngOnInit(): void {
@@ -61,7 +74,7 @@ export class MasterItemSelectorComponent {
     this.apiService
       .get('master-items', {
         keyword: this.searchControl.value || '',
-        purchase_type: this.purchaseType,
+        ...(this.semuaTipe ? {} : { purchase_type: this.purchaseType }),
         page: 1,
         page_size: 25,
         /*

@@ -201,6 +201,16 @@ $faint: var(--faint, #9aa0ab);
   > :last-child {
     flex: 1 1 auto;
   }
+
+  /* Kolom kanan: AGENDA yang memanjang, reimbursement setinggi isinya. */
+  &--agenda {
+    > :last-child {
+      flex: 0 0 auto;
+    }
+    > :first-child {
+      flex: 1 1 auto;
+    }
+  }
   > * > * {
     display: block;
     height: 100%;
