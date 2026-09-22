@@ -172,7 +172,22 @@
   color: var(--faint);
 }
 
-@media (prefers-reduced-motion: reduce) {
+/* Sakelar gerak aplikasi (Pengaturan → Transisi "tanpa"), bukan setelan OS
+   — sama dengan desktop; lihat `animations/gerak.ts`. */
+/* Petak menyusul sesudah kartu utama. */
+.mbr-petak.akn-m-kartu {
+  --akn-jeda: 120ms;
+}
+
+/* Tempat angka kartu utama selama memuat — setinggi angkanya, supaya kartu
+   tidak berubah tinggi saat angkanya datang. */
+.mbr-hero__kerangka {
+  width: 64px;
+  height: 36px;
+  border-radius: 10px;
+}
+
+:host-context(html[data-gerak="mati"]) {
   .mbr-hero {
     animation: none;
   }

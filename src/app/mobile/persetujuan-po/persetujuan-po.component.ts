@@ -21,6 +21,9 @@ import { ClauseSection } from '../../constants/clause-templates';
 import { purchaseTypeLabel } from '../../constants/purchase-type-label.constant';
 import { barisTampil } from '../../constants/baris-tampil-po';
 import { nilaiBaris } from '../../helpers/nilai-baris.helper';
+import { lembarBawah } from '../gerak-lembar';
+import { gerakMati } from '../../animations/gerak';
+import { KartuKerangkaComponent } from '../kartu-kerangka/kartu-kerangka.component';
 
 /**
  * Menyetujui purchase order dari ponsel.
@@ -47,9 +50,11 @@ import { nilaiBaris } from '../../helpers/nilai-baris.helper';
  * terlihat.
  */
 @Component({
+  animations: [lembarBawah],
   selector: 'app-persetujuan-po',
   standalone: true,
   imports: [
+    KartuKerangkaComponent,
     CommonModule,
     MatIconModule,
     MatButtonModule,
@@ -60,6 +65,9 @@ import { nilaiBaris } from '../../helpers/nilai-baris.helper';
   styleUrls: ['./persetujuan-po.component.scss'],
 })
 export class PersetujuanPoComponent implements OnInit {
+  /** Sakelar gerak aplikasi — mematikan gerak keluar lembar. */
+  readonly gerakMati = gerakMati;
+
   private readonly api = inject(ApiService);
   private readonly akun = inject(AccountService);
   private readonly izin = inject(PermissionService);

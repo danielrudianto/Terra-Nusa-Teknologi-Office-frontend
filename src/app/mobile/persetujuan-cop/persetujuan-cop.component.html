@@ -34,7 +34,7 @@
   </div>
 
   @if (sedangMemuat) {
-    <div class="mcp-muat"><mat-spinner diameter="32" /></div>
+    <app-kartu-kerangka />
   } @else if (!daftar.length) {
     <div class="mcp-kosong">
       <mat-icon>task_alt</mat-icon>
@@ -78,115 +78,117 @@
 
 <!-- ===== Rincian & persetujuan ===== -->
 @if (dipilih) {
-  <div class="mcp-tirai" (click)="tutup()"></div>
-  <section class="mcp-lembar" appGeserTutup (tutup)="tutup()">
-    <div class="mcp-pegangan"></div>
+  <div class="mcp-wadah" @lembarBawah [@.disabled]="gerakMati()">
+    <div class="mcp-tirai akn-m-pudar-masuk" (click)="tutup()"></div>
+    <section class="mcp-lembar akn-m-lembar akn-m-lembar-naik" appGeserTutup (tutup)="tutup()">
+      <div class="mcp-pegangan"></div>
 
-    @if (memuatRincian) {
-      <div class="mcp-muat"><mat-spinner diameter="32" /></div>
-    } @else {
-      <h2 class="mcp-lembar__judul">{{ dipilih.name }}</h2>
-      <p class="mcp-lembar__sub">
-        {{ dipilih.projectName }} · {{ dipilih.purchaseOrderName }}
-      </p>
-
-      <dl class="mcp-info">
-        <div>
-          <dt>{{ "cop.tanggal" | translate }}</dt>
-          <dd>{{ dipilih.date | date: "d MMM y" }}</dd>
-        </div>
-        @if (dipilih.periodStart) {
-          <div>
-            <dt>{{ "cop.periode" | translate }}</dt>
-            <dd>
-              {{ dipilih.periodStart | date: "d MMM" }} –
-              {{ dipilih.periodEnd | date: "d MMM" }}
-            </dd>
-          </div>
-        }
-        <div>
-          <dt>{{ "cop.dibuat" | translate }}</dt>
-          <dd>{{ dipilih.createdByName || "—" }}</dd>
-        </div>
-        @if (dipilih.isBapApproved) {
-          <div>
-            <dt>{{ "cop.bapDisetujui" | translate }}</dt>
-            <dd>{{ dipilih.bapApprovedByName || "—" }}</dd>
-          </div>
-        }
-        @if (dipilih.isCopCreated) {
-          <div>
-            <dt>{{ "cop.copDibuat" | translate }}</dt>
-            <dd>{{ dipilih.copCreatedByName || "—" }}</dd>
-          </div>
-        }
-      </dl>
-
-      <!--
-        Baris pekerjaan ditampilkan LENGKAP, bukan diringkas jadi total saja:
-        yang menyetujui perlu melihat pekerjaan apa dan berapa volumenya.
-      -->
-      <ul class="mcp-item">
-        @for (i of dipilih.items || []; track i.id) {
-          <li>
-            <div class="mcp-item__nama">{{ i.task || "—" }}</div>
-            <div class="mcp-item__angka">
-              <span class="mcp-item__vol">
-                {{ i.quantity | number: "1.0-2" }} {{ i.unit }}
-                @if (i.paguBaris) {
-                  <em>{{ "cop.dariPagu" | translate }} {{ i.paguBaris | number: "1.0-2" }}</em>
-                }
-              </span>
-              @if (bolehLihatNilai && i.amount !== undefined) {
-                <span class="mcp-item__nilai">{{ i.amount | number: "1.2-2" }}</span>
-              }
-            </div>
-            @if (i.remarks) {
-              <div class="mcp-item__ket">{{ i.remarks }}</div>
-            }
-          </li>
-        }
-      </ul>
-
-      @if (bolehLihatNilai && total(dipilih) !== null) {
-        <p class="mcp-total">
-          {{ "cop.total" | translate }}
-          <strong>{{ total(dipilih) | number: "1.2-2" }}</strong>
+      @if (memuatRincian) {
+        <div class="mcp-muat"><mat-spinner diameter="32" /></div>
+      } @else {
+        <h2 class="mcp-lembar__judul">{{ dipilih.name }}</h2>
+        <p class="mcp-lembar__sub">
+          {{ dipilih.projectName }} · {{ dipilih.purchaseOrderName }}
         </p>
+
+        <dl class="mcp-info">
+          <div>
+            <dt>{{ "cop.tanggal" | translate }}</dt>
+            <dd>{{ dipilih.date | date: "d MMM y" }}</dd>
+          </div>
+          @if (dipilih.periodStart) {
+            <div>
+              <dt>{{ "cop.periode" | translate }}</dt>
+              <dd>
+                {{ dipilih.periodStart | date: "d MMM" }} –
+                {{ dipilih.periodEnd | date: "d MMM" }}
+              </dd>
+            </div>
+          }
+          <div>
+            <dt>{{ "cop.dibuat" | translate }}</dt>
+            <dd>{{ dipilih.createdByName || "—" }}</dd>
+          </div>
+          @if (dipilih.isBapApproved) {
+            <div>
+              <dt>{{ "cop.bapDisetujui" | translate }}</dt>
+              <dd>{{ dipilih.bapApprovedByName || "—" }}</dd>
+            </div>
+          }
+          @if (dipilih.isCopCreated) {
+            <div>
+              <dt>{{ "cop.copDibuat" | translate }}</dt>
+              <dd>{{ dipilih.copCreatedByName || "—" }}</dd>
+            </div>
+          }
+        </dl>
+
+        <!--
+          Baris pekerjaan ditampilkan LENGKAP, bukan diringkas jadi total saja:
+          yang menyetujui perlu melihat pekerjaan apa dan berapa volumenya.
+        -->
+        <ul class="mcp-item">
+          @for (i of dipilih.items || []; track i.id) {
+            <li>
+              <div class="mcp-item__nama">{{ i.task || "—" }}</div>
+              <div class="mcp-item__angka">
+                <span class="mcp-item__vol">
+                  {{ i.quantity | number: "1.0-2" }} {{ i.unit }}
+                  @if (i.paguBaris) {
+                    <em>{{ "cop.dariPagu" | translate }} {{ i.paguBaris | number: "1.0-2" }}</em>
+                  }
+                </span>
+                @if (bolehLihatNilai && i.amount !== undefined) {
+                  <span class="mcp-item__nilai">{{ i.amount | number: "1.2-2" }}</span>
+                }
+              </div>
+              @if (i.remarks) {
+                <div class="mcp-item__ket">{{ i.remarks }}</div>
+              }
+            </li>
+          }
+        </ul>
+
+        @if (bolehLihatNilai && total(dipilih) !== null) {
+          <p class="mcp-total">
+            {{ "cop.total" | translate }}
+            <strong>{{ total(dipilih) | number: "1.2-2" }}</strong>
+          </p>
+        }
+
+        @if (dipilih.note) {
+          <p class="mcp-catatan">{{ dipilih.note }}</p>
+        }
+
+        <label class="mcp-baca">
+          <input
+            type="checkbox"
+            [checked]="sudahBaca"
+            (change)="tandaiBaca($any($event.target).checked)"
+          />
+          <span>{{ "mobile.cop.sudahBaca" | translate }}</span>
+        </label>
+
+        <div class="mcp-aksi">
+          <button type="button" class="mcp-batal" (click)="tutup()">
+            {{ "common.cancel" | translate }}
+          </button>
+          <button
+            type="button"
+            class="mcp-setujui"
+            [disabled]="!sudahBaca || sedangKirim"
+            (click)="setujui()"
+          >
+            <mat-icon>{{
+              tahap(dipilih) === "bap" ? "assignment_turned_in" : "verified"
+            }}</mat-icon>
+            {{
+              (tahap(dipilih) === "bap" ? "cop.setujuiBap" : "cop.setujui")
+                | translate
+            }}
+          </button>
+        </div>
       }
-
-      @if (dipilih.note) {
-        <p class="mcp-catatan">{{ dipilih.note }}</p>
-      }
-
-      <label class="mcp-baca">
-        <input
-          type="checkbox"
-          [checked]="sudahBaca"
-          (change)="tandaiBaca($any($event.target).checked)"
-        />
-        <span>{{ "mobile.cop.sudahBaca" | translate }}</span>
-      </label>
-
-      <div class="mcp-aksi">
-        <button type="button" class="mcp-batal" (click)="tutup()">
-          {{ "common.cancel" | translate }}
-        </button>
-        <button
-          type="button"
-          class="mcp-setujui"
-          [disabled]="!sudahBaca || sedangKirim"
-          (click)="setujui()"
-        >
-          <mat-icon>{{
-            tahap(dipilih) === "bap" ? "assignment_turned_in" : "verified"
-          }}</mat-icon>
-          {{
-            (tahap(dipilih) === "bap" ? "cop.setujuiBap" : "cop.setujui")
-              | translate
-          }}
-        </button>
-      </div>
-    }
-  </section>
+    </section>
+  </div>
 }

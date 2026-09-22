@@ -27,7 +27,7 @@
   </div>
 
   @if (sedangMemuat) {
-    <div class="mpo-muat"><mat-spinner diameter="32" /></div>
+    <app-kartu-kerangka />
   } @else if (mode === 'periksa' && !bolehMemeriksa()) {
     <div class="mpo-kosong">
       <mat-icon>lock</mat-icon>
@@ -88,9 +88,9 @@
 
 <!-- Panel rincian + aksi (periksa / setujui). -->
 @if (dipilih) {
-  <div class="mpo-tirai" (click)="tutup()">
+  <div class="mpo-tirai" (click)="tutup()" @lembarBawah [@.disabled]="gerakMati()">
     <div
-      class="mpo-panel"
+      class="mpo-panel akn-m-lembar"
       appGeserTutup
       (tutup)="tutup()"
       (click)="$event.stopPropagation()"

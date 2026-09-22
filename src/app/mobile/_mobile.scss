@@ -146,19 +146,23 @@ $sentuh-minimum: 48px;
   /* Daftar muncul dengan naik-samar bertahap, bukan sekaligus.
      Datang serempak terbaca sebagai halaman yang dimuat; datang bertahap
      terbaca sebagai daftar yang mengalir masuk — dan itu kesan aplikasi. */
+  /* Kurva dan jeda sama dengan kartu desktop (`akn-berurutan`).
+     `backwards`, bukan `both`: sesudah selesai, animasinya tidak boleh terus
+     memaksakan `transform`, supaya kartu masih mengecil saat ditekan. */
   .#{$p}-kartu {
-    animation: #{$p}-kartu-masuk 0.26s ease-out both;
+    animation: #{$p}-kartu-masuk 0.4s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
+    animation-delay: calc(var(--akn-urut, 10) * 42ms);
   }
-  @for $i from 1 through 8 {
-    .#{$p}-kartu:nth-child(#{$i}) {
-      animation-delay: #{$i * 0.03}s;
+  @for $i from 1 through 10 {
+    .#{$p}-kartu:nth-of-type(#{$i}) {
+      --akn-urut: #{$i - 1};
     }
   }
 
   @keyframes #{$p}-kartu-masuk {
     from {
       opacity: 0;
-      transform: translateY(8px);
+      transform: translateY(10px) scale(0.98);
     }
     to {
       opacity: 1;
@@ -181,7 +185,7 @@ $sentuh-minimum: 48px;
     backdrop-filter: blur(2px);
     display: flex;
     align-items: flex-end;
-    animation: #{$p}-tirai-masuk 0.18s ease-out both;
+    animation: #{$p}-tirai-masuk 0.18s ease-out backwards;
   }
 
   @keyframes #{$p}-tirai-masuk {
@@ -213,7 +217,7 @@ $sentuh-minimum: 48px;
     box-shadow: 0 -8px 40px rgba(9, 12, 18, 0.25);
     /* Naik dari bawah, penuh — arah yang sama dengan datangnya, sehingga
        terbaca sebagai lanjutan ketukan, bukan sebagai layar yang berganti. */
-    animation: #{$p}-panel-naik 0.28s cubic-bezier(0.2, 0.85, 0.2, 1) both;
+    animation: #{$p}-panel-naik 0.3s cubic-bezier(0.2, 0.85, 0.2, 1) backwards;
   }
 
   /* Pegangan tarik, seperti pada lembar bawah aplikasi asli — memberi tahu
@@ -284,11 +288,13 @@ $sentuh-minimum: 48px;
   }
 }
 
-/* Yang menyetel sistemnya untuk mengurangi gerak biasanya melakukannya
-   karena gerak membuatnya pusing — bukan karena selera. Aplikasi yang
-   dipakai sambil berjalan paling sering menemuinya. */
+/* Gerak dimatikan oleh SATU sakelar aplikasi — Pengaturan → Transisi
+   "tanpa" (`html[data-gerak="mati"]`, lihat `animations/gerak.ts`) — sama
+   dengan desktop. Setelan OS tidak lagi dipakai: di banyak ponsel ia ikut
+   menyala bersama mode hemat baterai, dan seluruh aplikasi lalu terasa kaku
+   tanpa ada yang memilihnya. */
 @mixin hormati_gerak($p) {
-  @media (prefers-reduced-motion: reduce) {
+  :host-context(html[data-gerak="mati"]) {
     .#{$p}-kartu,
     .#{$p}-tirai,
     .#{$p}-panel {

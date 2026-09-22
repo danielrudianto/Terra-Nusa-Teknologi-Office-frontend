@@ -13,6 +13,7 @@ import { ApiService } from '../../services/api.service';
 import { AccountService } from '../../services/account.service';
 import { PermissionService } from '../../services/permission.service';
 import { bolehDrafPembelianMobile } from '../penjaga-level';
+import { HitungNaikDirective } from '../../directives/hitung-naik.directive';
 
 /**
  * Beranda mobile: berapa yang menunggu, dan jalan ke sana.
@@ -27,6 +28,7 @@ import { bolehDrafPembelianMobile } from '../penjaga-level';
   selector: 'app-beranda',
   standalone: true,
   imports: [
+    HitungNaikDirective,
     CommonModule,
     MatIconModule,
     MatProgressSpinnerModule,

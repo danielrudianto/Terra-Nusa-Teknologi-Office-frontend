@@ -4,7 +4,7 @@
 }
 
 @if (sedangMemuat) {
-  <div class="mpo-muat"><mat-spinner diameter="32" /></div>
+  <app-kartu-kerangka />
 } @else if (!bolehMemeriksa()) {
   <!--
     Bukan daftar kosong: yang tidak berwenang memeriksa perlu tahu SEBABNYA,
@@ -52,8 +52,8 @@
   membaca harga, volume, dan spesifikasinya, bukan satu ketukan refleks.
 -->
 @if (dipilih) {
-  <div class="mpo-tirai" (click)="tutup()">
-    <div class="mpo-panel" (click)="$event.stopPropagation()">
+  <div class="mpo-tirai" (click)="tutup()" @lembarBawah [@.disabled]="gerakMati()">
+    <div class="mpo-panel akn-m-lembar" (click)="$event.stopPropagation()">
       <div class="mpo-tarik"></div>
 
       <div class="mpo-panel__kepala">

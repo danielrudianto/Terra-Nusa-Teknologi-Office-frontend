@@ -48,6 +48,9 @@ AKAR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 ANIM = os.path.join(AKAR, 'src', 'app', 'animations', 'transisi-rute.ts')
 MAIN_HTML = os.path.join(AKAR, 'src', 'app', 'pages', 'main', 'main.component.html')
 MAIN_TS = os.path.join(AKAR, 'src', 'app', 'pages', 'main', 'main.component.ts')
+KERANGKA_MOBILE_HTML = os.path.join(
+    AKAR, 'src', 'app', 'mobile', 'kerangka', 'kerangka.component.html'
+)
 MASTER_TS = os.path.join(AKAR, 'src', 'app', 'pages', 'master', 'master.component.ts')
 MASTER_HTML = os.path.join(AKAR, 'src', 'app', 'pages', 'master', 'master.component.html')
 DIREKTIF = os.path.join(
@@ -234,6 +237,12 @@ def periksa():
         _baca(os.path.join(AKAR, 'src', 'app', 'app-routing.module.ts'))
     )
     for berkas in sorted(pathlib.Path(AKAR, 'src/app').rglob('*.html')):
+        # Kerangka aplikasi MOBILE adalah padanan MainComponent di aplikasinya
+        # sendiri: layout terluar (akarnya hanya `<router-outlet />` polos),
+        # rutenya di mobile.routes.ts, dan tidak ada layout beroutlet di
+        # bawahnya. Tidak ada yang bersarang, jadi tidak ada yang ditandai.
+        if berkas == pathlib.Path(KERANGKA_MOBILE_HTML):
+            continue
         if berkas == pathlib.Path(MAIN_HTML):
             continue
         isi = _tanpa_komentar(berkas.read_text(encoding='utf-8'))

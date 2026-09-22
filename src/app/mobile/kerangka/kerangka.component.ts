@@ -4,7 +4,9 @@ import {
   ElementRef,
   OnDestroy,
   ViewChild,
+  computed,
   inject,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
@@ -13,6 +15,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 
 import { AccountService } from '../../services/account.service';
 import { PermissionService } from '../../services/permission.service';
+import { SettingsService } from '../../services/setting.service';
+import { TransisiHalamanDirective } from '../../animations/transisi-halaman.directive';
 
 /**
  * Kerangka aplikasi mobile: kepala tipis di atas, navigasi di BAWAH.
@@ -25,7 +29,14 @@ import { PermissionService } from '../../services/permission.service';
 @Component({
   selector: 'app-kerangka',
   standalone: true,
-  imports: [CommonModule, RouterModule, RouterOutlet, MatIconModule, TranslatePipe],
+  imports: [
+    CommonModule,
+    RouterModule,
+    RouterOutlet,
+    MatIconModule,
+    TranslatePipe,
+    TransisiHalamanDirective,
+  ],
   templateUrl: './kerangka.component.html',
   styleUrls: ['./kerangka.component.scss'],
 })
@@ -33,6 +44,17 @@ export class KerangkaComponent implements AfterViewInit, OnDestroy {
   private readonly akun = inject(AccountService);
   private readonly izin = inject(PermissionService);
   private readonly router = inject(Router);
+  private readonly settings = inject(SettingsService);
+
+  /** Setelan transisi yang berlaku (Pengaturan → Transisi), sama dengan desktop. */
+  readonly setelan = computed(() => this.settings.transisiParams());
+
+  /** Berubah tiap halaman berganti — menyalakan `appTransisiHalaman`. */
+  readonly kunciRute = signal('');
+
+  catatRute(): void {
+    this.kunciRute.set(this.router.url.split('?')[0]);
+  }
 
   @ViewChild('kepala') kepala?: ElementRef<HTMLElement>;
   private ro?: ResizeObserver;

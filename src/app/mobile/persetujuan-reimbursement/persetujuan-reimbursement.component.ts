@@ -14,6 +14,9 @@ import { ServerMessageService } from '../../services/server-message.service';
 import { TarikSegarkanDirective } from '../tarik-segarkan.directive';
 import { ScrollBawahDirective } from '../scroll-bawah.directive';
 import { GeserTutupDirective } from '../geser-tutup.directive';
+import { lembarBawah } from '../gerak-lembar';
+import { gerakMati } from '../../animations/gerak';
+import { KartuKerangkaComponent } from '../kartu-kerangka/kartu-kerangka.component';
 
 /**
  * Menyetujui reimbursement dari ponsel.
@@ -25,9 +28,11 @@ import { GeserTutupDirective } from '../geser-tutup.directive';
  * nominalnya terlihat.
  */
 @Component({
+  animations: [lembarBawah],
   selector: 'app-persetujuan-reimbursement',
   standalone: true,
   imports: [
+    KartuKerangkaComponent,
     CommonModule,
     ReactiveFormsModule,
     MatIconModule,
@@ -46,6 +51,9 @@ import { GeserTutupDirective } from '../geser-tutup.directive';
   ],
 })
 export class PersetujuanReimbursementComponent implements OnInit {
+  /** Sakelar gerak aplikasi — mematikan gerak keluar lembar. */
+  readonly gerakMati = gerakMati;
+
   private readonly api = inject(ApiService);
   private readonly akun = inject(AccountService);
   private readonly snackBar = inject(MatSnackBar);

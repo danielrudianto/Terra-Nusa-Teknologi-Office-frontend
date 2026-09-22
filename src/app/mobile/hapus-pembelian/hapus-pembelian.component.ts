@@ -13,6 +13,9 @@ import { debounceTime } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { ServerMessageService } from '../../services/server-message.service';
 import { PermissionService } from '../../services/permission.service';
+import { lembarBawah } from '../gerak-lembar';
+import { gerakMati } from '../../animations/gerak';
+import { KartuKerangkaComponent } from '../kartu-kerangka/kartu-kerangka.component';
 
 /**
  * Menghapus pembelian dari ponsel.
@@ -31,9 +34,11 @@ import { PermissionService } from '../../services/permission.service';
  *      aturan itu TIDAK disalin ke sini, hanya pesannya yang ditampilkan.
  */
 @Component({
+  animations: [lembarBawah],
   selector: 'app-hapus-pembelian',
   standalone: true,
   imports: [
+    KartuKerangkaComponent,
     CommonModule,
     ReactiveFormsModule,
     MatIconModule,
@@ -47,6 +52,9 @@ import { PermissionService } from '../../services/permission.service';
   styleUrls: ['./hapus-pembelian.component.scss'],
 })
 export class HapusPembelianComponent implements OnInit {
+  /** Sakelar gerak aplikasi — mematikan gerak keluar lembar. */
+  readonly gerakMati = gerakMati;
+
   private readonly api = inject(ApiService);
   private readonly perm = inject(PermissionService);
   private readonly snackBar = inject(MatSnackBar);

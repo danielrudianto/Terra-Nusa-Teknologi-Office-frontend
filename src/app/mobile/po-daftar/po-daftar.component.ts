@@ -23,6 +23,9 @@ import { nilaiBaris } from '../../helpers/nilai-baris.helper';
 import { TarikSegarkanDirective } from '../tarik-segarkan.directive';
 import { ScrollBawahDirective } from '../scroll-bawah.directive';
 import { GeserTutupDirective } from '../geser-tutup.directive';
+import { lembarBawah } from '../gerak-lembar';
+import { gerakMati } from '../../animations/gerak';
+import { KartuKerangkaComponent } from '../kartu-kerangka/kartu-kerangka.component';
 
 type Mode = 'periksa' | 'setujui';
 
@@ -43,9 +46,11 @@ type Mode = 'periksa' | 'setujui';
  * tombol yang pasti ditolak, dengan sebab yang disebutkan.
  */
 @Component({
+  animations: [lembarBawah],
   selector: 'app-po-daftar',
   standalone: true,
   imports: [
+    KartuKerangkaComponent,
     CommonModule,
     ReactiveFormsModule,
     MatIconModule,
@@ -65,6 +70,9 @@ type Mode = 'periksa' | 'setujui';
   ],
 })
 export class PoDaftarComponent implements OnInit {
+  /** Sakelar gerak aplikasi — mematikan gerak keluar lembar. */
+  readonly gerakMati = gerakMati;
+
   private readonly api = inject(ApiService);
   private readonly akun = inject(AccountService);
   private readonly izin = inject(PermissionService);

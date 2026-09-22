@@ -60,7 +60,9 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
+/* Sakelar gerak aplikasi (Pengaturan → Transisi "tanpa"), bukan setelan OS
+   — sama dengan desktop; lihat `animations/gerak.ts`. */
+:host-context(html[data-gerak="mati"]) {
   .mpo-sakelar button {
     transition: none;
   }

@@ -2,7 +2,7 @@
 <p class="mpo-sub">{{ "mobile.po.sub" | translate }}</p>
 
 @if (sedangMemuat) {
-  <div class="mpo-muat"><mat-spinner diameter="32" /></div>
+  <app-kartu-kerangka />
 } @else if (!daftar.length) {
   <div class="mpo-kosong">
     <mat-icon>task_alt</mat-icon>
@@ -43,8 +43,8 @@
   ada di dalam, di bawah isi perjanjian yang sebenarnya.
 -->
 @if (dipilih) {
-  <div class="mpo-tirai" (click)="tutup()">
-    <div class="mpo-panel" (click)="$event.stopPropagation()">
+  <div class="mpo-tirai" (click)="tutup()" @lembarBawah [@.disabled]="gerakMati()">
+    <div class="mpo-panel akn-m-lembar" (click)="$event.stopPropagation()">
       <div class="mpo-tarik"></div>
 
       <div class="mpo-panel__kepala">

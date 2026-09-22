@@ -1813,3 +1813,111 @@ html[data-gerak="mati"] .akn-panel-samping .mat-mdc-dialog-content > * {
   background: rgba(120, 128, 140, 0.6);
   background-clip: padding-box;
 }
+
+/* ===================================================================
+   GERAK MOBILE — padanan gerak mikro desktop untuk aplikasi ponsel.
+   Satu sakelar yang sama: `html[data-gerak="mati"]`.
+   =================================================================== */
+
+/* Kartu yang muncul berurutan (kartu CoP, petak beranda). Kartu daftar
+   lain memakai padanannya di `mobile/_mobile.scss` (mixin kartu-daftar). */
+.akn-m-kartu {
+  animation: akn-m-kartu 0.4s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
+  animation-delay: calc(var(--akn-jeda, 0ms) + var(--akn-urut, 10) * 42ms);
+}
+@for $i from 1 through 10 {
+  .akn-m-kartu:nth-of-type(#{$i}) {
+    --akn-urut: #{$i - 1};
+  }
+}
+@keyframes akn-m-kartu {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Kerangka kartu saat daftar dimuat (`app-kartu-kerangka`). */
+.akn-m-kerangka {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.25rem 0;
+}
+.akn-m-kerangka__kartu {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.95rem 1.05rem;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+}
+.akn-m-kerangka__kartu:nth-child(3) { opacity: 0.8; }
+.akn-m-kerangka__kartu:nth-child(4) { opacity: 0.6; }
+.akn-m-kerangka__kartu:nth-child(n + 5) { opacity: 0.4; }
+.akn-m-kerangka__bulat {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+.akn-m-kerangka__teks {
+  flex: 1;
+  display: grid;
+  gap: 0.5rem;
+}
+.akn-m-kerangka__bulat,
+.akn-m-kerangka__garis {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ink) 6%, transparent) 0%,
+    color-mix(in srgb, var(--ink) 13%, transparent) 50%,
+    color-mix(in srgb, var(--ink) 6%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  animation: akn-kilau 1.4s ease-in-out infinite;
+}
+.akn-m-kerangka__garis {
+  display: block;
+  height: 11px;
+  border-radius: 6px;
+}
+
+/* Lembar bawah yang belum punya gerak masuk sendiri (lembar CoP). Gerak
+   KELUAR semua lembar dijalankan pemicu `lembarBawah` (mobile/gerak-lembar). */
+@keyframes akn-m-lembar-naik {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes akn-m-pudar-masuk {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.akn-m-lembar-naik {
+  animation: akn-m-lembar-naik 0.3s cubic-bezier(0.2, 0.85, 0.2, 1) backwards;
+}
+.akn-m-pudar-masuk {
+  animation: akn-m-pudar-masuk 0.18s ease-out backwards;
+}
+
+html[data-gerak="mati"] {
+  .akn-m-kartu,
+  .akn-m-kerangka__bulat,
+  .akn-m-kerangka__garis,
+  .akn-m-lembar-naik,
+  .akn-m-pudar-masuk {
+    animation: none !important;
+  }
+}

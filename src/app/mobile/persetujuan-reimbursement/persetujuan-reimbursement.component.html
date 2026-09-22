@@ -30,7 +30,7 @@
   </div>
 
   @if (sedangMemuat) {
-    <div class="mrb-muat"><mat-spinner diameter="32" /></div>
+    <app-kartu-kerangka />
   } @else if (!daftar.length) {
     <div class="mrb-kosong">
       <mat-icon>task_alt</mat-icon>
@@ -70,9 +70,9 @@
 </div>
 
 @if (dipilih) {
-  <div class="mrb-tirai" (click)="tutup()">
+  <div class="mrb-tirai" (click)="tutup()" @lembarBawah [@.disabled]="gerakMati()">
     <div
-      class="mrb-panel"
+      class="mrb-panel akn-m-lembar"
       appGeserTutup
       (tutup)="tutup()"
       (click)="$event.stopPropagation()"

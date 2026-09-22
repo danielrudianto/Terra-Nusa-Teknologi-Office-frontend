@@ -13,6 +13,9 @@ import { ServerMessageService } from '../../services/server-message.service';
 import { GeserTutupDirective } from '../geser-tutup.directive';
 import { ScrollBawahDirective } from '../scroll-bawah.directive';
 import { TarikSegarkanDirective } from '../tarik-segarkan.directive';
+import { lembarBawah } from '../gerak-lembar';
+import { gerakMati } from '../../animations/gerak';
+import { KartuKerangkaComponent } from '../kartu-kerangka/kartu-kerangka.component';
 
 /**
  * Menyetujui Certificate of Payment dari ponsel.
@@ -31,9 +34,11 @@ import { TarikSegarkanDirective } from '../tarik-segarkan.directive';
  * menampilkannya hanya membuat daftar penuh tombol yang akan ditolak server.
  */
 @Component({
+  animations: [lembarBawah],
   selector: 'app-persetujuan-cop',
   standalone: true,
   imports: [
+    KartuKerangkaComponent,
     CommonModule,
     ReactiveFormsModule,
     MatIconModule,
@@ -52,6 +57,9 @@ import { TarikSegarkanDirective } from '../tarik-segarkan.directive';
   ],
 })
 export class PersetujuanCopComponent implements OnInit {
+  /** Sakelar gerak aplikasi — mematikan gerak keluar lembar. */
+  readonly gerakMati = gerakMati;
+
   private readonly service = inject(CertificateOfPaymentService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);

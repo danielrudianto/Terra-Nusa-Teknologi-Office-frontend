@@ -17,8 +17,17 @@
     </button>
   </header>
 
-  <main class="mkr-isi">
-    <router-outlet />
+  <!--
+    Transisi halaman — direktif yang sama dengan desktop, mengikuti setelan
+    Pengaturan → Transisi. Kuncinya diisi saat outlet mengaktifkan halaman
+    (lihat `catatRute`), bukan dihitung di templat: itu memicu NG0100.
+  -->
+  <main
+    class="mkr-isi"
+    [appTransisiHalaman]="kunciRute()"
+    [transisiSetelan]="setelan()"
+  >
+    <router-outlet (activate)="catatRute()" />
   </main>
 
   <!--

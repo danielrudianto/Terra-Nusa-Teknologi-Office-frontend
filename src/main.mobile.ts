@@ -71,11 +71,15 @@ registerLocaleData(localeZh, 'zh');
 })();
 
 import { AuthInterceptor } from './app/services/auth.interceptor';
+import { MediaMatcher } from '@angular/cdk/layout';
+import { MediaGerakMatcher } from './app/services/media-gerak';
 
 bootstrapApplication(MobileRootComponent, {
   providers: [
     provideRouter(MOBILE_ROUTES, withComponentInputBinding()),
     provideAnimations(),
+    // Gerak mengikuti sakelar aplikasi, bukan setelan OS — sama dengan desktop.
+    { provide: MediaMatcher, useClass: MediaGerakMatcher },
     /*
      * Interceptor yang SAMA dengan desktop.
      *

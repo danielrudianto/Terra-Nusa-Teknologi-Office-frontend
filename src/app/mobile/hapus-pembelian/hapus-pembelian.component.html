@@ -23,7 +23,7 @@
 </mat-form-field>
 
 @if (sedangMemuat) {
-  <div class="mhp-muat"><mat-spinner diameter="32" /></div>
+  <app-kartu-kerangka />
 } @else if (!sudahMencari) {
   <!--
     Layar ini TIDAK menampilkan daftar dengan sendirinya.
@@ -55,8 +55,8 @@
 }
 
 @if (dipilih) {
-  <div class="mhp-tirai" (click)="tutup()">
-    <div class="mhp-panel" (click)="$event.stopPropagation()">
+  <div class="mhp-tirai" (click)="tutup()" @lembarBawah [@.disabled]="gerakMati()">
+    <div class="mhp-panel akn-m-lembar" (click)="$event.stopPropagation()">
       <div class="mhp-tarik"></div>
 
       <h2 class="mhp-judul">{{ dipilih.invoiceName || dipilih.id }}</h2>

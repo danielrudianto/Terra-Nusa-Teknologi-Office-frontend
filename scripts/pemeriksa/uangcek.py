@@ -65,7 +65,7 @@ KUANTITAS_MANUAL = {
      "certificate-of-payment-pratinjau.component.html", 84),
     ("pages/certificate-of-payment/certificate-of-payment-view/"
      "certificate-of-payment-view.component.html", 226),
-    ("mobile/persetujuan-cop/persetujuan-cop.component.html", 137),
+    ("mobile/persetujuan-cop/persetujuan-cop.component.html", 138),
 }
 
 # HARGA SATUAN yang sengaja lebih presisi.
