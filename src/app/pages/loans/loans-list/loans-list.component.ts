@@ -99,6 +99,38 @@ export class LoansListComponent {
     return this.chipSelections[field];
   }
 
+  /*
+   * Pemuatan PERTAMA.
+   *
+   * Dulu tidak ada `ngOnInit` sama sekali: data termuat hanya karena chip
+   * yang dipilih lewat `[selected]` ikut memancarkan selectionChange. Sejak
+   * pancaran palsu itu disaring (transisi ganda), halaman ini kosong sampai
+   * disegarkan — dan pendengar pencariannya pun tidak pernah terpasang.
+   */
+  ngOnInit(): void {
+    const q = this.route.snapshot?.queryParamMap;
+    const n = (k: string) => Number(q?.get(k));
+    if (Number.isFinite(n('page')) && n('page') >= 0 && q?.get('page')) this.page = n('page');
+    if (Number.isFinite(n('pageSize')) && n('pageSize') > 0) this.pageSize = n('pageSize');
+    if (q?.get('sortBy')) this.sortBy = q.get('sortBy')!;
+    if (q?.get('sortByDirection')) this.sortByDirection = q.get('sortByDirection')!;
+    if (q?.get('search')) this.searchControl.setValue(q.get('search'), { emitEvent: false });
+    for (const k of ['isPaid', 'isUnpaid']) {
+      const v = q?.get(k);
+      if (v === 'true' || v === 'false') {
+        this.filterFormGroup.get(k)?.setValue(v === 'true', { emitEvent: false });
+        this.chipSelections[k] = v === 'true';
+      }
+    }
+    this.setupQueryParamListeners();
+    this.fetchData(this.page, this.pageSize);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   private setupQueryParamListeners(): void {
     this.filterFormGroup.valueChanges
       .pipe(takeUntil(this.destroy$), debounceTime(300))
@@ -167,6 +199,7 @@ export class LoansListComponent {
     // halamannya pun jalan dua kali.
     if (event?.isUserInput === false) return;
     this.filterFormGroup.get(field)?.setValue(event.selected);
+    this.chipSelections[field] = event.selected;
     this.updateQueryParams();
     this.fetchData(0);
   }

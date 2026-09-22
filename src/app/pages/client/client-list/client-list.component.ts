@@ -52,7 +52,7 @@ export class ClientListComponent {
   clients: any[] = [];
   count: number = 0;
 
-  displayedColumns: string[] = ['name', 'address', 'city', 'npwp', 'action'];
+  displayedColumns: string[] = ['name', 'address', 'city', 'npwp'];
 
   ngOnInit(): void {
     this.fetchClients();

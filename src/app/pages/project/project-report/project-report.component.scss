@@ -1437,3 +1437,12 @@
     flex: none;
   }
 }
+
+/* Grafik arus kas dapat diseret (menggeser jendela) — kursor memberitahunya. */
+.prp-prog__grafik--seret {
+  cursor: grab;
+  touch-action: pan-y;
+}
+.prp-prog__grafik--seret:active {
+  cursor: grabbing;
+}

@@ -92,6 +92,15 @@ export class PurchaseDraftListComponent {
     }
   }
 
+  /*
+   * Pemuatan PERTAMA — dulu hanya terjadi karena chip `[selected]` ikut
+   * memancarkan selectionChange; sejak pancaran palsu itu disaring, halaman
+   * ini kosong sampai disegarkan.
+   */
+  ngOnInit(): void {
+    this.fetchData(1);
+  }
+
   fetchData(targetPage: number = 1, pageSize: number = this.pageSize) {
     this.isLoading = true;
     const searchValue = this.searchControl.value;

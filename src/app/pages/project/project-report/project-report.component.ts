@@ -1351,6 +1351,43 @@ export class ProjectReportComponent implements OnInit {
     this.geserKas.set(0);
   }
 
+  /*
+   * SERET untuk menggeser jendela arus kas.
+   *
+   * Grafik ini hanya menerima titik DI DALAM jendela (30/60/90), jadi geser
+   * bawaan plugin zoom tidak punya apa pun di luar layar untuk ditampilkan —
+   * itulah sebab "bisa zoom tapi tidak bisa digeser". Seretan di sini
+   * menggerakkan `geserKas` itu sendiri: seret ke kanan = mundur ke titik
+   * yang lebih lama, seperti grafik saham.
+   */
+  private seret: { x: number; geser: number; pxPerTitik: number } | null = null;
+
+  mulaiSeretKas(e: PointerEvent): void {
+    if (!this.jendelaDipakai() || e.button !== 0) return;
+    const el = e.currentTarget as HTMLElement;
+    const lebar = el.getBoundingClientRect().width || 1;
+    this.seret = {
+      x: e.clientX,
+      geser: this.geserSah(),
+      pxPerTitik: lebar / Math.max(1, this.lebarJendela()),
+    };
+    try {
+      el.setPointerCapture(e.pointerId);
+    } catch {}
+  }
+
+  gerakSeretKas(e: PointerEvent): void {
+    if (!this.seret) return;
+    const langkah = Math.round((e.clientX - this.seret.x) / this.seret.pxPerTitik);
+    const maks = Math.max(0, this.titikArusKas().length - this.lebarJendela());
+    const baru = Math.max(0, Math.min(maks, this.seret.geser + langkah));
+    if (baru !== this.geserKas()) this.geserKas.set(baru);
+  }
+
+  akhiriSeretKas(): void {
+    this.seret = null;
+  }
+
   pilihJendela(p: number | 'auto'): void {
     this.pilihanJendela.set(p);
     // Kembali ke ujung kanan: melebarkan jendela dari posisi tengah membuat
@@ -1533,10 +1570,16 @@ export class ProjectReportComponent implements OnInit {
   readonly opsiArusKas: ChartConfiguration<'line'>['options'] = {
     responsive: true,
     maintainAspectRatio: false,
+    // Tanpa animasi: tiap langkah seretan mengganti datanya, dan animasi
+    // membuat garisnya bergoyang mengejar jari.
+    animation: false,
     interaction: { mode: 'index', intersect: false },
     plugins: {
       // Jendelanya diatur sendiri (30/60/90 hari) — bukan 12 titik bawaan.
       geserZoomAkn: { jendelaAwal: false },
+      // Geser plugin DIMATIKAN: seretan menggerakkan jendela (`geserKas`),
+      // lihat `mulaiSeretKas`. Zoom roda/cubit tetap.
+      zoom: { pan: { enabled: false } } as any,
       // Sama seperti kurva S: legenda bertitik kecil supaya tidak membungkus
       // menjadi dua baris di layar sempit.
       legend: {

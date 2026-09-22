@@ -551,6 +551,30 @@ describe('ProjectReport — arus kas', () => {
     }
   }));
 
+  it('seret ke kanan menggeser jendela ke titik yang lebih lama', fakeAsync(() => {
+    const banyak = {
+      ...ARUS,
+      outgoing: Array.from({ length: 60 }, (_, i) => ({
+        date: `2026-0${1 + Math.floor(i / 28)}-${String(1 + (i % 28)).padStart(2, '0')}`,
+        amount: 10,
+        jenis: 'pembelian',
+      })),
+    };
+    const f = buat(banyak);
+    const c = f.componentInstance;
+    c.muat('R501');
+    tick();
+    c.pilihJendela(30);
+    expect(c.jendelaDipakai()).toBeTrue();
+    const el = { getBoundingClientRect: () => ({ width: 300 }), setPointerCapture: () => {} };
+    c.mulaiSeretKas({ button: 0, clientX: 100, pointerId: 1, currentTarget: el } as any);
+    c.gerakSeretKas({ clientX: 130 } as any); // 10 px per titik -> 3 titik
+    expect(c.geserKas()).toBe(3);
+    c.gerakSeretKas({ clientX: 50 } as any); // ke kiri melewati ujung terbaru
+    expect(c.geserKas()).toBe(0);
+    c.akhiriSeretKas();
+  }));
+
   it('garis digambar LURUS, tanpa lengkung', fakeAsync(() => {
     /*
      * Lengkung (`tension > 0`) membuat chart.js menarik kurva MELEWATI titik

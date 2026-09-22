@@ -819,7 +819,15 @@
             </div>
           </div>
 
-          <div class="prp-prog__grafik" #wadahGrafik>
+          <div
+            class="prp-prog__grafik"
+            #wadahGrafik
+            [class.prp-prog__grafik--seret]="jendelaDipakai()"
+            (pointerdown)="mulaiSeretKas($event)"
+            (pointermove)="gerakSeretKas($event)"
+            (pointerup)="akhiriSeretKas()"
+            (pointercancel)="akhiriSeretKas()"
+          >
             <canvas
               baseChart
               type="line"
