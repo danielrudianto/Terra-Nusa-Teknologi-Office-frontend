@@ -111,10 +111,18 @@
             </svg>
           </button>
 
+          <!--
+            Buka/tutup memakai `grid-template-rows: 1fr <-> 0fr`, bukan
+            `max-height`: tinggi aslinya ikut dianimasikan, jadi gerak buka
+            dan tutup sama panjang berapa pun jumlah menunya. `inert` saat
+            tertutup: menu yang tak terlihat tidak ikut tersinggahi Tab.
+          -->
           <div
-            class="snav-group__items"
+            class="snav-group__items snav-group__items--lipat"
             [class.is-collapsed]="isCollapsed(group.name) && !isFiltering"
+            [attr.inert]="isCollapsed(group.name) && !isFiltering ? '' : null"
           >
+            <div class="snav-group__isi">
             <ng-container *ngFor="let i of group.children">
               <app-side-nav-item
                 *ngIf="matches(i)"
@@ -128,6 +136,7 @@
                 (pinToggle)="togglePin(i)"
               />
             </ng-container>
+            </div>
           </div>
         </div>
       </ng-container>
