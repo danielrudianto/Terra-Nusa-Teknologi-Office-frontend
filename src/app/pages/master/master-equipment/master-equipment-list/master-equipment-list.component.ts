@@ -1,3 +1,5 @@
+import { panelSamping } from '../../../../helpers/panel-samping';
+import { HapusTundaService } from 'src/app/services/hapus-tunda.service';
 import { CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import { CanDirective } from '../../../../directives/can.directive';
@@ -15,7 +17,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { debounceTime } from 'rxjs';
-import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ApiService } from 'src/app/services/api.service';
@@ -51,6 +52,7 @@ import { KerangkaTabelDirective } from '../../../../directives/kerangka-tabel.di
   styleUrl: './master-equipment-list.component.scss',
 })
 export class MasterEquipmentListComponent {
+  private readonly hapusTunda = inject(HapusTundaService);
   private readonly serverMessage = inject(ServerMessageService);
 
   private readonly translate = inject(TranslateService);
@@ -149,40 +151,35 @@ export class MasterEquipmentListComponent {
   }
 
   viewItem(item: any) {
-    this.dialog.open(MasterEquipmentViewComponent, {
+    this.dialog.open(MasterEquipmentViewComponent, panelSamping({
       width: '560px',
       maxWidth: '94vw',
       autoFocus: false,
       data: { equipment: item },
-    });
+    }));
   }
 
-  deleteItem(item: any) {
-    this.dialog
-      .open(DeleteConfirmationComponent, {
-        data: {
-          title: 'Hapus equipment',
-          prompt: `Yakin mau menghapus "${item.name}"?`,
-        },
-      })
-      .afterClosed()
-      .subscribe((confirmed) => {
-        if (!confirmed) return;
-        this.apiService.delete('master-equipment/' + item.id).subscribe({
-          next: () => {
-            this.snackBar.open(
-      this.translate.instant('notify.deleteSuccess'), 'Close', {
-              duration: 2000,
-            });
-            this.fetch(this.page);
-          },
-          error: (err) =>
-            this.snackBar.open(
-              this.serverMessage.terjemahkan(err, 'notify.deleteFailed'),
-              'Close',
-              { duration: 3000 },
-            ),
-        });
-      });
+  deleteItem(baris: any) {
+    // Tanpa dialog konfirmasi: barisnya hilang seketika dan bisa diurungkan
+    // selama beberapa detik — lihat HapusTundaService.
+    const item = baris;
+    if (!item) return;
+    const posisi = this.items.findIndex((x: any) => x.id === item.id);
+    this.hapusTunda.hapus({
+      label: item.name,
+      kirim: () => this.apiService.delete('master-equipment/' + item.id),
+      sembunyikan: () => {
+        this.items = this.items.filter((x: any) => x.id !== item.id);
+        this.count = Math.max(0, (this.count || 0) - 1);
+      },
+      pulihkan: () => {
+        if (this.items.some((x: any) => x.id === item.id)) return;
+        const a = [...this.items];
+        a.splice(Math.min(Math.max(posisi, 0), a.length), 0, item);
+        this.items = a;
+        this.count = (this.count || 0) + 1;
+      },
+      berhasil: () => this.fetch(this.page),
+    });
   }
 }

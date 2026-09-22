@@ -1509,3 +1509,29 @@ html[data-gerak="mati"] {
   border-radius: 16px !important;
   overflow: hidden;
 }
+
+/* ===================================================================
+   PANEL SAMPING (`panelSamping()` di helpers/panel-samping.ts)
+   Rincian meluncur dari kanan setinggi layar. Material menganimasikan
+   skala permukaan dialog; di sini diganti geser mendatar.
+   =================================================================== */
+.akn-panel-samping .mat-mdc-dialog-surface {
+  border-radius: 18px 0 0 18px !important;
+  transform: translateX(56px);
+  box-shadow: -12px 0 40px rgba(16, 24, 40, 0.16) !important;
+}
+.akn-panel-samping .mdc-dialog--open .mat-mdc-dialog-surface,
+.akn-panel-samping .mdc-dialog--closing .mat-mdc-dialog-surface {
+  transform: none;
+}
+.akn-panel-samping .mat-mdc-dialog-container {
+  --mat-dialog-container-max-width: 100vw;
+}
+html[data-gerak="mati"] .akn-panel-samping .mat-mdc-dialog-surface {
+  transform: none;
+}
+@media (max-width: 600px) {
+  .akn-panel-samping .mat-mdc-dialog-surface {
+    border-radius: 0 !important;
+  }
+}

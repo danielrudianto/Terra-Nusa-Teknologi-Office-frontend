@@ -502,3 +502,61 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   line-height: 18px;
   opacity: 0.75;
 }
+
+/* ===================================================================
+   GERAK: memuat dan muncul
+   Memuat — angka tiap sel diganti balok berkilau (warnanya dari --ink,
+   jadi pas di tema gelap). Muncul — sel masuk bergelombang diagonal dari
+   pojok kiri atas (`--gel` = baris + kolom), sekali tiap data tiba.
+   Skala, bukan geser: sel tidak pernah keluar dari kotaknya sendiri.
+   =================================================================== */
+@keyframes cal-kilau {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+@keyframes cal-muncul {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.cal-grid--memuat .cal-cell.is-active .cal-cell__value,
+.cal-grid--memuat .cal-cell.is-active .cal-cell__plan {
+  color: transparent !important;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ink) 6%, transparent) 0%,
+    color-mix(in srgb, var(--ink) 13%, transparent) 50%,
+    color-mix(in srgb, var(--ink) 6%, transparent) 100%
+  ) !important;
+  background-size: 200% 100% !important;
+  animation: cal-kilau 1.3s ease-in-out infinite;
+  animation-delay: calc(var(--gel, 0) * 40ms);
+
+  .mat-icon {
+    visibility: hidden;
+  }
+}
+
+.cal-grid--muncul .cal-cell.is-active {
+  animation: cal-muncul 0.42s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation-delay: calc(var(--gel, 0) * 32ms);
+}
+
+:host-context(html[data-gerak="mati"]) {
+  .cal-grid--muncul .cal-cell.is-active,
+  .cal-grid--memuat .cal-cell.is-active .cal-cell__value,
+  .cal-grid--memuat .cal-cell.is-active .cal-cell__plan {
+    animation: none;
+  }
+}

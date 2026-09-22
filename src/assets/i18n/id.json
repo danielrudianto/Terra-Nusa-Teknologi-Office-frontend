@@ -1372,6 +1372,12 @@
     "judul": "Menunggu Anda",
     "kosong": "Tidak ada yang menunggu Anda. Semua beres!"
   },
+  "hapusTunda": {
+    "dihapus": "{{label}} dihapus",
+    "urungkan": "Urungkan",
+    "tutup": "Tutup",
+    "labelTransfer": "Transfer"
+  },
   "client": {
     "title": "Klien",
     "subtitle": "Kelola data klien perusahaan",

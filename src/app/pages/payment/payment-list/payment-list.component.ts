@@ -1,3 +1,4 @@
+import { panelSamping } from '../../../helpers/panel-samping';
 import { CommonModule } from '@angular/common';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -421,11 +422,11 @@ export class PaymentListComponent implements OnInit, OnDestroy {
 
   viewPayment(id: number) {
     this.dialog
-      .open(PaymentViewComponent, {
+      .open(PaymentViewComponent, panelSamping({
         data: {
           id: id,
         },
-      })
+      }))
       .afterClosed()
       .subscribe((berubah) => {
         // Dialog menutup dengan `true` bila pembayarannya dihapus dari sana —

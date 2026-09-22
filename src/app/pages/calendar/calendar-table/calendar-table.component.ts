@@ -213,7 +213,19 @@ export class CalendarTableComponent {
     this.fetchData();
   }
 
+  /*
+   * Keadaan tampilan kisi:
+   *   memuat  — angka sel diganti kilau kerangka;
+   *   muncul  — sel masuk bergelombang dari pojok kiri atas.
+   * `muncul` dimatikan saat memuat dan dinyalakan lagi saat data tiba,
+   * supaya animasinya diputar ulang setiap ganti bulan atau rekening.
+   */
+  memuat = false;
+  muncul = false;
+
   fetchData() {
+    this.memuat = true;
+    this.muncul = false;
     this.apiService
       .get('calendar', {
         month: this.month + 1,
@@ -228,8 +240,12 @@ export class CalendarTableComponent {
           this.incomeData = data.incomes;
           this.interpayments = data.interpayments;
           this.balance = data.balances;
+          this.memuat = false;
+          this.muncul = true;
         },
         error: (error) => {
+          this.memuat = false;
+          this.muncul = true;
           this.snackBar.open(
             this.translate.instant('notify.loadFailed'),
             'Close',

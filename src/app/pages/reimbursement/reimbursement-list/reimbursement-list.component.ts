@@ -1,3 +1,4 @@
+import { panelSamping } from '../../../helpers/panel-samping';
 import { Component, ViewChild, OnDestroy } from '@angular/core';
 import { CanDirective } from '../../../directives/can.directive';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -316,11 +317,11 @@ export class ReimbursementListComponent implements OnDestroy {
   }
 
   viewReimbursementData(id: number) {
-    this.dialog.open(ReimbursementViewComponent, {
+    this.dialog.open(ReimbursementViewComponent, panelSamping({
       data: {
         id: id,
       },
-    });
+    }));
   }
 
   changePage(event: any) {

@@ -43,6 +43,11 @@ export class DialogGeserDirective implements OnInit, OnDestroy {
     const el = this.host.nativeElement as HTMLElement;
     this.panel = el.closest('.mat-mdc-dialog-surface') as HTMLElement | null;
     if (!this.panel) return;
+    // Panel samping menempel di tepi kanan — tidak untuk diseret.
+    if (el.closest('.akn-panel-samping')) {
+      this.panel = null;
+      return;
+    }
 
     el.style.cursor = 'move';
     // Menyeret kepala tidak boleh sekaligus menandai teks judulnya.

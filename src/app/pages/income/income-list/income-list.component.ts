@@ -1,3 +1,4 @@
+import { panelSamping } from '../../../helpers/panel-samping';
 import { Component, inject } from '@angular/core';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -236,11 +237,11 @@ export class IncomeListComponent {
   }
 
   viewIncome(id: number) {
-    this.dialog.open(IncomeViewComponent, {
+    this.dialog.open(IncomeViewComponent, panelSamping({
       data: {
         id: id,
       },
-    });
+    }));
   }
 
   deleteIncome(id: number) {

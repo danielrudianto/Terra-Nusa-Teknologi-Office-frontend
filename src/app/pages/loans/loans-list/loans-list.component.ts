@@ -1,3 +1,4 @@
+import { panelSamping } from '../../../helpers/panel-samping';
 import { CommonModule } from '@angular/common';
 import { CanDirective } from '../../../directives/can.directive';
 import { Component } from '@angular/core';
@@ -299,10 +300,10 @@ export class LoansListComponent {
   }
 
   viewLoan(id: number) {
-    this.dialog.open(LoansViewComponent, {
+    this.dialog.open(LoansViewComponent, panelSamping({
       data: {
         id: id,
       },
-    });
+    }));
   }
 }

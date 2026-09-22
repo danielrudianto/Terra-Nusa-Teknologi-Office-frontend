@@ -1,3 +1,4 @@
+import { panelSamping } from '../../../helpers/panel-samping';
 import { Component, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CanDirective } from '../../../directives/can.directive';
@@ -276,11 +277,11 @@ export class SalesInvoiceListComponent {
   }
 
   viewSalesInvoice(id: number) {
-    this.dialog.open(SalesInvoiceViewComponent, {
+    this.dialog.open(SalesInvoiceViewComponent, panelSamping({
       data: {
         id: id,
       },
-    });
+    }));
   }
 
   openIncomeTax(invoice: any): void {

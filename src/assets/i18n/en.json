@@ -1372,6 +1372,12 @@
     "judul": "Waiting for you",
     "kosong": "Nothing is waiting for you. All clear!"
   },
+  "hapusTunda": {
+    "dihapus": "{{label}} deleted",
+    "urungkan": "Undo",
+    "tutup": "Close",
+    "labelTransfer": "Transfer"
+  },
   "client": {
     "title": "Client",
     "subtitle": "Manage company client data",

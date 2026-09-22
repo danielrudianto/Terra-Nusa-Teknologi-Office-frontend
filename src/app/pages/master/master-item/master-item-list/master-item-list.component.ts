@@ -1,6 +1,7 @@
+import { HapusTundaService } from 'src/app/services/hapus-tunda.service';
 import { CommonModule } from '@angular/common';
 import { CanDirective } from '../../../../directives/can.directive';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,7 +15,6 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { debounceTime } from 'rxjs';
-import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MasterItemCreateComponent } from '../master-item-create/master-item-create.component';
@@ -60,6 +60,7 @@ import { KerangkaTabelDirective } from '../../../../directives/kerangka-tabel.di
   styleUrl: './master-item-list.component.scss',
 })
 export class MasterItemListComponent {
+  private readonly hapusTunda = inject(HapusTundaService);
   constructor(
     private serverMessage: ServerMessageService,
     public settings: SettingsService,
@@ -385,31 +386,27 @@ export class MasterItemListComponent {
       });
   }
 
-  deleteItem(item: any) {
-    const ref = this.dialog.open(DeleteConfirmationComponent, {
-      data: {
-        title: this.translate.instant('confirm.deleteTitle'),
-        prompt: this.translate.instant('confirm.deleteNamed', {
-          name: item.sku,
-        }),
+  deleteItem(baris: any) {
+    // Tanpa dialog konfirmasi: barisnya hilang seketika dan bisa diurungkan
+    // selama beberapa detik — lihat HapusTundaService.
+    const item = baris;
+    if (!item) return;
+    const posisi = this.items.findIndex((x: any) => x.id === item.id);
+    this.hapusTunda.hapus({
+      label: item.sku || item.name,
+      kirim: () => this.apiService.delete('master-items/' + item.id),
+      sembunyikan: () => {
+        this.items = this.items.filter((x: any) => x.id !== item.id);
+        this.count = Math.max(0, (this.count || 0) - 1);
       },
-    });
-    ref.afterClosed().subscribe((confirmed) => {
-      if (!confirmed) return;
-      this.apiService.delete('master-items/' + item.id).subscribe({
-        next: () => {
-          this.snackBar.open(
-      this.translate.instant('notify.deleteSuccess'), 'Close', { duration: 2000 });
-          this.fetchItems(this.page);
-        },
-        error: (err) => {
-          this.snackBar.open(
-            this.serverMessage.terjemahkan(err, 'notify.deleteFailed'),
-            'Close',
-            { duration: 3000 },
-          );
-        },
-      });
+      pulihkan: () => {
+        if (this.items.some((x: any) => x.id === item.id)) return;
+        const a = [...this.items];
+        a.splice(Math.min(Math.max(posisi, 0), a.length), 0, item);
+        this.items = a;
+        this.count = (this.count || 0) + 1;
+      },
+      berhasil: () => this.fetchItems(this.page),
     });
   }
 }

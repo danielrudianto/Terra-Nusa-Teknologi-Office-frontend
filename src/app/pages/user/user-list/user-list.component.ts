@@ -1,3 +1,4 @@
+import { panelSamping } from '../../../helpers/panel-samping';
 import { Component } from '@angular/core';
 import { CanDirective } from '../../../directives/can.directive';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -137,7 +138,7 @@ export class UserListComponent {
   }
 
   onViewUser(id: number) {
-    this.dialog.open(UserViewComponent, { data: { id } });
+    this.dialog.open(UserViewComponent, panelSamping({ data: { id } }));
   }
 
   onEditUser(id: number) {

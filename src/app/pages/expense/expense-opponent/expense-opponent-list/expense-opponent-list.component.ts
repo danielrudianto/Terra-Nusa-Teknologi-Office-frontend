@@ -1,3 +1,5 @@
+import { panelSamping } from '../../../../helpers/panel-samping';
+import { HapusTundaService } from 'src/app/services/hapus-tunda.service';
 import { Component, inject } from '@angular/core';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { CanDirective } from '../../../../directives/can.directive';
@@ -6,7 +8,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { ExpenseOpponentViewComponent } from '../expense-opponent-view/expense-opponent-view.component';
 import { ExpenseOpponentUpdateComponent } from '../expense-opponent-update/expense-opponent-update.component';
 import { ExpenseOpponentCreateComponent } from '../expense-opponent-create/expense-opponent-create.component';
-import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { TranslateService } from '@ngx-translate/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
@@ -48,6 +49,7 @@ import { KerangkaTabelDirective } from '../../../../directives/kerangka-tabel.di
   ],
 })
 export class ExpenseOpponentListComponent {
+  private readonly hapusTunda = inject(HapusTundaService);
   private readonly serverMessage = inject(ServerMessageService);
   constructor(
     private apiService: ApiService,
@@ -145,12 +147,12 @@ export class ExpenseOpponentListComponent {
 
   onViewOpponent(opponent: any) {
     this.dialog
-      .open(ExpenseOpponentViewComponent, {
+      .open(ExpenseOpponentViewComponent, panelSamping({
         data: { opponent },
         width: '560px',
         maxWidth: '94vw',
         autoFocus: false,
-      })
+      }))
       .afterClosed()
       .subscribe((result) => {
         if (result?.action === 'edit') {
@@ -160,33 +162,28 @@ export class ExpenseOpponentListComponent {
   }
 
   onDeleteOpponent(opponent: any) {
-    this.dialog
-      .open(DeleteConfirmationComponent, {
-        data: {
-          title: this.translate.instant('expenseOpponent.deleteTitle'),
-          prompt: this.translate.instant('expenseOpponent.deletePrompt'),
-        },
-      })
-      .afterClosed()
-      .subscribe((confirmed) => {
-        if (!confirmed) return;
-        this.apiService.delete('expense-opponents/' + opponent.id).subscribe({
-          next: () => {
-            this.snackBar.open(
-              this.translate.instant('expenseOpponent.deleted'),
-              'Close',
-              { duration: 2000 },
-            );
-            this.fetchOpponents(this.page);
-          },
-          error: (err) =>
-            this.snackBar.open(
-              this.serverMessage.terjemahkan(err, 'expenseOpponent.deleteFailed'),
-              'Close',
-              { duration: 3000 },
-            ),
-        });
-      });
+    // Tanpa dialog konfirmasi: barisnya hilang seketika dan bisa diurungkan
+    // selama beberapa detik — lihat HapusTundaService.
+    const item = opponent;
+    if (!item) return;
+    const posisi = this.suppliers.findIndex((x: any) => x.id === item.id);
+    this.hapusTunda.hapus({
+      label: item.name,
+      kirim: () => this.apiService.delete('expense-opponents/' + item.id),
+      sembunyikan: () => {
+        this.suppliers = this.suppliers.filter((x: any) => x.id !== item.id);
+        this.count = Math.max(0, (this.count || 0) - 1);
+      },
+      pulihkan: () => {
+        if (this.suppliers.some((x: any) => x.id === item.id)) return;
+        const a = [...this.suppliers];
+        a.splice(Math.min(Math.max(posisi, 0), a.length), 0, item);
+        this.suppliers = a;
+        this.count = (this.count || 0) + 1;
+      },
+      berhasil: () => this.fetchOpponents(this.page),
+      galatCadangan: 'expenseOpponent.deleteFailed',
+    });
   }
 
   copyPaymentNumber(paymentNumber: string) {

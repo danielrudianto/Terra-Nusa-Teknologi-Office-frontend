@@ -1,3 +1,5 @@
+import { panelSamping } from '../../../helpers/panel-samping';
+import { HapusTundaService } from 'src/app/services/hapus-tunda.service';
 import { CommonModule } from '@angular/common';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, ViewChild, OnInit, inject } from '@angular/core';
@@ -23,7 +25,6 @@ import moment from 'moment';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { debounceTime } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
@@ -62,6 +63,7 @@ import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
   standalone: true,
 })
 export class InterpaymentListComponent implements OnInit {
+  private readonly hapusTunda = inject(HapusTundaService);
   private readonly serverMessage = inject(ServerMessageService);
   constructor(
     public settings: SettingsService,
@@ -218,50 +220,35 @@ export class InterpaymentListComponent implements OnInit {
   }
 
   viewInterpayment(id: number) {
-    this.dialog.open(InterpaymentViewComponent, {
+    this.dialog.open(InterpaymentViewComponent, panelSamping({
       data: { id },
       width: '560px',
       maxWidth: '94vw',
       autoFocus: false,
-    });
+    }));
   }
 
   delete(id: number) {
-    this.dialog
-      .open(DeleteConfirmationComponent, {
-        data: {
-          title: this.translate.instant('confirm.deleteTitle'),
-          prompt: this.translate.instant('confirm.deletePrompt'),
-        },
-      })
-      .afterClosed()
-      .subscribe((data) => {
-        if (data) {
-          this.apiService.delete(`interpayments/${id}`).subscribe({
-            next: () => {
-              // remove the deleted interpayment from the list
-              this.payments = this.payments.filter(
-                (payment) => payment.id !== id,
-              );
-              this.count--;
-              this.snackBar.open(
-      this.translate.instant('notify.deleteSuccess'),
-                'Close',
-                {
-                  duration: 3000,
-                },
-              );
-            },
-            error: (error) => {
-              console.error('Error deleting interpayment:', error);
-              this.snackBar.open(
-          this.serverMessage.terjemahkan(error), 'Close', {
-                duration: 3000,
-              });
-            },
-          });
-        }
-      });
+    // Tanpa dialog konfirmasi: barisnya hilang seketika dan bisa diurungkan
+    // selama beberapa detik — lihat HapusTundaService.
+    const item = this.payments.find((x: any) => x.id === id);
+    if (!item) return;
+    const posisi = this.payments.findIndex((x: any) => x.id === item.id);
+    this.hapusTunda.hapus({
+      label: this.translate.instant('hapusTunda.labelTransfer'),
+      kirim: () => this.apiService.delete(`interpayments/${item.id}`),
+      sembunyikan: () => {
+        this.payments = this.payments.filter((x: any) => x.id !== item.id);
+        this.count = Math.max(0, (this.count || 0) - 1);
+      },
+      pulihkan: () => {
+        if (this.payments.some((x: any) => x.id === item.id)) return;
+        const a = [...this.payments];
+        a.splice(Math.min(Math.max(posisi, 0), a.length), 0, item);
+        this.payments = a;
+        this.count = (this.count || 0) + 1;
+      },
+    });
   }
 
   isDisabled(id: number) {

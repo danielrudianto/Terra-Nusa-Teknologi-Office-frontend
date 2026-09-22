@@ -1372,6 +1372,12 @@
     "judul": "等待您处理",
     "kosong": "没有等待您处理的事项。一切就绪！"
   },
+  "hapusTunda": {
+    "dihapus": "已删除 {{label}}",
+    "urungkan": "撤销",
+    "tutup": "关闭",
+    "labelTransfer": "转账"
+  },
   "client": {
     "title": "客户",
     "subtitle": "管理公司客户数据",

@@ -1,3 +1,4 @@
+import { HapusTundaService } from 'src/app/services/hapus-tunda.service';
 import { Component, inject } from '@angular/core';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -6,7 +7,6 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
 import { debounceTime } from 'rxjs';
-import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -55,6 +55,7 @@ import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.direc
   standalone: true,
 })
 export class SupplierListComponent {
+  private readonly hapusTunda = inject(HapusTundaService);
   private readonly ruteCari = inject(ActivatedRoute, { optional: true });
   private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
@@ -156,33 +157,26 @@ export class SupplierListComponent {
   }
 
   onConfirmDelete(id: number) {
-    this.dialog
-      .open(DeleteConfirmationComponent, {
-        data: {
-          title: 'Delete supplier',
-          prompt: 'Are you sure you want to delete this supplier?',
-        },
-      })
-      .afterClosed()
-      .subscribe((data) => {
-        if (data == true) {
-          this.apiService.delete(`suppliers/${id}`).subscribe({
-            next: () => {
-              this.snackBar.open(
-      this.translate.instant('notify.deleteSuccess'), 'Close', {
-                duration: 3000,
-              });
-              const index = this.suppliers.findIndex((x) => x.id == id);
-              if (index != -1) {
-                this.suppliers.splice(index, 1);
-              }
-            },
-            error: (err) => {
-              console.error('Error deleting supplier:', err);
-            },
-          });
-        }
-      });
+    // Tanpa dialog konfirmasi: barisnya hilang seketika dan bisa diurungkan
+    // selama beberapa detik — lihat HapusTundaService.
+    const item = this.suppliers.find((x: any) => x.id == id);
+    if (!item) return;
+    const posisi = this.suppliers.findIndex((x: any) => x.id === item.id);
+    this.hapusTunda.hapus({
+      label: item.name,
+      kirim: () => this.apiService.delete(`suppliers/${item.id}`),
+      sembunyikan: () => {
+        this.suppliers = this.suppliers.filter((x: any) => x.id !== item.id);
+        this.count = Math.max(0, (this.count || 0) - 1);
+      },
+      pulihkan: () => {
+        if (this.suppliers.some((x: any) => x.id === item.id)) return;
+        const a = [...this.suppliers];
+        a.splice(Math.min(Math.max(posisi, 0), a.length), 0, item);
+        this.suppliers = a;
+        this.count = (this.count || 0) + 1;
+      },
+    });
   }
 
   onUpdateSupplier(id: number) {

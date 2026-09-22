@@ -31,10 +31,16 @@
       <div class="cal-dow--we">{{ "common.sun" | translate }}</div>
     </div>
 
-    <div class="cal-grid">
-      <ng-container *ngFor="let week of weeks">
+    <div
+      class="cal-grid"
+      [class.cal-grid--memuat]="memuat"
+      [class.cal-grid--muncul]="muncul"
+      [attr.aria-busy]="memuat"
+    >
+      <ng-container *ngFor="let week of weeks; let wi = index">
         <div
-          *ngFor="let day of week"
+          *ngFor="let day of week; let di = index"
+          [style.--gel]="wi + di"
           class="cal-cell"
           [ngClass]="{
             'is-active': day != null,
