@@ -102,7 +102,7 @@
     <div class="prl-loadingbar" *ngIf="isLoading"><span></span></div>
 
     <div class="table-responsive">
-      <table mat-table [dataSource]="projects" #table>
+      <table mat-table [appKerangka]="isLoading" [dataSource]="projects" #table>
         <ng-container matColumnDef="code">
           <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('code')">
             <span class="pl-th">

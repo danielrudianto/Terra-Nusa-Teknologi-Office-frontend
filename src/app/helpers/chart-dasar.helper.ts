@@ -1,3 +1,4 @@
+import { gerakMati } from '../animations/gerak';
 import { Chart, ChartType, Plugin, registerables } from 'chart.js';
 // Plugin zoom membawa Hammer sendiri (dependensinya, bukan dependensi kita):
 // Hammer yang menangani SEMUA seretan — tetikus maupun jari. `hammerjs`
@@ -57,6 +58,36 @@ export function pastikanChart(): void {
   Chart.defaults.font.size = 11;
 
   pasangGeserZoom();
+  pasangGerakMasuk();
+}
+
+/**
+ * GRAFIK TUMBUH SAAT PERTAMA TAMPIL — batang naik satu per satu dari kiri,
+ * garis naik dari dasar, donat berputar penuh.
+ *
+ * Jedanya hanya untuk gambar PERTAMA tiap grafik (`$aknSudahMasuk`).
+ * Mengganti saringan, menggeser, atau memperbesar sesudahnya bergerak
+ * serentak dan singkat: batang yang menunggu giliran setiap kali tahunnya
+ * diganti terasa lambat, bukan mahal.
+ *
+ * Mematuhi saklar gerak (`gerakMati`) — dibaca SAAT grafik bergerak,
+ * bukan saat didaftarkan, supaya mengubah setelan berlaku tanpa memuat
+ * ulang halaman.
+ */
+function pasangGerakMasuk(): void {
+  const a: any = Chart.defaults.animation;
+  a.easing = 'easeOutQuart';
+  a.duration = () => (gerakMati() ? 0 : 750);
+  a.delay = (ctx: any) => {
+    if (gerakMati() || ctx?.type !== 'data' || ctx.chart?.$aknSudahMasuk) return 0;
+    return Math.min(ctx.dataIndex ?? 0, 24) * 16 + (ctx.datasetIndex ?? 0) * 70;
+  };
+  Chart.register({
+    id: 'aknGerakMasuk',
+    afterRender(chart: any) {
+      chart.$aknSudahMasuk = true;
+    },
+  });
 }
 
 /**

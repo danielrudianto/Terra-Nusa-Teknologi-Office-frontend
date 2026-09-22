@@ -63,9 +63,7 @@
       class="cp-total__value"
       *ngIf="!isLoading"
       [class.negative]="negatif(totalBalance)"
-    >
-      {{ formatIDR(totalBalance) }}
-    </span>
+     [appHitungNaik]="totalBalance" [hnFormat]="formatIDR"></span>
     <span class="cp-skeleton cp-skeleton--hero" *ngIf="isLoading"></span>
 
     <!--
@@ -162,9 +160,7 @@
           {{ maskAccount(a.bankAccountNumber) }}</span
         >
       </div>
-      <span class="cp-balance" [class.negative]="negatif(a.balance)">
-        {{ formatIDR(a.balance) }}
-      </span>
+      <span class="cp-balance" [class.negative]="negatif(a.balance)" [appHitungNaik]="a.balance" [hnFormat]="formatIDR"></span>
     </div>
 
     <div class="cp-empty" *ngIf="accounts.length === 0">
@@ -184,9 +180,7 @@
         <span class="cp-kecuali__label">
           {{ "dashboard.saldoDikecualikan" | translate }}
         </span>
-        <span class="cp-kecuali__nilai" [class.negative]="negatif(excludedBalance)">
-          {{ formatIDR(excludedBalance) }}
-        </span>
+        <span class="cp-kecuali__nilai" [class.negative]="negatif(excludedBalance)" [appHitungNaik]="excludedBalance" [hnFormat]="formatIDR"></span>
       </div>
       <div class="cp-kecuali__baris cp-kecuali__baris--total">
         <span class="cp-kecuali__label">
@@ -195,9 +189,7 @@
         <span
           class="cp-kecuali__nilai"
           [class.negative]="negatif(grandTotalBalance)"
-        >
-          {{ formatIDR(grandTotalBalance) }}
-        </span>
+         [appHitungNaik]="grandTotalBalance" [hnFormat]="formatIDR"></span>
       </div>
     </div>
   </div>

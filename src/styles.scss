@@ -1310,3 +1310,147 @@ body.mobile-app *::-webkit-scrollbar {
 [class*="fchip--notdue"], [class*="fchip--all"], [class*="fchip--semua"] {
   --fchip-titik: var(--muted, #9aa0ab);
 }
+
+/* ===================================================================
+   GERAK MIKRO
+   Baris dan kartu yang muncul berurutan, kerangka berkilau saat memuat,
+   tombol yang mengecil saat ditekan, kartu yang terangkat saat disentuh.
+
+   Semuanya dimatikan oleh SATU saklar — `html[data-gerak="mati"]`, yang
+   dipasang saat Pengaturan → Transisi disetel "Tanpa transisi"
+   (lihat `animations/gerak.ts`). Angka yang menghitung naik dan grafik
+   yang tumbuh mematuhi saklar yang sama dari TypeScript.
+   =================================================================== */
+@keyframes akn-muncul {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes akn-kilau {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+/*
+ * Baris tabel muncul berurutan.
+ *
+ * Hanya baris yang BARU dibuat yang bergerak: daftar memakai `trackBy`
+ * menurut id, jadi menyegarkan data yang sama atau mengurutkan ulang tidak
+ * memutar ulang animasinya — hanya pindah halaman, mencari, atau menyaring
+ * yang menghasilkan baris baru.
+ *
+ * Jedanya berhenti di baris ke-12. Baris ke-50 yang menunggu 1,4 detik
+ * bukan kesan mahal, melainkan kesan lambat.
+ */
+.mat-mdc-table tbody:not(.akn-kerangka) > tr.mat-mdc-row {
+  animation: akn-muncul 0.32s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation-delay: calc(var(--akn-urut, 12) * 26ms);
+}
+@for $i from 1 through 12 {
+  .mat-mdc-table tbody > tr.mat-mdc-row:nth-child(#{$i}) {
+    --akn-urut: #{$i - 1};
+  }
+}
+
+/* Kartu (ringkasan angka, kartu proyek) muncul berurutan. */
+.akn-berurutan > * {
+  animation: akn-muncul 0.42s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation-delay: calc(var(--akn-urut, 8) * 55ms);
+}
+@for $i from 1 through 8 {
+  .akn-berurutan > :nth-child(#{$i}) {
+    --akn-urut: #{$i - 1};
+  }
+}
+
+/*
+ * Kerangka tabel (direktif `appKerangka`).
+ *
+ * Warnanya diturunkan dari `--ink`, bukan warna tetap: abu-abu yang pas di
+ * tema terang menjadi kotak terang yang menyilaukan di tema gelap.
+ */
+.akn-tabel-memuat .mat-mdc-no-data-row,
+.akn-tabel-memuat .cdk-no-data-row {
+  display: none;
+}
+.akn-kerangka__sel {
+  padding: 15px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.akn-kerangka__balok {
+  display: block;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ink) 6%, transparent) 0%,
+    color-mix(in srgb, var(--ink) 13%, transparent) 50%,
+    color-mix(in srgb, var(--ink) 6%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  animation: akn-kilau 1.4s ease-in-out infinite;
+}
+/* Baris bawah memudar: terbaca sebagai daftar yang sedang datang, bukan
+   enam garis yang sama tebalnya. */
+.akn-kerangka__baris:nth-child(4) { opacity: 0.8; }
+.akn-kerangka__baris:nth-child(5) { opacity: 0.6; }
+.akn-kerangka__baris:nth-child(n + 6) { opacity: 0.4; }
+
+/*
+ * Tombol mengecil sedikit saat ditekan — umpan balik bahwa tekanannya
+ * diterima, sebelum hasilnya sempat tampil.
+ *
+ * Tanpa `transition` sengaja: menambahkannya di sini menimpa transisi
+ * bawaan Material (bayangan tombol timbul) pada setiap tombol.
+ */
+.mat-mdc-button-base:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+/* Kartu yang bisa diklik terangkat saat disentuh. HANYA yang bisa diklik:
+   kartu diam yang ikut terangkat menjanjikan sesuatu yang tidak ada. */
+.akn-angkat {
+  transition:
+    transform 0.18s cubic-bezier(0.2, 0.7, 0.3, 1),
+    box-shadow 0.18s ease;
+}
+.akn-angkat:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 2px 4px rgba(16, 24, 40, 0.06),
+    0 12px 28px rgba(16, 24, 40, 0.1);
+}
+
+/* Dialog: skala masuknya sedikit melenting (durasinya di app.module). */
+.cdk-overlay-pane .mat-mdc-dialog-surface {
+  transition-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1.08);
+}
+
+/* Saklar mati, dan cetak: tidak ada yang bergerak. */
+html[data-gerak="mati"] {
+  .mat-mdc-table tr.mat-mdc-row,
+  .akn-berurutan > *,
+  .akn-kerangka__balok {
+    animation: none !important;
+  }
+  .mat-mdc-button-base:active,
+  .akn-angkat:hover {
+    transform: none !important;
+  }
+}
+@media print {
+  .mat-mdc-table tr.mat-mdc-row,
+  .akn-berurutan > * {
+    animation: none !important;
+  }
+}

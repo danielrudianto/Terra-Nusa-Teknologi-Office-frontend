@@ -74,7 +74,7 @@
     <div class="bl-loadingbar" *ngIf="isLoading"><span></span></div>
 
     <div class="table-responsive">
-      <table mat-table [dataSource]="banks">
+      <table mat-table [appKerangka]="isLoading" [dataSource]="banks">
         <!-- Bank -->
         <ng-container matColumnDef="bankName">
           <th

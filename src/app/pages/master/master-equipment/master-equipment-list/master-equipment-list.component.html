@@ -56,7 +56,7 @@
       class="me-progress"
     ></mat-progress-bar>
     <div class="table-responsive">
-      <table mat-table [dataSource]="items">
+      <table mat-table [appKerangka]="isLoading" [dataSource]="items">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>
             {{ "table.name" | translate }}

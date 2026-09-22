@@ -34,10 +34,12 @@ import { IncomeCreateComponent } from '../income-create/income-create.component'
 import { DeleteConfirmationComponent } from '../../../components/delete-confirmation/delete-confirmation.component';
 import { RouterModule } from '@angular/router';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
+import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-income-list',
   imports: [
+    KerangkaTabelDirective,
     MatDatepickerModule,
     CanDirective,
     RouterModule,

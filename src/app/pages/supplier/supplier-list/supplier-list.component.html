@@ -50,7 +50,7 @@
     <div class="sl-loadingbar" *ngIf="isLoading"><span></span></div>
 
     <div class="table-responsive">
-      <table mat-table [dataSource]="suppliers">
+      <table mat-table [appKerangka]="isLoading" [dataSource]="suppliers">
         <!-- Name -->
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>

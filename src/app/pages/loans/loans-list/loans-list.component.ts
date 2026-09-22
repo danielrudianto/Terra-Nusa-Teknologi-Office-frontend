@@ -26,10 +26,12 @@ import { LoansUpdateComponent } from '../loans-update/loans-update.component';
 import { LoanPaymentCreateComponent } from '../../../components/payment-create/loan-payment-create/loan-payment-create.component';
 import { LoansViewComponent } from '../loans-view/loans-view.component';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
+import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-loans-list',
   imports: [
+    KerangkaTabelDirective,
     CanDirective,
     TranslatePipe,
     CommonModule,

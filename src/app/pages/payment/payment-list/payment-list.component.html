@@ -106,7 +106,7 @@
 
   <div class="pl-card">
     <div class="table-responsive">
-      <table mat-table [dataSource]="payments">
+      <table mat-table [appKerangka]="isLoading" [dataSource]="payments">
         <ng-container matColumnDef="bankAccount">
           <th mat-header-cell *matHeaderCellDef>
             {{ "table.bankAccount" | translate }}

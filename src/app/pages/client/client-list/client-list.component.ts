@@ -17,6 +17,7 @@ import { ClientCreateComponent } from '../client-create/client-create.component'
 import { TranslatePipe } from '@ngx-translate/core';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
+import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-client-list',
@@ -24,6 +25,7 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
   templateUrl: './client-list.component.html',
   styleUrl: './client-list.component.scss',
   imports: [
+    KerangkaTabelDirective,
     HeaderTitleComponent,
     CommonModule,
     MatTableModule,

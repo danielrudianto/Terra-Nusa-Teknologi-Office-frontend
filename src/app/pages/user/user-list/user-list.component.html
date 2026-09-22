@@ -33,7 +33,7 @@
     <div class="ul-loadingbar" *ngIf="isLoading"><span></span></div>
 
     <div class="table-responsive">
-      <table mat-table [dataSource]="users">
+      <table mat-table [appKerangka]="isLoading" [dataSource]="users">
         <!-- Name -->
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('name')">

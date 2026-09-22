@@ -26,10 +26,12 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { ReimbursementHelper } from '../../../helpers/reimbursement.helper';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
+import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-reimbursement-list',
   imports: [
+    KerangkaTabelDirective,
     CanDirective,
     TranslatePipe,
     CommonModule,

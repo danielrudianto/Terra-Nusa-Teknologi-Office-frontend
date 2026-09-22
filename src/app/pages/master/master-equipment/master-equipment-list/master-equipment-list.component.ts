@@ -23,11 +23,13 @@ import { MasterEquipmentCreateComponent } from '../master-equipment-create/maste
 import { MasterEquipmentViewComponent } from '../master-equipment-view/master-equipment-view.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RefreshButtonComponent } from '../../../../components/refresh-button/refresh-button.component';
+import { KerangkaTabelDirective } from '../../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-master-equipment-list',
   standalone: true,
   imports: [
+    KerangkaTabelDirective,
     CanDirective,
     TranslatePipe,
     MatProgressSpinnerModule,

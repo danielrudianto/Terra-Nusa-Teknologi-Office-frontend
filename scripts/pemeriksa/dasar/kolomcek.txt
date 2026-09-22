@@ -1,3 +1,0 @@
-kelengkapan kolom tabel: 1
-
-  pages/payment/payment-list/payment-list.component.html: `matColumnDef` createdAt, id, status tidak disebut di daftar kolomnya — kolomnya tidak tergambar, tanpa galat apa pun, dan yang menambahkannya akan menyangka perubahannya belum ter-deploy

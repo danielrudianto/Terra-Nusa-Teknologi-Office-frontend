@@ -1,5 +1,0 @@
-
-payment/payment-list/payment-list
-  - pencarian tidak berdiri tepat sebelum tombol muat ulang; urutan bilah alat: mat-chip-listbox → mat-form-field → mat-form-field → button → mat-form-field → button → app-refresh-button
-
-23 halaman daftar diperiksa, 1 menyimpang.

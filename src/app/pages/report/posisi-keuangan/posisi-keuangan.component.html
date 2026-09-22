@@ -17,12 +17,12 @@
 
   @if (data(); as d) {
     <!-- ================= 1. Baris KPI ================= -->
-    <div class="pkeu-kpi">
+    <div class="pkeu-kpi akn-berurutan">
       <div class="pkeu-kartu">
         <span class="pkeu-kartu__cap">{{
           "posisiKeuangan.kas" | translate
         }}</span>
-        <span class="pkeu-kartu__nilai">{{ uang(d.kas?.total) }}</span>
+        <span class="pkeu-kartu__nilai" [appHitungNaik]="d.kas?.total" [hnFormat]="uang"></span>
         <!--
           Rekening yang dikecualikan disebut DI BAWAH angkanya, bukan
           dihilangkan. Uangnya memang ada; yang tidak boleh cuma ikut dihitung
@@ -40,7 +40,7 @@
         <span class="pkeu-kartu__cap">{{
           "posisiKeuangan.piutang" | translate
         }}</span>
-        <span class="pkeu-kartu__nilai">{{ uang(d.piutang?.total) }}</span>
+        <span class="pkeu-kartu__nilai" [appHitungNaik]="d.piutang?.total" [hnFormat]="uang"></span>
         <span class="pkeu-kartu__ket">
           {{
             "posisiKeuangan.dokumen"
@@ -53,7 +53,7 @@
         <span class="pkeu-kartu__cap">{{
           "posisiKeuangan.utang" | translate
         }}</span>
-        <span class="pkeu-kartu__nilai">{{ uang(d.utangUsaha?.total) }}</span>
+        <span class="pkeu-kartu__nilai" [appHitungNaik]="d.utangUsaha?.total" [hnFormat]="uang"></span>
         <span class="pkeu-kartu__ket">
           {{
             "posisiKeuangan.dokumen"

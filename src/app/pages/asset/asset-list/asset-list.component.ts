@@ -23,10 +23,12 @@ import { AssetCreateComponent } from '../asset-create/asset-create.component';
 import { AssetUpdateComponent } from '../asset-update/asset-update.component';
 import { AssetViewComponent } from '../asset-view/asset-view.component';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
+import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-asset-list',
   imports: [
+    KerangkaTabelDirective,
     CanDirective,
     TranslatePipe,
     CommonModule,

@@ -23,10 +23,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { TranslateService } from '@ngx-translate/core';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
+import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-bank-list',
   imports: [
+    KerangkaTabelDirective,
     CanDirective,
     TranslatePipe,
     FormsModule,

@@ -29,6 +29,7 @@ import { RasioDialogComponent } from './rasio-dialog/rasio-dialog.component';
 import { LabaRugiDialogComponent } from '../laba-rugi/laba-rugi-dialog/laba-rugi-dialog.component';
 import { pastikanChart, rupiah } from 'src/app/helpers/chart-dasar.helper';
 import { uangDokumen } from 'src/app/helpers/uang.helper';
+import { HitungNaikDirective } from '../../../directives/hitung-naik.directive';
 
 /*
  * chart.js v4 TIDAK mendaftarkan apa pun sendiri, dan pendaftarannya dipanggil
@@ -79,6 +80,7 @@ interface Ember {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    HitungNaikDirective,
     CommonModule,
     MatIconModule,
     MatProgressBarModule,

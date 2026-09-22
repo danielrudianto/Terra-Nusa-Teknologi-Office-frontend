@@ -22,6 +22,7 @@ import { RouterModule, Router } from '@angular/router';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { RefreshButtonComponent } from '../../../../components/refresh-button/refresh-button.component';
+import { KerangkaTabelDirective } from '../../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-expense-opponent-list',
@@ -29,6 +30,7 @@ import { RefreshButtonComponent } from '../../../../components/refresh-button/re
   styleUrl: './expense-opponent-list.component.scss',
   standalone: true,
   imports: [
+    KerangkaTabelDirective,
     CanDirective,
     TranslatePipe,
     RouterModule,

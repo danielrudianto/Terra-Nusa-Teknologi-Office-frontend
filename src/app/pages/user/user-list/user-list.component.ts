@@ -23,10 +23,12 @@ import { UserAccessComponent } from '../user-access/user-access.component';
 import { UserViewComponent } from '../user-view/user-view.component';
 import { SettingsService } from '../../../services/setting.service';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
+import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-user-list',
   imports: [
+    KerangkaTabelDirective,
     CanDirective,
     CommonModule,
     MatTableModule,

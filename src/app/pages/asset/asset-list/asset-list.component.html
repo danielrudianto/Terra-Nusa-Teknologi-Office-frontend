@@ -33,7 +33,7 @@
     <div class="al-loadingbar" *ngIf="isLoading"><span></span></div>
 
     <div class="table-responsive">
-      <table mat-table [dataSource]="clients" #table>
+      <table mat-table [appKerangka]="isLoading" [dataSource]="clients" #table>
         <!-- Date -->
         <ng-container matColumnDef="date">
           <th

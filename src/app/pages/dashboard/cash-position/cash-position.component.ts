@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from 'src/app/services/api.service';
+import { HitungNaikDirective } from '../../../directives/hitung-naik.directive';
 
 interface CashAccount {
   bankAccountID: number;
@@ -33,7 +34,8 @@ interface CashPositionResponse {
   templateUrl: './cash-position.component.html',
   styleUrls: ['./cash-position.component.scss'],
   standalone: true,
-  imports: [TranslatePipe, CommonModule],
+  imports: [
+    HitungNaikDirective, TranslatePipe, CommonModule],
 })
 export class CashPositionComponent implements OnInit {
 

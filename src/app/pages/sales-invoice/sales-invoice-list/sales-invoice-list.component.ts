@@ -25,10 +25,12 @@ import { IncomeTaxCreateComponent } from './income-tax-create/income-tax-create.
 import { TaxInvoiceEditComponent } from './tax-invoice-edit/tax-invoice-edit.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
+import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-sales-invoice-list',
   imports: [
+    KerangkaTabelDirective,
     CanDirective,
     CommonModule,
     FormsModule,

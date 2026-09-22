@@ -26,10 +26,12 @@ import { EmployeeViewComponent } from '../employee-view/employee-view.component'
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
+import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-employee-list',
   imports: [
+    KerangkaTabelDirective,
     CanDirective,
     MatChipsModule,
     TranslatePipe,

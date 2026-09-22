@@ -60,6 +60,7 @@ import {
   unduhLaporanProyekPdf,
   type DataLaporanProyek,
 } from '../../../helpers/project-report-download';
+import { HitungNaikDirective } from '../../../directives/hitung-naik.directive';
 
 /*
  * Pendaftaran dan setelan dasar chart.js — alasannya di `chart-dasar.helper`.
@@ -460,6 +461,7 @@ interface Kategori {
   selector: 'app-project-report',
   standalone: true,
   imports: [
+    HitungNaikDirective,
     CommonModule,
     ReactiveFormsModule,
     MatIconModule,

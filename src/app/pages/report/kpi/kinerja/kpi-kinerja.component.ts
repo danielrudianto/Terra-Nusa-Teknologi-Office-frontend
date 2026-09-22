@@ -20,6 +20,7 @@ import { pastikanChart, rupiah } from 'src/app/helpers/chart-dasar.helper';
 import { uangDokumen } from 'src/app/helpers/uang.helper';
 import { ApiService } from 'src/app/services/api.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import { HitungNaikDirective } from '../../../../directives/hitung-naik.directive';
 
 /*
  * chart.js v4 tidak mendaftarkan apa pun sendiri, dan pendaftarannya dipanggil
@@ -57,6 +58,7 @@ export function titikMarjin(deret: any[], kunci: string): (number | null)[] {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    HitungNaikDirective,
     CommonModule,
     MatFormFieldModule,
     MatIconModule,

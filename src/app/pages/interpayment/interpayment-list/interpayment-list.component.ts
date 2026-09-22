@@ -31,10 +31,12 @@ import { InterpaymentViewComponent } from '../interpayment-view/interpayment-vie
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsService } from '../../../services/setting.service';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
+import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-interpayment-list',
   imports: [
+    KerangkaTabelDirective,
     MatDatepickerModule,
     HeaderTitleComponent,
     CommonModule,

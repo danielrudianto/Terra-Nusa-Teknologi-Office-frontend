@@ -84,7 +84,7 @@
     <div class="ip-loadingbar" *ngIf="isLoading"><span></span></div>
 
     <div class="table-responsive">
-      <table mat-table [dataSource]="payments" #table>
+      <table mat-table [appKerangka]="isLoading" [dataSource]="payments" #table>
         <!-- Date -->
         <ng-container matColumnDef="date">
           <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('date')">

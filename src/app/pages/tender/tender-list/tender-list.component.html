@@ -74,7 +74,7 @@
     <div class="tl-loadingbar" *ngIf="isLoading"><span></span></div>
 
     <div class="table-responsive">
-      <table mat-table [dataSource]="tenders" #table>
+      <table mat-table [appKerangka]="isLoading" [dataSource]="tenders" #table>
         <ng-container matColumnDef="number">
           <th mat-header-cell *matHeaderCellDef (click)="urutkan('number')">
             <span class="tl-th">

@@ -34,10 +34,12 @@ import moment from 'moment';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { CanDirective } from '../../../directives/can.directive';
+import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-expense-list',
   imports: [
+    KerangkaTabelDirective,
     MatDatepickerModule,
     CommonModule,
     ReactiveFormsModule,

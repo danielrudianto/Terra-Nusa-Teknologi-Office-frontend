@@ -25,10 +25,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
 import { PurchaseDraftCreateComponent } from '../purchase-draft-create/purchase-draft-create.component';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
+import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-purchase-draft-list',
   imports: [
+    KerangkaTabelDirective,
     CanDirective,
     CommonModule,
     ReactiveFormsModule,

@@ -1,3 +1,4 @@
+import { pasangGerak } from '../animations/gerak';
 import { Injectable, computed, signal } from '@angular/core';
 
 import {
@@ -264,6 +265,7 @@ export class SettingsService {
   setTransisiJenis(jenis: JenisTransisi): void {
     if (!(jenis in MULAI_TRANSISI)) return;
     this._transisiJenis.set(jenis);
+    pasangGerak(jenis !== 'none');
     try {
       localStorage.setItem(TRANSISI_JENIS_KEY, jenis);
     } catch {
@@ -436,6 +438,9 @@ export class SettingsService {
     } else if (gerakDikurangi()) {
       this._transisiDurasi.set(250);
     }
+
+    // Gerak mikro (angka, baris, kerangka, grafik) ikut saklar yang sama.
+    pasangGerak(this._transisiJenis() !== 'none');
 
     this.applyTextScale();
     this.applyTheme();

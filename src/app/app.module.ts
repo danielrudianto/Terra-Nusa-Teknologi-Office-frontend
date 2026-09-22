@@ -19,7 +19,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialogModule } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DEFAULT_OPTIONS,
+  MatDialogConfig,
+  MatDialogModule,
+} from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -152,6 +156,23 @@ export const MY_FORMATS = {
     }),
   ],
   providers: [
+    /*
+     * Dialog muncul sedikit lebih lambat daripada bawaan Material (150ms)
+     * supaya skalanya terbaca sebagai gerakan, bukan kedipan; kurvanya
+     * disetel di styles.scss (`.mat-mdc-dialog-surface`).
+     *
+     * Disebarkan dari `new MatDialogConfig()`: token ini MENGGANTI seluruh
+     * bawaan, bukan menambahinya — objek parsial akan menghapus bawaan
+     * lain seperti `autoFocus`, `restoreFocus`, dan `maxWidth`.
+     */
+    {
+      provide: MAT_DIALOG_DEFAULT_OPTIONS,
+      useValue: {
+        ...new MatDialogConfig(),
+        enterAnimationDuration: 240,
+        exitAnimationDuration: 140,
+      },
+    },
     /*
      * Potongan aplikasi yang sudah tidak ada memuat ulang halaman sendiri.
      *

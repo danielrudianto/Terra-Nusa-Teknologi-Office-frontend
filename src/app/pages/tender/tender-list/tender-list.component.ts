@@ -18,11 +18,13 @@ import { MINIMAL_PENAWARAN, TenderService } from 'src/app/services/tender.servic
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { RefreshButtonComponent } from 'src/app/components/refresh-button/refresh-button.component';
 import { SettingsService } from 'src/app/services/setting.service';
+import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-tender-list',
   standalone: true,
   imports: [
+    KerangkaTabelDirective,
     CommonModule,
     ReactiveFormsModule,
     MatTableModule,

@@ -35,6 +35,7 @@ import {
 import { PermissionService } from 'src/app/services/permission.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { CanDirective } from 'src/app/directives/can.directive';
+import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 
 /**
  * Daftar Certificate of Payment.
@@ -48,6 +49,7 @@ import { CanDirective } from 'src/app/directives/can.directive';
   selector: 'app-certificate-of-payment-list',
   standalone: true,
   imports: [
+    KerangkaTabelDirective,
     CanDirective,
     CommonModule,
     ReactiveFormsModule,

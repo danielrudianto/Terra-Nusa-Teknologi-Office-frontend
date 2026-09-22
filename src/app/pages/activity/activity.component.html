@@ -139,7 +139,7 @@
     }
 
     <div class="al-tablewrap">
-      <table mat-table [dataSource]="entries" class="al-table">
+      <table mat-table [appKerangka]="isLoading" [dataSource]="entries" class="al-table">
         <ng-container matColumnDef="when">
           <th mat-header-cell *matHeaderCellDef>
             {{ "table.date" | translate }}

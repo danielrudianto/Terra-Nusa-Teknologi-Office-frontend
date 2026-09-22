@@ -26,10 +26,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SupplierCreateComponent } from '../supplier-create/supplier-create.component';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { SupplierReportComponent } from '../supplier-report/supplier-report.component';
+import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-supplier-list',
   imports: [
+    KerangkaTabelDirective,
     CanDirective,
     CommonModule,
     MatTableModule,

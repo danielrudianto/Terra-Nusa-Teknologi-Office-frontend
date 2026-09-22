@@ -29,11 +29,13 @@ import { TranslateService } from '@ngx-translate/core';
 import { SettingsService } from '../../../../services/setting.service';
 import { RefreshButtonComponent } from '../../../../components/refresh-button/refresh-button.component';
 import { ServerMessageService } from '../../../../services/server-message.service';
+import { KerangkaTabelDirective } from '../../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-master-item-list',
   standalone: true,
   imports: [
+    KerangkaTabelDirective,
     CanDirective,
     TranslatePipe,
     MatProgressSpinnerModule,

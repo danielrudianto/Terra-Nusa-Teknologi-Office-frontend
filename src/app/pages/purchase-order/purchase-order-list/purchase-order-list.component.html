@@ -94,7 +94,7 @@
     ></mat-progress-bar>
 
     <div class="table-responsive">
-      <table mat-table [dataSource]="orders">
+      <table mat-table [appKerangka]="isLoading" [dataSource]="orders">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('name')">
             <span class="pol-th"

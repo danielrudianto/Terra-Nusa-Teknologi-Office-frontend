@@ -23,6 +23,7 @@ import { MatInputModule } from '@angular/material/input';
 import { tanggalLokal } from '../../utils/tanggal';
 import { PermissionService } from '../../services/permission.service';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { KerangkaTabelDirective } from '../../directives/kerangka-tabel.directive';
 
 interface ActivityEntry {
   id: number;
@@ -46,7 +47,8 @@ interface ActivityEntry {
 @Component({
   selector: 'app-activity',
   standalone: true,
-  imports: [AuditLabelPipe, 
+  imports: [
+    KerangkaTabelDirective, AuditLabelPipe, 
     MatAutocompleteModule,
     MatInputModule,
     MatNativeDateModule,

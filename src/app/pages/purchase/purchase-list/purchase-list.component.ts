@@ -35,10 +35,12 @@ import { SettingsService } from '../../../services/setting.service';
 import { PermissionService } from '../../../services/permission.service';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { ShortCurrencyPipe } from 'src/app/pipes/short-currency.pipe';
+import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 
 @Component({
   selector: 'app-purchase-list',
   imports: [
+    KerangkaTabelDirective,
     CanDirective,
     CommonModule,
     FormsModule,

@@ -33,7 +33,7 @@
     <div class="cl-loadingbar" *ngIf="isLoading"><span></span></div>
 
     <div class="table-responsive">
-      <table mat-table [dataSource]="clients" #table>
+      <table mat-table [appKerangka]="isLoading" [dataSource]="clients" #table>
         <!-- Name -->
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>{{ "client.name" | translate }}</th>

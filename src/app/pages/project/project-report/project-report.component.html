@@ -71,7 +71,7 @@
 
   <ng-container *ngIf="kode() && adaData() && !memuat() && !galat()">
     <!-- ===== ringkasan angka ===== -->
-    <div class="prp-kpi" [class.is-berubah]="baruBerubah()">
+    <div class="prp-kpi akn-berurutan" [class.is-berubah]="baruBerubah()">
       <div class="prp-sel">
         <div class="prp-label">{{ "projectReport.contract" | translate }}</div>
         <!--
@@ -85,7 +85,7 @@
           DPP tetap disebut di bawahnya — ia yang dipakai menghitung margin,
           dan yang membaca perlu tahu angka mana yang mana.
         -->
-        <div class="prp-nilai">{{ nominalKontrak() | number: "1.2-2" }}</div>
+        <div class="prp-nilai" [appHitungNaik]="nominalKontrak()"></div>
         <div class="prp-ket">
           {{ "projectReport.contractGrossHint" | translate }}
           <span *ngIf="nominalKontrak() !== nilaiKontrak()">
@@ -104,7 +104,7 @@
       -->
       <div class="prp-sel">
         <div class="prp-label">{{ "projectReport.cost" | translate }}</div>
-        <div class="prp-nilai">{{ biayaSeumurProyek() | number: "1.2-2" }}</div>
+        <div class="prp-nilai" [appHitungNaik]="biayaSeumurProyek()"></div>
         <div class="prp-ket" *ngIf="nilaiKontrak() > 0">
           {{ persenKontrak(biayaSeumurProyek()) | number: "1.1-1" }}%
           {{ "projectReport.ofContract" | translate }}
@@ -123,7 +123,7 @@
         <div class="prp-label">
           {{ "projectReport.costPeriod" | translate }} {{ labelPeriode() }}
         </div>
-        <div class="prp-nilai">{{ biayaPeriode() | number: "1.2-2" }}</div>
+        <div class="prp-nilai" [appHitungNaik]="biayaPeriode()"></div>
         <div class="prp-ket" *ngIf="biayaSeumurProyek() > 0">
           {{ (biayaPeriode() / biayaSeumurProyek()) * 100 | number: "1.1-1" }}%
           {{ "projectReport.ofLifetimeCost" | translate }}
@@ -136,7 +136,7 @@
         *ngIf="!kontrakKosong()"
       >
         <div class="prp-label">{{ "projectReport.margin" | translate }}</div>
-        <div class="prp-nilai">{{ margin() | number: "1.2-2" }}</div>
+        <div class="prp-nilai" [appHitungNaik]="margin()"></div>
         <div class="prp-ket">
           {{ persenKontrak(margin()) | number: "1.1-1" }}%
           {{ "projectReport.ofContract" | translate }}
@@ -177,7 +177,7 @@
 
       <div class="prp-sel">
         <div class="prp-label">{{ "projectReport.billed" | translate }}</div>
-        <div class="prp-nilai">{{ tertagih() | number: "1.2-2" }}</div>
+        <div class="prp-nilai" [appHitungNaik]="tertagih()"></div>
         <!--
           DPP disebut di bawahnya, sama seperti pada nilai kontrak — supaya
           keduanya dapat dibaca dalam dasar yang sama.
@@ -646,17 +646,13 @@
               <div class="prp-label">
                 {{ "projectCashflow.totalIn" | translate }}
               </div>
-              <div class="prp-nilai">
-                {{ totalKasMasuk() | number: "1.2-2" }}
-              </div>
+              <div class="prp-nilai" [appHitungNaik]="totalKasMasuk()"></div>
             </div>
             <div class="prp-sel">
               <div class="prp-label">
                 {{ "projectCashflow.totalOut" | translate }}
               </div>
-              <div class="prp-nilai">
-                {{ totalKasKeluar() | number: "1.2-2" }}
-              </div>
+              <div class="prp-nilai" [appHitungNaik]="totalKasKeluar()"></div>
             </div>
             <!--
               Saldo kas: angka yang sebenarnya dicari. Merah bila minus —
@@ -669,9 +665,7 @@
               <div class="prp-label">
                 {{ "projectCashflow.balance" | translate }}
               </div>
-              <div class="prp-nilai">
-                {{ saldoKasAkhir() | number: "1.2-2" }}
-              </div>
+              <div class="prp-nilai" [appHitungNaik]="saldoKasAkhir()"></div>
               <div class="prp-ket" *ngIf="bulanMulaiMinus()">
                 {{
                   "projectCashflow.negativeSince"
