@@ -545,6 +545,13 @@ export class ProyeksiKasComponent implements OnChanges {
     maintainAspectRatio: false,
     interaction: { mode: 'index', intersect: false },
     plugins: {
+      /*
+       * Proyeksi dibaca dari HARI INI ke depan: jendela awalnya satu bulan
+       * PERTAMA, lalu digeser ke kanan untuk bulan berikutnya. Bawaan grafik
+       * lain (12 titik TERAKHIR) membuka proyeksi ini di Desember — ujung
+       * yang paling tidak pasti, dan bukan yang dicari saat membukanya.
+       */
+      geserZoomAkn: { jendelaAwal: { posisi: 'awal', titik: 31 } },
       legend: { display: false },
       tooltip: {
         callbacks: {

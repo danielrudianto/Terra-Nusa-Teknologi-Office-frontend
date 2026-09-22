@@ -169,7 +169,7 @@ function pasangGeserZoom(): void {
  */
 const PETUNJUK =
   'Seret untuk menggeser · Ctrl + gulir (atau cubit) untuk memperbesar · ' +
-  'klik dua kali untuk kembali ke 12 terakhir';
+  'klik dua kali untuk kembali ke tampilan awal';
 
 /**
  * Deret panjang dibuka pada 12 titik TERAKHIR; sisanya tinggal digeser.
@@ -182,20 +182,39 @@ export const JENDELA_AWAL = 12;
  * hari) atau yang bentuk utuhnya justru yang dibaca (kurva S) menolaknya:
  *   plugins: { geserZoomAkn: { jendelaAwal: false } }
  */
+/*
+ * Grafik MASA DEPAN (proyeksi) membaca dari hari ini ke depan, jadi jendelanya
+ * dipasang di AWAL deret, bukan di akhirnya — dan boleh lebih lebar:
+ *   plugins: { geserZoomAkn: { jendelaAwal: { posisi: 'awal', titik: 31 } } }
+ */
+export interface JendelaAwal {
+  posisi?: 'awal' | 'akhir';
+  titik?: number;
+}
 declare module 'chart.js' {
   interface PluginOptionsByType<TType extends ChartType> {
-    geserZoomAkn?: { jendelaAwal?: boolean };
+    geserZoomAkn?: { jendelaAwal?: boolean | JendelaAwal };
   }
 }
 const JENDELA = new WeakMap<object, number>();
 
-function pasangJendela(chart: any): void {
-  const n = chart.data?.labels?.length ?? 0;
-  if (n > JENDELA_AWAL) {
-    chart.zoomScale?.('x', { min: n - JENDELA_AWAL, max: n - 1 }, 'none');
-  } else {
-    chart.resetZoom?.('none');
-  }
+/** Rentang indeks jendela awal; null = tampilkan seluruh deret. Diekspor untuk uji. */
+export function rentangJendela(
+  n: number,
+  opsi?: boolean | JendelaAwal,
+): { min: number; max: number } | null {
+  const o = typeof opsi === 'object' && opsi ? opsi : {};
+  const titik = Math.max(2, o.titik ?? JENDELA_AWAL);
+  if (n <= titik) return null;
+  return o.posisi === 'awal'
+    ? { min: 0, max: titik - 1 }
+    : { min: n - titik, max: n - 1 };
+}
+
+function pasangJendela(chart: any, opsi?: boolean | JendelaAwal): void {
+  const r = rentangJendela(chart.data?.labels?.length ?? 0, opsi);
+  if (r) chart.zoomScale?.('x', r, 'none');
+  else chart.resetZoom?.('none');
 }
 
 const PENDENGAR = new WeakMap<
@@ -227,7 +246,7 @@ export const geserZoom: Plugin = {
       opsi?.jendelaAwal === false ||
       (chart as any).scales?.x?.type !== 'category'
         ? (chart as any).resetZoom?.()
-        : pasangJendela(chart);
+        : pasangJendela(chart, opsi?.jendelaAwal);
     kanvas.addEventListener('dblclick', kembali);
     PENDENGAR.set(chart, { kanvas, kembali });
   },
@@ -247,7 +266,7 @@ export const geserZoom: Plugin = {
     if (lama === n) return;
     JENDELA.set(chart, n);
     if (lama !== undefined) (chart as any).resetZoom?.('none');
-    pasangJendela(chart);
+    pasangJendela(chart, opsi?.jendelaAwal);
   },
   // Kanvasnya DISIMPAN saat dipasang: pada `afterDestroy` chart.js sudah
   // mengosongkan `chart.canvas`, dan membuang pendengar dari `null` gagal

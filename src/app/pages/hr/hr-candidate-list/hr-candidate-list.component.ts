@@ -1,3 +1,5 @@
+import { MatTableModule } from '@angular/material/table';
+import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, OnInit, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -87,6 +89,8 @@ interface Ringkasan {
     CanDirective,
     HeaderTitleComponent,
     TransisiHalamanDirective,
+    MatTableModule,
+    KerangkaTabelDirective,
   ],
   templateUrl: './hr-candidate-list.component.html',
   styleUrl: './hr-candidate-list.component.scss',
@@ -133,6 +137,12 @@ export class HrCandidateListComponent implements OnInit {
 
   /** Pelamar yang pratinjau pesannya sedang dibuka. */
   intip: number | null = null;
+
+  readonly kolom = ['nama', 'status', 'ujian', 'aksi'];
+  readonly kolomPratinjau = ['pratinjau'];
+  trackById = (_: number, p: any) => p?.id ?? _;
+  /** Baris pratinjau pesan hanya untuk pelamar yang sedang diintip. */
+  sedangDiintip = (_: number, p: any) => this.intip === p?.id;
   /*
    * Penyaring status yang lama DIBUANG, bukan disembunyikan.
    *

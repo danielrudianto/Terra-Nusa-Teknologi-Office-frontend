@@ -31,7 +31,13 @@
           (mousemove)="aktif.set(indeks(r))"
           (click)="r.buka()"
         >
-          <span class="cg-baris__ikon"><mat-icon>{{ r.ikon }}</mat-icon></span>
+          <span class="cg-baris__ikon">
+            @if (r.svg) {
+              <span class="cg-baris__svg" [style.--cg-ico]="'url(' + r.svg + ')'"></span>
+            } @else {
+              <mat-icon>{{ r.ikon }}</mat-icon>
+            }
+          </span>
           <span class="cg-baris__teks">
             <span class="cg-baris__judul">{{ r.judul }}</span>
             @if (r.sub) {

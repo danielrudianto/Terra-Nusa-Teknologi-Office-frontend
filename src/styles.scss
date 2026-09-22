@@ -220,44 +220,196 @@ html {
   font-display: swap;
 }
 
+/*
+ * Montserrat, Roboto Mono, dan ikon Material — SEMUA di-host sendiri
+ * (@fontsource, OFL/Apache), tidak lagi dari fonts.googleapis.com.
+ *
+ * Dua alasan:
+ *  1. Ikon yang diambil dari Google berubah menjadi TULISAN ("search",
+ *     "delete") setiap kali jaringan kantor lambat atau Google terblokir —
+ *     `mat-icon` hanyalah teks yang digambar oleh font ikon.
+ *  2. Montserrat dulu hanya punya ketebalan 400 dan 700, padahal lebih dari
+ *     800 aturan memakai 600 dan hampir 200 memakai 800. Peramban
+ *     membulatkan 600 dan 800 ke 700, jadi hierarki huruf yang dirancang
+ *     tidak pernah tampil. Kini 300–800 tersedia sungguhan (woff2, jauh
+ *     lebih kecil daripada TTF lama).
+ *
+ * Ikon memakai `font-display: block`, BUKAN `swap`: `swap` menampilkan nama
+ * ikonnya sebagai teks selama font dimuat — tepat kedipan yang ingin
+ * dihilangkan.
+ */
 @font-face {
   font-family: "Montserrat";
-  src: url("assets/fonts/Monsterrat/static/Montserrat-Regular.ttf")
-    format("truetype");
+  src: url("assets/fonts/Montserrat/montserrat-latin-ext-300-normal.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: "Montserrat";
+  src: url("assets/fonts/Montserrat/montserrat-latin-300-normal.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Montserrat";
+  src: url("assets/fonts/Montserrat/montserrat-latin-ext-400-normal.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
-
 @font-face {
   font-family: "Montserrat";
-  src: url("assets/fonts/Monsterrat/static/Montserrat-Bold.ttf")
-    format("truetype");
+  src: url("assets/fonts/Montserrat/montserrat-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Montserrat";
+  src: url("assets/fonts/Montserrat/montserrat-latin-ext-500-normal.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: "Montserrat";
+  src: url("assets/fonts/Montserrat/montserrat-latin-500-normal.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Montserrat";
+  src: url("assets/fonts/Montserrat/montserrat-latin-ext-600-normal.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: "Montserrat";
+  src: url("assets/fonts/Montserrat/montserrat-latin-600-normal.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Montserrat";
+  src: url("assets/fonts/Montserrat/montserrat-latin-ext-700-normal.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
-
 @font-face {
   font-family: "Montserrat";
-  src: url("assets/fonts/Monsterrat/static/Montserrat-BoldItalic.ttf")
-    format("truetype");
+  src: url("assets/fonts/Montserrat/montserrat-latin-700-normal.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Montserrat";
+  src: url("assets/fonts/Montserrat/montserrat-latin-ext-800-normal.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: "Montserrat";
+  src: url("assets/fonts/Montserrat/montserrat-latin-800-normal.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Montserrat";
+  src: url("assets/fonts/Montserrat/montserrat-latin-ext-700-italic.woff2") format("woff2");
   font-weight: 700;
   font-style: italic;
+  font-display: swap;
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
-
 @font-face {
   font-family: "Montserrat";
-  src: url("assets/fonts/Monsterrat/static/Montserrat-Black.ttf")
-    format("truetype");
-  font-weight: 900;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Montserrat";
-  src: url("assets/fonts/Monsterrat/static/Montserrat-BlackItalic.ttf")
-    format("truetype");
-  font-weight: 900;
+  src: url("assets/fonts/Montserrat/montserrat-latin-700-italic.woff2") format("woff2");
+  font-weight: 700;
   font-style: italic;
+  font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+@font-face {
+  font-family: "Roboto Mono";
+  src: url("assets/fonts/RobotoMono/roboto-mono-latin-ext-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: "Roboto Mono";
+  src: url("assets/fonts/RobotoMono/roboto-mono-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Roboto Mono";
+  src: url("assets/fonts/RobotoMono/roboto-mono-latin-ext-600-normal.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: "Roboto Mono";
+  src: url("assets/fonts/RobotoMono/roboto-mono-latin-600-normal.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+@font-face {
+  font-family: "Material Icons";
+  src: url("assets/fonts/MaterialIcons/material-icons-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+/* Kelas bawaan mat-icon (fontSet "material-icons"); dulu disediakan CSS
+   Google, kini ditulis di sini. */
+.material-icons {
+  font-family: "Material Icons";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  /* Ligatur standar menyala secara bawaan — itulah yang mengubah teks
+     "search" menjadi ikonnya; tidak perlu `font-feature-settings`. */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 @font-face {
@@ -1375,7 +1527,7 @@ body.mobile-app *::-webkit-scrollbar {
  * bukan kesan mahal, melainkan kesan lambat.
  */
 .mat-mdc-table tbody:not(.akn-kerangka) > tr.mat-mdc-row {
-  animation: akn-muncul-baris 0.32s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation: akn-muncul-baris 0.32s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
   animation-delay: calc(var(--akn-urut, 12) * 26ms);
 }
 @for $i from 1 through 12 {
@@ -1384,10 +1536,21 @@ body.mobile-app *::-webkit-scrollbar {
   }
 }
 
+/* Satu blok yang turun perlahan ke tempatnya (mis. bilah penyaring di atas
+   kartu-kartu). Dari ATAS, alasannya sama dengan baris tabel. */
+.akn-masuk-atas {
+  animation: akn-muncul-baris 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
+}
+
 /* Kartu (ringkasan angka, kartu proyek) muncul berurutan. */
+/* `backwards`, BUKAN `both`: sesudah selesai, animasi tidak boleh terus
+   memaksakan `transform: none` — itu mematikan efek terangkat saat disorot
+   pada kartu yang punya `:hover { transform }` sendiri (mis. Pusat Pajak). */
 .akn-berurutan > * {
-  animation: akn-muncul-kartu 0.42s cubic-bezier(0.2, 0.7, 0.3, 1) both;
-  animation-delay: calc(var(--akn-urut, 8) * 55ms);
+  animation: akn-muncul-kartu 0.42s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
+  /* `--akn-jeda` menunda seluruh kelompok — mis. kartu yang baru boleh
+     muncul sesudah bilah di atasnya. */
+  animation-delay: calc(var(--akn-jeda, 0ms) + var(--akn-urut, 8) * 55ms);
 }
 @for $i from 1 through 8 {
   .akn-berurutan > :nth-child(#{$i}) {
@@ -1462,6 +1625,7 @@ body.mobile-app *::-webkit-scrollbar {
 html[data-gerak="mati"] {
   .mat-mdc-table tr.mat-mdc-row,
   .akn-berurutan > *,
+  .akn-masuk-atas,
   .akn-kerangka__balok {
     animation: none !important;
   }

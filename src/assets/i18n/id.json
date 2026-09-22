@@ -5054,6 +5054,11 @@
     "bukaLaporan": "Buka laporan proyek"
   },
   "employeeView": {
+    "teleponRumah": "Telepon rumah",
+    "kepemilikanRumah": "Kepemilikan rumah",
+    "tempatTinggal": "Tempat tinggal",
+    "berat": "Berat badan",
+    "tinggi": "Tinggi badan",
     "menu": "Lihat data lengkap",
     "tabPokok": "Data pokok",
     "tabProfil": "Profil pribadi",
@@ -5190,6 +5195,10 @@
     "dialogSub": "Soal esai; jawabannya dinilai manusia."
   },
   "hrCandidate": {
+    "kolomBerlaku": "Tautan berlaku",
+    "kolomUjian": "Paket ujian",
+    "kolomStatus": "Status",
+    "kolomNama": "Pelamar",
     "tindakan": "Tindakan",
     "statusDiubah": "Status pelamar diperbarui.",
     "hapusHasil": "Hapus hasil & ulangi",

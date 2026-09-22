@@ -5054,6 +5054,11 @@
     "bukaLaporan": "打开项目报告"
   },
   "employeeView": {
+    "teleponRumah": "家庭电话",
+    "kepemilikanRumah": "住房所有权",
+    "tempatTinggal": "居住",
+    "berat": "体重",
+    "tinggi": "身高",
     "menu": "查看完整资料",
     "tabPokok": "基本资料",
     "tabProfil": "个人档案",
@@ -5190,6 +5195,10 @@
     "dialogSub": "论述题；答案由人工评分。"
   },
   "hrCandidate": {
+    "kolomBerlaku": "链接有效期",
+    "kolomUjian": "考试套餐",
+    "kolomStatus": "状态",
+    "kolomNama": "应聘者",
     "tindakan": "\u64cd\u4f5c",
     "statusDiubah": "\u8003\u751f\u72b6\u6001\u5df2\u66f4\u65b0\u3002",
     "hapusHasil": "\u6e05\u9664\u7ed3\u679c\u5e76\u91cd\u8003",

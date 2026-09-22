@@ -189,3 +189,14 @@ kbd {
     display: none;
   }
 }
+
+/* Ikon SVG menu samping digambar sebagai topeng, supaya warnanya ikut
+   `currentColor` (redup biasa, biru saat baris aktif) — sama seperti di
+   menu samping. */
+.cg-baris__svg {
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  -webkit-mask: var(--cg-ico) center / contain no-repeat;
+  mask: var(--cg-ico) center / contain no-repeat;
+}

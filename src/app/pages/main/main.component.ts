@@ -454,7 +454,9 @@ export class MainComponent implements OnDestroy {
         },
         {
           name: 'nav.bank',
-          icon: 'payment-method.svg',
+          // Gedung bank, bukan kartu: kartu tetap milik Pembayaran, dan dua
+          // menu bersebelahan dengan ikon yang sama harus dibaca labelnya.
+          icon: 'bank.svg',
           route: '/Bank',
         },
         {

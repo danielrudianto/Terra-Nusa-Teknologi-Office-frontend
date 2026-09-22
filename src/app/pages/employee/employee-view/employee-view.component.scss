@@ -518,3 +518,28 @@
     }
   }
 }
+
+/*
+ * DUA KOLOM di layar lebar.
+ *
+ * Satu isian per baris membuat Data Pokok setinggi dua belas baris — yang
+ * membacanya harus menggulir untuk isian yang masing-masing hanya satu
+ * kata. Berpasangan, satu bagian muat dalam satu pandangan; alamat dan
+ * isian panjang tetap selebar penuh (`ev-baris--lebar`).
+ */
+@media (min-width: 640px) {
+  .ev-kisi {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 0.5rem;
+  }
+  .ev-kisi .ev-baris + .ev-baris {
+    border-top: 0;
+  }
+  .ev-kisi .ev-baris {
+    border-bottom: 1px solid var(--line, #f1f3f7);
+  }
+  .ev-baris--lebar {
+    grid-column: 1 / -1;
+  }
+}

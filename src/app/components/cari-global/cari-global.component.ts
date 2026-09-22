@@ -28,6 +28,8 @@ import {
 interface Baris {
   jenis: 'menu' | string;
   ikon: string;
+  /** Ikon menu samping (berkas SVG di assets/vector), bila ada. */
+  svg?: string;
   judul: string;
   sub?: string | null;
   tanggal?: string | null;
@@ -104,7 +106,10 @@ export class CariGlobalComponent implements AfterViewInit, OnDestroy {
         label: 'cariGlobal.menu',
         baris: menu.map((m) => ({
           jenis: 'menu',
-          ikon: m.icon || 'arrow_forward',
+          // Ikon yang SAMA dengan menu samping: butir menu di sini dikenali
+          // dari bentuk yang sudah dilihat setiap hari.
+          ikon: 'arrow_forward',
+          svg: m.icon && /\.svg$/.test(m.icon) ? `/assets/vector/${m.icon}` : undefined,
           judul: this.translate.instant(m.name),
           sub: m.grup ? this.translate.instant(m.grup) : null,
           buka: () => this.pergi([m.route]),

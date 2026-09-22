@@ -5054,6 +5054,11 @@
     "bukaLaporan": "Open project report"
   },
   "employeeView": {
+    "teleponRumah": "Home phone",
+    "kepemilikanRumah": "Home ownership",
+    "tempatTinggal": "Residence",
+    "berat": "Weight",
+    "tinggi": "Height",
     "menu": "View full record",
     "tabPokok": "Core data",
     "tabProfil": "Personal profile",
@@ -5190,6 +5195,10 @@
     "dialogSub": "Essay question; answers are graded by a person."
   },
   "hrCandidate": {
+    "kolomBerlaku": "Link valid",
+    "kolomUjian": "Test package",
+    "kolomStatus": "Status",
+    "kolomNama": "Candidate",
     "tindakan": "Actions",
     "statusDiubah": "Candidate status updated.",
     "hapusHasil": "Clear result & retake",

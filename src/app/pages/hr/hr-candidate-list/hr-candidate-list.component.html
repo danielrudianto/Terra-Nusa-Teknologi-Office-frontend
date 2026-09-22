@@ -134,198 +134,211 @@
     [transisiSetelan]="setelan()"
     [transisiLewatiPertama]="true"
   >
-  @if (isLoading) {
-    <div class="hcl-muat"><mat-spinner diameter="30"></mat-spinner></div>
-  } @else if (!pelamar.length) {
-    <p class="hcl-kosong">{{ "hrCandidate.kosong" | translate }}</p>
-  } @else {
-    @for (p of pelamar; track p.id) {
-      <div class="hcl-baris" [class.hcl-baris--habis]="kedaluwarsa(p)">
-        <div class="hcl-baris__utama">
-          <span class="hcl-nama">{{ p.name }}</span>
-          @if (p.gender) {
-            <span class="hcl-gender">{{ p.gender }}</span>
-          }
-          <span class="hcl-status" [ngClass]="'is-' + p.status">
-            {{ "hrCandidate.status_" + p.status | translate }}
-          </span>
-        </div>
+  <!--
+    TABEL, sama dengan daftar lain: baris masuk berurutan, kerangka saat
+    memuat, rata kolom yang dapat dipindai. Sebelumnya kartu-kartu berbaris
+    yang bentuknya beda sendiri di antara seluruh daftar aplikasi.
+  -->
+  <div class="hcl-kartu">
+    <div class="table-responsive">
+      <table
+        mat-table
+        [dataSource]="pelamar"
+        [appKerangka]="isLoading"
+        multiTemplateDataRows
+        [trackBy]="trackById"
+      >
+        <ng-container matColumnDef="nama">
+          <th mat-header-cell *matHeaderCellDef>{{ "hrCandidate.kolomNama" | translate }}</th>
+          <td mat-cell *matCellDef="let p">
+            <div class="hcl-nama-sel">
+              <span class="hcl-avatar">{{ (p.name || "?").charAt(0) }}</span>
+              <span class="hcl-nama-sel__teks">
+                <span class="hcl-nama">
+                  {{ p.name }}
+                  @if (p.gender) {
+                    <span class="hcl-gender">{{ p.gender }}</span>
+                  }
+                </span>
+                @if (p.email) {
+                  <span class="hcl-sub">{{ p.email }}</span>
+                }
+              </span>
+            </div>
+          </td>
+        </ng-container>
 
-        <div class="hcl-baris__ket">
-          <span>{{ p.testName }}</span>
-          <span class="hcl-titik">·</span>
-          <!--
-            Sisa waktu, bukan tanggal kedaluwarsa.
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>{{ "hrCandidate.kolomStatus" | translate }}</th>
+          <td mat-cell *matCellDef="let p">
+            <span class="hcl-status" [ngClass]="'is-' + p.status">
+              {{ "hrCandidate.status_" + p.status | translate }}
+            </span>
+          </td>
+        </ng-container>
 
-            "Berlaku sampai 24 Agu 2026, 14:32" menuntut yang membacanya
-            menghitung sendiri; "2 hari lagi" langsung memberi tahu seberapa
-            mendesak.
-          -->
-          <span [class.hcl-habis]="kedaluwarsa(p)">{{ sisaWaktu(p) }}</span>
-          @if (p.email) {
-            <span class="hcl-titik">·</span>
-            <span>{{ p.email }}</span>
-          }
-        </div>
+        <ng-container matColumnDef="ujian">
+          <th mat-header-cell *matHeaderCellDef>{{ "hrCandidate.kolomUjian" | translate }}</th>
+          <td mat-cell *matCellDef="let p">
+            <span class="hcl-ujian" [attr.title]="p.testName">{{ p.testName }}</span>
+            <!-- Sisa waktu, bukan tanggal kedaluwarsa: "2 hari lagi" langsung
+                 memberi tahu seberapa mendesak. -->
+            <span class="hcl-sisa" [class.hcl-habis]="kedaluwarsa(p)">{{ sisaWaktu(p) }}</span>
+          </td>
+        </ng-container>
 
-        @if (!kedaluwarsa(p)) {
-          <!--
-            Dua tombol: tautan saja, dan pesan lengkap.
 
-            Tautan saja dipakai ketika percakapannya sudah berjalan; pesan
-            lengkap untuk kiriman pertama. Menggabungkannya berarti salah
-            satu keadaan selalu dilayani dengan teks yang tidak pas.
-          -->
-          <button
-            type="button"
-            class="hcl-tautan"
-            [attr.aria-label]="'hrCandidate.salinTautan' | translate"
-            (click)="salinTautan(p)"
-          >
-            <mat-icon>link</mat-icon>
-            {{ "hrCandidate.salinTautan" | translate }}
+        <ng-container matColumnDef="aksi">
+          <th mat-header-cell *matHeaderCellDef [attr.aria-label]="'common.actions' | translate"></th>
+          <td mat-cell *matCellDef="let p" class="hcl-aksi-sel">
+            <div class="hcl-aksi">
+              @if (!kedaluwarsa(p)) {
+                <!-- Tautan saja untuk percakapan yang sudah berjalan; pesan
+                     lengkap untuk kiriman pertama. -->
+                <!-- Ikon saja: tabelnya perlu ruang, dan "Salin pesan" di
+                     sebelahnya yang dipakai untuk kiriman pertama. -->
+                <button
+                  type="button"
+                  class="hcl-intip"
+                  [attr.aria-label]="'hrCandidate.salinTautan' | translate"
+                  [attr.title]="'hrCandidate.salinTautan' | translate"
+                  (click)="salinTautan(p)"
+                >
+                  <mat-icon>link</mat-icon>
+                </button>
+                <button
+                  type="button"
+                  class="hcl-tautan hcl-tautan--utama"
+                  [attr.aria-label]="'hrCandidate.salinPesan' | translate"
+                  (click)="salinPesan(p)"
+                >
+                  <mat-icon>chat</mat-icon>
+                  {{ "hrCandidate.salinPesan" | translate }}
+                </button>
+                <button
+                  type="button"
+                  class="hcl-intip"
+                  [attr.aria-label]="'hrCandidate.lihatPesan' | translate"
+                  (click)="intip = intip === p.id ? null : p.id"
+                >
+                  <mat-icon>{{ intip === p.id ? "expand_less" : "expand_more" }}</mat-icon>
+                </button>
+              }
+              <!-- Nilai DI LUAR penjaga kedaluwarsa: pemeriksaan kerap
+                   dikerjakan sesudah tautan tujuh harinya habis. -->
+              @if (p.startedAt) {
+                <button
+                  type="button"
+                  class="hcl-tautan hcl-tautan--nilai"
+                  [attr.aria-label]="'hrCandidate.nilai' | translate"
+                  (click)="bukaNilai(p)"
+                >
+                  <mat-icon>fact_check</mat-icon>
+                  {{ "hrCandidate.nilai" | translate }}
+                </button>
+              }
+              <button
+                type="button"
+                class="hcl-intip"
+                [matMenuTriggerFor]="menuAksi"
+                [attr.aria-label]="'hrCandidate.tindakan' | translate"
+              >
+                <mat-icon>more_horiz</mat-icon>
+              </button>
+    <mat-menu #menuAksi="matMenu">
+      <!--
+        Baris TERHAPUS hanya menawarkan satu hal: memulihkannya.
+
+        Mengubah status atau menghapus hasil pelamar yang sudah dihapus
+        ditolak server (404) — menawarkannya hanya menghasilkan tombol
+        yang selalu gagal.
+      -->
+      @if (terhapus(p)) {
+        @if (bolehHapusHasil()) {
+          <button mat-menu-item (click)="pulihkan(p)">
+            <mat-icon>restore_from_trash</mat-icon>
+            <span>{{ "hrCandidate.pulihkan" | translate }}</span>
           </button>
-
-          <button
-            type="button"
-            class="hcl-tautan hcl-tautan--utama"
-            [attr.aria-label]="'hrCandidate.salinPesan' | translate"
-            (click)="salinPesan(p)"
-          >
-            <mat-icon>chat</mat-icon>
-            {{ "hrCandidate.salinPesan" | translate }}
-          </button>
-
-          <button
-            type="button"
-            class="hcl-intip"
-            [attr.aria-label]="'hrCandidate.lihatPesan' | translate"
-            (click)="intip = intip === p.id ? null : p.id"
-          >
-            <mat-icon>{{
-              intip === p.id ? "expand_less" : "expand_more"
-            }}</mat-icon>
+        } @else {
+          <button mat-menu-item disabled>
+            <mat-icon>lock</mat-icon>
+            <span>{{ "hrCandidate.pulihkanLevel5" | translate }}</span>
           </button>
         }
-
-        <!--
-          Tombol NILAI berada DI LUAR penjaga `!kedaluwarsa(p)` di atas.
-
-          Tautan ujian berlaku tujuh hari; pemeriksaan jawaban kerap
-          dikerjakan setelah itu. Bila tombol ini ikut di dalam penjaga tadi,
-          ia menghilang tepat ketika mulai dibutuhkan — dan jawabannya hanya
-          dapat dibaca lewat SQL.
-
-          Muncul sejak pelamarnya MULAI, bukan sejak mengirim: jawaban
-          tersimpan sambil diketik, jadi lembar yang belum dikirim pun sudah
-          berisi dan tetap layak dibaca.
-        -->
-        @if (p.startedAt) {
-          <button
-            type="button"
-            class="hcl-tautan hcl-tautan--nilai"
-            [attr.aria-label]="'hrCandidate.nilai' | translate"
-            (click)="bukaNilai(p)"
-          >
-            <mat-icon>fact_check</mat-icon>
-            {{ "hrCandidate.nilai" | translate }}
-          </button>
-        }
-
-        <!--
-          Menu tindakan lanjutan.
-
-          Status yang DAPAT disetel hanya yang diputuskan manusia; `dinilai`
-          naik sendiri begitu soal terakhir bernilai, dan mundur lagi bila
-          ada nilai yang dicabut. Menawarkannya sebagai tombol berarti
-          daftar ini dapat menyatakan "sudah dinilai" atas lembar yang belum
-          disentuh siapa pun.
-        -->
+      } @else {
+      @for (st of statusManual; track st) {
         <button
-          type="button"
-          class="hcl-intip"
-          [matMenuTriggerFor]="menuAksi"
-          [attr.aria-label]="'hrCandidate.tindakan' | translate"
+          mat-menu-item
+          [disabled]="p.status === st"
+          (click)="ubahStatus(p, st)"
         >
-          <mat-icon>more_horiz</mat-icon>
+          <mat-icon>{{
+            st === "diterima"
+              ? "task_alt"
+              : st === "ditolak"
+                ? "cancel"
+                : "record_voice_over"
+          }}</mat-icon>
+          <span>{{ "hrCandidate.status_" + st | translate }}</span>
         </button>
-        <mat-menu #menuAksi="matMenu">
-          <!--
-            Baris TERHAPUS hanya menawarkan satu hal: memulihkannya.
+      }
 
-            Mengubah status atau menghapus hasil pelamar yang sudah dihapus
-            ditolak server (404) — menawarkannya hanya menghasilkan tombol
-            yang selalu gagal.
-          -->
-          @if (terhapus(p)) {
-            @if (bolehHapusHasil()) {
-              <button mat-menu-item (click)="pulihkan(p)">
-                <mat-icon>restore_from_trash</mat-icon>
-                <span>{{ "hrCandidate.pulihkan" | translate }}</span>
-              </button>
-            } @else {
-              <button mat-menu-item disabled>
-                <mat-icon>lock</mat-icon>
-                <span>{{ "hrCandidate.pulihkanLevel5" | translate }}</span>
-              </button>
-            }
-          } @else {
-          @for (st of statusManual; track st) {
-            <button
-              mat-menu-item
-              [disabled]="p.status === st"
-              (click)="ubahStatus(p, st)"
-            >
-              <mat-icon>{{
-                st === "diterima"
-                  ? "task_alt"
-                  : st === "ditolak"
-                    ? "cancel"
-                    : "record_voice_over"
-              }}</mat-icon>
-              <span>{{ "hrCandidate.status_" + st | translate }}</span>
-            </button>
-          }
+      <!--
+        Hapus hasil DIPISAH dengan garis, dan hanya untuk level 5.
 
-          <!--
-            Hapus hasil DIPISAH dengan garis, dan hanya untuk level 5.
-
-            Ia satu-satunya tindakan di layar ini yang membuang pekerjaan
-            orang tanpa dapat dikembalikan; menaruhnya berdempetan dengan
-            tombol status membuatnya tertekan karena salah sasaran.
-          -->
-          @if (bolehHapusHasil()) {
-            <mat-divider></mat-divider>
-            <button mat-menu-item class="hcl-bahaya" (click)="hapusHasil(p)">
-              <mat-icon>restart_alt</mat-icon>
-              <span>{{ "hrCandidate.hapusHasil" | translate }}</span>
-            </button>
-            <!--
-              Hapus PELAMARNYA — tautannya mati dan ia pindah ke kelompok
-              "Dihapus". Berbeda dari hapus hasil, yang membiarkan tautannya
-              hidup dan dapat dikerjakan ulang. Dapat dipulihkan.
-            -->
-            <button mat-menu-item class="hcl-bahaya" (click)="hapusPelamar(p)">
-              <mat-icon>person_remove</mat-icon>
-              <span>{{ "hrCandidate.hapusPelamar" | translate }}</span>
-            </button>
-          }
-          }
-        </mat-menu>
-
+        Ia satu-satunya tindakan di layar ini yang membuang pekerjaan
+        orang tanpa dapat dikembalikan; menaruhnya berdempetan dengan
+        tombol status membuatnya tertekan karena salah sasaran.
+      -->
+      @if (bolehHapusHasil()) {
+        <mat-divider></mat-divider>
+        <button mat-menu-item class="hcl-bahaya" (click)="hapusHasil(p)">
+          <mat-icon>restart_alt</mat-icon>
+          <span>{{ "hrCandidate.hapusHasil" | translate }}</span>
+        </button>
         <!--
-          Pratinjau pesan.
-
-          Yang mengirimnya perlu membaca sebelum menempel: pesan ini kiriman
-          pertama kepada orang di luar perusahaan, dan salah kirim tidak dapat
-          ditarik kembali dari WhatsApp.
+          Hapus PELAMARNYA — tautannya mati dan ia pindah ke kelompok
+          "Dihapus". Berbeda dari hapus hasil, yang membiarkan tautannya
+          hidup dan dapat dikerjakan ulang. Dapat dipulihkan.
         -->
-        @if (intip === p.id) {
-          <pre class="hcl-pratinjau">{{ pesanUndangan(p) }}</pre>
-        }
-      </div>
-    }
-  }
+        <button mat-menu-item class="hcl-bahaya" (click)="hapusPelamar(p)">
+          <mat-icon>person_remove</mat-icon>
+          <span>{{ "hrCandidate.hapusPelamar" | translate }}</span>
+        </button>
+      }
+      }
+    </mat-menu>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Pratinjau pesan — baris kedua di bawah pelamarnya. Yang
+             mengirimnya perlu membaca sebelum menempel ke WhatsApp. -->
+        <ng-container matColumnDef="pratinjau">
+          <td mat-cell *matCellDef="let p" [attr.colspan]="kolom.length" class="hcl-pratinjau-sel">
+            <pre class="hcl-pratinjau">{{ pesanUndangan(p) }}</pre>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="kolom"></tr>
+        <tr
+          mat-row
+          *matRowDef="let p; columns: kolom"
+          [class.hcl-baris--habis]="kedaluwarsa(p)"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let p; columns: kolomPratinjau; when: sedangDiintip"
+          class="hcl-baris-pratinjau"
+        ></tr>
+        <tr class="mat-row hcl-norow" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="kolom.length">
+            <p class="hcl-kosong">{{ "hrCandidate.kosong" | translate }}</p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
   </div>
   </section>
 </div>

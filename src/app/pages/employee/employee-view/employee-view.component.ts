@@ -54,6 +54,10 @@ interface Bagian {
  */
 const IKON: Record<string, string> = {
   'employeeView.alamatKtp': 'contact_mail',
+  'employeeView.tinggi': 'height',
+  'employeeView.berat': 'monitor_weight',
+  'employeeView.kepemilikanRumah': 'home',
+  'employeeView.teleponRumah': 'call',
   'employeeView.golonganDarah': 'bloodtype',
   'employeeView.kewarganegaraan': 'flag',
   'employeeView.suku': 'diversity_3',
@@ -257,6 +261,15 @@ export class EmployeeViewComponent implements OnInit {
   }
 
   /** Ikon untuk sebuah label; kosong bila tidak ada padanannya. */
+  /**
+   * Baris yang mengambil DUA kolom: alamat, dan isian panjang (anggota
+   * keluarga, pendidikan, riwayat kerja). Dipotong dua kolom, alamat
+   * membungkus di tiap kata dan terbaca seperti daftar.
+   */
+  lebar(r: { label: string; nilai: string }): boolean {
+    return /alamat/i.test(r.label) || String(r.nilai ?? '').length > 38;
+  }
+
   ikon(label: string): string {
     return IKON[label] || '';
   }
@@ -296,19 +309,67 @@ export class EmployeeViewComponent implements OnInit {
     });
   }
 
+  /**
+   * Kode isian → teks yang dibaca manusia ("L" → "Laki-laki",
+   * "pasangan" → "Pasangan"). Kuncinya SAMA dengan yang dipakai formulir
+   * profil, jadi tampilan dan formulir tidak mungkin menyebut satu nilai
+   * dengan dua nama. Kode yang tidak dikenal ditampilkan apa adanya.
+   */
+  private static readonly KODE: Record<string, Record<string, string>> = {
+    gender: { L: 'employeeProfile.male', P: 'employeeProfile.female' },
+    maritalStatus: {
+      lajang: 'employeeProfile.single',
+      menikah: 'employeeProfile.married',
+      cerai: 'employeeProfile.divorced',
+    },
+    homeOwnership: {
+      pribadi: 'employeeProfile.ownOwn',
+      orangtua: 'employeeProfile.ownParents',
+      kontrak: 'employeeProfile.ownRent',
+    },
+    relation: {
+      pasangan: 'employeeProfile.spouse',
+      anak: 'employeeProfile.child',
+      saudara: 'employeeProfile.sibling',
+    },
+    kemampuan: { aktif: 'employeeProfile.active', pasif: 'employeeProfile.passive' },
+  };
+
+  private kode(jenis: string, v: unknown): string {
+    const kunci = EmployeeViewComponent.KODE[jenis]?.[String(v ?? '').trim()];
+    return kunci ? this.translate.instant(kunci) : this.teks(v);
+  }
+
+  /** "172 cm" — satuan ikut ditulis; angka telanjang tidak jelas maknanya. */
+  private satuan(v: unknown, s: string): string {
+    const t = this.teks(v);
+    return t === '—' ? t : `${t} ${s}`;
+  }
+
   private susunProfil(d: any): Bagian[] {
     const bagian: Bagian[] = [
       {
         judul: 'employeeView.identitas',
         baris: [
           { label: 'employeeView.tempatLahir', nilai: this.teks(d.birthPlace) },
-          { label: 'employeeView.jenisKelamin', nilai: this.teks(d.gender) },
+          { label: 'employeeView.jenisKelamin', nilai: this.kode('gender', d.gender) },
           { label: 'employeeView.golonganDarah', nilai: this.teks(d.bloodType) },
           { label: 'employeeView.agama', nilai: this.teks(d.religion) },
-          { label: 'employeeView.statusNikah', nilai: this.teks(d.maritalStatus) },
+          { label: 'employeeView.statusNikah', nilai: this.kode('maritalStatus', d.maritalStatus) },
           { label: 'employeeView.kewarganegaraan', nilai: this.teks(d.citizenship) },
           { label: 'employeeView.suku', nilai: this.teks(d.ethnicity) },
+          // Diisi di formulir, tetapi dulu tidak pernah ditampilkan.
+          { label: 'employeeView.tinggi', nilai: this.satuan(d.heightCm, 'cm') },
+          { label: 'employeeView.berat', nilai: this.satuan(d.weightKg, 'kg') },
           { label: 'employeeView.alamatKtp', nilai: this.teks(d.ktpAddress) },
+        ],
+      },
+      {
+        // Seluruh bagian ini dulu hilang dari tampilan.
+        judul: 'employeeView.tempatTinggal',
+        baris: [
+          { label: 'employeeView.kepemilikanRumah', nilai: this.kode('homeOwnership', d.homeOwnership) },
+          { label: 'employeeView.teleponRumah', nilai: this.teks(d.homePhone) },
         ],
       },
       {
@@ -366,7 +427,7 @@ export class EmployeeViewComponent implements OnInit {
       bagian.push({
         judul: 'employeeView.anggotaKeluarga',
         baris: keluarga.map((k: any) => ({
-          label: this.teks(k.relation),
+          label: this.kode('relation', k.relation),
           nilai: [this.teks(k.name), k.birthday || '', k.job || '']
             .filter((x) => x && x !== '—')
             .join(' · '),
@@ -422,8 +483,8 @@ export class EmployeeViewComponent implements OnInit {
           // menggabungkannya menjadi satu tingkat menghilangkan perbedaan
           // yang justru menentukan saat menugaskan pekerjaan.
           nilai: [
-            b.speaking ? `${this.translate.instant('employeeView.lisan')}: ${b.speaking}` : '',
-            b.writing ? `${this.translate.instant('employeeView.tulisan')}: ${b.writing}` : '',
+            b.speaking ? `${this.translate.instant('employeeView.lisan')}: ${this.kode('kemampuan', b.speaking)}` : '',
+            b.writing ? `${this.translate.instant('employeeView.tulisan')}: ${this.kode('kemampuan', b.writing)}` : '',
           ]
             .filter(Boolean)
             .join(' · '),

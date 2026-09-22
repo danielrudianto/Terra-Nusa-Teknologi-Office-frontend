@@ -43,7 +43,7 @@ POLA_DEF = re.compile(r'matColumnDef="([\w.-]+)"')
 
 # Daftar kolom ditulis dengan beberapa nama di repo ini.
 POLA_DAFTAR = re.compile(
-    r"(?:readonly\s+)?(?:kolom|displayedColumns|columns)\s*"
+    r"(?:readonly\s+)?(?:kolom\w*|displayedColumns|columns)\s*"
     r"(?::\s*[\w<>\[\]|\s]+)?\s*=\s*\[([^\]]*)\]"
 )
 POLA_TEKS = re.compile(r"['\"]([\w.-]+)['\"]")
@@ -70,7 +70,11 @@ def periksa() -> list[str]:
             continue
         isi_ts = _tanpa_komentar(ts.read_text(encoding="utf-8"))
 
-        daftar = POLA_DAFTAR.search(isi_ts)
+        # SEMUA daftar kolom di berkas itu, bukan hanya yang pertama: tabel
+        # dengan baris kedua (mis. baris pratinjau `multiTemplateDataRows`)
+        # menyebut kolomnya di daftar tersendiri.
+        semua_daftar = list(POLA_DAFTAR.finditer(isi_ts))
+        daftar = semua_daftar[0] if semua_daftar else None
         if not daftar:
             # Sebagian tabel menyusun kolomnya secara dinamis (mis. menurut
             # izin). Itu bentuk yang sah, dan pemeriksa ini tidak dapat
@@ -81,7 +85,8 @@ def periksa() -> list[str]:
 
         disebut = [
             t
-            for t in POLA_TEKS.findall(daftar.group(1))
+            for d in semua_daftar
+            for t in POLA_TEKS.findall(d.group(1))
             # Baris seperti `...KOLOM_DASAR` tidak menghasilkan teks; yang
             # tertangkap hanya yang benar-benar ditulis sebagai teks.
             if t

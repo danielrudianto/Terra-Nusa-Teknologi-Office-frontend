@@ -81,8 +81,9 @@
                   {{ "employeeView.salinBagian" | translate }}
                 </button>
               </div>
+              <div class="ev-kisi">
               @for (r of b.baris; track r.label) {
-                <div class="ev-baris">
+                <div class="ev-baris" [class.ev-baris--lebar]="lebar(r)">
                   <!--
                     Ikon memberi bentuk berbeda pada tiap baris.
 
@@ -119,6 +120,7 @@
                   </button>
                 </div>
               }
+              </div>
             </div>
           }
         </mat-tab>
@@ -146,8 +148,9 @@
                     {{ "employeeView.salinBagian" | translate }}
                   </button>
                 </div>
+                <div class="ev-kisi">
                 @for (r of b.baris; track r.label) {
-                  <div class="ev-baris">
+                  <div class="ev-baris" [class.ev-baris--lebar]="lebar(r)">
                     <span class="ev-baris__ikon">
                       @if (ikon(r.label); as ic) {
                         <mat-icon>{{ ic }}</mat-icon>
@@ -175,6 +178,7 @@
                     </button>
                   </div>
                 }
+                </div>
               </div>
             }
           }

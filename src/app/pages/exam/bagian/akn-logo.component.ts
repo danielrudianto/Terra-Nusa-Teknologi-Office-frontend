@@ -1,27 +1,35 @@
 import { Component, Input } from '@angular/core';
 
 /**
- * Logo PT Alpha Konstruksi Nusantara: tanda segitiga + tulisan.
+ * Logo PT Alpha Konstruksi Nusantara — dari berkas RESMI (Logo 20x20.pdf).
  *
- * Digambar ulang sebagai SVG dari kop surat resmi
- * (`templates/pdf/assets/kop.png`) — berkas PNG yang ada hanya 95 px dan
- * pecah di layar retina. Warnanya TETAP oranye AKN, tidak ikut palet
- * pilihan pelamar: logo adalah identitas, bukan hiasan.
+ * Tanda dan tulisannya diturunkan dari gambar 2000 px di dalam PDF itu:
+ * tanda sebagai tiga poligon (sudutnya diukur, lalu disimetriskan pada
+ * sumbu tengah), tulisan sebagai jalur hasil telusur — hurufnya persis
+ * huruf logo, bukan huruf pengganti.
+ *
+ * Warnanya warna resmi: emas #BD925B untuk tanda, #B38B57 dan #8D683B untuk
+ * dua baris tulisan. Warna tetap, tidak ikut palet pilihan pelamar: logo
+ * adalah identitas, bukan hiasan. Di tema gelap tulisannya dicerahkan —
+ * cokelat #8D683B di atas latar gelap hanya berkontras sekitar 3:1.
+ *
+ * Susunannya MENDATAR (tanda di kiri, tulisan di kanan) untuk kepala
+ * halaman. Versi bertumpuk seperti aslinya ada di `assets/logo/akn-logo.svg`.
  */
 @Component({
   selector: 'app-akn-logo',
   standalone: true,
   template: `
-    <span class="akl" [class.akl--terang]="terang">
-      <svg class="akl-tanda" viewBox="0 0 52 38" aria-hidden="true">
-        <polygon points="26,1 22,6 30,6" />
-        <polygon points="17.5,11 23.5,11 23.5,28 0.5,36" />
-        <polygon points="28.5,11 34.5,11 51.5,36 28.5,28" />
+    <span class="akl" [class.akl--terang]="terang" role="img" aria-label="PT Alpha Konstruksi Nusantara">
+      <svg class="akl-tanda" viewBox="0 0 188.1 137.1" aria-hidden="true">
+        <polygon points="94.05,0 109.25,22.25 78.85,22.25" />
+        <polygon points="85.15,39.65 66.5,39.65 0,137.1 85.15,103.35" />
+        <polygon points="102.95,39.65 121.6,39.65 188.1,137.1 102.95,103.35" />
       </svg>
-      <span class="akl-teks">
-        <span class="akl-atas">Alpha Konstruksi</span>
-        <span class="akl-bawah">Nusantara</span>
-      </span>
+      <svg class="akl-teks" viewBox="0 0 171.4 37.6" aria-hidden="true">
+        <path class="akl-atas" fill-rule="evenodd" d="M166.7,0.3 L166.7,1.4 L168.3,1.5 L168.3,11.1 L166.7,11.2 L166.7,12.3 L171.4,12.3 L171.4,11.2 L169.8,11.1 L169.8,1.5 L171.4,1.4 L171.4,0.3Z M144.4,0.3 L144.4,12.3 L145.9,12.3 L145.9,8.2 L147.1,6.9 L151.9,12.3 L153.9,12.3 L148.4,6.0 L148.4,5.8 L153.7,0.3 L151.8,0.3 L146.0,6.5 L145.9,0.3Z M132.0,0.3 L132.0,8.9 L132.6,10.7 L133.9,12.0 L135.4,12.5 L137.7,12.5 L139.2,12.0 L140.5,10.7 L141.1,8.9 L141.1,0.3 L139.7,0.3 L139.7,7.5 L139.4,9.6 L138.4,10.8 L137.4,11.2 L135.3,11.1 L134.7,10.8 L133.7,9.6 L133.4,7.6 L133.4,0.3Z M120.5,0.3 L120.5,12.3 L122.0,12.3 L122.1,7.5 L124.4,7.5 L128.4,12.3 L130.4,12.3 L126.0,7.2 L126.1,6.9 L126.8,6.6 L127.7,5.8 L128.2,4.9 L128.4,3.1 L128.3,2.5 L127.9,1.7 L126.9,0.8 L125.8,0.4Z M122.0,1.7 L125.0,1.6 L126.0,2.0 L126.6,2.6 L126.8,3.2 L126.8,4.2 L126.4,5.2 L125.8,5.8 L125.2,6.1 L122.1,6.2Z M108.7,0.3 L108.7,1.6 L113.0,1.7 L113.0,12.3 L114.5,12.3 L114.5,1.7 L118.8,1.6 L118.8,0.3Z M86.4,0.3 L86.4,12.3 L87.8,12.3 L87.9,1.6 L88.5,2.5 L93.6,12.3 L95.6,12.3 L95.6,0.3 L94.2,0.3 L94.1,10.1 L88.9,0.3Z M62.0,0.3 L62.0,12.3 L63.5,12.3 L63.5,8.2 L64.7,6.9 L69.5,12.3 L71.5,12.3 L66.0,6.0 L66.0,5.8 L71.3,0.3 L69.4,0.3 L63.6,6.5 L63.5,0.3Z M47.6,0.3 L43.2,12.3 L44.8,12.3 L46.0,8.9 L51.2,8.9 L51.5,9.4 L52.4,12.2 L54.1,12.3 L49.7,0.3Z M48.6,1.7 L48.8,1.9 L50.8,7.5 L50.7,7.6 L46.5,7.5Z M32.1,0.3 L32.1,12.3 L33.6,12.3 L33.6,6.5 L33.8,6.3 L39.7,6.3 L39.8,12.3 L41.3,12.3 L41.3,0.3 L39.8,0.3 L39.7,5.0 L33.7,5.0 L33.6,0.3Z M27.8,0.6 L26.6,0.3 L22.1,0.3 L22.1,12.3 L23.6,12.3 L23.7,7.8 L26.0,7.8 L27.5,7.5 L28.8,6.7 L29.7,5.4 L29.9,4.8 L29.9,2.9 L29.7,2.3 L28.7,1.1Z M23.6,1.7 L26.3,1.6 L27.7,2.2 L28.1,2.7 L28.4,3.6 L28.3,4.7 L27.8,5.6 L27.2,6.1 L26.4,6.4 L23.7,6.5Z M12.8,0.3 L12.8,12.3 L20.4,12.3 L20.4,11.0 L14.3,10.9 L14.3,0.3Z M4.4,0.3 L0.0,12.3 L1.6,12.3 L2.8,8.9 L8.0,8.9 L8.3,9.4 L9.2,12.2 L10.9,12.3 L6.5,0.3Z M5.4,1.7 L5.6,1.9 L7.6,7.5 L7.5,7.6 L3.3,7.5Z M158.8,0.1 L157.3,0.6 L156.0,1.7 L155.5,2.8 L155.6,4.6 L156.0,5.4 L156.5,5.9 L157.6,6.5 L158.6,6.8 L160.8,7.1 L161.9,7.4 L162.4,7.7 L163.0,8.5 L163.0,9.7 L162.7,10.2 L161.8,10.9 L160.8,11.2 L159.0,11.2 L157.2,10.7 L155.4,9.6 L155.4,11.6 L157.0,12.2 L158.5,12.5 L160.9,12.5 L162.6,12.0 L163.9,11.0 L164.6,9.5 L164.5,7.7 L164.1,7.0 L162.9,6.1 L161.2,5.6 L159.1,5.3 L157.9,4.9 L157.2,4.2 L157.1,2.8 L157.8,1.9 L159.0,1.4 L161.6,1.5 L162.8,1.9 L164.1,2.7 L164.1,0.8 L161.5,0.1Z M101.0,0.3 L99.7,1.0 L98.8,2.0 L98.5,2.8 L98.5,4.2 L98.7,4.9 L99.5,5.9 L100.6,6.5 L101.6,6.8 L103.8,7.1 L105.1,7.5 L105.9,8.2 L106.0,9.6 L105.3,10.6 L103.8,11.2 L102.0,11.2 L101.1,11.0 L99.2,10.2 L98.4,9.6 L98.4,11.6 L100.0,12.2 L101.5,12.5 L104.5,12.4 L106.1,11.7 L107.1,10.7 L107.6,9.5 L107.5,7.7 L107.1,7.0 L105.9,6.1 L104.6,5.7 L102.1,5.3 L100.9,4.9 L100.4,4.5 L100.1,4.0 L100.1,2.8 L100.7,2.0 L102.0,1.4 L104.1,1.4 L105.0,1.6 L106.4,2.2 L107.1,2.7 L107.1,0.8 L104.5,0.1 L101.8,0.1Z M76.9,0.1 L75.1,0.8 L73.6,2.3 L73.1,3.3 L72.7,4.7 L72.6,7.0 L72.8,8.3 L73.6,10.3 L74.7,11.5 L75.3,11.9 L77.1,12.5 L79.4,12.5 L80.5,12.2 L81.6,11.6 L82.6,10.6 L83.1,9.8 L83.5,8.8 L83.8,7.2 L83.8,5.3 L83.6,4.1 L82.7,2.1 L82.0,1.3 L81.3,0.8 L79.5,0.1Z M77.8,1.3 L79.6,1.5 L80.5,2.0 L81.5,3.1 L81.9,3.9 L82.2,5.2 L82.2,7.4 L82.0,8.4 L81.5,9.5 L80.6,10.5 L79.1,11.2 L77.3,11.2 L75.7,10.4 L75.2,9.9 L74.6,8.9 L74.2,7.2 L74.3,4.7 L74.9,3.1 L76.2,1.8Z" />
+        <path class="akl-bawah" fill-rule="evenodd" d="M160.2,17.2 L153.0,37.2 L155.6,37.2 L157.6,31.6 L166.3,31.6 L168.3,37.2 L171.1,37.2 L163.8,17.2Z M161.9,19.6 L162.1,19.7 L165.5,29.2 L165.4,29.4 L158.4,29.3Z M136.1,17.2 L136.1,37.2 L138.7,37.2 L138.8,29.2 L142.5,29.2 L149.2,37.2 L152.6,37.2 L145.1,28.5 L146.3,27.9 L147.5,27.0 L148.2,26.2 L148.8,25.1 L149.2,23.5 L149.2,21.7 L148.9,20.5 L148.2,19.3 L147.5,18.6 L146.2,17.8 L144.4,17.3Z M138.7,19.5 L143.1,19.4 L144.2,19.6 L145.6,20.4 L146.1,21.0 L146.5,22.1 L146.4,24.2 L145.7,25.6 L144.8,26.4 L143.6,26.9 L142.2,27.1 L138.8,27.1Z M122.1,17.2 L114.9,37.2 L117.5,37.2 L119.5,31.6 L128.2,31.6 L130.2,37.2 L133.0,37.2 L125.7,17.2Z M123.8,19.6 L124.0,19.7 L127.4,29.2 L127.3,29.4 L120.3,29.3Z M99.0,17.2 L99.0,19.5 L106.2,19.5 L106.2,37.2 L108.8,37.2 L108.8,19.5 L115.8,19.5 L116.0,19.4 L116.0,17.2Z M81.0,17.2 L81.0,37.2 L83.4,37.2 L83.5,19.3 L92.9,37.1 L96.2,37.2 L96.3,17.3 L93.8,17.3 L93.9,33.3 L93.7,33.4 L85.2,17.3Z M67.0,17.2 L59.8,37.2 L62.4,37.2 L64.4,31.6 L73.1,31.6 L75.1,37.2 L77.9,37.2 L70.6,17.2Z M68.7,19.6 L68.9,19.7 L72.3,29.2 L72.2,29.4 L65.2,29.3Z M22.9,17.2 L22.9,30.7 L23.2,32.6 L23.9,34.4 L24.7,35.5 L25.6,36.3 L26.8,37.0 L28.5,37.5 L32.0,37.6 L33.5,37.3 L35.1,36.6 L35.7,36.2 L37.2,34.5 L37.8,33.1 L38.2,31.2 L38.3,17.2 L35.7,17.2 L35.7,30.1 L35.6,31.2 L35.2,32.7 L34.5,33.9 L34.0,34.4 L32.8,35.1 L31.6,35.4 L29.6,35.4 L28.1,35.0 L27.4,34.6 L26.5,33.7 L25.9,32.6 L25.5,30.8 L25.5,17.2Z M2.5,17.2 L2.5,37.2 L4.9,37.2 L5.0,19.3 L14.4,37.1 L17.7,37.2 L17.8,17.2 L15.3,17.2 L15.3,33.4 L15.1,33.3 L6.7,17.3Z M49.4,16.8 L47.9,17.0 L46.1,17.6 L45.2,18.1 L43.9,19.2 L43.0,20.7 L42.7,21.9 L42.7,23.2 L43.1,24.8 L43.7,25.8 L44.5,26.6 L46.1,27.5 L47.7,28.0 L52.8,28.9 L54.3,29.6 L55.0,30.3 L55.3,31.2 L55.3,32.5 L55.1,33.1 L54.1,34.3 L52.8,35.0 L51.6,35.3 L49.6,35.4 L47.6,35.1 L45.7,34.5 L44.6,34.0 L42.6,32.7 L42.6,36.0 L45.2,37.0 L46.9,37.4 L48.7,37.6 L51.1,37.6 L52.5,37.4 L54.1,36.9 L55.7,36.0 L56.7,35.1 L57.7,33.4 L58.0,32.3 L58.0,30.6 L57.7,29.4 L57.2,28.5 L56.3,27.6 L54.9,26.8 L52.9,26.2 L47.9,25.3 L46.4,24.6 L45.7,23.8 L45.5,23.2 L45.5,21.5 L45.9,20.7 L46.9,19.8 L48.0,19.3 L49.7,19.0 L51.8,19.1 L53.6,19.5 L55.4,20.2 L57.0,21.3 L57.2,21.3 L57.2,18.2 L55.7,17.6 L53.2,17.0Z" />
+      </svg>
     </span>
   `,
   styles: [
@@ -32,39 +40,37 @@ import { Component, Input } from '@angular/core';
       .akl {
         display: inline-flex;
         align-items: center;
-        gap: 0.6rem;
-        color: var(--ink, #16181d);
-      }
-      .akl--terang {
-        color: #fff;
+        gap: 0.65em;
       }
       .akl-tanda {
         flex: 0 0 auto;
-        width: 2.4em;
+        width: 2.8em;
         height: auto;
-        fill: #dd8840;
+        fill: #bd925b;
       }
       .akl-teks {
-        display: flex;
-        flex-direction: column;
-        font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-        text-transform: uppercase;
-        line-height: 1;
+        flex: 0 0 auto;
+        height: 1.9em;
+        width: auto;
       }
       .akl-atas {
-        font-size: 0.72em;
-        font-weight: 600;
-        letter-spacing: 0.08em;
+        fill: #b38b57;
       }
       .akl-bawah {
-        font-size: 1.15em;
-        font-weight: 700;
-        letter-spacing: 0.06em;
+        fill: #8d683b;
+      }
+      :host-context(html[data-theme='dark']) .akl-atas,
+      .akl--terang .akl-atas {
+        fill: #d6b98f;
+      }
+      :host-context(html[data-theme='dark']) .akl-bawah,
+      .akl--terang .akl-bawah {
+        fill: #c9a26f;
       }
     `,
   ],
 })
 export class AknLogoComponent {
-  /** Tulisan putih — untuk latar gelap. */
+  /** Tulisan dicerahkan — untuk latar gelap di luar tema gelap. */
   @Input() terang = false;
 }
