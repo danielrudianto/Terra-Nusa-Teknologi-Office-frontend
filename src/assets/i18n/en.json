@@ -6051,6 +6051,8 @@
     "pilihKosong": "No certificate of payment is ready to bill.",
     "spkHanyaSpkJudul": "Approved documents billed in stages only",
     "fakturSudahAdaJudul": "This SPK has already been billed through an invoice",
+    "lemburTanpaBarisJudul": "Overtime is not an SPK line yet",
+    "lemburTanpaBaris": "This SPK agrees an overtime rate per {{satuan}}, but it has no overtime line, so the volume cannot be entered here. Add the line through an SPK addendum.",
     "fakturSudahAda": "There are {{n}} bill(s) against this SPK created through the manpower invoice maker. That path does not yet read the budget on this screen, so volume entered here does not reduce anything there.",
     "fakturSudahAdaNilai": "Their value is Rp {{nilai}}.",
     "periodeJudul": "Work cut-off period",

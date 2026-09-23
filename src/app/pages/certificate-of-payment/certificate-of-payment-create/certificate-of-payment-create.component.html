@@ -232,6 +232,23 @@
       </div>
     }
 
+    <!--
+      SPK menyepakati lembur, tetapi barisnya tidak ada.
+
+      Terjadi pada SPK yang terbit sebelum lembur menjadi baris tersendiri.
+      Tanpa kalimat ini, yang mengisi mencari "Lembur" di daftar volume,
+      tidak menemukannya, dan menyimpulkan sistemnya rusak.
+    -->
+    @if (lemburTanpaBaris(); as lb) {
+      <div class="cop-banner cop-banner--awas">
+        <mat-icon>schedule</mat-icon>
+        <div>
+          <strong>{{ "cop.lemburTanpaBarisJudul" | translate }}</strong>
+          <span>{{ "cop.lemburTanpaBaris" | translate: { satuan: lb.satuan } }}</span>
+        </div>
+      </div>
+    }
+
     <!-- ===== 3. VOLUME ===== -->
     <section class="cop-kartu">
       <div class="cop-kartu__judul">{{ "cop.langkahVolume" | translate }}</div>

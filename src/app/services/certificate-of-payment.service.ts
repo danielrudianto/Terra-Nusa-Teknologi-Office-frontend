@@ -327,6 +327,14 @@ export class CertificateOfPaymentService {
   }
 
   /** Baris pekerjaan SPK beserta sisa pagunya. */
+  /** SPK menyepakati tarif lembur tetapi tidak punya baris lembur. */
+  peringatanLembur(purchaseOrderId: number) {
+    return this.api.get(
+      `${CertificateOfPaymentService.JALUR}/peringatan-lembur/${purchaseOrderId}`,
+      {},
+    );
+  }
+
   pagu(purchaseOrderId: number) {
     return this.api.get(
       `${CertificateOfPaymentService.JALUR}/pagu/${purchaseOrderId}`,

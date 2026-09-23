@@ -397,9 +397,12 @@ export class MainComponent implements OnDestroy {
     {
       /*
        * PENJUALAN — urut sesuai jalannya pekerjaan, bukan sesuai abjad:
-       * tender dimenangkan, progresnya disertifikasi (CoP), difakturkan,
-       * lalu uangnya masuk. Dibaca dari atas ke bawah, urutan ini
-       * menceritakan satu siklus utuh.
+       * tender dimenangkan, pekerjaannya difakturkan, lalu uangnya masuk.
+       *
+       * CoP TIDAK di sini, meski ia berita acara. Yang disertifikasinya
+       * pekerjaan PEMASOK, dan dokumen berikutnya adalah faktur pembelian —
+       * satu alur dengan SPK, bukan dengan penagihan ke klien. Di kelompok
+       * penjualan ia dicari orang di tempat yang salah.
        */
       name: 'nav.penjualan',
       children: [
@@ -409,17 +412,6 @@ export class MainComponent implements OnDestroy {
           name: 'nav.tender',
           icon: 'price.svg',
           route: '/Tender',
-        },
-        {
-          // Lambang DOKUMEN bercentang, bukan keranjang belanja.
-          //
-          // Keranjang dipinjam dari faktur pembelian saat menu ini baru
-          // ditambahkan. CoP bukan pembelian: ia berita acara yang dibaca,
-          // diperiksa, dan ditandatangani — dan lambang keranjang membuatnya
-          // dicari di kelompok pembelian oleh yang membuka menu.
-          name: 'nav.certificateOfPayment',
-          icon: 'certificate-of-payment.svg',
-          route: '/Certificate-of-payment',
         },
         {
           name: 'nav.salesInvoice',
@@ -435,8 +427,9 @@ export class MainComponent implements OnDestroy {
     },
     {
       /*
-       * PENGADAAN — ketiga tahap satu pekerjaan, berurutan dan berdekatan:
-       * draf disusun, SPK/PO terbit, fakturnya masuk.
+       * PENGADAAN — tahap satu pekerjaan, berurutan dan berdekatan: draf
+       * disusun, SPK/PO terbit, volumenya disertifikasi (CoP), fakturnya
+       * masuk.
        */
       name: 'nav.pengadaan',
       children: [
@@ -450,6 +443,19 @@ export class MainComponent implements OnDestroy {
           name: 'nav.purchaseOrder',
           icon: 'purchase-order.svg',
           route: '/Purchase-order',
+        },
+        {
+          /*
+           * Di antara SPK dan faktur pembelian, karena memang begitu
+           * urutannya: SPK terbit, volumenya disertifikasi (CoP), lalu
+           * fakturnya dibuat DARI CoP itu.
+           *
+           * Lambang DOKUMEN bercentang, bukan keranjang belanja: CoP berita
+           * acara yang dibaca, diperiksa, dan ditandatangani.
+           */
+          name: 'nav.certificateOfPayment',
+          icon: 'certificate-of-payment.svg',
+          route: '/Certificate-of-payment',
         },
         {
           name: 'nav.purchase',

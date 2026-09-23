@@ -6051,6 +6051,8 @@
     "pilihKosong": "Tidak ada CoP yang siap ditagihkan.",
     "spkHanyaSpkJudul": "Hanya dokumen disetujui yang ditagih bertahap",
     "fakturSudahAdaJudul": "SPK ini sudah pernah ditagih lewat faktur",
+    "lemburTanpaBarisJudul": "Lembur belum jadi baris SPK",
+    "lemburTanpaBaris": "SPK ini menyepakati upah lembur per {{satuan}}, tetapi barisnya tidak ada sehingga volumenya tidak dapat diisi di sini. Buat adendum SPK untuk menambahkan barisnya.",
     "fakturSudahAda": "Ada {{n}} tagihan atas SPK ini yang dibuat lewat pembuat faktur tenaga kerja. Jalur itu belum membaca pagu di layar ini, jadi volume di sini tidak mengurangi apa pun di sana.",
     "fakturSudahAdaNilai": "Nilainya Rp {{nilai}}.",
     "periodeJudul": "Periode cut-off pekerjaan",

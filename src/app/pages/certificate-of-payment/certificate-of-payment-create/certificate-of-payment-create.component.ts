@@ -155,6 +155,15 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
     null,
   );
 
+  /**
+   * SPK menyepakati tarif lembur tetapi tidak punya baris lembur.
+   *
+   * SPK lama: lembur dulu hanya klausul di tingkat dokumen. Tanpa
+   * keterangan ini, yang mengisi membuka daftar volume, tidak menemukan
+   * "Lembur", dan menyangka sistemnya yang salah.
+   */
+  readonly lemburTanpaBaris = signal<{ satuan: string } | null>(null);
+
   readonly tanggal = new FormControl<Date | null>(new Date());
   /*
    * Periode WAJIB — cerminan aturan server.
@@ -277,6 +286,7 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
   lepasSpk(): void {
     this.spkTerpilih.set(null);
     this.tagihanFaktur.set(null);
+    this.lemburTanpaBaris.set(null);
     this.baris.set([]);
     this.kontrol.clear();
     this.isian.set({});
@@ -293,8 +303,10 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
     this.catatanBaris.set({});
     this.volumeAwal.set({});
     this.tagihanFaktur.set(null);
+    this.lemburTanpaBaris.set(null);
     await this.muatPagu(spk.id);
     await this.muatPeringatanFaktur(spk.id);
+    await this.muatPeringatanLembur(spk.id);
   }
 
   /**
@@ -313,6 +325,20 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
       this.tagihanFaktur.set(jumlah > 0 ? { jumlah, nilai: hasil?.nilai } : null);
     } catch {
       this.tagihanFaktur.set(null);
+    }
+  }
+
+  /** Sama seperti peringatan faktur: gagalnya tidak menjatuhkan layar. */
+  private async muatPeringatanLembur(spkId: number): Promise<void> {
+    try {
+      const hasil = (await firstValueFrom(
+        this.service.peringatanLembur(spkId),
+      )) as { ada?: boolean; satuan?: string };
+      this.lemburTanpaBaris.set(
+        hasil?.ada ? { satuan: String(hasil.satuan || 'jam') } : null,
+      );
+    } catch {
+      this.lemburTanpaBaris.set(null);
     }
   }
 

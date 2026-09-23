@@ -6051,6 +6051,8 @@
     "pilihKosong": "没有可开票的付款证书。",
     "spkHanyaSpkJudul": "仅限已审批且分期结算的单据",
     "fakturSudahAdaJudul": "此 SPK 已通过发票开过账单",
+    "lemburTanpaBarisJudul": "加班尚未成为 SPK 行",
+    "lemburTanpaBaris": "本 SPK 约定了每{{satuan}}加班费，但没有加班行，因此无法在此填写数量。请通过 SPK 附录添加该行。",
     "fakturSudahAda": "本 SPK 已有 {{n}} 笔通过人工发票生成器开出的账单。该渠道尚未读取本页的预算，因此在此录入的工程量不会抵减那边的金额。",
     "fakturSudahAdaNilai": "金额为 Rp {{nilai}}。",
     "periodeJudul": "工程结算期间",
