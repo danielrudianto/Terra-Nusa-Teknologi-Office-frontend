@@ -30,6 +30,8 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SupplierSelectorComponent } from '../../../../components/supplier-selector/supplier-selector.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { pphDiputuskan, tarifPphNol } from 'src/app/utils/pph-wajib';
 import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
 import { ApiService } from '../../../../services/api.service';
@@ -60,6 +62,7 @@ const PENANDA_LEMBUR = 'LEMBUR';
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    MatCheckboxModule,
     ProjectSelectorComponent,
     ClauseLineComponent,
     MatTooltipModule,
@@ -172,10 +175,14 @@ export class PurchaseOrderCreateDComponent {
          * tidak pernah bisa dikosongkan lagi.
          */
         if (data?.hapus) {
+          // Mengosongkan kode mengembalikan SPK ke keadaan "belum
+          // diputuskan" — pernyataan tanpa-PPh harus dicentang sendiri,
+          // bukan diwariskan dari pilihan sebelumnya.
           this.formGroup.patchValue({
             pphCode: '',
             pphTaxObject: '',
             pphPercentage: 0,
+            tanpaPph: false,
           });
           return;
         }
@@ -184,6 +191,8 @@ export class PurchaseOrderCreateDComponent {
           pphCode: data.code,
           pphTaxObject: data.taxObjectName,
           pphPercentage: data.tariff,
+          // Memilih kode berarti bukan "tanpa PPh".
+          tanpaPph: false,
         });
       });
   }
@@ -234,6 +243,14 @@ export class PurchaseOrderCreateDComponent {
     pphCode: new FormControl(''),
     pphTaxObject: new FormControl(''),
     pphPercentage: new FormControl(0),
+    /*
+     * Pernyataan "memang tidak dipotong".
+     *
+     * TIDAK dikirim ke server dan bukan kolom: yang tersimpan tetap kode
+     * kosong dan tarif nol. Gunanya hanya memaksa PPh DIPUTUSKAN, bukan
+     * dilewati — lihat `utils/pph-wajib.ts`.
+     */
+    tanpaPph: new FormControl(false),
 
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
@@ -310,7 +327,16 @@ export class PurchaseOrderCreateDComponent {
     notes: new FormControl(''),
     // Satu SPK = satu pekerja, jadi array ini selalu berisi tepat 1 entri.
     workers: new FormArray([]),
-  });
+  }, { validators: pphDiputuskan() });
+
+  /** Tarif terpilih nol — ditegaskan, karena nol tidak terlihat sebagai nol. */
+  get pphNol(): boolean {
+    return tarifPphNol(this.formGroup);
+  }
+
+  get pphBelumDiputuskan(): boolean {
+    return !!this.formGroup.errors?.['pphBelumDiputuskan'];
+  }
 
   get f() {
     return this.formGroup.controls;

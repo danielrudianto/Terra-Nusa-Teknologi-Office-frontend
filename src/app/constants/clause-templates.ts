@@ -30,6 +30,45 @@ export const OFFICE_CONTACT = {
 };
 
 /** Everything a template might need to fill in the variable points (1-5). */
+/**
+ * Kalimat pemotongan PPh untuk dokumen.
+ *
+ * Disatukan supaya seluruh jenis SPK berbunyi sama. Sebelumnya kalimatnya
+ * disalin di lima tempat dan TIDAK ADA di tiga jenis lain (B, D, H) —
+ * sehingga SPK yang memotong upah tidak menyebut pemotongan itu sama
+ * sekali, dan yang menandatanganinya baru mengetahuinya dari CoP.
+ *
+ * Mengembalikan daftar kosong bila tarifnya nol: pekerja di bawah batas
+ * atau ber-SKB memang tidak dipotong, dan menuliskannya menyatakan sesuatu
+ * yang tidak terjadi.
+ */
+export function kalimatPotonganPph(ctx: ClauseContext): string[] {
+  const tarif = Number(ctx.pphPercentage) || 0;
+  if (!tarif) return [];
+  const objek = String(ctx.pphTaxObject || '').trim();
+  const kode = String(ctx.pphCode || '').trim();
+  return [
+    `Pembayaran atas perjanjian ini dipotong PPh sebesar ${persenCetak(tarif)}` +
+      (kode ? ` (kode objek pajak ${kode}${objek ? ` — ${objek}` : ''})` : '') +
+      `, yang disetorkan PIHAK PERTAMA ke kas negara atas nama PIHAK KEDUA.`,
+  ];
+}
+
+/**
+ * Persen untuk KALIMAT dokumen: `2.5` -> "2,5%", `2` -> "2%".
+ *
+ * Koma desimal, karena dokumennya berbahasa Indonesia — dan tanpa nol di
+ * belakang, supaya "2,50%" tidak terbaca seolah lebih teliti daripada yang
+ * dimaksud.
+ */
+function persenCetak(n: number): string {
+  const teks = Number(n)
+    .toFixed(2)
+    .replace(/\.?0+$/, '')
+    .replace('.', ',');
+  return `${teks}%`;
+}
+
 export interface ClauseContext {
   /**
    * Saluran pengadaan asuransi: lewat broker atau langsung ke penanggung.
@@ -1048,6 +1087,24 @@ export function buildManpowerClauses(
     umum.push(`Pekerjaan dilaksanakan di ${lokasi}.`);
   }
 
+  /*
+   * Pemotongan PPh DISEBUT pada dokumennya.
+   *
+   * Hanya bila memang ada tarifnya. Pada yang tidak dipotong — pekerja di
+   * bawah batas, atau ber-SKB — menuliskan kalimat ini justru menyatakan
+   * sesuatu yang tidak terjadi.
+   */
+  const tarifPph = Number(ctx.pphPercentage) || 0;
+  if (tarifPph > 0) {
+    const objek = String(ctx.pphTaxObject || '').trim();
+    umum.push(
+      `Pembayaran atas perjanjian ini dipotong PPh sebesar ` +
+        `${persenCetak(tarifPph)}` +
+        (objek ? ` (${objek})` : '') +
+        `, yang disetorkan perusahaan ke kas negara atas nama pekerja.`,
+    );
+  }
+
   if (ctx.contractStartText) {
     umum.push(
       ctx.contractUntilProjectDone || !ctx.contractEndText
@@ -1405,6 +1462,11 @@ function bangunKlausulB(
           paymentTerm: ctx.paymentTerm || ctx.paymentTermText,
         }),
         'Harga sudah termasuk seluruh biaya perpajakan yang berlaku di Republik Indonesia.',
+        // Pemotongan PPh DISEBUT pada dokumennya — kalimat di atas hanya
+        // menyatakan harga sudah termasuk pajak, bukan bahwa pembayarannya
+        // akan dipotong. Keduanya hal berbeda, dan yang kedua yang
+        // mengubah jumlah yang diterima PIHAK KEDUA.
+        ...kalimatPotonganPph(ctx),
         /*
          * Cakupan harga pada pekerjaan pengangkutan.
          *
@@ -3920,6 +3982,11 @@ const H_CLAUSES: ClauseTemplate[] = [
           ? 'Nilai pekerjaan bersifat lump sum (borongan) untuk seluruh lingkup pekerjaan yang tercantum.'
           : 'Nilai pekerjaan dihitung berdasarkan harga satuan sesuai volume pekerjaan yang terlaksana dan disetujui.',
       );
+
+      // Pemotongan PPh DISEBUT pada dokumennya. Subkontraktor perorangan
+      // dipotong PPh final, dan lembar yang ditandatangani harus
+      // menyatakannya — bukan CoP-nya yang memberi tahu belakangan.
+      lines.push(...kalimatPotonganPph(ctx));
 
       lines.push(
         // Termin & tata cara pembayaran seluruhnya diatur pada Pasal 5,

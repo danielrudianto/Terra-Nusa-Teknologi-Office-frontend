@@ -1539,3 +1539,9 @@ app-wysiwyg {
  * yang ini menandai UJUNG daftar, dan bentuknya menyerupai baris kosong
  * yang menunggu diisi.
  */
+
+/* Pernyataan "memang tidak dipotong PPh" — badan usaha saja; perorangan
+   memakai kode baku yang tidak dapat dikosongkan. */
+.poh-tanpapph {
+  margin: -0.2rem 0 0.6rem;
+}

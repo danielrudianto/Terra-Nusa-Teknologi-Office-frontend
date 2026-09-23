@@ -1346,3 +1346,10 @@ app-wysiwyg {
   display: inline-flex;
   align-items: center;
 }
+
+/* Pernyataan "memang tidak dipotong PPh".
+   Berdampingan dengan isian kodenya, bukan di bagian lain formulir: yang
+   memutuskan keduanya orang yang sama, pada saat yang sama. */
+.pod-tanpapph {
+  margin: -0.35rem 0 0.6rem;
+}

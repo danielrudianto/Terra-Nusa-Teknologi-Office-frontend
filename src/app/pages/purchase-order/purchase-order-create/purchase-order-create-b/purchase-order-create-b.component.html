@@ -526,6 +526,44 @@
           }
         </mat-form-field>
 
+        <!--
+          BELUM DIPUTUSKAN — bukan sekadar kosong.
+
+          Selama isian ini boleh dilewati, ia cenderung SELALU dilewati;
+          SPK terbit tanpa PPh dan baru ketahuan saat CoP-nya dicetak.
+        -->
+        @if (pphBelumDiputuskan) {
+          <div class="pou-banner pob-span3">
+            <mat-icon>gavel</mat-icon>
+            <div>
+              <strong>{{ "poField.pphWajibJudul" | translate }}</strong>
+              <span>{{ "poField.pphWajibKeterangan" | translate }}</span>
+            </div>
+          </div>
+        }
+
+        <!--
+          TARIF NOL — ditegaskan, karena nol tidak terlihat sebagai nol.
+
+          "0% — <objek>" terbaca semeyakinkan "2,5% — <objek>", dan nol juga
+          dapat datang dari centang SKB yang tidak meninggalkan tanda apa pun.
+        -->
+        @if (pphNol) {
+          <div class="pou-banner pob-span3">
+            <mat-icon>report</mat-icon>
+            <div>
+              <strong>{{ "poField.pphNolJudul" | translate }}</strong>
+              <span>{{ "poField.pphNolKeterangan" | translate }}</span>
+            </div>
+          </div>
+        }
+
+        <div class="pob-span3 pob-tanpapph">
+          <mat-checkbox formControlName="tanpaPph">
+            {{ "poField.tanpaPph" | translate }}
+          </mat-checkbox>
+        </div>
+
         <mat-form-field appearance="outline" class="pob-span2">
           <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
           <mat-select

@@ -1,6 +1,8 @@
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
 import { memoLarik } from 'src/app/utils/memo-larik';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { pphDiputuskan, tarifPphNol } from 'src/app/utils/pph-wajib';
 import { Component, inject, OnInit } from '@angular/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
@@ -53,7 +55,6 @@ import {
   TANGGUNGAN_BAWAAN_UMUM,
   type PenanggungAsuransi,
 } from '../../../../constants/clause-templates';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { printPurchaseOrderH } from '../../../../helpers/purchase-order-h.helper';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
@@ -214,6 +215,7 @@ export class PurchaseOrderCreateHComponent implements OnInit {
           pphCode: data.code,
           pphTaxObject: data.taxObjectName,
           pphPercentage: data.tariff,
+          tanpaPph: false,
         });
       });
   }
@@ -232,6 +234,9 @@ export class PurchaseOrderCreateHComponent implements OnInit {
       pphCode: '',
       pphTaxObject: '',
       pphPercentage: 0,
+      // Mengosongkan kode mengembalikan SPK ke keadaan "belum diputuskan" —
+      // pernyataan tanpa-PPh dicentang sendiri, bukan diwariskan.
+      tanpaPph: false,
     });
   }
 
@@ -558,6 +563,13 @@ export class PurchaseOrderCreateHComponent implements OnInit {
     pphNote: new FormControl(MANDOR_PPH_NOTES[0]),
     toolingNote: new FormControl(MANDOR_TOOLING_NOTES[0]),
     pphCode: new FormControl(''),
+    /*
+     * Pernyataan "memang tidak dipotong".
+     *
+     * TIDAK dikirim ke server dan bukan kolom — lihat `utils/pph-wajib.ts`.
+     * Gunanya memaksa PPh DIPUTUSKAN, bukan dilewati.
+     */
+    tanpaPph: new FormControl(false),
     pphTaxObject: new FormControl(''),
     pphPercentage: new FormControl(0, [Validators.min(0), Validators.max(100)]),
     lumpSumPrice: new FormControl(0, [Validators.min(0)]),
@@ -622,7 +634,16 @@ export class PurchaseOrderCreateHComponent implements OnInit {
     scopes: new FormArray([]),
     workers: new FormArray([]),
     includePPN: new FormControl(true),
-  });
+  }, { validators: pphDiputuskan() });
+
+  /** Tarif terpilih nol — ditegaskan, karena nol tidak terlihat sebagai nol. */
+  get pphNol(): boolean {
+    return tarifPphNol(this.formGroup);
+  }
+
+  get pphBelumDiputuskan(): boolean {
+    return !!this.formGroup.errors?.['pphBelumDiputuskan'];
+  }
 
   get f() {
     return this.formGroup.controls;

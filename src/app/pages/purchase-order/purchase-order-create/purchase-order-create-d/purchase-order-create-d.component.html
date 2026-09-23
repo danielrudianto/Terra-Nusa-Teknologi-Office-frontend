@@ -676,6 +676,46 @@
           }
         </mat-form-field>
 
+        <!--
+          BELUM DIPUTUSKAN — bukan sekadar kosong.
+
+          Selama isian ini boleh dilewati, ia SELALU dilewati: seluruh SPK
+          upah operator terbit tanpa PPh, dan baru ketahuan saat CoP-nya
+          dicetak dan tidak memotong apa pun.
+        -->
+        @if (pphBelumDiputuskan) {
+          <div class="pou-banner pod-span2">
+            <mat-icon>gavel</mat-icon>
+            <div>
+              <strong>{{ "poField.pphWajibJudul" | translate }}</strong>
+              <span>{{ "poField.pphWajibKeterangan" | translate }}</span>
+            </div>
+          </div>
+        }
+
+        <!--
+          TARIF NOL — ditegaskan, karena nol tidak terlihat sebagai nol.
+
+          "0% — Upah Pegawai Tidak Tetap..." terbaca semeyakinkan
+          "2,5% — ...". Nol juga dapat datang dari centang SKB, yang tidak
+          meninggalkan tanda apa pun di layar ini.
+        -->
+        @if (pphNol) {
+          <div class="pou-banner pod-span2">
+            <mat-icon>report</mat-icon>
+            <div>
+              <strong>{{ "poField.pphNolJudul" | translate }}</strong>
+              <span>{{ "poField.pphNolKeterangan" | translate }}</span>
+            </div>
+          </div>
+        }
+
+        <div class="pod-span2 pod-tanpapph">
+          <mat-checkbox formControlName="tanpaPph">
+            {{ "poField.tanpaPph" | translate }}
+          </mat-checkbox>
+        </div>
+
         <mat-form-field appearance="outline">
           <mat-label>{{ "poField.mulaiBerlaku" | translate }}</mat-label>
           <input

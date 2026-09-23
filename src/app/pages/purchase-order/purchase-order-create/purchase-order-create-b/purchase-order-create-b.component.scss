@@ -1155,3 +1155,8 @@ app-wysiwyg {
   color: var(--muted, #6b7280);
   margin: 0.6rem 0 0.35rem;
 }
+
+/* Pernyataan "memang tidak dipotong PPh" — berdampingan dengan kodenya. */
+.pob-tanpapph {
+  margin: -0.35rem 0 0.6rem;
+}

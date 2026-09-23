@@ -305,6 +305,43 @@
             </mat-form-field>
           </div>
 
+          <!--
+            BELUM DIPUTUSKAN — hanya mungkin pada BADAN USAHA.
+
+            Perorangan sudah memakai kode baku yang tidak dapat dikosongkan
+            (lihat `clearPph`), jadi keadaan ini tidak pernah terjadi di
+            sana. Yang berisiko justru H1: kodenya dipilih sendiri, dan
+            selama boleh dilewati ia cenderung dilewati.
+          -->
+          @if (pphBelumDiputuskan) {
+            <div class="pou-banner">
+              <mat-icon>gavel</mat-icon>
+              <div>
+                <strong>{{ "poField.pphWajibJudul" | translate }}</strong>
+                <span>{{ "poField.pphWajibKeterangan" | translate }}</span>
+              </div>
+            </div>
+          }
+
+          <!-- TARIF NOL — "0% — <objek>" terbaca semeyakinkan "2,5% — <objek>". -->
+          @if (pphNol) {
+            <div class="pou-banner">
+              <mat-icon>report</mat-icon>
+              <div>
+                <strong>{{ "poField.pphNolJudul" | translate }}</strong>
+                <span>{{ "poField.pphNolKeterangan" | translate }}</span>
+              </div>
+            </div>
+          }
+
+          @if (isEntity) {
+            <div class="poh-tanpapph">
+              <mat-checkbox formControlName="tanpaPph">
+                {{ "poField.tanpaPph" | translate }}
+              </mat-checkbox>
+            </div>
+          }
+
           @if (formGroup.value.pphCode) {
             <div class="poh-optrow">
               <span class="poh-krow__no"

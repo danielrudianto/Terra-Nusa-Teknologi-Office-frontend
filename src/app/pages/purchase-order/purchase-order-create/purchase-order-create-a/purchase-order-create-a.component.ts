@@ -1,6 +1,8 @@
 import { memoLarik } from 'src/app/utils/memo-larik';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { pphDiputuskan, tarifPphNol } from 'src/app/utils/pph-wajib';
 import { Component, inject, OnInit } from '@angular/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
@@ -64,6 +66,7 @@ import { SupplierTerkunciComponent } from '../../../../components/supplier-terku
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    MatCheckboxModule,
     ProjectSelectorComponent,
     ClauseLineComponent,
     MatAutocompleteModule,
@@ -277,6 +280,13 @@ export class PurchaseOrderCreateAComponent implements OnInit {
     overtimeRate: new FormControl(0, [Validators.min(0)]),
     paymentTermText: new FormControl(''),
     pphCode: new FormControl(''),
+    /*
+     * Pernyataan "memang tidak dipotong".
+     *
+     * TIDAK dikirim ke server dan bukan kolom — lihat `utils/pph-wajib.ts`.
+     * Gunanya memaksa PPh DIPUTUSKAN, bukan dilewati.
+     */
+    tanpaPph: new FormControl(false),
     pphTaxObject: new FormControl(''),
     pphPercentage: new FormControl(0),
     additionalClauses: new FormArray([]),
@@ -305,7 +315,16 @@ export class PurchaseOrderCreateAComponent implements OnInit {
      * Bila PPN dimatikan, tarif yang tercatat adalah 0.
      */
     ppnRate: new FormControl(11),
-  });
+  }, { validators: pphDiputuskan() });
+
+  /** Tarif terpilih nol — ditegaskan, karena nol tidak terlihat sebagai nol. */
+  get pphNol(): boolean {
+    return tarifPphNol(this.formGroup);
+  }
+
+  get pphBelumDiputuskan(): boolean {
+    return !!this.formGroup.errors?.['pphBelumDiputuskan'];
+  }
 
   get f() {
     return this.formGroup.controls;
@@ -600,6 +619,7 @@ export class PurchaseOrderCreateAComponent implements OnInit {
           pphCode: data.code,
           pphTaxObject: data.taxObjectName,
           pphPercentage: data.tariff,
+          tanpaPph: false,
         });
       });
   }
@@ -609,6 +629,10 @@ export class PurchaseOrderCreateAComponent implements OnInit {
       pphCode: '',
       pphTaxObject: '',
       pphPercentage: 0,
+      // Mengosongkan kode mengembalikan SPK ke keadaan "belum
+      // diputuskan" — pernyataan tanpa-PPh dicentang sendiri, bukan
+      // diwariskan dari pilihan sebelumnya.
+      tanpaPph: false,
     });
   }
 

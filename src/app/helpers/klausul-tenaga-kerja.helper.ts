@@ -158,13 +158,30 @@ export function tanggalPanjang(nilai: any): string {
  */
 export function konteksKlausulTenagaKerja(
   custom: any,
-  po: { projectName?: string; payment_term?: string } = {},
+  po: {
+    projectName?: string;
+    payment_term?: string;
+    pphPercentage?: number | string;
+    pphTaxObject?: string;
+    pphCode?: string;
+  } = {},
 ): any {
   const c = custom || {};
   return {
     ...c,
     paymentTerm: c.paymentTerm ?? po.payment_term,
     projectName: c.projectName ?? po.projectName,
+    /*
+     * PPh dibaca dari KOLOM dokumennya, bukan dari `customData`.
+     *
+     * Formulir menyimpannya sebagai kolom `purchase_orders`
+     * (`pphPercentage`, `pphTaxObject`), jadi `customData` tidak pernah
+     * memuatnya — dan klausulnya tidak akan pernah tercetak bila dicari di
+     * sana.
+     */
+    pphPercentage: c.pphPercentage ?? po.pphPercentage,
+    pphTaxObject: c.pphTaxObject ?? po.pphTaxObject,
+    pphCode: c.pphCode ?? po.pphCode,
     /*
      * Tanggal disimpan dalam bentuk ISO dan dipakai dalam bentuk kalimat.
      *
