@@ -152,6 +152,16 @@ export class PurchaseDraftCreateComponent {
     ppn: new FormControl(0, [Validators.required, Validators.min(0)]),
     ppnValue: new FormControl(0, [Validators.required, Validators.min(0)]),
     pbbkb: new FormControl(0, [Validators.required, Validators.min(0)]),
+    /*
+     * PERIODE tagihan — boleh kosong.
+     *
+     * Logistik lapangan memasukkan draf setiap hari, dan yang menyusun
+     * pembelian kemudian tidak punya cara memisahkan mana yang masuk
+     * hitungan bulan ini. Diisi di sini, pada saat orang yang tahu
+     * pekerjaannya masih ada di depan layar.
+     */
+    periodStart: new FormControl<any>(null),
+    periodEnd: new FormControl<any>(null),
   });
 
   onCancel() {
@@ -223,6 +233,8 @@ export class PurchaseDraftCreateComponent {
       pbbkb: this.metaFormGroup.controls['pbbkb'].value,
       description: this.metaFormGroup.controls['description'].value,
       purchaseType: this.metaFormGroup.controls['purchaseType'].value,
+      periodStart: this.tanggalIso(this.metaFormGroup.controls['periodStart'].value),
+      periodEnd: this.tanggalIso(this.metaFormGroup.controls['periodEnd'].value),
     };
 
     this.apiService
@@ -243,6 +255,7 @@ export class PurchaseDraftCreateComponent {
               supplierName: '', supplierAddress: '', date: '',
               purchaseOrderName: '', projectName: '', purchaseType: '',
               dpp: 0, ppn: 0, ppnValue: 0, pbbkb: 0,
+              periodStart: null, periodEnd: null,
             });
           }
         },
@@ -256,6 +269,20 @@ export class PurchaseDraftCreateComponent {
       .add(() => {
         this.isSubmitting = false;
       });
+  }
+
+  /** `Date`/Moment/teks -> `YYYY-MM-DD` waktu setempat; kosong tetap null. */
+  private tanggalIso(v: any): string | null {
+    if (!v) return null;
+    const d =
+      v instanceof Date
+        ? v
+        : typeof v?.toDate === 'function'
+          ? v.toDate()
+          : new Date(v);
+    if (isNaN(d.getTime())) return null;
+    const dd = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${dd(d.getMonth() + 1)}-${dd(d.getDate())}`;
   }
 
   get total(): number {

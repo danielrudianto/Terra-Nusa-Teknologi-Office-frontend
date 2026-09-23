@@ -820,6 +820,16 @@
     "copTerkunci": "otomatis, karena pembelian ini menagihkan sebuah CoP"
   },
   "purchaseDraft": {
+    "keadaanKonversi": "Jadi pembelian",
+    "periode": "Periode",
+    "periodeMulai": "Periode mulai",
+    "periodeSelesai": "Periode selesai",
+    "periodeKosong": "Belum berperiode",
+    "periodePetunjuk": "Periode menandai tagihan bulan/minggu mana draf ini masuk, agar yang membuat pembelian tahu mana yang sudah lewat batas.",
+    "ubahNilai": "Ubah nilai",
+    "ubahPetunjuk": "Pemasok, proyek, dan SPK tidak dapat diganti. Setiap perubahan tercatat di riwayat di bawah.",
+    "riwayatUbah": "Riwayat perubahan",
+    "keadaanHapus": "Dihapus",
     "title": "Draft Pembelian",
     "description": "Kelola data draft pembelian di sini",
     "createNew": "Buat draft pembelian baru",

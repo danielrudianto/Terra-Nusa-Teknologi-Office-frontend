@@ -85,6 +85,40 @@
           ></textarea>
         </mat-form-field>
 
+        <!-- PERIODE tagihan — boleh dikosongkan.
+             Draf masuk setiap hari dari lapangan; periode inilah yang
+             nanti memberitahu penyusun pembelian mana yang masuk hitungan
+             bulan ini. -->
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "purchaseDraft.periodeMulai" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="periodStart"
+            [matDatepicker]="pdAwal"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="pdAwal"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pdAwal></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{
+            "purchaseDraft.periodeSelesai" | translate
+          }}</mat-label>
+          <input
+            matInput
+            formControlName="periodEnd"
+            [matDatepicker]="pdAkhir"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="pdAkhir"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pdAkhir></mat-datepicker>
+        </mat-form-field>
+
         <mat-form-field appearance="outline" class="pdc-span2">
           <mat-label>{{ "purchaseDraftCreate.poName" | translate }}</mat-label>
           <input

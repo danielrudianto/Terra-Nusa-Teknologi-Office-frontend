@@ -65,6 +65,16 @@ export class AuditTrailComponent implements OnChanges {
   @Input() entityId!: number;
   @Input() limit = 20;
 
+  /**
+   * Penanda muat ulang.
+   *
+   * Dokumennya tetap sama, jadi `entityId` tidak berubah dan riwayatnya
+   * tidak akan menyegarkan dirinya sendiri. Induk yang baru saja menyimpan
+   * perubahan menaikkan angka ini, dan barisnya yang baru ikut tampil tanpa
+   * dialog perlu ditutup dan dibuka lagi.
+   */
+  @Input() muatUlang = 0;
+
   entries: AuditEntry[] = [];
   isLoading = false;
   hasError = false;
@@ -81,7 +91,8 @@ export class AuditTrailComponent implements OnChanges {
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['entity'] || changes['entityId']) this.fetch();
+    if (changes['entity'] || changes['entityId'] || changes['muatUlang'])
+      this.fetch();
   }
 
   private fetch(): void {

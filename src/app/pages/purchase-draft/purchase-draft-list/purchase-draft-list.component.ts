@@ -1,4 +1,5 @@
 import { Component, ViewChild, inject } from '@angular/core';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { CanDirective } from '../../../directives/can.directive';
 import {
@@ -29,6 +30,7 @@ import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.direc
 import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
 import { NamaBadanComponent, inisialBadan } from '../../../components/nama-badan/nama-badan.component';
 import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-purchase-draft-list',
@@ -53,6 +55,7 @@ import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
     TranslatePipe,
     MatMenuModule,
     RefreshButtonComponent,
+    MatDatepickerModule,
   ],
   templateUrl: './purchase-draft-list.component.html',
   styleUrl: './purchase-draft-list.component.scss',
@@ -85,7 +88,50 @@ export class PurchaseDraftListComponent {
   count: number = 0;
 
   isPending: boolean = true;
+  /*
+   * TIGA KEADAAN, bukan dua.
+   *
+   * `isApproved` nama lama penyaring "dihapus", dan namanya keliru sejak
+   * awal — draf yang dihapus ditampilkan sebagai "Disetujui" berlencana
+   * centang hijau, sehingga yang barusan dibatalkan terbaca sebagai
+   * pekerjaan yang sudah beres. Server kini menerima `isConverted` dan
+   * `isDeleted`; `isApproved` tidak lagi dipakai layar ini.
+   */
   isApproved: boolean = false;
+  isConverted: boolean = false;
+  isDeleted: boolean = false;
+
+  /*
+   * PENYARING PERIODE — yang dipakai saat menyusun tagihan.
+   *
+   * Logistik lapangan memasukkan draf setiap hari, sehingga daftar ini
+   * panjang dan tidak ada tanda mana yang masuk hitungan bulan ini. Rentang
+   * ini yang memotongnya, dan draf lama yang belum berperiode dinilai
+   * server menurut tanggal dokumennya supaya tidak ada yang hilang.
+   */
+  periodeMulai = new FormControl<any>(null);
+  periodeSelesai = new FormControl<any>(null);
+
+  /** `Date`/Moment/teks -> `YYYY-MM-DD` waktu setempat; kosong tetap null. */
+  private tanggalIso(v: any): string | null {
+    if (!v) return null;
+    const d =
+      v instanceof Date
+        ? v
+        : typeof v?.toDate === 'function'
+          ? v.toDate()
+          : new Date(v);
+    if (isNaN(d.getTime())) return null;
+    const dd = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${dd(d.getMonth() + 1)}-${dd(d.getDate())}`;
+  }
+
+  /** Keadaan satu draf: belum diapa-apakan, sudah jadi pembelian, atau dihapus. */
+  keadaan(d: any): 'draf' | 'konversi' | 'hapus' {
+    if (d?.convertedAt) return 'konversi';
+    if (d?.isDelete) return 'hapus';
+    return 'draf';
+  }
 
   changeSelection(field: string, event: any) {
     // Chip yang dipilih LEWAT KODE (`[selected]` saat halaman dibuka)
@@ -98,8 +144,12 @@ export class PurchaseDraftListComponent {
         this.isPending = event.selected;
         this.fetchData(1);
         break;
-      case 'isApproved':
-        this.isApproved = event.selected;
+      case 'isConverted':
+        this.isConverted = event.selected;
+        this.fetchData(1);
+        break;
+      case 'isDeleted':
+        this.isDeleted = event.selected;
         this.fetchData(1);
         break;
     }
@@ -112,6 +162,33 @@ export class PurchaseDraftListComponent {
    */
   ngOnInit(): void {
     this.fetchData(1);
+
+    /*
+     * Kotak pencarian sebelumnya tidak terhubung ke apa pun.
+     *
+     * Mengetik di sana tidak mengubah daftar sama sekali; kata kuncinya baru
+     * terpakai bila kebetulan ada tindakan lain yang memanggil `fetchData`
+     * — menekan muat ulang, mengganti keping, berpindah halaman. Yang
+     * mencari lalu menyimpulkan drafnya tidak ada.
+     */
+    this.searchControl.valueChanges
+      .pipe(debounceTime(400), distinctUntilChanged())
+      .subscribe(() => this.fetchData(1));
+
+    /*
+     * Rentang periode: dimuat ulang saat rentangnya LENGKAP atau kosong
+     * seluruhnya. Di antara keduanya — baru tanggal awal yang dipilih —
+     * daftarnya akan memuat separuh penyaring dan berkedip dua kali.
+     */
+    this.periodeSelesai.valueChanges
+      .pipe(debounceTime(150))
+      .subscribe(() => this.fetchData(1));
+    this.periodeMulai.valueChanges
+      .pipe(debounceTime(150))
+      .subscribe(() => {
+        if (!this.periodeMulai.value && !this.periodeSelesai.value)
+          this.fetchData(1);
+      });
   }
 
   fetchData(targetPage: number = 1, pageSize: number = this.pageSize) {
@@ -125,10 +202,20 @@ export class PurchaseDraftListComponent {
         pageSize: pageSize,
         // if filter is empty, then filter = 0
         isPending: this.isPending,
-        isApproved: this.isApproved,
+        isApproved: false,
+        isConverted: this.isConverted,
+        isDeleted: this.isDeleted,
         sortBy: this.sortBy,
         sortByDirection: this.sortByDirection,
         keyword: searchValue,
+        // Dikirim hanya bila terisi — parameter kosong membuat server
+        // membangun penyaring yang menyaring apa pun jadi tidak ada.
+        ...(this.tanggalIso(this.periodeMulai.value)
+          ? { periodFrom: this.tanggalIso(this.periodeMulai.value) }
+          : {}),
+        ...(this.tanggalIso(this.periodeSelesai.value)
+          ? { periodTo: this.tanggalIso(this.periodeSelesai.value) }
+          : {}),
       })
       .subscribe({
         next: (res: any) => {
@@ -156,10 +243,15 @@ export class PurchaseDraftListComponent {
       })
       .afterClosed()
       .subscribe((data) => {
-        if (data == true) {
+        if (data === true) {
           const index = this.purchases.findIndex((x) => x.id == id);
           this.purchases[index].isDelete = true;
           this.table?.renderRows();
+        } else if (data === 'ubah') {
+          // Nominal/periodenya berubah di dalam dialog; barisnya di daftar
+          // masih memuat angka lama. Dimuat ulang pada HALAMAN YANG SAMA,
+          // bukan kembali ke halaman satu.
+          this.fetchData(this.page);
         }
       });
   }

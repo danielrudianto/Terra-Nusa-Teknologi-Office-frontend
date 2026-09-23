@@ -820,6 +820,16 @@
     "copTerkunci": "自动设置，因为本次采购正在为一份付款证书开票"
   },
   "purchaseDraft": {
+    "keadaanKonversi": "已转为采购",
+    "periode": "期间",
+    "periodeMulai": "期间开始",
+    "periodeSelesai": "期间结束",
+    "periodeKosong": "无期间",
+    "periodePetunjuk": "期间标明该草稿属于哪一个结算周期，便于制单人判断哪些已超过截止日。",
+    "ubahNilai": "修改金额",
+    "ubahPetunjuk": "供应商、项目和 SPK 不可更改。每次修改都会记录在下方的历史中。",
+    "riwayatUbah": "修改历史",
+    "keadaanHapus": "已删除",
     "title": "采购草稿",
     "description": "在此管理您的采购草稿数据",
     "createNew": "创建新采购草稿",

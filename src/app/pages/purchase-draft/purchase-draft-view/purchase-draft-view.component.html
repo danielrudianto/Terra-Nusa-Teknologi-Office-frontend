@@ -7,10 +7,13 @@
       <h2 class="pdv-name">
         {{ formGroup.get("purchaseOrderName")?.value || ('hardcoded.purchaseDraft' | translate) }}
       </h2>
+      <!-- Tanggal dibaca dari `asli`, BUKAN dari isian.
+           Di mode ubah isiannya memuat tanggal mentah untuk datepicker, dan
+           kepala dialog lalu berbunyi "2026-09-11". -->
       <div class="pdv-meta pdv-sub">
         {{ formGroup.get("supplierName")?.value
-        }}<ng-container *ngIf="formGroup.get('date')?.value">
-          · {{ formGroup.get("date")?.value }}</ng-container
+        }}<ng-container *ngIf="asliTanggal">
+          · {{ asliTanggal | date: "dd MMMM yyyy" }}</ng-container
         >
       </div>
     </div>
@@ -61,16 +64,136 @@
             >
           </div>
         </div>
-        <div class="pdv-field" *ngIf="formGroup.get('description')?.value">
+        <div
+          class="pdv-field"
+          *ngIf="!mengubah && formGroup.get('description')?.value"
+        >
           <span class="pdv-label">{{ "table.description" | translate }}</span>
           <span class="pdv-value pdv-value--multi">{{
             formGroup.get("description")?.value
           }}</span>
         </div>
+
+        <!-- Periode: batas tagihan draf ini. Logistik lapangan memasukkan
+             draf tiap hari, dan tanpa periode yang membuat pembelian tidak
+             tahu mana yang masih masuk hitungan bulan ini. -->
+        <div class="pdv-field" *ngIf="!mengubah">
+          <span class="pdv-label">{{
+            "purchaseDraft.periode" | translate
+          }}</span>
+          <span
+            class="pdv-value"
+            *ngIf="asliPeriodeMulai || asliPeriodeSelesai; else tanpaPeriode"
+          >
+            {{ asliPeriodeMulai | date: "dd MMM yyyy" }} &ndash;
+            {{ asliPeriodeSelesai | date: "dd MMM yyyy" }}
+          </span>
+          <ng-template #tanpaPeriode>
+            <span class="pdv-value pdv-value--kosong">{{
+              "purchaseDraft.periodeKosong" | translate
+            }}</span>
+          </ng-template>
+        </div>
+      </section>
+
+      <!-- ===== mode ubah ===== -->
+      <section class="pdv-section pdv-ubah" *ngIf="mengubah">
+        <div class="pdv-section__title">
+          {{ "purchaseDraft.ubahNilai" | translate }}
+        </div>
+        <p class="pdv-petunjuk">
+          {{ "purchaseDraft.ubahPetunjuk" | translate }}
+        </p>
+
+        <div class="pdv-form">
+          <mat-form-field appearance="outline">
+            <mat-label>DPP</mat-label>
+            <input matInput type="number" formControlName="dpp" min="0" />
+            <span matTextPrefix>Rp&nbsp;</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "purchaseDraft.ppn" | translate }}</mat-label>
+            <input matInput type="number" formControlName="ppn" min="0" />
+            <span matTextSuffix>%</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "expense.pbbkb" | translate }}</mat-label>
+            <input matInput type="number" formControlName="pbbkb" min="0" />
+            <span matTextPrefix>Rp&nbsp;</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "table.date" | translate }}</mat-label>
+            <input matInput [matDatepicker]="pTgl" formControlName="date" />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="pTgl"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #pTgl></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{
+              "purchaseDraft.periodeMulai" | translate
+            }}</mat-label>
+            <input
+              matInput
+              [matDatepicker]="pAwal"
+              formControlName="periodStart"
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="pAwal"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #pAwal></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{
+              "purchaseDraft.periodeSelesai" | translate
+            }}</mat-label>
+            <input
+              matInput
+              [matDatepicker]="pAkhir"
+              formControlName="periodEnd"
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="pAkhir"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #pAkhir></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="pdv-form__span2">
+            <mat-label>{{ "table.description" | translate }}</mat-label>
+            <textarea
+              matInput
+              rows="2"
+              formControlName="description"
+            ></textarea>
+          </mat-form-field>
+        </div>
+
+        <p class="pdv-petunjuk">
+          {{ "purchaseDraft.periodePetunjuk" | translate }}
+        </p>
+
+        <div class="pdv-money pdv-money--pratinjau">
+          <div class="pdv-money__row">
+            <span>{{ "purchaseDraft.ppnRp" | translate }}</span>
+            <span>Rp {{ ppnRupiah | number: "1.2-2" }}</span>
+          </div>
+          <div class="pdv-money__row pdv-money__row--total">
+            <span>{{ "purchaseDraft.viewTotal" | translate }}</span>
+            <span>Rp {{ totalUbah | number: "1.2-2" }}</span>
+          </div>
+        </div>
       </section>
 
       <!-- money -->
-      <section class="pdv-section">
+      <section class="pdv-section" *ngIf="!mengubah">
         <div class="pdv-section__title">
           {{ "purchaseDraft.viewValueBreakdown" | translate }}
         </div>
@@ -103,25 +226,63 @@
       Dokumen dibuat pada {{ formGroup.get("createdAt")?.value }}
     </p>
   
-  <!-- ===== riwayat ===== -->
+  <!-- ===== riwayat =====
+       Inilah yang membuat pengubahan nominal aman: angkanya boleh
+       dibetulkan, tetapi nilai lamanya tidak hilang. -->
   <app-audit-trail
     *ngIf="data?.id"
     entity="purchase_draft"
     [entityId]="data.id"
+    [muatUlang]="muatUlangRiwayat"
   ></app-audit-trail>
   </mat-dialog-content>
 
   <mat-dialog-actions class="pdv-actions">
-    <button
-      type="button"
-      class="pdv-btn pdv-btn--danger"
-      (click)="deletePurchaseDraft()"
-    >
-      {{ "purchaseDraft.viewDelete" | translate }}
-    </button>
-    <span class="pdv-spacer"></span>
-    <button type="button" class="pdv-btn pdv-btn--ghost" mat-dialog-close>
-      {{ "purchaseDraft.viewClose" | translate }}
-    </button>
+    <ng-container *ngIf="!mengubah">
+      <button
+        type="button"
+        class="pdv-btn pdv-btn--danger"
+        (click)="deletePurchaseDraft()"
+      >
+        {{ "purchaseDraft.viewDelete" | translate }}
+      </button>
+      <span class="pdv-spacer"></span>
+      <button
+        *ngIf="bolehUbah"
+        type="button"
+        class="pdv-btn pdv-btn--ghost"
+        (click)="mulaiUbah()"
+      >
+        {{ "common.edit" | translate }}
+      </button>
+      <button type="button" class="pdv-btn pdv-btn--ghost" (click)="tutup()">
+        {{ "purchaseDraft.viewClose" | translate }}
+      </button>
+    </ng-container>
+
+    <ng-container *ngIf="mengubah">
+      <span class="pdv-spacer"></span>
+      <button
+        type="button"
+        class="pdv-btn pdv-btn--ghost"
+        [disabled]="menyimpan"
+        (click)="batalUbah()"
+      >
+        {{ "common.cancel" | translate }}
+      </button>
+      <button
+        type="button"
+        class="pdv-btn pdv-btn--utama"
+        [disabled]="menyimpan"
+        (click)="simpanUbah()"
+      >
+        <mat-spinner
+          *ngIf="menyimpan"
+          diameter="16"
+          class="pdv-btn__putar"
+        ></mat-spinner>
+        {{ (menyimpan ? "common.saving" : "common.save") | translate }}
+      </button>
+    </ng-container>
   </mat-dialog-actions>
 </div>

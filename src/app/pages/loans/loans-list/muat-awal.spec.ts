@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import { of } from 'rxjs';
 
 import { ApiService } from 'src/app/services/api.service';
@@ -21,6 +22,11 @@ function siapkan(qp: Record<string, string> = {}) {
     imports: [LoansListComponent, PurchaseDraftListComponent, TranslateModule.forRoot()],
     providers: [
       provideNoopAnimations(),
+      // Daftar Draf memakai datepicker rentang (penyaring periode), dan
+      // datepicker menolak dibuat tanpa DateAdapter. Aplikasinya memasang
+      // adapter Moment di AppModule — uji ini memasang yang sama, supaya
+      // yang diuji tetap perilaku halamannya, bukan susunan providernya.
+      provideMomentDateAdapter(),
       {
         provide: ApiService,
         useValue: {

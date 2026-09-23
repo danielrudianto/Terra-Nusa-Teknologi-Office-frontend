@@ -229,3 +229,67 @@
 h2.pdv-name {
   margin: 0;
 }
+
+/* ===== mode ubah ===== */
+.pdv-petunjuk {
+  margin: 0 0 1rem;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--muted, #6b7280);
+}
+.pdv-ubah .pdv-petunjuk:last-of-type {
+  margin: 0.4rem 0 1rem;
+}
+
+.pdv-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 0.9rem;
+
+  &__span2 {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 560px) {
+  .pdv-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Pratinjau angka saat mengubah: memperlihatkan PPN dalam rupiah dan
+   totalnya, karena yang diisi persennya. */
+.pdv-money--pratinjau {
+  background: var(--surface-2, #f6f8ff);
+  border-style: dashed;
+}
+
+/* Tombol utama.
+
+   Teks memakai `--on-brand`, bukan putih: di tema gelap aksennya sengaja
+   TERANG, dan putih di atasnya hanya berkontras 2,5:1. */
+.pdv-btn--utama {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--brand, #154dec);
+  color: var(--on-brand, #ffffff);
+  &:hover:not(:disabled) {
+    background: var(--brand-strong, #0f3fd0);
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+.pdv-btn__putar ::ng-deep circle {
+  stroke: var(--on-brand, #ffffff);
+}
+.pdv-btn:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.pdv-value--kosong {
+  color: var(--faint, #9aa0ab);
+  font-style: italic;
+  font-weight: 400;
+}

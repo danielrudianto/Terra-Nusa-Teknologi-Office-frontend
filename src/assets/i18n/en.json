@@ -820,6 +820,16 @@
     "copTerkunci": "set automatically, because this purchase bills a certificate of payment"
   },
   "purchaseDraft": {
+    "keadaanKonversi": "Converted",
+    "periode": "Period",
+    "periodeMulai": "Period start",
+    "periodeSelesai": "Period end",
+    "periodeKosong": "No period",
+    "periodePetunjuk": "The period marks which billing week/month this draft belongs to, so whoever builds the purchase knows what falls past the cut-off.",
+    "ubahNilai": "Edit values",
+    "ubahPetunjuk": "Supplier, project and SPK cannot be changed. Every change is recorded in the history below.",
+    "riwayatUbah": "Change history",
+    "keadaanHapus": "Deleted",
     "title": "Purchase Draft",
     "description": "Manage your purchase draft data here",
     "createNew": "Create new purchase draft",
