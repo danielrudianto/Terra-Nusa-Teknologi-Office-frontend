@@ -70,6 +70,8 @@ export class PurchaseViewComponent {
    */
   copId: number | null = null;
   copNama: string = '';
+  /** CoP-nya sudah dihapus: nomornya tetap ditampilkan, tautannya tidak. */
+  copTerhapus = false;
 
   private readonly matDialog = inject(MatDialog);
   private readonly snack = inject(MatSnackBar);
@@ -110,7 +112,7 @@ export class PurchaseViewComponent {
    * membingungkan daripada tidak ada tombol.
    */
   bukaCop(): void {
-    if (!this.copId) return;
+    if (!this.copId || this.copTerhapus) return;
     this.matDialog.open(CertificateOfPaymentViewComponent, {
       data: { id: this.copId },
       width: '900px',
@@ -237,6 +239,7 @@ export class PurchaseViewComponent {
         this.purchaseOrderId = data.purchase_order_id ?? null;
         this.copId = data.certificateOfPaymentID ?? null;
         this.copNama = data.certificate_of_payment_name ?? '';
+        this.copTerhapus = !!data.certificate_of_payment_deleted;
         this.metaFormGroup.patchValue({
           date: this.datePipe.transform(data.date, 'dd MMMM yyyy'),
           dueDate: this.datePipe.transform(data.dueDate, 'dd MMMM yyyy'),

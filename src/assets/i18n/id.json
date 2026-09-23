@@ -3645,6 +3645,7 @@
     "bukaDokumenPo": "Buka dokumen purchase order",
     "copPenagih": "Certificate of payment",
     "bukaCop": "Buka dokumen CoP",
+    "copTerhapus": "Dokumen CoP ini sudah dihapus",
     "dokumenPoBelumAda": "Dokumen belum tersedia",
     "salinNomorPo": "Salin nomor PO"
   },
@@ -5938,7 +5939,7 @@
     "cabutPeriksa": "Cabut pemeriksaan",
     "setujui": "Setujui CoP",
     "konfirmHapusJudul": "Hapus certificate of payment?",
-    "konfirmHapus": "CoP {{nomor}} akan dihapus. Volume yang sudah disertifikasi di dalamnya kembali tersedia untuk CoP berikutnya.",
+    "konfirmHapus": "CoP {{nomor}} akan dihapus, dan volume yang sudah disertifikasi di dalamnya kembali tersedia untuk CoP berikutnya. CoP yang sudah ditagihkan lewat pembelian tidak dapat dihapus — hapus pembeliannya lebih dahulu.",
     "konfirmSetujuiJudul": "Setujui CoP ini?",
     "konfirmSetujui": "CoP {{nomor}} menjadi siap ditagih. Persetujuan CoP tidak dapat dicabut dari layar ini.",
     "konfirmSetujuiBapJudul": "Setujui BAP ini?",

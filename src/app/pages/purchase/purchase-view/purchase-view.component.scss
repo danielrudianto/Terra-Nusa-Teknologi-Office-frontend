@@ -479,3 +479,17 @@
 h2.pv-supplier {
   margin: 0;
 }
+
+/* CoP yang sudah dihapus: nomornya tetap terbaca sebagai asal-usul tagihan,
+   tetapi bukan tautan — dokumennya sudah tidak dapat dibuka. */
+.pv-cop--terhapus {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--muted, #6b7280);
+}
+.pv-cop__catatan {
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--bad-fg, #b3322f);
+}

@@ -3645,6 +3645,7 @@
     "bukaDokumenPo": "Open the purchase order document",
     "copPenagih": "Certificate of payment",
     "bukaCop": "Open the CoP document",
+    "copTerhapus": "This CoP document has been deleted",
     "dokumenPoBelumAda": "Document not available yet",
     "salinNomorPo": "Copy PO number"
   },
@@ -5938,7 +5939,7 @@
     "cabutPeriksa": "Undo check",
     "setujui": "Approve CoP",
     "konfirmHapusJudul": "Delete this certificate of payment?",
-    "konfirmHapus": "CoP {{nomor}} will be deleted. The volume it certified becomes available again for the next CoP.",
+    "konfirmHapus": "CoP {{nomor}} will be deleted, and the volume it certified becomes available again for the next CoP. A CoP that has already been billed through a purchase cannot be deleted — delete that purchase first.",
     "konfirmSetujuiJudul": "Approve this CoP?",
     "konfirmSetujui": "CoP {{nomor}} becomes ready to bill. CoP approval cannot be revoked from this screen.",
     "konfirmSetujuiBapJudul": "Approve this BAP?",

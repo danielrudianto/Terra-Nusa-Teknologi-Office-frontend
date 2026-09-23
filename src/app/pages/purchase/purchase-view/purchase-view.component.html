@@ -101,7 +101,7 @@
              yang berdiri sendiri tidak punya dokumen untuk dibuka. -->
         <div class="pv-field" *ngIf="copId">
           <span class="pv-label">{{ "purchaseView.copPenagih" | translate }}</span>
-          <div class="pv-po">
+          <div class="pv-po" *ngIf="!copTerhapus">
             <button
               type="button"
               class="pv-value pv-polink"
@@ -111,6 +111,16 @@
               {{ copNama || ("purchaseView.bukaCop" | translate) }}
             </button>
           </div>
+          <!-- CoP-nya sudah dihapus. Nomornya tetap ditampilkan — asal-usul
+               tagihan ini tidak boleh hilang dari layar — tetapi tidak
+               ditawarkan sebagai tautan, karena dokumennya tidak lagi
+               dapat dibuka. -->
+          <span class="pv-value pv-cop--terhapus" *ngIf="copTerhapus">
+            {{ copNama || "—" }}
+            <span class="pv-cop__catatan">{{
+              "purchaseView.copTerhapus" | translate
+            }}</span>
+          </span>
         </div>
         <div class="pv-field">
           <span class="pv-label">{{ "table.invoice" | translate }}</span

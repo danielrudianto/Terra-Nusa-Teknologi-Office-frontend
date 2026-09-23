@@ -3645,6 +3645,7 @@
     "bukaDokumenPo": "打开采购订单文件",
     "copPenagih": "付款证书",
     "bukaCop": "打开付款证书文件",
+    "copTerhapus": "该付款证书文件已被删除",
     "dokumenPoBelumAda": "文件尚未提供",
     "salinNomorPo": "复制采购订单编号"
   },
@@ -5938,7 +5939,7 @@
     "cabutPeriksa": "撤销检查",
     "setujui": "批准 CoP",
     "konfirmHapusJudul": "删除此付款证书？",
-    "konfirmHapus": "将删除 CoP {{nomor}}。其中已认证的工程量将重新可用于下一份 CoP。",
+    "konfirmHapus": "将删除 CoP {{nomor}}，其中已认证的工程量将重新可用于下一份 CoP。已通过采购开具账单的 CoP 无法删除——请先删除该采购。",
     "konfirmSetujuiJudul": "批准此 CoP？",
     "konfirmSetujui": "CoP {{nomor}} 将可开票。CoP 批准无法在此页面撤销。",
     "konfirmSetujuiBapJudul": "批准此 BAP？",
