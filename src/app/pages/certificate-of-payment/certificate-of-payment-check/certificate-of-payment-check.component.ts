@@ -294,6 +294,15 @@ export class CertificateOfPaymentCheckComponent implements OnInit {
   }
 
   melebihi(b: BarisPagu): boolean {
+    /*
+     * Kontrak harga satuan TIDAK pernah melebihi apa pun.
+     *
+     * Layar pencatatan volume (`…-create`) sudah memeriksa ini sejak awal;
+     * layar INI tidak — dan itulah yang membuat SPK D tetap ditolak di tahap
+     * dua meskipun pagunya sudah dibuka di server. Dua layar yang memutuskan
+     * hal yang sama harus memakai penanda yang sama.
+     */
+    if (b.tanpaPagu) return false;
     const v = this.nilai(b.purchaseOrderItemID);
     return v !== null && v > this.sisaBoleh(b);
   }

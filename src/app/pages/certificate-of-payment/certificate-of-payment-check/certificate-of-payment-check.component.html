@@ -108,11 +108,18 @@
                 }
               </div>
 
+              <!--
+                Pada baris TANPA PLAFON, volume SPK dan sisanya tidak disebut:
+                keduanya angka yang tidak menahan apa pun. Yang tersisa —
+                sudah dipakai dan harga satuan — memang masih berguna.
+              -->
               <dl class="cop-item__pagu">
-                <div>
-                  <dt>{{ "cop.pagu" | translate }}</dt>
-                  <dd>{{ b.pagu | number: "1.0-2" }} {{ b.unit }}</dd>
-                </div>
+                @if (!b.tanpaPagu) {
+                  <div>
+                    <dt>{{ "cop.pagu" | translate }}</dt>
+                    <dd>{{ b.pagu | number: "1.0-2" }} {{ b.unit }}</dd>
+                  </div>
+                }
                 <div>
                   <dt>{{ "cop.terpakai" | translate }}</dt>
                   <dd>{{ b.terpakai | number: "1.0-2" }} {{ b.unit }}</dd>
@@ -121,10 +128,12 @@
                   <dt>{{ "cop.hargaSatuan" | translate }}</dt>
                   <dd>{{ b.price | number: "1.2-2" }}</dd>
                 </div>
-                <div class="cop-item__sisa">
-                  <dt>{{ "cop.sisa" | translate }}</dt>
-                  <dd>{{ sisaBoleh(b) | number: "1.0-2" }} {{ b.unit }}</dd>
-                </div>
+                @if (!b.tanpaPagu) {
+                  <div class="cop-item__sisa">
+                    <dt>{{ "cop.sisa" | translate }}</dt>
+                    <dd>{{ sisaBoleh(b) | number: "1.0-2" }} {{ b.unit }}</dd>
+                  </div>
+                }
               </dl>
             </div>
 
