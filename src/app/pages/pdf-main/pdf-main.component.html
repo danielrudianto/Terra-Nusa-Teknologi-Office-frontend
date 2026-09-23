@@ -63,10 +63,42 @@
   </app-file-drop>
 
   <!-- Processing Indicator -->
-  <div *ngIf="isProcessing" class="processing-overlay">
-    <div class="processing-spinner"></div>
-    <p>{{ "pdf.processing" | translate }}</p>
-    <span class="processing-text">{{ processingProgress }}</span>
+  <!--
+    LAPISAN MEMPROSES — `fixed`, bukan `absolute`.
+
+    Sebelumnya ia absolut di dalam isi halaman, sehingga yang teredam hanya
+    setinggi daftar kartunya: bagian bawah layar tetap terang, dan
+    spinnernya berhenti di tengah ISI, bukan di tengah layar. Yang melihat
+    menyebutnya "menggantung".
+  -->
+  <div *ngIf="isProcessing" class="pdf-proses">
+    <div class="pdf-proses__kartu">
+      <div class="pdf-proses__cincin">
+        <svg viewBox="0 0 48 48" width="48" height="48" aria-hidden="true">
+          <circle class="pdf-proses__jalur" cx="24" cy="24" r="20" />
+          <circle class="pdf-proses__laju" cx="24" cy="24" r="20" />
+        </svg>
+        @if (prosesTotal > 1) {
+          <span class="pdf-proses__angka">{{ prosesKe }}/{{ prosesTotal }}</span>
+        }
+      </div>
+
+      <strong class="pdf-proses__judul">{{ "pdf.processing" | translate }}</strong>
+      @if (processingProgress) {
+        <span class="pdf-proses__berkas" [title]="processingProgress">
+          {{ processingProgress }}
+        </span>
+      }
+
+      <!-- Bilah kemajuan: terisi bila jumlah berkasnya diketahui, bergerak
+           sendiri bila tidak (mis. saat menggabungkan). -->
+      <div
+        class="pdf-proses__bilah"
+        [class.pdf-proses__bilah--tak-tentu]="!prosesTotal"
+      >
+        <i [style.width.%]="prosesTotal ? prosesPersen : 100"></i>
+      </div>
+    </div>
   </div>
   <!-- Uploaded Files Grid -->
   <div
@@ -111,9 +143,15 @@
       }
     </div>
 
+    <!--
+      `cdkDropListOrientation="mixed"`: daftarnya PETAK yang membungkus
+      baris, bukan satu kolom. Dengan orientasi bawaan, menjatuhkan halaman
+      di antara dua halaman pada baris yang sama tidak dikenali sama sekali.
+    -->
     <div
       class="files-grid"
       cdkDropList
+      cdkDropListOrientation="mixed"
       [cdkDropListData]="processedDocuments"
       (cdkDropListDropped)="onFileDropped($event)"
     >
@@ -138,8 +176,14 @@
           <span class="checkmark"></span>
         </div>
 
-        <!-- Drag Handle -->
-        <div class="drag-handle" cdkDragHandle>
+        <!--
+          TANPA `cdkDragHandle`: seluruh kartu dapat diseret.
+
+          Sebelumnya hanya gagang kecil di pojok yang dapat menyeret —
+          sementara yang menyeret gambarnya sendiri malah memulai seretan
+          bawaan peramban. Ikon gagangnya tetap ada sebagai penanda.
+        -->
+        <div class="drag-handle">
           <mat-icon class="handle-icon">drag_indicator</mat-icon>
         </div>
 
@@ -155,6 +199,7 @@
             class="thumbnail-image"
             [class.loading]="isProcessing"
             [style.transform]="'rotate(' + (page.rotation || 0) + 'deg)'"
+            draggable="false"
           />
           <div class="page-badge">{{ i + 1 }}</div>
 
@@ -265,7 +310,7 @@
 
         <!-- Drag Preview -->
         <div *cdkDragPreview class="drag-preview">
-          <img [src]="page.thumbnail" />
+          <img [src]="page.thumbnail" draggable="false" />
           <span>{{ getShortFileName(page.fileName) }}</span>
         </div>
 

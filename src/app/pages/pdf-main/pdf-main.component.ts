@@ -164,6 +164,15 @@ export class PdfMainComponent implements OnInit {
   selectedPages: PageData[] = [];
   selectedCount = 0;
   isProcessing = false;
+  /*
+   * Kemajuan pemrosesan: berkas ke berapa dari berapa.
+   *
+   * Dipakai bilah kemajuan pada lapisan "Memproses berkas PDF". Tanpa angka
+   * ini, lapisannya hanya berputar — dan yang mengunggah dua puluh berkas
+   * tidak punya cara tahu apakah ia baru mulai atau hampir selesai.
+   */
+  prosesKe = 0;
+  prosesTotal = 0;
   isDragging = false;
   processingProgress = '';
 
@@ -201,25 +210,33 @@ export class PdfMainComponent implements OnInit {
 
   async onFilesDropped(files: FileList): Promise<void> {
     this.isProcessing = true;
+    const daftar = Array.from(files).filter(
+      (f) =>
+        f.type === 'application/pdf' && f.name.toLowerCase().endsWith('.pdf'),
+    );
+    this.prosesTotal = daftar.length;
+    this.prosesKe = 0;
 
     try {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-
-        if (
-          file.type === 'application/pdf' &&
-          file.name.toLowerCase().endsWith('.pdf')
-        ) {
-          this.processingProgress = `Processing ${file.name}...`;
-          await this.processPdfFile(file);
-        }
+      for (const file of daftar) {
+        this.prosesKe++;
+        this.processingProgress = file.name;
+        await this.processPdfFile(file);
       }
     } catch (error) {
       console.error('Error processing PDFs:', error);
     } finally {
       this.isProcessing = false;
       this.processingProgress = '';
+      this.prosesKe = 0;
+      this.prosesTotal = 0;
     }
+  }
+
+  /** Persentase kemajuan; 0 berarti tidak diketahui (bilah bergerak sendiri). */
+  get prosesPersen(): number {
+    if (!this.prosesTotal) return 0;
+    return Math.round((this.prosesKe / this.prosesTotal) * 100);
   }
 
   private async processPdfFile(file: File): Promise<void> {
@@ -441,7 +458,9 @@ export class PdfMainComponent implements OnInit {
     }
 
     this.isProcessing = true;
-    this.processingProgress = 'Merging PDFs...';
+    this.processingProgress = '';
+    this.prosesKe = 0;
+    this.prosesTotal = 0;
 
     try {
       const mergedPdf = await PDFDocument.create();

@@ -93,17 +93,29 @@ export class FileDropComponent {
     this.handleDrop(input.files);
   }
 
+  /**
+   * Seretan ini membawa BERKAS DARI LUAR peramban?
+   *
+   * Bukan sekadar "ada Files di dalamnya". Menyeret gambar yang ada DI
+   * HALAMAN — pratinjau halaman PDF, misalnya — juga menghasilkan `Files`
+   * pada Chrome, berikut `text/html` dan `text/uri-list` yang menyebut
+   * asalnya. Tanpa membedakan keduanya, menyeret satu halaman untuk
+   * mengurutkannya justru memunculkan lapisan "Lepas untuk upload", dan
+   * pengurutannya batal.
+   *
+   * Berkas dari penjelajah berkas TIDAK membawa penanda asal itu.
+   */
   private containsFiles(event: DragEvent): boolean {
-    if (!event.dataTransfer) return false;
-
-    // Check if the drag event contains files
-    const types = event.dataTransfer.types;
-    return (
-      types &&
-      (types.includes('Files') ||
-        types.includes('application/x-moz-file') ||
-        (types.length > 0 && types[0] === 'Files'))
-    );
+    const dt = event.dataTransfer;
+    if (!dt) return false;
+    const types = Array.from(dt.types || []);
+    if (!types.length) return false;
+    const adaBerkas =
+      types.includes('Files') || types.includes('application/x-moz-file');
+    if (!adaBerkas) return false;
+    const dariHalaman =
+      types.includes('text/html') || types.includes('text/uri-list');
+    return !dariHalaman;
   }
 
   private resetDragState() {
