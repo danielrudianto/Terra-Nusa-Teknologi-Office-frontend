@@ -675,3 +675,50 @@ tfoot .tv-td-item {
 .tv-draf strong {
   font-weight: 600;
 }
+
+/*
+ * Kartu draf: keterangan, langkahnya, lalu tindakannya.
+ *
+ * Spanduknya sendiri sudah punya jarak atas; di dalam kartu ia menempel
+ * ke tepi atas supaya tidak ada dua lapis jarak yang terbaca seperti
+ * kartu kosong.
+ */
+.tv-draf-kartu .tv-draf {
+  margin-top: 0;
+}
+
+.tv-draf__langkah {
+  margin: 1rem 0 0;
+  padding-left: 1.25rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--muted, #6b7280);
+
+  li + li {
+    margin-top: 0.35rem;
+  }
+}
+
+.tv-draf__aksi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.1rem;
+}
+
+.tv-draf__takboleh {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin: 1rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+  }
+}

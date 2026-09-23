@@ -48,18 +48,19 @@
             {{ "common.edit" | translate }}
           </button>
         }
-        @if (data.status === "draft") {
-          <button
-            mat-flat-button
-            color="primary"
-            type="button"
-            *appCan="'tender:update'"
-            (click)="sebarkan()"
-          >
-            <mat-icon>send</mat-icon>
-            {{ "tender.sebarkan" | translate }}
-          </button>
-        }
+        <!--
+          TIDAK ADA tombol setujui di kepala.
+
+          Ia tinggal SATU, di kartu draf di bawah, bersama keterangan apa
+          yang sebenarnya terjadi kalau ditekan. Dua tombol biru serupa di
+          satu layar pendek justru menambah pertanyaan yang sedang dijawab
+          halaman ini.
+
+          Namanya pun berganti: "Setujui tender", bukan "Sebarkan". Tombol
+          itu tidak mengirim apa pun — yang mengirim adalah orang, lewat
+          kartu "Sebarkan ke pemasok". Dua hal itu dulu sama-sama bernama
+          "sebarkan".
+        -->
         @if (dapatDisunting) {
           <button
             mat-icon-button
@@ -81,7 +82,16 @@
     </div>
 
     <!-- ===== sebar lewat WhatsApp ===== -->
-    @if (dapatDisunting) {
+    <!--
+      Muncul SESUDAH disetujui, bukan selagi draf.
+
+      Menyebarkan daftar yang masih boleh berubah berarti pemasok menjawab
+      pertanyaan yang sebentar lagi tidak berlaku. Selagi draf, kartunya
+      juga menjadi "sebarkan" yang kedua di layar yang sama — dan itulah
+      yang membuat orang mengira tombol biru di atas yang mengirim
+      WhatsApp-nya.
+    -->
+    @if (dapatMenerimaPenawaran) {
       <div class="tv-sebar">
         <div class="tv-sebar__teks">
           <strong>{{ "tender.sebarJudul" | translate }}</strong>
@@ -119,24 +129,71 @@
     }
 
     <!--
-      Spanduk draf — ikon + blok teks, bukan hint kecil.
+      DRAF: keterangan dan tindakan, BUKAN bagian-bagian yang mati.
 
-      Menjelaskan MENGAPA tombol catat penawaran tidak ada, di tempat yang
-      sama dengan tombol yang hilang itu. Tanpa ini, yang membuka tender
-      melihat bagian perbandingan tanpa satu pun cara mengisinya, dan tidak
-      ada apa pun di layar yang menyebut sebabnya.
+      Dulu perbandingan penawaran dan hasil tender tetap terpampang selagi
+      draf — keduanya kosong, dengan tombol "Tetapkan pemenang" yang pasti
+      ditolak server, dan spanduk kecil di atasnya yang menerangkan kenapa.
+      Yang membacanya tetap mencoba, karena yang terlihat mata adalah dua
+      bagian yang seolah tinggal diisi.
+
+      Selagi draf cuma ada dua hal yang masuk akal dikerjakan: menyetujuinya,
+      atau membuangnya. Jadi hanya itu yang ditawarkan.
     -->
     @if (masihDraf) {
-      <div class="tv-draf">
-        <mat-icon>lock_clock</mat-icon>
-        <div>
-          <strong>{{ "tender.drafJudul" | translate }}</strong>
-          <span>{{ "tender.drafKet" | translate }}</span>
+      <div class="tv-card tv-draf-kartu">
+        <div class="tv-draf">
+          <mat-icon>lock_clock</mat-icon>
+          <div>
+            <strong>{{ "tender.drafJudul" | translate }}</strong>
+            <span>{{ "tender.drafKet" | translate }}</span>
+          </div>
         </div>
+
+        <ol class="tv-draf__langkah">
+          <li>{{ "tender.drafLangkah1" | translate }}</li>
+          <li>{{ "tender.drafLangkah2" | translate }}</li>
+          <li>{{ "tender.drafLangkah3" | translate }}</li>
+        </ol>
+
+        <div class="tv-draf__aksi">
+          @if (bolehSetujui) {
+            <button
+              mat-flat-button
+              color="primary"
+              type="button"
+              (click)="sebarkan()"
+            >
+              <mat-icon>verified</mat-icon>
+              {{ "tender.setujui" | translate }}
+            </button>
+          }
+          @if (bolehHapus) {
+            <button mat-stroked-button type="button" (click)="hapus()">
+              <mat-icon>delete_outline</mat-icon>
+              {{ "tender.hapus" | translate }}
+            </button>
+          }
+        </div>
+
+        <!--
+          Tidak berwenang: DIKATAKAN, bukan dibiarkan kosong.
+
+          Tanpa baris ini layar orang level 1 dan level 3 hanya berbeda pada
+          ada-tidaknya tombol, dan yang tidak punya tombol mengira layarnya
+          belum selesai dimuat.
+        -->
+        @if (!bolehSetujui) {
+          <p class="tv-draf__takboleh">
+            <mat-icon>info</mat-icon>
+            {{ "tender.drafTakBerwenang" | translate }}
+          </p>
+        }
       </div>
     }
 
     <!-- ===== perbandingan penawaran ===== -->
+    @if (!masihDraf) {
     <div class="tv-card">
       <div class="tv-card__head">
         <div>
@@ -635,6 +692,8 @@
         </p>
       }
     </div>
+
+    }
 
     <!--
       Riwayat tendernya sendiri.

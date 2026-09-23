@@ -11,6 +11,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { CanDirective } from 'src/app/directives/can.directive';
+import { PermissionService } from 'src/app/services/permission.service';
 import {
   DataGambar,
   gambarPermintaanPenawaran,
@@ -69,6 +70,7 @@ export class TenderViewComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
+  private readonly perm = inject(PermissionService);
 
   readonly MINIMAL = MINIMAL_PENAWARAN;
 
@@ -136,6 +138,25 @@ export class TenderViewComponent implements OnInit {
     return this.data?.status === 'draft';
   }
 
+  /**
+   * Berwenang menyetujui — dibaca SENDIRI, tidak cuma lewat `*appCan`.
+   *
+   * Direktifnya menyembunyikan tombol, dan itu saja meninggalkan layar yang
+   * bagi orang tak berwenang tampak belum selesai dimuat. Nilai ini dipakai
+   * untuk MENGATAKANNYA: "persetujuan hanya untuk level 3 ke atas".
+   *
+   * `approve`, bukan `update` — sama dengan yang dijaga rutenya. Selama ini
+   * tombolnya dijaga `update`, sehingga level 1 melihatnya lalu menerima
+   * 403; kegagalan yang tampak seperti kerusakan aplikasi.
+   */
+  get bolehSetujui(): boolean {
+    return this.perm.can('tender', 'approve');
+  }
+
+  get bolehHapus(): boolean {
+    return this.perm.can('tender', 'delete');
+  }
+
   get kurangPenawaran(): number {
     return Math.max(this.MINIMAL - this.quotes.length, 0);
   }
@@ -163,9 +184,15 @@ export class TenderViewComponent implements OnInit {
     return this.quotes.find((q) => Number(q.id) === Number(id)) ?? null;
   }
 
-  /** Keputusan masih terbuka: belum selesai dan belum dibatalkan. */
+  /**
+   * Keputusan masih terbuka.
+   *
+   * `draft` DIKELUARKAN. Tender yang belum disetujui tidak mungkin punya
+   * penawaran — servernya sendiri menolak dengan "Tender ini masih draf" —
+   * sehingga "Tetapkan pemenang" di sana hanya tombol yang pasti gagal.
+   */
   get dapatDiputuskan(): boolean {
-    return ['draft', 'berjalan'].includes(this.data?.status);
+    return this.data?.status === 'berjalan';
   }
 
   // ------------------------------------------------------------------
@@ -382,6 +409,42 @@ export class TenderViewComponent implements OnInit {
             this.snackBar.open(this.serverMessage.terjemahkan(e, 'notify.actionFailed'), 'Close', {
               duration: 4000,
             }),
+        });
+      });
+  }
+
+  /**
+   * Buang tender yang tidak jadi dikerjakan.
+   *
+   * Rutenya sudah ada sejak awal dan `TenderService.hapus()` pun sudah ada —
+   * hanya tidak pernah ada tombolnya, sehingga draf yang salah buat tinggal
+   * selamanya di daftar. Yang pemenangnya sudah ditetapkan tetap ditolak
+   * server: riwayat pengadaan harus dapat ditinjau.
+   */
+  hapus(): void {
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: this.translate.instant('tender.hapusJudul'),
+          prompt: this.translate.instant('tender.hapusKet', {
+            nama: this.data?.name ?? '',
+          }),
+        },
+        width: '440px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((ya) => {
+        if (!ya) return;
+        this.service.hapus(this.tenderId).subscribe({
+          next: () => this.router.navigate(['/Tender']),
+          error: (e: any) =>
+            this.snackBar.open(
+              this.serverMessage.terjemahkan(e, 'notify.actionFailed'),
+              'Close',
+              { duration: 4000 },
+            ),
         });
       });
   }

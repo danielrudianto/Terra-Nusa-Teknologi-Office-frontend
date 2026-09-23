@@ -154,10 +154,33 @@ function barisSewa(x: any): BarisTampil {
   };
 }
 
-/** Barang katalog: nama, SKU, catatan. */
+/**
+ * Barang katalog: nama + "Ex. merek", lalu SKU dan catatan.
+ *
+ * MEREKNYA IKUT, karena mereknyalah yang dibeli.
+ *
+ * Dokumen yang DICETAK sudah lama menuliskannya — `namaBarangCetak()`
+ * menyusun `[SKU] - Deskripsi Ex. Merek`. Layar ini tidak, sehingga yang
+ * memeriksa di layar melihat "Kabel NYM 2 x 2.5mm" saja dan baru menemukan
+ * mereknya setelah dokumennya tercetak. Padahal justru di layar itulah
+ * dokumennya masih bisa dibetulkan.
+ *
+ * SKU-nya TIDAK ikut diawalkan seperti pada cetakan: di sini ia sudah
+ * berdiri sebagai baris rinciannya sendiri tepat di bawah judul, dan
+ * menaruhnya dua kali hanya memanjangkan baris tanpa menambah keterangan.
+ *
+ * Aturan "hanya barang katalog" sama dengan cetakannya: baris jasa atau
+ * alat tidak punya `item_id`, dan merek yang menempel pada baris seperti
+ * itu tidak berarti apa-apa.
+ */
 function barisBarang(x: any): BarisTampil {
+  const nama = namaBarang(x) || x?.task || '—';
+  const merek = String(x?.brand ?? '').trim();
+  const punyaItemId =
+    x?.item_id !== null && x?.item_id !== undefined && x?.item_id !== '';
+
   return {
-    judul: namaBarang(x) || x?.task || '—',
+    judul: punyaItemId && merek ? `${nama} Ex. ${merek}` : nama,
     rincian: [
       ...isi(x?.sku),
       ...isi(x?.remarks_1),
