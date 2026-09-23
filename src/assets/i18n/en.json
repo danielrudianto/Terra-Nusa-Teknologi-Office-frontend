@@ -3643,6 +3643,8 @@
   "purchaseView": {
     "createdOn": "Document created on",
     "bukaDokumenPo": "Open the purchase order document",
+    "copPenagih": "Certificate of payment",
+    "bukaCop": "Open the CoP document",
     "dokumenPoBelumAda": "Document not available yet",
     "salinNomorPo": "Copy PO number"
   },

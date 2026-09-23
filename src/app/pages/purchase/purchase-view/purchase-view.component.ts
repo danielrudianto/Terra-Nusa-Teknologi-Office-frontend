@@ -1,5 +1,6 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
+import { CertificateOfPaymentViewComponent } from '../../certificate-of-payment/certificate-of-payment-view/certificate-of-payment-view.component';
 import { PurchaseOrderViewComponent } from '../../purchase-order/purchase-order-view/purchase-order-view.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Component, Inject, inject } from '@angular/core';
@@ -59,6 +60,17 @@ export class PurchaseViewComponent {
   /** Id purchase order yang cocok; kosong bila dokumennya belum ada. */
   purchaseOrderId: number | null = null;
 
+  /*
+   * CoP YANG MENAGIHKAN pembelian ini.
+   *
+   * Kaitannya sudah tersimpan (`purchases.certificateOfPaymentID`) sejak
+   * pembelian dibuat dari CoP, tetapi layar ini tidak pernah menyebutnya —
+   * sehingga yang membuka pembelian dan ingin memeriksa dasar tagihannya
+   * harus mencari CoP-nya sendiri, berbekal nomor SPK dan tanggal.
+   */
+  copId: number | null = null;
+  copNama: string = '';
+
   private readonly matDialog = inject(MatDialog);
   private readonly snack = inject(MatSnackBar);
 
@@ -87,6 +99,24 @@ export class PurchaseViewComponent {
       'Close',
       { duration: 3000 },
     );
+  }
+
+  /**
+   * Buka CoP yang menagihkan pembelian ini.
+   *
+   * Hanya tersedia bila kaitannya memang ada: pembelian yang berdiri
+   * sendiri (bukan dari CoP) tidak punya dokumen yang dapat dibuka, dan
+   * tombol yang selalu ada tetapi kadang tidak melakukan apa-apa lebih
+   * membingungkan daripada tidak ada tombol.
+   */
+  bukaCop(): void {
+    if (!this.copId) return;
+    this.matDialog.open(CertificateOfPaymentViewComponent, {
+      data: { id: this.copId },
+      width: '900px',
+      maxWidth: '94vw',
+      autoFocus: false,
+    });
   }
 
   viewPurchaseOrder() {
@@ -205,6 +235,8 @@ export class PurchaseViewComponent {
         this.createdBy = data.createdBy ?? null;
         this.createdByName = data.createdByName ?? '';
         this.purchaseOrderId = data.purchase_order_id ?? null;
+        this.copId = data.certificateOfPaymentID ?? null;
+        this.copNama = data.certificate_of_payment_name ?? '';
         this.metaFormGroup.patchValue({
           date: this.datePipe.transform(data.date, 'dd MMMM yyyy'),
           dueDate: this.datePipe.transform(data.dueDate, 'dd MMMM yyyy'),

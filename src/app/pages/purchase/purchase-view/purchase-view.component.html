@@ -96,6 +96,22 @@
             <span class="pv-value">—</span>
           }
         </div>
+        <!-- CoP yang menagihkan pembelian ini.
+             Bidangnya hanya muncul bila kaitannya memang ada: pembelian
+             yang berdiri sendiri tidak punya dokumen untuk dibuka. -->
+        <div class="pv-field" *ngIf="copId">
+          <span class="pv-label">{{ "purchaseView.copPenagih" | translate }}</span>
+          <div class="pv-po">
+            <button
+              type="button"
+              class="pv-value pv-polink"
+              [title]="'purchaseView.bukaCop' | translate"
+              (click)="bukaCop()"
+            >
+              {{ copNama || ("purchaseView.bukaCop" | translate) }}
+            </button>
+          </div>
+        </div>
         <div class="pv-field">
           <span class="pv-label">{{ "table.invoice" | translate }}</span
           ><span class="pv-value">{{ f["invoiceName"].value || "—" }}</span>

@@ -3643,6 +3643,8 @@
   "purchaseView": {
     "createdOn": "Dokumen dibuat pada",
     "bukaDokumenPo": "Buka dokumen purchase order",
+    "copPenagih": "Certificate of payment",
+    "bukaCop": "Buka dokumen CoP",
     "dokumenPoBelumAda": "Dokumen belum tersedia",
     "salinNomorPo": "Salin nomor PO"
   },
