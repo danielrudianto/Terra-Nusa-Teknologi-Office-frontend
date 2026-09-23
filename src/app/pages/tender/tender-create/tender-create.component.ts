@@ -151,6 +151,16 @@ export class TenderCreateComponent implements OnInit {
 
   private buatBaris(v: any = {}): FormGroup {
     return this.formBuilder.group({
+      /*
+       * Id baris yang SUDAH ADA, dibawa pulang saat menyimpan.
+       *
+       * Tanpa ini server tidak dapat membedakan "baris yang sama, diubah"
+       * dari "baris baru", sehingga penyimpanan menghapus semua baris lalu
+       * menulis ulang — dan penghapusan itu memusnahkan harga yang sudah
+       * ditawarkan vendor atas baris tersebut. Baris baru bernilai `null`
+       * dan tetap disisipkan seperti biasa.
+       */
+      id: [v.id ?? null],
       itemID: [v.itemID ?? null],
       name: [v.name ?? '', [Validators.required, Validators.maxLength(255)]],
       specification: [v.specification ?? ''],
@@ -245,6 +255,7 @@ export class TenderCreateComponent implements OnInit {
       requirements: v.requirements || null,
       dueDate: this.tanggalIso(v.dueDate),
       items: (v.items || []).map((x: any, i: number) => ({
+        id: x.id ?? null,
         itemID: x.itemID ?? null,
         name: x.name,
         specification: x.specification || null,
