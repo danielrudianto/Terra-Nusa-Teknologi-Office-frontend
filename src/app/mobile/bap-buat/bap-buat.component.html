@@ -109,7 +109,10 @@
         @for (b of baris(); track b.purchaseOrderItemID) {
           <div class="mbap-baris" [class.lebih]="lebih(b)">
             <span class="mbap-baris__nama">
-              {{ b.task || "—" }}
+              {{ b.komponen || b.task || "—" }}
+              @if (b.komponen && b.task) {
+                <span class="mbap-komponen">{{ b.task }}</span>
+              }
               <!--
                 KOMPONEN upah, bila ada — DI DALAM nama, bukan baris petak
                 tersendiri.

@@ -763,3 +763,11 @@
     text-transform: uppercase;
   }
 }
+
+/* Komponen upah di bawah nama pekerjaan — pembeda baris yang bernama sama. */
+.cv-komponen {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted, #6b7280);
+  margin-top: 2px;
+}

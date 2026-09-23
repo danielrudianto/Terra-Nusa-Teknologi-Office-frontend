@@ -60,12 +60,12 @@ KUANTITAS_MANUAL = {
     ("pages/certificate-of-payment/certificate-of-payment-check/"
      "certificate-of-payment-check.component.html", 118),
     ("pages/certificate-of-payment/certificate-of-payment-pratinjau/"
-     "certificate-of-payment-pratinjau.component.html", 96),
+     "certificate-of-payment-pratinjau.component.html", 101),
     ("pages/certificate-of-payment/certificate-of-payment-pratinjau/"
-     "certificate-of-payment-pratinjau.component.html", 105),
+     "certificate-of-payment-pratinjau.component.html", 110),
     ("pages/certificate-of-payment/certificate-of-payment-view/"
-     "certificate-of-payment-view.component.html", 245),
-    ("mobile/persetujuan-cop/persetujuan-cop.component.html", 138),
+     "certificate-of-payment-view.component.html", 252),
+    ("mobile/persetujuan-cop/persetujuan-cop.component.html", 143),
 }
 
 # HARGA SATUAN yang sengaja lebih presisi.

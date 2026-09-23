@@ -102,7 +102,20 @@
               <span class="cop-item__cap">{{ "cop.sisiKontrak" | translate }}</span>
 
               <div class="cop-item__nama">
-                {{ b.task || "-" }}
+                <!--
+                  URUTAN MENGIKUTI TAMPILAN SPK: komponen upah sebagai JUDUL,
+                  nama pekerjaan sebagai anak judul.
+
+                  Satu SPK D memakai nama pekerjaan yang sama pada seluruh
+                  barisnya ("Operator Bored Pile"); yang membedakannya
+                  komponen upahnya. Menaruh nama pekerjaan sebagai judul
+                  membuat tiga baris tampil kembar — dan itu yang terjadi
+                  sebelum ini.
+                -->
+                {{ b.komponen || b.task || "-" }}
+                @if (b.komponen && b.task) {
+                  <span class="cop-item__ket">{{ b.task }}</span>
+                }
                 @if (b.keterangan) {
                   <span class="cop-item__ket">{{ b.keterangan }}</span>
                 }

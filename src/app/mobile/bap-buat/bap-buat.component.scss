@@ -297,3 +297,10 @@
   min-height: 50px;
   margin-top: 0.25rem;
 }
+
+/* Komponen upah — pembeda baris yang bernama sama pada SPK tenaga kerja. */
+.mbap-komponen {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--muted, #6b7280);
+}

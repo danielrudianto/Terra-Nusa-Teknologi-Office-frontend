@@ -326,6 +326,42 @@
   padding-left: 4px;
 }
 
+/*
+ * Jumlah baris = volume × harga satuan.
+ *
+ * Kelasnya ada di templat sejak awal, tetapi TIDAK PERNAH DIBERI GAYA —
+ * sehingga label dan angkanya tercetak dempet ("Jumlah baris1.050.000,00")
+ * dan menempel pada kotak di bawahnya. Bentuknya disamakan dengan baris
+ * ringkasan lain: label kecil di kiri, angka tebal rata kanan, dipisahkan
+ * garis tipis dari isian di atasnya.
+ */
+.cop-item__jumlah {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0.15rem 0 0.9rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  background: var(--surface-2, #f6f8fb);
+  border: 1px solid var(--line, #eef0f3);
+
+  span {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted, #6b7280);
+  }
+  strong {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink, #16181d);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+}
+
 .cop-ket-field {
   width: 100%;
 }

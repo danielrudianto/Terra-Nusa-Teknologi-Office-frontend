@@ -130,7 +130,12 @@
         <ul class="mcp-item">
           @for (i of dipilih.items || []; track i.id) {
             <li>
-              <div class="mcp-item__nama">{{ i.task || "—" }}</div>
+              <div class="mcp-item__nama">
+                {{ i.komponen || i.task || "—" }}
+                @if (i.komponen && i.task) {
+                  <span class="mcp-item__komponen">{{ i.task }}</span>
+                }
+              </div>
               <div class="mcp-item__angka">
                 <span class="mcp-item__vol">
                   {{ i.quantity | number: "1.0-2" }} {{ i.unit }}

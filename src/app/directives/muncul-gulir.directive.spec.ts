@@ -19,7 +19,18 @@ describe('MunculGulirDirective', () => {
     const el: HTMLElement = f.nativeElement.querySelector('div');
     expect(el.classList).toContain('akn-mg');
     expect(el.classList).toContain('akn-mg--kiri');
-    await new Promise((r) => setTimeout(r, 200));
+    /*
+     * DITUNGGU SAMPAI MUNCUL, bukan ditunggu 200 ms.
+     *
+     * Yang menampilkannya `IntersectionObserver` — pengamat yang dijadwalkan
+     * peramban, bukan timer. Pada mesin yang sedang sibuk panggilannya dapat
+     * tiba setelah 200 ms, dan ujinya merah tanpa ada yang rusak. Uji yang
+     * kadang merah lebih buruk daripada tidak ada uji: yang membacanya
+     * berhenti mempercayai warnanya.
+     */
+    for (let i = 0; i < 40 && !el.classList.contains('akn-mg--tampil'); i++) {
+      await new Promise((r) => setTimeout(r, 50));
+    }
     expect(el.classList).toContain('akn-mg--tampil');
     f.nativeElement.remove();
   });

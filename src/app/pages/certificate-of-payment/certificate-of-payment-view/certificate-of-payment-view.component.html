@@ -221,7 +221,14 @@
             <th mat-header-cell *matHeaderCellDef>
               {{ "cop.pekerjaan" | translate }}
             </th>
-            <td mat-cell *matCellDef="let i">{{ i.task || "-" }}</td>
+            <td mat-cell *matCellDef="let i">
+              <!-- Komponen upah sebagai judul, nama pekerjaan di bawahnya —
+                   sama dengan tampilan SPK. -->
+              {{ i.komponen || i.task || "-" }}
+              @if (i.komponen && i.task) {
+                <span class="cv-komponen">{{ i.task }}</span>
+              }
+            </td>
           </ng-container>
 
           <ng-container matColumnDef="satuan">

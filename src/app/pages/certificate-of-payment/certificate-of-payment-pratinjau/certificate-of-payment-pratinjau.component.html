@@ -74,7 +74,12 @@
         @for (b of data.baris; track b.purchaseOrderItemID) {
           <tr [class.cp-baris--habis]="!b.tanpaPagu && b.sisaSetelah <= 0">
             <td>
-              <span class="cp-nama">{{ b.task || "-" }}</span>
+              <!-- Komponen upah sebagai judul, nama pekerjaan di bawahnya —
+                   sama dengan tampilan SPK. -->
+              <span class="cp-nama">{{ b.komponen || b.task || "-" }}</span>
+              @if (b.komponen && b.task) {
+                <span class="cp-ket">{{ b.task }}</span>
+              }
               @if (b.keterangan) {
                 <span class="cp-ket">{{ b.keterangan }}</span>
               }

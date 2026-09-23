@@ -324,3 +324,10 @@ app-kartu-kerangka {
 :host-context(html[data-gerak="mati"]) .mcp-kartu {
   animation: none;
 }
+
+/* Komponen upah di bawah nama pekerjaan — baris SPK D bernama sama. */
+.mcp-item__komponen {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--muted, #6b7280);
+}

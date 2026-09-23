@@ -24,6 +24,8 @@ import { BarisPagu, SpkKandidat } from 'src/app/services/certificate-of-payment.
 export interface BarisPratinjauCoP {
   purchaseOrderItemID: number;
   task: string | null;
+  /** Komponen upah (upah harian, lembur, …) — pembeda baris senama. */
+  komponen: string | null;
   unit: string | null;
   pagu: number;
   terpakai: number;
@@ -238,6 +240,7 @@ export class CertificateOfPaymentPratinjauComponent
         return {
           purchaseOrderItemID: b.purchaseOrderItemID,
           task: b.task,
+          komponen: b.komponen ?? null,
           unit: b.unit,
           pagu: b.pagu,
           terpakai: b.terpakai,
