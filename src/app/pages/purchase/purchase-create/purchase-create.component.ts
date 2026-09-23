@@ -1,3 +1,5 @@
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { pphDiputuskan, tarifPphNol } from 'src/app/utils/pph-wajib';
 import { Component, ElementRef, ViewChild, inject, signal } from '@angular/core';
 import { nilaiUang } from '../../../utils/angka';
 import { debounceTime, distinctUntilChanged, firstValueFrom } from 'rxjs';
@@ -112,6 +114,7 @@ function bankAccountIDRequired(): ValidatorFn {
   selector: 'app-purchase-create',
   providers: [provideNgxMask()],
   imports: [
+    MatCheckboxModule,
     BankAccountSelectorComponent,
     ProjectSelectorComponent,
     MatTooltipModule,
@@ -225,7 +228,11 @@ export class PurchaseCreateComponent {
     return (
       this.valueFormGroup.controls['dpp'].valid &&
       this.valueFormGroup.controls['ppn'].valid &&
-      this.valueFormGroup.controls['pbbkb'].valid
+      this.valueFormGroup.controls['pbbkb'].valid &&
+      // PPh harus DIPUTUSKAN — dipilih kodenya, atau dinyatakan memang
+      // tidak dipotong. Tanpa ini langkah nilai lolos dengan PPh kosong,
+      // dan itulah bentuk kebocoran yang paling sering terjadi.
+      !this.pphBelumDiputuskan
     );
   }
 
@@ -278,11 +285,33 @@ export class PurchaseCreateComponent {
     pphCode: new FormControl(''),
     pphTaxObject: new FormControl(''),
     pphPercentage: new FormControl(0, [Validators.required, Validators.min(0)]),
+    /*
+     * Pernyataan "memang tidak dipotong".
+     *
+     * TIDAK dikirim ke server dan bukan kolom — lihat `utils/pph-wajib.ts`.
+     *
+     * GERBANG YANG SEBENARNYA ADA DI SINI, bukan di SPK-nya. Nilai PPh pada
+     * SPK hanya PREFILL: layar ini boleh menimpanya, dan memang menimpanya.
+     * Dari 175 SPK tipe D, ada yang SPK-nya 0% tetapi seluruh fakturnya
+     * dipotong 2,5%, dan ada yang SPK-nya 2,5% tetapi lima belas fakturnya
+     * tidak memotong sepeser pun. Membetulkan SPK saja tidak menutup apa
+     * pun — uangnya bergerak di layar ini.
+     */
+    tanpaPph: new FormControl(false),
     pphValue: new FormControl(0),
     otherValue: new FormControl(0, [Validators.required, Validators.min(0)]),
     otherValueNote: new FormControl('', Validators.maxLength(255)),
     total: new FormControl(0, [Validators.required, Validators.min(0)]),
-  });
+  }, { validators: pphDiputuskan() });
+
+  /** Tarif terpilih nol — ditegaskan, karena nol tidak terlihat sebagai nol. */
+  get pphNol(): boolean {
+    return tarifPphNol(this.valueFormGroup);
+  }
+
+  get pphBelumDiputuskan(): boolean {
+    return !!this.valueFormGroup.errors?.['pphBelumDiputuskan'];
+  }
 
   attachmentFormGroup: FormGroup = new FormGroup({
     isInvoiceAttached: new FormControl(false, Validators.requiredTrue),
@@ -575,13 +604,34 @@ export class PurchaseCreateComponent {
       this.selaraskanRekening(),
     );
 
-    this.metaFormGroup.controls['documentType'].valueChanges.subscribe(() => {
-      const documentType = this.metaFormGroup.value['documentType'];
+    /*
+     * Nilainya dibaca DARI YANG DIPANCARKAN, bukan dari `metaFormGroup.value`.
+     *
+     * `AbstractControl.setValue()` memancarkan `valueChanges` kendalinya
+     * SEBELUM memperbarui induknya, sehingga `metaFormGroup.value` di dalam
+     * langganan ini masih berisi jenis yang LAMA. Pada pembelian pertama —
+     * jenis sebelumnya masih kosong — pembacaannya menghasilkan `''`, dan
+     * cabang "barang" tidak pernah dimasuki: PPh yang terbawa dari purchase
+     * order tetap menempel pada pembelian barang, padahal isiannya sudah
+     * disembunyikan. Tidak ada galat, dan tidak ada yang melihatnya.
+     */
+    this.metaFormGroup.controls['documentType'].valueChanges.subscribe((jenis) => {
+      const documentType = jenis;
       if (documentType == 'goods') {
         this.valueFormGroup.patchValue({
           pphCode: '',
           pphTaxObject: '',
           pphPercentage: 0,
+          /*
+           * Pembelian BARANG menyatakan dirinya sendiri "tanpa PPh".
+           *
+           * Isian PPh-nya memang tidak ditampilkan pada jenis ini, sehingga
+           * kalau pernyataannya tidak dipasang di sini gerbangnya mengunci
+           * langkah nilai untuk SETIAP pembelian barang, tanpa satu pun
+           * centang yang dapat dijangkau orangnya. Jawaban Daniel sendiri
+           * yang dipakai: "beli barang mana ada hubungannya sama pph".
+           */
+          tanpaPph: true,
           /*
            * `pphValue` ikut dikosongkan.
            *
@@ -593,6 +643,15 @@ export class PurchaseCreateComponent {
            */
           pphValue: 0,
         });
+      } else {
+        /*
+         * Berganti ke JASA mengembalikan keputusannya kepada orangnya.
+         *
+         * Pernyataan "tanpa PPh" yang terbawa dari jenis barang akan
+         * meloloskan faktur jasa tanpa kode — persis kebocoran yang
+         * gerbang ini dipasang untuk menutupnya.
+         */
+        this.valueFormGroup.patchValue({ tanpaPph: false });
       }
 
       /*
@@ -1189,10 +1248,13 @@ export class PurchaseCreateComponent {
            * pernah hilang.
            */
           if (data?.hapus) {
+            // Kembali ke keadaan "belum diputuskan" — pernyataan tanpa-PPh
+            // dicentang sendiri, bukan diwariskan dari pilihan sebelumnya.
             this.valueFormGroup.patchValue({
               pphCode: '',
               pphTaxObject: '',
               pphPercentage: 0,
+              tanpaPph: false,
             });
             return;
           }
@@ -1202,6 +1264,8 @@ export class PurchaseCreateComponent {
               pphCode: pph.code,
               pphTaxObject: pph.taxObjectName,
               pphPercentage: pph.tariff,
+              // Memilih kode berarti bukan "tanpa PPh".
+              tanpaPph: false,
             });
 
             const pphPercentage =
@@ -1446,6 +1510,10 @@ export class PurchaseCreateComponent {
                     pphCode: '',
                     pphTaxObject: '',
                     pphPercentage: 0,
+                    // Ikut disebut: tanpa itu `reset()` memberinya `null`, bukan
+                    // `false` — dan pernyataan tanpa-PPh dari faktur sebelumnya
+                    // tidak boleh terbawa ke faktur berikutnya.
+                    tanpaPph: false,
                     pphValue: 0,
                     otherValue: 0,
                     otherValueNote: '',
@@ -1566,6 +1634,10 @@ export class PurchaseCreateComponent {
               pphCode: '',
               pphTaxObject: '',
               pphPercentage: 0,
+              // Ikut disebut: tanpa itu `reset()` memberinya `null`, bukan
+              // `false` — dan pernyataan tanpa-PPh dari faktur sebelumnya
+              // tidak boleh terbawa ke faktur berikutnya.
+              tanpaPph: false,
               pphValue: 0,
               otherValue: 0,
               otherValueNote: '',

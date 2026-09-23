@@ -606,3 +606,9 @@
   color: var(--muted, #6b7280);
   font-style: italic;
 }
+
+/* Centang "memang tidak dipotong" duduk rapat di bawah isian PPh-nya,
+   bukan mengambang sebagai baris tersendiri. */
+.pc-tanpapph {
+  margin: -0.35rem 0 0.9rem;
+}

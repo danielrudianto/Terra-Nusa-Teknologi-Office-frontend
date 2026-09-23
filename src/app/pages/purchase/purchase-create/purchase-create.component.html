@@ -626,6 +626,48 @@
             mask="separator"
           />
         </mat-form-field>
+
+        <!--
+          BELUM DIPUTUSKAN — bukan sekadar kosong.
+
+          Gerbangnya ADA DI LAYAR INI, bukan di SPK-nya. Nilai PPh pada SPK
+          cuma prefill dan layar ini boleh menimpanya: dari 175 SPK tipe D
+          ada yang SPK-nya 0% tetapi seluruh fakturnya dipotong 2,5%, dan
+          ada yang SPK-nya 2,5% tetapi lima belas fakturnya tidak memotong
+          sepeser pun. Uangnya bergerak di sini.
+        -->
+        @if (pphBelumDiputuskan) {
+          <div class="pc-banner">
+            <mat-icon>gavel</mat-icon>
+            <div>
+              <strong>{{ "purchaseCreate.pphWajibJudul" | translate }}</strong>
+              <span>{{ "purchaseCreate.pphWajibKeterangan" | translate }}</span>
+            </div>
+          </div>
+        }
+
+        <!--
+          TARIF NOL — ditegaskan, karena nol tidak terlihat sebagai nol.
+
+          "0% — Upah Pegawai Tidak Tetap..." terbaca semeyakinkan "2,5% —
+          ...". Nol juga dapat datang dari centang SKB, yang tidak
+          meninggalkan tanda apa pun di layar ini.
+        -->
+        @if (pphNol) {
+          <div class="pc-banner">
+            <mat-icon>report</mat-icon>
+            <div>
+              <strong>{{ "purchaseCreate.pphNolJudul" | translate }}</strong>
+              <span>{{ "purchaseCreate.pphNolKeterangan" | translate }}</span>
+            </div>
+          </div>
+        }
+
+        <div class="pc-tanpapph">
+          <mat-checkbox formControlName="tanpaPph">
+            {{ "purchaseCreate.tanpaPph" | translate }}
+          </mat-checkbox>
+        </div>
       } @else if (metaFormGroup.get("documentType")?.value === "goods") {
         <div class="pc-banner">
           <mat-icon>info</mat-icon>
