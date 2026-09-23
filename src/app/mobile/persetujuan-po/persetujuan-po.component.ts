@@ -2,6 +2,7 @@ import {
   nilaiPurchaseOrder,
   poSudahSah,
 } from 'src/app/helpers/purchase-order-shared.helper';
+import { memoLarik } from 'src/app/utils/memo-larik';
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -148,21 +149,44 @@ export class PersetujuanPoComponent implements OnInit {
    * sendiri di sini akan menampilkan nomor polisi sebagai nama barang pada
    * satu varian dan sebaliknya pada varian lain.
    */
+  /*
+   * Diingat selama baris SPK-nya belum berganti.
+   *
+   * `*ngFor` membaca getter ini pada tiap putaran deteksi perubahan, dan
+   * isinya `map()` — larik baru setiap kali, sehingga seluruh kartu barang
+   * dibongkar-pasang ulang. Lihat `memoLarik`.
+   */
+  /*
+   * Ingatan dibuat SAAT PERTAMA DIBACA, bukan sebagai nilai awal bidang.
+   *
+   * Uji memanggil getter ini lewat prototipe dengan `this` buatan sendiri —
+   * komponennya tidak dinyalakan — sehingga bidang instansi tidak pernah
+   * terisi. Dibuat di sini, `this` apa pun tetap bekerja.
+   */
+  private barangMemo?: () => { judul: string; rincian: string[]; qty: string; nilai: number }[];
+
   get barang(): { judul: string; rincian: string[]; qty: string; nilai: number }[] {
-    const items = this.dipilih?.items ?? [];
-    return items.map((x: any) => {
-      const t = barisTampil(this.dipilih?.purchaseType, x, (k, p) => this.translate.instant(k, p));
-      const q = Number(x?.quantity) || 0;
-      const satuan = (x?.unit ?? '').toString().trim();
-      return {
-        judul: t.judul,
-        rincian: t.rincian,
-        // "10 sak", "1 Ls" — kosong bila volumenya tak berarti.
-        qty: q ? `${q}${satuan ? ' ' + satuan : ''}` : satuan,
-        nilai: nilaiBaris(x),
-      };
-    });
+    this.barangMemo ??= memoLarik(
+      (): { judul: string; rincian: string[]; qty: string; nilai: number }[] => {
+      const items = this.dipilih?.items ?? [];
+      return items.map((x: any) => {
+        const t = barisTampil(this.dipilih?.purchaseType, x, (k, p) => this.translate.instant(k, p));
+        const q = Number(x?.quantity) || 0;
+        const satuan = (x?.unit ?? '').toString().trim();
+        return {
+          judul: t.judul,
+          rincian: t.rincian,
+          // "10 sak", "1 Ls" — kosong bila volumenya tak berarti.
+          qty: q ? `${q}${satuan ? ' ' + satuan : ''}` : satuan,
+          nilai: nilaiBaris(x),
+        };
+      });
+      },
+      () => [this.dipilih?.items, this.translate?.currentLang],
+    );
+    return this.barangMemo();
   }
+
 
   get jumlahBarang(): number {
     return this.dipilih?.items?.length ?? 0;

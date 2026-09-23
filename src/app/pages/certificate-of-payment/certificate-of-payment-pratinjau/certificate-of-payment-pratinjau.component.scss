@@ -17,6 +17,10 @@
   gap: 0.5rem;
   font-size: 1rem;
   font-weight: 700;
+  /* Material menempelkan judul dialog ke tepi atas; dua baris judul + anak
+     judul di sana terbaca seperti terpotong. */
+  padding: 1.1rem 1.25rem 0.9rem !important;
+  margin: 0 !important;
 
   .mat-icon {
     width: 20px;

@@ -1,3 +1,4 @@
+import { memoLarik } from 'src/app/utils/memo-larik';
 import { Component, Inject, Optional } from '@angular/core';
 import {
   KeadaanProyek,
@@ -149,12 +150,18 @@ export class ProjectUpdateComponent {
    * dapat dihitung: dirinya sendiri, proyek yang sudah menjadi anak, dan —
    * bila proyek ini sendiri punya anak — seluruhnya.
    */
+  private readonly calonIndukMemo = memoLarik(
+    (): any[] => {
+      const semua = this.lookup.proyek().filter((p) => p.id > 0);
+      if (this.lookup.anakDari(this.data?.id).length) return [];
+      return semua.filter((p) => p.id !== this.data?.id && !p.parentProjectID);
+    },
+    () => [this.lookup.proyek()],
+  );
+
+  /* Diingat selama daftar proyeknya belum dimuat ulang. */
   get calonInduk(): any[] {
-    const semua = this.lookup.proyek().filter((p) => p.id > 0);
-    if (this.lookup.anakDari(this.data?.id).length) return [];
-    return semua.filter(
-      (p) => p.id !== this.data?.id && !p.parentProjectID,
-    );
+    return this.calonIndukMemo();
   }
 
   /** Proyek ini sudah menjadi induk, sehingga tidak dapat menjadi anak. */

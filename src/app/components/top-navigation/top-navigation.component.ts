@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  computed,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TopNavigationBookmarkComponent } from './top-navigation-bookmark/top-navigation-bookmark.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -65,7 +72,15 @@ export class TopNavigationComponent {
    * dengan lencana menu samping. Tidak ada sumber kedua — lonceng dan menu
    * samping tidak mungkin berselisih angka.
    */
-  get notifikasi(): { rute: string; ikon: string; ket: string; n: number }[] {
+  /*
+   * `computed`, BUKAN getter.
+   *
+   * Isinya lahir dari `Object.entries(...).map(...)` — larik baru setiap kali
+   * dibaca. Sebagai getter di dalam `@for`, ia dibaca pada tiap putaran
+   * deteksi perubahan, dan bilah atas hadir di SEMUA halaman. `computed`
+   * hanya menghitung ulang ketika lencananya sendiri berubah.
+   */
+  readonly notifikasi = computed(() => {
     const semua = this.lencana.semua();
     return Object.entries(RUTE_LENCANA)
       .map(([rute, kunci]) => ({
@@ -75,11 +90,11 @@ export class TopNavigationComponent {
         n: Number(semua[kunci]) || 0,
       }))
       .filter((x) => x.n > 0);
-  }
+  });
 
-  get totalNotifikasi(): number {
-    return this.notifikasi.reduce((a, x) => a + x.n, 0);
-  }
+  readonly totalNotifikasi = computed(() =>
+    this.notifikasi().reduce((a, x) => a + x.n, 0),
+  );
 
   bukaNotifikasi(rute: string): void {
     this.router.navigateByUrl(rute);

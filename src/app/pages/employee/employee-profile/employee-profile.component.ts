@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { memoLarik } from 'src/app/utils/memo-larik';
 import { Component, Inject, OnInit } from '@angular/core';
 import {
   FormArray,
@@ -109,8 +110,14 @@ export class EmployeeProfileComponent implements OnInit {
    * kartu berisi nama dan jam saja: catatan audit yang menyatakan ada
    * perubahan, padahal tidak ada.
    */
+  private readonly riwayatMemo = memoLarik(
+    (): any[] => this.riwayat.filter((e) => e?.changedFields?.length),
+    () => [this.riwayat],
+  );
+
+  /* Diingat selama riwayatnya belum dimuat ulang. */
   get riwayatBerisi(): any[] {
-    return this.riwayat.filter((e) => e?.changedFields?.length);
+    return this.riwayatMemo();
   }
 
   bukaRiwayat(): void {
@@ -427,14 +434,30 @@ export class EmployeeProfileComponent implements OnInit {
    * Dicocokkan ke nama RESMI maupun aliasnya — orang mengetik "BCA", bukan
    * "PT Bank Central Asia Tbk.".
    */
+  private readonly bankMemo = memoLarik(
+    (): IBank[] => {
+      const k = String(this.kataBank || '').toLowerCase().trim();
+      if (!k) return this.daftarBank;
+      return this.daftarBank.filter(
+        (b) =>
+          b.name.toLowerCase().includes(k) ||
+          (b.alias || '').toLowerCase().includes(k),
+      );
+    },
+    () => [this.kataBank, this.daftarBank],
+  );
+
+  /** Kata yang sedang diketik di isian bank; kunci ingatan `bankMemo`. */
+  private kataBank: string | null | undefined = '';
+
+  /*
+   * Dipanggil dari `*ngFor` dengan nilai isian sebagai argumen, jadi ia
+   * menyaring ulang pada tiap putaran deteksi perubahan. Argumennya disimpan
+   * sebagai kunci, lalu hasilnya diingat — lihat `memoLarik`.
+   */
   bankTersaring(nilai: string | null | undefined): IBank[] {
-    const k = String(nilai || '').toLowerCase().trim();
-    if (!k) return this.daftarBank;
-    return this.daftarBank.filter(
-      (b) =>
-        b.name.toLowerCase().includes(k) ||
-        (b.alias || '').toLowerCase().includes(k),
-    );
+    this.kataBank = nilai;
+    return this.bankMemo();
   }
 
   readonly daftarBahasa = [

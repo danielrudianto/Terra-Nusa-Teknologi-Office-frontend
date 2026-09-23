@@ -1,3 +1,4 @@
+import { memoLarik } from 'src/app/utils/memo-larik';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
 import { Component, inject, OnInit } from '@angular/core';
@@ -729,31 +730,45 @@ export class PurchaseOrderCreateAComponent implements OnInit {
    * tanpa judul seksi; jasa pengiriman memakai template transportasi yang
    * terbagi seksi Umum dan moda angkutan.
    */
+  private readonly previewMemo = memoLarik(
+    (): { title?: string; items: (string | string[])[] }[] => {
+      const ctx = this.clauseContext();
+      const extra = this.additionalClauseValues;
+
+      const sections = transportUsesRentalLayout(ctx.workKind)
+        ? [
+            {
+              items: buildClauseLines('B', ctx as any, '1.0') as (
+                string | string[]
+              )[],
+            },
+          ]
+        : buildTransportClauses(ctx as any, extra);
+
+      // Sewa alat memakai tata letak PO-B, yang menggabungkan poin tambahan
+      // dengan caranya sendiri.
+      if (!extra.length || !sections.length) return sections;
+      if (!transportUsesRentalLayout(ctx.workKind)) return sections;
+
+      const last = sections[sections.length - 1];
+      return [
+        ...sections.slice(0, -1),
+        { ...last, items: [...last.items, ...extra] },
+      ];
+    },
+    () => [this.formGroup.value, this.additionalClauseValues],
+  );
+
+  /*
+   * Pratinjau klausul MERAKIT ULANG seluruh poin perjanjian. Sebagai getter
+   * di dalam `*ngFor` ia dirakit pada tiap putaran deteksi perubahan — pada
+   * formulir yang sedang diketik, itu berarti tiap huruf. Diingat sampai
+   * isian formulirnya benar-benar berubah; lihat `memoLarik`.
+   */
   get previewSections(): { title?: string; items: (string | string[])[] }[] {
-    const ctx = this.clauseContext();
-    const extra = this.additionalClauseValues;
-
-    const sections = transportUsesRentalLayout(ctx.workKind)
-      ? [
-          {
-            items: buildClauseLines('B', ctx as any, '1.0') as (
-              string | string[]
-            )[],
-          },
-        ]
-      : buildTransportClauses(ctx as any, extra);
-
-    // Sewa alat memakai tata letak PO-B, yang menggabungkan poin tambahan
-    // dengan caranya sendiri.
-    if (!extra.length || !sections.length) return sections;
-    if (!transportUsesRentalLayout(ctx.workKind)) return sections;
-
-    const last = sections[sections.length - 1];
-    return [
-      ...sections.slice(0, -1),
-      { ...last, items: [...last.items, ...extra] },
-    ];
+    return this.previewMemo();
   }
+
 
   isSubList(x: string | string[]): boolean {
     return Array.isArray(x);

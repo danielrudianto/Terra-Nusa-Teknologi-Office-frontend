@@ -1,6 +1,7 @@
 import { HapusTundaService } from 'src/app/services/hapus-tunda.service';
 import { CommonModule } from '@angular/common';
 import { CanDirective } from '../../../../directives/can.directive';
+import { memoPerBaris } from 'src/app/utils/memo-larik';
 import { Component, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -30,6 +31,17 @@ import { SettingsService } from '../../../../services/setting.service';
 import { RefreshButtonComponent } from '../../../../components/refresh-button/refresh-button.component';
 import { ServerMessageService } from '../../../../services/server-message.service';
 import { KerangkaTabelDirective } from '../../../../directives/kerangka-tabel.directive';
+
+/* Ingatan per baris di tingkat modul — lihat catatan di `kpi-antrean`. */
+const chipsBaris = memoPerBaris((item: any): string[] => {
+  const v = item?.availablePurchaseType;
+  if (!v) return [];
+  if (Array.isArray(v)) return v;
+  return String(v)
+    .split(',')
+    .map((x) => x.trim())
+    .filter(Boolean);
+});
 
 @Component({
   selector: 'app-master-item-list',
@@ -258,14 +270,13 @@ export class MasterItemListComponent {
   }
 
   /** availablePurchaseType can be a string ("G,B") from DB or an array from Meilisearch */
+  /*
+   * Dipanggil DI DALAM `*ngFor` — sekali per baris, pada tiap putaran
+   * deteksi perubahan. Tanpa ingatan per baris, dua puluh lima baris berarti
+   * dua puluh lima larik baru setiap kali kursor bergerak.
+   */
   typeChips(item: any): string[] {
-    const v = item?.availablePurchaseType;
-    if (!v) return [];
-    if (Array.isArray(v)) return v;
-    return String(v)
-      .split(',')
-      .map((x) => x.trim())
-      .filter(Boolean);
+    return chipsBaris(item);
   }
 
   typeLabel(code: string): string {

@@ -1,5 +1,6 @@
 import { AuditLabelPipe } from '../../pipes/audit-label.pipe';
 import { CommonModule } from '@angular/common';
+import { memoLarik } from 'src/app/utils/memo-larik';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -105,13 +106,25 @@ export class ActivityComponent implements OnInit {
   }
 
   /** Saran yang belum terpilih, disaring menurut yang diketik. */
+  /*
+   * Dipanggil dari `*ngFor`, jadi dihitung ulang pada tiap putaran deteksi
+   * perubahan — termasuk pada TIAP KETIKAN di kotak cari, yang memang
+   * memicu putaran itu. Diingat sampai kata cari atau daftarnya berganti.
+   */
+  private readonly saranMemo = memoLarik(
+    (): { id: number; name: string }[] => {
+      const q = (this.penggunaCari.value ?? '').trim().toLowerCase();
+      const dipilih = new Set(this.penggunaTerpilih.map((u) => u.id));
+      return this.semuaPengguna
+        .filter((u) => !dipilih.has(u.id))
+        .filter((u) => !q || u.name.toLowerCase().includes(q))
+        .slice(0, 8);
+    },
+    () => [this.semuaPengguna, this.penggunaTerpilih, this.penggunaCari.value],
+  );
+
   saranPengguna(): { id: number; name: string }[] {
-    const q = (this.penggunaCari.value ?? '').trim().toLowerCase();
-    const dipilih = new Set(this.penggunaTerpilih.map((u) => u.id));
-    return this.semuaPengguna
-      .filter((u) => !dipilih.has(u.id))
-      .filter((u) => !q || u.name.toLowerCase().includes(q))
-      .slice(0, 8);
+    return this.saranMemo();
   }
 
   pilihPengguna(u: { id: number; name: string }): void {

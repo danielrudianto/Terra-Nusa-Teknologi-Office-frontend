@@ -1,5 +1,6 @@
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
+import { memoLarik } from 'src/app/utils/memo-larik';
 import { Component, inject, OnInit } from '@angular/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
@@ -697,12 +698,19 @@ export class PurchaseOrderCreateBComponent implements OnInit {
    * alat berat dan kendaraan. Scaffolding, genset, dan perlengkapan lain
    * tidak pernah terbit lewat jalur itu.
    */
+  private readonly kategoriMemo = memoLarik(
+    () =>
+      this.isTipeA
+        ? this.SEMUA_KATEGORI.filter((c) =>
+            ['alat-berat', 'kendaraan'].includes(c.value),
+          )
+        : this.SEMUA_KATEGORI,
+    () => [this.isTipeA],
+  );
+
+  /* Hanya berubah saat jenis sewanya berganti. */
   get rentalCategories() {
-    return this.isTipeA
-      ? this.SEMUA_KATEGORI.filter((c) =>
-          ['alat-berat', 'kendaraan'].includes(c.value),
-        )
-      : this.SEMUA_KATEGORI;
+    return this.kategoriMemo();
   }
 
   /*

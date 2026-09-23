@@ -28,8 +28,10 @@ export interface BarisPratinjauCoP {
   pagu: number;
   terpakai: number;
   volume: number;
-  /** Sisa pagu SETELAH baris ini tersimpan. */
+  /** Sisa pagu SETELAH baris ini tersimpan; tak berarti bila `tanpaPagu`. */
   sisaSetelah: number;
+  /** Kontrak harga satuan: pagu dan sisanya tidak menahan apa pun. */
+  tanpaPagu: boolean;
   keterangan: string | null;
   catatan: string | null;
 }
@@ -187,7 +189,13 @@ export class CertificateOfPaymentPratinjauComponent
    * baik diketahui sekarang daripada bulan depan.
    */
   get barisHabis(): BarisPratinjauCoP[] {
-    return this.data.baris.filter((b) => b.sisaSetelah <= 0);
+    // Baris tanpa plafon tidak pernah "habis": tidak ada yang dihabiskan.
+    return this.data.baris.filter((b) => !b.tanpaPagu && b.sisaSetelah <= 0);
+  }
+
+  /** Ada baris yang pagunya memang menahan? Menentukan kolom pagu & sisa. */
+  get adaPagu(): boolean {
+    return this.data.baris.some((b) => !b.tanpaPagu);
   }
 
   batal(): void {
@@ -235,6 +243,7 @@ export class CertificateOfPaymentPratinjauComponent
           terpakai: b.terpakai,
           volume,
           sisaSetelah: bolehPakai - volume,
+          tanpaPagu: !!b.tanpaPagu,
           keterangan: b.keterangan,
           catatan: catatanBaris[b.purchaseOrderItemID] || null,
         };

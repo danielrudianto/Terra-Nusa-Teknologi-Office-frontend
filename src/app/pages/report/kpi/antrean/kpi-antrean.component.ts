@@ -1,3 +1,4 @@
+import { memoPerBaris } from 'src/app/utils/memo-larik';
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -40,6 +41,23 @@ export const URUT_EMBER = ['0-2', '3-7', '8-14', '15+'];
  * "15+" bisa tidak tersorot, atau sebaliknya.
  */
 export const BATAS_TERTAHAN = 15;
+
+/*
+ * Ingatan per baris, DI TINGKAT MODUL.
+ *
+ * Kuncinya objek tahapnya sendiri (WeakMap), jadi berbagi antar-instansi
+ * tidak menimbulkan kebocoran: entri ikut hilang bersama datanya. Ditaruh di
+ * sini, bukan sebagai bidang kelas, supaya `emberTahap` tetap METODE pada
+ * prototipe — uji memanggilnya tanpa menyalakan komponennya.
+ */
+const emberTahapBaris = memoPerBaris((t: any): Ember[] => {
+  const e = t?.ember ?? {};
+  return URUT_EMBER.map((k) => ({
+    kunci: k,
+    nilai: Number(e[k]) || 0,
+    mendesak: k === '15+',
+  }));
+});
 
 @Component({
   selector: 'app-kpi-antrean',
@@ -92,13 +110,9 @@ export class KpiAntreanComponent {
    */
   readonly adaAntrean = computed<boolean>(() => this.tahap().length > 0);
 
+  /* Di dalam `*ngFor`, sekali per tahap tiap putaran — diingat per baris. */
   emberTahap(t: any): Ember[] {
-    const e = t?.ember ?? {};
-    return URUT_EMBER.map((k) => ({
-      kunci: k,
-      nilai: Number(e[k]) || 0,
-      mendesak: k === '15+',
-    }));
+    return emberTahapBaris(t);
   }
 
   /** Lebar batang, dalam persen dari jumlah tahap itu sendiri. */

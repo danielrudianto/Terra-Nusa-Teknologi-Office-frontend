@@ -24,16 +24,16 @@
     [attr.aria-label]="'notifikasi.judul' | translate"
     [matTooltip]="'notifikasi.judul' | translate"
   >
-    <mat-icon>{{ totalNotifikasi ? "notifications_active" : "notifications" }}</mat-icon>
-    @if (totalNotifikasi) {
-      <span class="tn-lonceng__angka">{{ totalNotifikasi > 99 ? "99+" : totalNotifikasi }}</span>
+    <mat-icon>{{ totalNotifikasi() ? "notifications_active" : "notifications" }}</mat-icon>
+    @if (totalNotifikasi()) {
+      <span class="tn-lonceng__angka">{{ totalNotifikasi() > 99 ? "99+" : totalNotifikasi() }}</span>
     }
   </button>
   <mat-menu #menuLonceng="matMenu" class="tn-lonceng-menu" xPosition="before">
     <div class="tn-lonceng-menu__kepala" (click)="$event.stopPropagation()">
       {{ "notifikasi.judul" | translate }}
     </div>
-    @for (x of notifikasi; track x.rute) {
+    @for (x of notifikasi(); track x.rute) {
       <button mat-menu-item class="tn-lonceng-menu__baris" (click)="bukaNotifikasi(x.rute)">
         <mat-icon>{{ x.ikon }}</mat-icon>
         <span>{{ x.ket | translate: { n: x.n } }}</span>

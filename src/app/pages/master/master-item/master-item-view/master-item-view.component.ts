@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { memoLarik } from 'src/app/utils/memo-larik';
 import { Component, Inject, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import {
@@ -43,14 +44,22 @@ export class MasterItemViewComponent {
     return this.data?.item ?? {};
   }
 
+  private readonly chipsMemo = memoLarik(
+    (): string[] => {
+      const v = this.item?.availablePurchaseType;
+      if (!v) return [];
+      if (Array.isArray(v)) return v;
+      return String(v)
+        .split(',')
+        .map((x) => x.trim())
+        .filter(Boolean);
+    },
+    () => [this.item?.availablePurchaseType],
+  );
+
+  /* Diingat selama barangnya belum berganti — lihat `memoLarik`. */
   typeChips(): string[] {
-    const v = this.item?.availablePurchaseType;
-    if (!v) return [];
-    if (Array.isArray(v)) return v;
-    return String(v)
-      .split(',')
-      .map((x) => x.trim())
-      .filter(Boolean);
+    return this.chipsMemo();
   }
 
   typeLabel(code: string): string {

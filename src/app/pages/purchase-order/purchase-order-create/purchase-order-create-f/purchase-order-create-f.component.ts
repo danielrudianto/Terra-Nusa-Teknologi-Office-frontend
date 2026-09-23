@@ -7,6 +7,7 @@ import {
   nilaiHitung,
   pembulatanSah,
 } from '../../../../helpers/nilai-baris.helper';
+import { memoLarik } from 'src/app/utils/memo-larik';
 import { Component, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
@@ -1105,11 +1106,18 @@ export class PurchaseOrderCreateFComponent {
    * dipilih sebelumnya hilang. Pill memisahkan "yang sudah dipilih" dari
    * "yang sedang diketik", dan tidak ada lagi yang dapat saling menimpa.
    */
+  private readonly ujiMemo = memoLarik(
+    (): string[] =>
+      String(this.formGroup.get('soilTestName')?.value || '')
+        .split(',')
+        .map((x) => x.trim())
+        .filter((x) => !!x),
+    () => [this.formGroup.get('soilTestName')?.value],
+  );
+
+  /* Diingat selama isian ujinya belum berubah — lihat `memoLarik`. */
   get ujiTerpilih(): string[] {
-    return String(this.formGroup.get('soilTestName')?.value || '')
-      .split(',')
-      .map((x) => x.trim())
-      .filter((x) => !!x);
+    return this.ujiMemo();
   }
 
   private setUji(daftar: string[]): void {
@@ -1119,14 +1127,23 @@ export class PurchaseOrderCreateFComponent {
   /** Yang sedang diketik pada kotak pencarian; bukan bagian dari nilainya. */
   ketikanUji = '';
 
+  private readonly usulanMemo = memoLarik(
+    (): string[] => {
+      const q = this.ketikanUji.trim().toLowerCase();
+      const sudah = new Set(this.ujiTerpilih.map((x) => x.toLowerCase()));
+      return this.usulanUjiTanah.filter(
+        // Yang sudah dipilih tidak ditawarkan lagi: memilihnya dua kali
+        // menghasilkan baris kembar pada dokumen.
+        (x) =>
+          !sudah.has(x.toLowerCase()) && (!q || x.toLowerCase().includes(q)),
+      );
+    },
+    () => [this.ketikanUji, this.ujiTerpilih, this.usulanUjiTanah],
+  );
+
+  /* Diingat sampai ketikan atau pilihannya berubah — lihat `memoLarik`. */
   get usulanTersaring(): string[] {
-    const q = this.ketikanUji.trim().toLowerCase();
-    const sudah = new Set(this.ujiTerpilih.map((x) => x.toLowerCase()));
-    return this.usulanUjiTanah.filter(
-      // Yang sudah dipilih tidak ditawarkan lagi: memilihnya dua kali
-      // menghasilkan baris kembar pada dokumen.
-      (x) => !sudah.has(x.toLowerCase()) && (!q || x.toLowerCase().includes(q)),
-    );
+    return this.usulanMemo();
   }
 
   tambahUji(nilai: string): void {

@@ -1,3 +1,4 @@
+import { memoLarik } from 'src/app/utils/memo-larik';
 import { Component, OnInit, inject } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
@@ -66,9 +67,16 @@ export class TodayPaymentComponent implements OnInit {
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
   }
 
+  private readonly visibleMemo = memoLarik(
+    (): TodayPaymentItem[] => this.items.slice(0, this.maxVisible),
+    () => [this.items],
+  );
+
+  /* Diingat selama daftarnya belum dimuat ulang — lihat `memoLarik`. */
   get visibleItems(): TodayPaymentItem[] {
-    return this.items.slice(0, this.maxVisible);
+    return this.visibleMemo();
   }
+
 
   get hiddenCount(): number {
     return Math.max(0, this.items.length - this.maxVisible);

@@ -5965,6 +5965,7 @@
     "penyesuaianDimana": "预付款抵扣、质保金、罚款及增加项由检查人在文档保存后于详情页填写。",
     "unduhPdf": "下载 PDF",
     "cetakInvoice": "打印发票",
+    "cetakInvoiceBelumSetuju": "CoP 获批后方可打印",
     "invoiceJudul": "劳务发票与收据",
     "invoiceBuka": "预览",
     "invoiceDariCopJudul": "明细取自此付款证书",

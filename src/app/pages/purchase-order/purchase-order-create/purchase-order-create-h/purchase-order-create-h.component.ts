@@ -1,5 +1,6 @@
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
+import { memoLarik } from 'src/app/utils/memo-larik';
 import { Component, inject, OnInit } from '@angular/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
@@ -983,8 +984,14 @@ export class PurchaseOrderCreateHComponent implements OnInit {
    * pernah disunting tetap terbaca apa adanya — yang dihilangkan hanya
    * kemampuan menyuntingnya dari layar.
    */
+  private readonly kewajibanMemo = memoLarik(
+    (): string[] => [...this.kewajibanValues, ...this.kewajibanTambahanValues],
+    () => [this.kewajiban.value, this.kewajibanTambahan.value],
+  );
+
+  /* Diingat selama kedua isian kewajibannya belum berubah. */
   get kewajibanPreview(): string[] {
-    return [...this.kewajibanValues, ...this.kewajibanTambahanValues];
+    return this.kewajibanMemo();
   }
 
   get kewajibanValues(): string[] {

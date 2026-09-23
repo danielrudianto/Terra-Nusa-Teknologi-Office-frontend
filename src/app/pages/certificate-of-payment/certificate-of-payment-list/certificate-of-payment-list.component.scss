@@ -31,6 +31,22 @@
   color: var(--warn-fg, #a2651a);
   .cl-chip__dot { background: var(--warn-fg, #e0942e); }
 }
+/*
+ * BAP disetujui: tahap yang ADA dan punya nama sendiri, jadi ia harus punya
+ * lencananya sendiri. Sebelumnya hanya `draft`, `diperiksa`, dan `disetujui`
+ * yang diwarnai — kelas `cl-chip--bap` dan `cl-chip--dibuat` tidak pernah
+ * didefinisikan, sehingga barisnya tampil sebagai TEKS TELANJANG di tengah
+ * kolom berisi lencana. Tidak ada galat; hanya satu baris yang terlihat
+ * seperti data rusak.
+ *
+ * Abu-abu, bukan biru: BAP yang disetujui masih MENUNGGU harga diisi.
+ */
+.cl-chip--bap {
+  background: var(--surface-2, #eef1f6);
+  color: var(--muted, #5f6672);
+  .cl-chip__dot { background: var(--muted, #9aa0ab); }
+}
+.cl-chip--dibuat,
 .cl-chip--diperiksa {
   background: var(--brand-soft, #e7ecfb);
   color: var(--brand, #154dec);

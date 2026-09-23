@@ -1,3 +1,4 @@
+import { memoLarik } from 'src/app/utils/memo-larik';
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -133,33 +134,54 @@ export class LabaRugiComponent {
    * ikut ditampilkan — kalau tidak, kolomnya tampak berlubang dan yang
    * mencocokkan menyangka ada baris yang hilang.
    */
+  /*
+   * Dipanggil dari `*ngFor` untuk tiga kelompok sekaligus, jadi tanpa
+   * ingatan ketiganya dirakit ulang pada tiap putaran deteksi perubahan —
+   * lihat `memoLarik`. Kuncinya data laporan; selama ia belum dimuat ulang,
+   * larik yang sama dikembalikan.
+   */
+  private readonly rinciMemo = new Map<string, () => any[]>();
+
   rinci(kelompok: string): any[] {
-    const d = this.data();
-    if (!d) return [];
-    const b = d.bulan?.[kelompok]?.rincian || [];
-    const y = d.ytd?.[kelompok]?.rincian || [];
-    const peta = new Map<string, any>();
-    for (const r of y) {
-      peta.set(r.kategori, {
-        kategori: r.kategori,
-        label: r.label,
-        bulan: 0,
-        ytd: Number(r.nilai) || 0,
-      });
+    let ambil = this.rinciMemo.get(kelompok);
+    if (!ambil) {
+      ambil = memoLarik(
+        (): any[] => this.hitungRinci(kelompok),
+        () => [this.data()],
+      );
+      this.rinciMemo.set(kelompok, ambil);
     }
-    for (const r of b) {
-      const ada = peta.get(r.kategori) || {
-        kategori: r.kategori,
-        label: r.label,
-        bulan: 0,
-        ytd: 0,
-      };
-      ada.bulan = Number(r.nilai) || 0;
-      ada.label = r.label;
-      peta.set(r.kategori, ada);
-    }
-    return Array.from(peta.values()).sort((a, c) => c.ytd - a.ytd);
+    return ambil();
   }
+
+  private hitungRinci(kelompok: string): any[] {
+      const d = this.data();
+      if (!d) return [];
+      const b = d.bulan?.[kelompok]?.rincian || [];
+      const y = d.ytd?.[kelompok]?.rincian || [];
+      const peta = new Map<string, any>();
+      for (const r of y) {
+        peta.set(r.kategori, {
+          kategori: r.kategori,
+          label: r.label,
+          bulan: 0,
+          ytd: Number(r.nilai) || 0,
+        });
+      }
+      for (const r of b) {
+        const ada = peta.get(r.kategori) || {
+          kategori: r.kategori,
+          label: r.label,
+          bulan: 0,
+          ytd: 0,
+        };
+        ada.bulan = Number(r.nilai) || 0;
+        ada.label = r.label;
+        peta.set(r.kategori, ada);
+      }
+      return Array.from(peta.values()).sort((a, c) => c.ytd - a.ytd);
+  }
+
 
   /**
    * Persentase sebuah nilai terhadap PENDAPATAN periode itu (common-size).

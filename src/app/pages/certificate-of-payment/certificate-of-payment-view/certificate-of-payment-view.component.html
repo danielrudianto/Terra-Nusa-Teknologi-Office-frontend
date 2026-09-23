@@ -85,6 +85,23 @@
           <dt>{{ "cop.spk" | translate }}</dt>
           <dd>{{ c.purchaseOrderName || "-" }}</dd>
         </div>
+        <!--
+          Pemasok DISEBUT di sini, bukan hanya di judul dialog.
+
+          Yang membaca lembar ini memeriksa tiga hal sekaligus: pekerjaannya,
+          siapa yang ditagih, dan proyek mana yang menanggung. Nama pemasok
+          yang hanya ada di daftar berarti dialognya harus ditutup dulu untuk
+          memastikannya.
+        -->
+        <div>
+          <dt>{{ "poForm.supplier" | translate }}</dt>
+          <dd>
+            <app-nama-badan
+              [nama]="c.supplierName"
+              [bentuk]="c.supplierPrefix"
+            />
+          </dd>
+        </div>
         <div>
           <dt>{{ "cop.proyek" | translate }}</dt>
           <dd>{{ c.projectName }}</dd>
@@ -220,7 +237,9 @@
             </th>
             <td mat-cell *matCellDef="let i" class="cv-angka">
               {{ i.quantity | number: "1.0-2" }}
-              @if (i.paguBaris) {
+              <!-- `tanpaPagu`: SPK harga satuan; "dari 1" di sana menyebut
+                   batas yang tidak ada. -->
+              @if (i.paguBaris && !i.tanpaPagu) {
                 <span class="cv-dari">
                   {{ "cop.dariPagu" | translate }}
                   {{ i.paguBaris | number: "1.0-2" }}
@@ -612,7 +631,14 @@
         dengan nomor yang sudah tercatat.
       -->
       @if (bolehCetakInvoice) {
-        <button mat-stroked-button (click)="cetakInvoice()">
+        <button
+          mat-stroked-button
+          (click)="cetakInvoice()"
+          [disabled]="!cetakInvoiceSiap"
+          [matTooltip]="
+            cetakInvoiceSiap ? '' : ('cop.cetakInvoiceBelumSetuju' | translate)
+          "
+        >
           <mat-icon>receipt_long</mat-icon>
           {{ "cop.cetakInvoice" | translate }}
         </button>

@@ -60,11 +60,11 @@ KUANTITAS_MANUAL = {
     ("pages/certificate-of-payment/certificate-of-payment-check/"
      "certificate-of-payment-check.component.html", 118),
     ("pages/certificate-of-payment/certificate-of-payment-pratinjau/"
-     "certificate-of-payment-pratinjau.component.html", 80),
+     "certificate-of-payment-pratinjau.component.html", 96),
     ("pages/certificate-of-payment/certificate-of-payment-pratinjau/"
-     "certificate-of-payment-pratinjau.component.html", 84),
+     "certificate-of-payment-pratinjau.component.html", 105),
     ("pages/certificate-of-payment/certificate-of-payment-view/"
-     "certificate-of-payment-view.component.html", 226),
+     "certificate-of-payment-view.component.html", 245),
     ("mobile/persetujuan-cop/persetujuan-cop.component.html", 138),
 }
 

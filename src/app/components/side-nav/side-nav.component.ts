@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { memoLarik } from '../../utils/memo-larik';
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -133,16 +134,18 @@ export class SideNavComponent implements OnInit {
    * deteksi perubahan. Array baru membuat @for menganggap seluruh isinya
    * berganti, sehingga menu dirender ulang terus-menerus.
    */
-  private _topGroupsSrc: any[] | null = null;
-  private _topGroups: any[] = [];
 
-  get topGroups(): any[] {
-    if (this._topGroupsSrc !== this.items) {
-      this._topGroupsSrc = this.items;
+  private readonly topGroupsMemo = memoLarik(
+    (): any[] => {
       const bottom = this.bottomGroup;
-      this._topGroups = (this.items || []).filter((g) => g !== bottom);
-    }
-    return this._topGroups;
+      return (this.items || []).filter((g) => g !== bottom);
+    },
+    () => [this.items],
+  );
+
+  /* Diingat selama daftar menunya belum diganti — lihat `memoLarik`. */
+  get topGroups(): any[] {
+    return this.topGroupsMemo();
   }
 
   isCollapsed(name: string): boolean {
@@ -164,10 +167,23 @@ export class SideNavComponent implements OnInit {
     );
   }
 
+  /*
+   * Diingat selama daftar pinnya dan daftar menunya belum berganti.
+   *
+   * `*ngFor` memanggil getter ini pada tiap putaran deteksi perubahan; larik
+   * baru tiap putaran di menu samping itulah yang dulu bertemu
+   * `routerLinkActive` dan membekukan halaman. Lihat `memoLarik`.
+   */
+  private readonly pinnedMemo = memoLarik(
+    () =>
+      this.pinnedRoutes
+        .map((r) => this.pinnableItems.find((i) => i.route === r))
+        .filter((i) => !!i),
+    () => [this.pinnedRoutes, this.pinnableItems],
+  );
+
   get pinnedItems(): any[] {
-    return this.pinnedRoutes
-      .map((r) => this.pinnableItems.find((i) => i.route === r))
-      .filter((i) => !!i);
+    return this.pinnedMemo();
   }
 
   isPinned(route?: string): boolean {

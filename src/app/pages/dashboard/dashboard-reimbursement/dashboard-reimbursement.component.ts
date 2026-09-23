@@ -1,3 +1,4 @@
+import { memoLarik } from 'src/app/utils/memo-larik';
 import { Component, OnInit } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
@@ -40,9 +41,16 @@ export class DashboardReimbursementComponent implements OnInit {
     this.fetch();
   }
 
+  private readonly visibleMemo = memoLarik(
+    (): ReimbursementItem[] => this.items.slice(0, this.maxVisible),
+    () => [this.items],
+  );
+
+  /* Diingat selama daftarnya belum dimuat ulang — lihat `memoLarik`. */
   get visibleItems(): ReimbursementItem[] {
-    return this.items.slice(0, this.maxVisible);
+    return this.visibleMemo();
   }
+
 
   get hiddenCount(): number {
     return Math.max(0, this.items.length - this.maxVisible);

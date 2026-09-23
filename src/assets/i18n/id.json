@@ -5965,6 +5965,7 @@
     "penyesuaianDimana": "Potongan uang muka, retensi, denda, dan penambahan diisi pemeriksa pada layar rincian setelah dokumen ini tersimpan.",
     "unduhPdf": "Unduh PDF",
     "cetakInvoice": "Cetak invoice",
+    "cetakInvoiceBelumSetuju": "Dapat dicetak setelah CoP disetujui",
     "invoiceJudul": "Invoice & kuitansi tenaga kerja",
     "invoiceBuka": "Pratinjau",
     "invoiceDariCopJudul": "Baris diambil dari CoP ini",

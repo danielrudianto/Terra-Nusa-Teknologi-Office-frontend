@@ -10,6 +10,8 @@ import { DialogGeserDirective } from 'src/app/directives/dialog-geser.directive'
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { NamaBadanComponent } from 'src/app/components/nama-badan/nama-badan.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
@@ -63,10 +65,12 @@ import {
     MatIconModule,
     MatMenuModule,
     MatProgressBarModule,
+    MatTooltipModule,
     TranslateModule,
     HeaderTitleComponent,
     AuditTrailComponent,
     DialogGeserDirective,
+    NamaBadanComponent,
   ],
   templateUrl: './certificate-of-payment-view.component.html',
   styleUrl: './certificate-of-payment-view.component.scss',
@@ -217,9 +221,25 @@ export class CertificateOfPaymentViewComponent implements OnInit {
    */
   get bolehCetakInvoice(): boolean {
     const c: any = this.cop();
-    if (!c || !this.bolehLihatNilai() || !c.isApproved) return false;
+    if (!c || !this.bolehLihatNilai()) return false;
     const jenis = String(c.purchaseType ?? '').trim().toUpperCase();
     return jenis ? jenis === 'D' : spkTenagaKerja(c.purchaseOrderName);
+  }
+
+  /*
+   * TAMPIL TAPI MATI selama CoP belum disetujui — bukan disembunyikan.
+   *
+   * Tombol yang hilang menimbulkan pertanyaan baru ("kok cetak invoice-nya
+   * tidak ada?"), dan yang bertanya tidak punya cara menebak jawabannya.
+   * Tombol mati yang menyebutkan syaratnya menjawab pertanyaan itu sebelum
+   * sempat ditanyakan.
+   *
+   * Syaratnya sendiri tidak berubah: nilai CoP masih dapat berubah sebelum
+   * disetujui, dan invoice yang tercetak dari angka yang belum final adalah
+   * dokumen yang harus ditarik kembali.
+   */
+  get cetakInvoiceSiap(): boolean {
+    return !!(this.cop() as any)?.isApproved;
   }
 
   cetakInvoice(): void {

@@ -5965,6 +5965,7 @@
     "penyesuaianDimana": "Advance recovery, retention, penalties, and additions are entered by the checker on the detail screen after this document is saved.",
     "unduhPdf": "Download PDF",
     "cetakInvoice": "Print invoice",
+    "cetakInvoiceBelumSetuju": "Available once the CoP is approved",
     "invoiceJudul": "Labour invoice & receipt",
     "invoiceBuka": "Preview",
     "invoiceDariCopJudul": "Lines are taken from this CoP",

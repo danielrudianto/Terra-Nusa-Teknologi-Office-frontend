@@ -303,15 +303,27 @@
 
               <!-- Pagu: kontrak, terpakai, sisa. Sisa dibuat paling menonjol
                    karena angka itulah yang paling sering dibaca saat mengisi. -->
+              <!--
+                PADA BARIS TANPA PLAFON, PAGU DAN SISA TIDAK DISEBUT SAMA
+                SEKALI.
+
+                SPK tenaga kerja menyepakati upah satuannya, bukan volumenya.
+                Menampilkan "Volume SPK 1 hari · Sisa: tanpa plafon" hanya
+                memunculkan angka yang tidak menahan apa pun, lalu ditanyakan
+                orang. Yang tetap berguna: berapa yang SUDAH ditagihkan.
+              -->
               <dl class="cop-item__pagu">
-                <div>
-                  <dt>{{ "cop.pagu" | translate }}</dt>
-                  <dd>{{ b.pagu | number: "1.0-2" }} {{ b.unit }}</dd>
-                </div>
+                @if (!b.tanpaPagu) {
+                  <div>
+                    <dt>{{ "cop.pagu" | translate }}</dt>
+                    <dd>{{ b.pagu | number: "1.0-2" }} {{ b.unit }}</dd>
+                  </div>
+                }
                 <div>
                   <dt>{{ "cop.terpakai" | translate }}</dt>
                   <dd>{{ b.terpakai | number: "1.0-2" }} {{ b.unit }}</dd>
                 </div>
+                @if (!b.tanpaPagu) {
                 <div class="cop-item__sisa">
                   <dt>{{ "cop.sisa" | translate }}</dt>
                   <!--
@@ -319,14 +331,9 @@
                     nol, dan mencetaknya berarti menyebut plafon yang tidak
                     ada.
                   -->
-                  <dd>
-                    @if (b.tanpaPagu) {
-                      {{ "cop.tanpaPagu" | translate }}
-                    } @else {
-                      {{ sisaBoleh(b) | number: "1.0-2" }} {{ b.unit }}
-                    }
-                  </dd>
+                  <dd>{{ sisaBoleh(b) | number: "1.0-2" }} {{ b.unit }}</dd>
                 </div>
+                }
               </dl>
             </div>
 

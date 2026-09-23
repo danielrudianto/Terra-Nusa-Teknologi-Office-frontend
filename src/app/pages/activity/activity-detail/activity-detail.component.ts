@@ -1,5 +1,6 @@
 import { AuditLabelPipe } from '../../../pipes/audit-label.pipe';
 import { CommonModule } from '@angular/common';
+import { memoLarik } from 'src/app/utils/memo-larik';
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -55,14 +56,22 @@ export class ActivityDetailComponent {
     return `auditEntity.${entity}`;
   }
 
+  private readonly changesMemo = memoLarik(
+    (): { field: string; from: string; to: string }[] => {
+      const c = this.entry?.changes;
+      if (!c) return [];
+      return Object.entries(c).map(([field, v]: [string, any]) => ({
+        field,
+        from: this.asText(v?.from),
+        to: this.asText(v?.to),
+      }));
+    },
+    () => [this.entry?.changes],
+  );
+
+  /* Diingat selama entri yang dibuka belum berganti — lihat `memoLarik`. */
   get changes(): { field: string; from: string; to: string }[] {
-    const c = this.entry?.changes;
-    if (!c) return [];
-    return Object.entries(c).map(([field, v]) => ({
-      field,
-      from: this.asText(v?.from),
-      to: this.asText(v?.to),
-    }));
+    return this.changesMemo();
   }
 
   private asText(value: unknown): string {

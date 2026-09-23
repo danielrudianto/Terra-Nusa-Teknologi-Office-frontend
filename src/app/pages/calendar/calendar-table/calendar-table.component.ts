@@ -1,3 +1,4 @@
+import { memoLarik } from 'src/app/utils/memo-larik';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -547,10 +548,29 @@ export class CalendarTableComponent {
   }
 
   /** Kategori yang benar-benar ada isinya, terbesar lebih dulu. */
+  /*
+   * Dua pemanggil (`masuk` dan `keluar`) di dalam templat, masing-masing di
+   * `*ngFor`. Diingat per arah selama ringkasannya belum diganti; tanpa itu
+   * kalender menyaring dan mengurutkan ulang pada tiap putaran deteksi
+   * perubahan — termasuk saat kursor sekadar melewati sel.
+   */
+  private readonly kategoriMemo: Record<string, () => any[]> = {
+    masuk: this.buatMemoKategori('masuk'),
+    keluar: this.buatMemoKategori('keluar'),
+  };
+
+  private buatMemoKategori(arah: 'masuk' | 'keluar'): () => any[] {
+    return memoLarik(
+      () =>
+        (this.ringkasan?.perKategori ?? [])
+          .filter((x: any) => x.planType === arah && Number(x.total) > 0)
+          .sort((a: any, b: any) => Number(b.total) - Number(a.total)),
+      () => [this.ringkasan?.perKategori],
+    );
+  }
+
   ringkasanKategori(arah: 'masuk' | 'keluar'): any[] {
-    return (this.ringkasan?.perKategori ?? [])
-      .filter((x: any) => x.planType === arah && Number(x.total) > 0)
-      .sort((a: any, b: any) => Number(b.total) - Number(a.total));
+    return this.kategoriMemo[arah]();
   }
 
   labelKategori(nilai: string): string {
