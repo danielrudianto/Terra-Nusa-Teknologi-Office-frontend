@@ -37,6 +37,7 @@ import { SalarySlipHelper } from 'src/app/helpers/salary-slip.helper';
 import { SettingsService } from '../../../services/setting.service';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
+import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
 
 const moment = _rollupMoment || _moment;
 
@@ -83,6 +84,9 @@ export const MY_FORMATS = {
   standalone: true,
 })
 export class SalarySlipListComponent {
+  /** Pilihan baris per halaman — satu daftar untuk seluruh aplikasi. */
+  readonly pilihanBaris = PILIHAN_BARIS;
+
   private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
 

@@ -38,6 +38,7 @@ import { ShortCurrencyPipe } from 'src/app/pipes/short-currency.pipe';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
 import { NamaBadanComponent, inisialBadan } from '../../../components/nama-badan/nama-badan.component';
+import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
 
 @Component({
   selector: 'app-purchase-list',
@@ -69,6 +70,9 @@ import { NamaBadanComponent, inisialBadan } from '../../../components/nama-badan
   standalone: true,
 })
 export class PurchaseListComponent {
+  /** Pilihan baris per halaman — satu daftar untuk seluruh aplikasi. */
+  readonly pilihanBaris = PILIHAN_BARIS;
+
   /** Huruf lencana dari NAMA pemasok, bukan dari bentuk badan usahanya. */
   readonly inisialBadan = inisialBadan;
 

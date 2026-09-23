@@ -5850,6 +5850,19 @@
   "sidenav": {
     "menungguAnda": "等待您处理"
   },
+  "tautan": {
+    "judul": "将采购关联到本 CoP",
+    "bannerJudul": "历史数据的临时工具",
+    "banner": "将已开具的采购关联到本 CoP，不新建采购，也不改动金额。",
+    "cari": "搜索发票号、SPK 或项目",
+    "kosong": "该供应商没有未关联的采购。",
+    "tautkan": "关联",
+    "selisih": "差额",
+    "nilaiSama": "金额相同",
+    "nilaiBersih": "CoP 净额",
+    "lepas": "解除关联",
+    "lepasKet": "将该采购从 CoP 解除关联；采购本身保留。"
+  },
   "cop": {
     "pratinjauSub": "保存前请核对数量和金额",
     "judul": "付款证书",

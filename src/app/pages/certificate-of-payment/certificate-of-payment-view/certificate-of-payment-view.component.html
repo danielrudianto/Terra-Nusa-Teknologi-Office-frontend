@@ -200,6 +200,17 @@
           @if (t.pembelian?.isPaid) {
             <span class="cv-tagih__lunas">{{ "cop.sudahLunas" | translate }}</span>
           }
+          <!-- SEMENTARA — lepas tautan pembelian historis. -->
+          <button
+            mat-stroked-button
+            type="button"
+            class="cv-tautan-lepas"
+            (click)="lepasTautan()"
+            [matTooltip]="'tautan.lepasKet' | translate"
+          >
+            <mat-icon>link_off</mat-icon>
+            {{ "tautan.lepas" | translate }}
+          </button>
         </section>
       } @else if (c.isApproved) {
         <section class="cv-tagih">
@@ -208,6 +219,18 @@
             <strong>{{ "cop.belumDitagihkan" | translate }}</strong>
             <span>{{ "cop.belumDitagihkanKet" | translate }}</span>
           </div>
+          <!-- SEMENTARA — tautkan pembelian yang sudah terbit (data historis). -->
+          @if (bolehTautkan) {
+            <button
+              mat-stroked-button
+              type="button"
+              class="cv-tautan"
+              (click)="bukaTautan()"
+            >
+              <mat-icon>link</mat-icon>
+              {{ "tautan.tautkan" | translate }}
+            </button>
+          }
         </section>
       }
     }

@@ -29,6 +29,7 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
 import { ProjectMarginListComponent } from '../project-margin-list/project-margin-list.component';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
+import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
 
 /** Dua wajah satu halaman: daftar proyek biasa, atau daftar marginnya. */
 type ModeProyek = 'proyek' | 'laporan';
@@ -80,6 +81,9 @@ const BAWAAN = 'berjalan';
   styleUrl: './project-list.component.scss',
 })
 export class ProjectListComponent implements OnInit {
+  /** Pilihan baris per halaman — satu daftar untuk seluruh aplikasi. */
+  readonly pilihanBaris = PILIHAN_BARIS;
+
   private readonly lookup = inject(ProjectLookupService);
   constructor(
     public settings: SettingsService,

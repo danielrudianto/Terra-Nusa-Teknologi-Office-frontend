@@ -25,6 +25,7 @@ import { MasterEquipmentViewComponent } from '../master-equipment-view/master-eq
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RefreshButtonComponent } from '../../../../components/refresh-button/refresh-button.component';
 import { KerangkaTabelDirective } from '../../../../directives/kerangka-tabel.directive';
+import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
 
 @Component({
   selector: 'app-master-equipment-list',
@@ -52,6 +53,9 @@ import { KerangkaTabelDirective } from '../../../../directives/kerangka-tabel.di
   styleUrl: './master-equipment-list.component.scss',
 })
 export class MasterEquipmentListComponent {
+  /** Pilihan baris per halaman — satu daftar untuk seluruh aplikasi. */
+  readonly pilihanBaris = PILIHAN_BARIS;
+
   private readonly hapusTunda = inject(HapusTundaService);
   private readonly serverMessage = inject(ServerMessageService);
 

@@ -1,0 +1,103 @@
+<div class="tp-head" mat-dialog-title appDialogGeser>
+  <span class="tp-badge">
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.5 1.5" />
+      <path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7L12 19" />
+    </svg>
+  </span>
+  <div class="tp-head__text">
+    <h2 class="tp-title">{{ "tautan.judul" | translate }}</h2>
+    <span class="tp-sub">{{ data.copNomor }}</span>
+  </div>
+</div>
+
+<mat-dialog-content class="tp-isi">
+  <!-- Alat sementara, dan layarnya mengatakan begitu. -->
+  <div class="tp-banner">
+    <mat-icon>info</mat-icon>
+    <div>
+      <strong>{{ "tautan.bannerJudul" | translate }}</strong>
+      <span>{{ "tautan.banner" | translate }}</span>
+    </div>
+  </div>
+
+  <mat-form-field appearance="outline" class="tp-cari">
+    <mat-label>{{ "tautan.cari" | translate }}</mat-label>
+    <input matInput autocomplete="off" [formControl]="cari" />
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  @if (galat()) {
+    <p class="tp-galat"><mat-icon>error_outline</mat-icon>{{ galat() }}</p>
+  }
+
+  @if (memuat()) {
+    <div class="tp-muat"><mat-spinner diameter="28" /></div>
+  } @else if (!calon().length) {
+    <p class="tp-kosong">{{ "tautan.kosong" | translate }}</p>
+  } @else {
+    <div class="tp-daftar">
+      @for (p of calon(); track p.id) {
+        <button
+          type="button"
+          class="tp-baris"
+          [class.tp-baris--pilih]="dipilih()?.id === p.id"
+          (click)="pilih(p)"
+        >
+          <span class="tp-baris__kiri">
+            <strong>{{ p.invoiceName || "—" }}</strong>
+            <small>
+              {{ p.date | date: "dd MMM yyyy" }} ·
+              {{ p.purchaseOrderName || "—" }} · {{ p.projectName }}
+            </small>
+          </span>
+          <span class="tp-baris__kanan">
+            <strong>{{ p.dpp | number: "1.2-2" }}</strong>
+            <!--
+              SELISIH DIPERLIHATKAN, TIDAK MENOLAK. Data historis memang kerap
+              tidak bulat; yang menautkan melihat angkanya sebelum memutuskan.
+            -->
+            @if (selisih(p) !== 0) {
+              <small class="tp-selisih">
+                {{ "tautan.selisih" | translate }}
+                {{ selisih(p) > 0 ? "+" : "" }}{{ selisih(p) | number: "1.2-2" }}
+              </small>
+            } @else {
+              <small class="tp-sama">{{ "tautan.nilaiSama" | translate }}</small>
+            }
+          </span>
+        </button>
+      }
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions class="tp-aksi">
+  <span class="tp-aksi__ket">
+    {{ "tautan.nilaiBersih" | translate }}
+    <strong>{{ data.nilaiBersih | number: "1.2-2" }}</strong>
+  </span>
+  <span class="tp-aksi__spacer"></span>
+  <button mat-stroked-button type="button" (click)="tutup()">
+    {{ "common.cancel" | translate }}
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    [disabled]="!dipilih() || menyimpan()"
+    (click)="simpan()"
+  >
+    <mat-icon>link</mat-icon>
+    {{ "tautan.tautkan" | translate }}
+  </button>
+</mat-dialog-actions>

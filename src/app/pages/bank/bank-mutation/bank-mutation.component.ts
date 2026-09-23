@@ -24,6 +24,7 @@ import { BankMutationDownloadComponent } from './bank-mutation-download/bank-mut
 import { MatDialog } from '@angular/material/dialog';
 import { CalendarMonthSelectorComponent } from '../../calendar/calendar-month-selector/calendar-month-selector.component';
 import { TranslatePipe } from '@ngx-translate/core';
+import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
 
 @Component({
   selector: 'app-bank-mutation',
@@ -45,6 +46,9 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './bank-mutation.component.scss',
 })
 export class BankMutationComponent {
+  /** Pilihan baris per halaman — satu daftar untuk seluruh aplikasi. */
+  readonly pilihanBaris = PILIHAN_BARIS;
+
   private readonly serverMessage = inject(ServerMessageService);
   constructor(
     private apiService: ApiService,

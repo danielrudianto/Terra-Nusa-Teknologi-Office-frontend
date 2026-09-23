@@ -5850,6 +5850,19 @@
   "sidenav": {
     "menungguAnda": "Waiting for you"
   },
+  "tautan": {
+    "judul": "Link a purchase to this CoP",
+    "bannerJudul": "Temporary tool for historical data",
+    "banner": "Links an existing purchase to this CoP without creating a new one. No amounts are changed.",
+    "cari": "Search invoice number, SPK, or project",
+    "kosong": "No unlinked purchases for this supplier.",
+    "tautkan": "Link",
+    "selisih": "Difference",
+    "nilaiSama": "Same amount",
+    "nilaiBersih": "CoP net amount",
+    "lepas": "Unlink",
+    "lepasKet": "Detach this purchase from the CoP; the purchase itself is kept."
+  },
   "cop": {
     "pratinjauSub": "Check volumes and amounts before saving",
     "judul": "Certificate of Payment",

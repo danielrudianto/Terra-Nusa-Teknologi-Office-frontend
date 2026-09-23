@@ -314,7 +314,7 @@
     <mat-paginator
       [length]="count"
       [pageSize]="pageSize"
-      [pageSizeOptions]="[10, 25, 50]"
+      [pageSizeOptions]="pilihanBaris"
       [attr.aria-label]="'payment.selectPageOfPayments' | translate"
       (page)="onPageChange($event)"
     ></mat-paginator>

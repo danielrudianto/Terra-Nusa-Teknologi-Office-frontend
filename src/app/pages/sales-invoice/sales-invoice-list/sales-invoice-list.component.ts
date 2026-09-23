@@ -28,6 +28,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
+import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
 
 @Component({
   selector: 'app-sales-invoice-list',
@@ -55,6 +56,9 @@ import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
   standalone: true,
 })
 export class SalesInvoiceListComponent {
+  /** Pilihan baris per halaman — satu daftar untuk seluruh aplikasi. */
+  readonly pilihanBaris = PILIHAN_BARIS;
+
   private readonly ruteCari = inject(ActivatedRoute, { optional: true });
   /** track by id: hindari render ulang seluruh baris saat data berubah. */
   trackById = (_: number, row: any): any => row?.id ?? _;

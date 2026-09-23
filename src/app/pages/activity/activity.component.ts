@@ -26,6 +26,7 @@ import { PermissionService } from '../../services/permission.service';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { KerangkaTabelDirective } from '../../directives/kerangka-tabel.directive';
 import { WaktuRelatifPipe } from '../../pipes/waktu-relatif.pipe';
+import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
 
 interface ActivityEntry {
   id: number;
@@ -74,6 +75,9 @@ interface ActivityEntry {
   styleUrl: './activity.component.scss',
 })
 export class ActivityComponent implements OnInit {
+  /** Pilihan baris per halaman — satu daftar untuk seluruh aplikasi. */
+  readonly pilihanBaris = PILIHAN_BARIS;
+
   readonly entities = AuditTrailEntities;
 
   readonly columns = ['when', 'who', 'what', 'where', 'detail'];

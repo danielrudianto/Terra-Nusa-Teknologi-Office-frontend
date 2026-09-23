@@ -12,6 +12,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NamaBadanComponent } from 'src/app/components/nama-badan/nama-badan.component';
+// SEMENTARA — alat tautkan pembelian lama; hapus bersama folder dialognya.
+import { TautanPembelianComponent } from '../tautan-pembelian/tautan-pembelian.component';
+import { TautanPembelianService } from '../tautan-pembelian/tautan-pembelian.service';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
@@ -240,6 +243,47 @@ export class CertificateOfPaymentViewComponent implements OnInit {
    */
   get cetakInvoiceSiap(): boolean {
     return !!(this.cop() as any)?.isApproved;
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* ALAT SEMENTARA — tautkan / lepas pembelian lama.                   */
+  /* Hapus blok ini, dua tombolnya di templat, dan folder                */
+  /* `../tautan-pembelian` saat fiturnya dicopot.                        */
+  /* ---------------------------------------------------------------- */
+  private readonly tautanService = inject(TautanPembelianService);
+
+  /** CoP disetujui dan belum ditagihkan — sama dengan syarat server. */
+  get bolehTautkan(): boolean {
+    return this.bolehBuatPembelian;
+  }
+
+  bukaTautan(): void {
+    const c: any = this.cop();
+    if (!c) return;
+    this.dialog
+      .open(TautanPembelianComponent, {
+        data: {
+          copId: c.id,
+          copNomor: c.name,
+          nilaiBersih: Number(c.netAmount) || 0,
+        },
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((ok) => {
+        if (ok) void this.muat();
+      });
+  }
+
+  lepasTautan(): void {
+    const c: any = this.cop();
+    const beli = this.tagihan()?.pembelian;
+    if (!c || !beli) return;
+    this.tautanService.lepas(c.id, beli.id).subscribe({
+      next: () => void this.muat(),
+      error: (e) => this.pesan(e),
+    });
   }
 
   cetakInvoice(): void {

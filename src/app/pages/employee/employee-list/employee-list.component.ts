@@ -28,6 +28,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
+import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
 
 @Component({
   selector: 'app-employee-list',
@@ -55,6 +56,9 @@ import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.direc
   standalone: true,
 })
 export class EmployeeListComponent {
+  /** Pilihan baris per halaman — satu daftar untuk seluruh aplikasi. */
+  readonly pilihanBaris = PILIHAN_BARIS;
+
   private readonly ruteCari = inject(ActivatedRoute, { optional: true });
   private readonly serverMessage = inject(ServerMessageService);
 

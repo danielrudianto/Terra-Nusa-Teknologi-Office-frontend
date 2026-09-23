@@ -5850,6 +5850,19 @@
   "sidenav": {
     "menungguAnda": "Menunggu Anda"
   },
+  "tautan": {
+    "judul": "Tautkan pembelian ke CoP",
+    "bannerJudul": "Alat sementara untuk data historis",
+    "banner": "Menautkan pembelian yang sudah terbit ke CoP ini, tanpa membuat pembelian baru. Nilainya tidak diubah.",
+    "cari": "Cari nomor invoice, SPK, atau proyek",
+    "kosong": "Tidak ada pembelian pemasok ini yang belum tertaut.",
+    "tautkan": "Tautkan",
+    "selisih": "Selisih",
+    "nilaiSama": "Nilai sama",
+    "nilaiBersih": "Nilai bersih CoP",
+    "lepas": "Lepas tautan",
+    "lepasKet": "Lepaskan pembelian ini dari CoP; pembeliannya sendiri tidak dihapus."
+  },
   "cop": {
     "pratinjauSub": "Periksa volume dan nilai sebelum disimpan",
     "judul": "Certificate of Payment",

@@ -24,6 +24,7 @@ import { HeaderTitleComponent } from 'src/app/components/header-title/header-tit
 import { TranslatePipe } from '@ngx-translate/core';
 import { RefreshButtonComponent } from '../../../../components/refresh-button/refresh-button.component';
 import { KerangkaTabelDirective } from '../../../../directives/kerangka-tabel.directive';
+import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
 
 @Component({
   selector: 'app-expense-opponent-list',
@@ -49,6 +50,9 @@ import { KerangkaTabelDirective } from '../../../../directives/kerangka-tabel.di
   ],
 })
 export class ExpenseOpponentListComponent {
+  /** Pilihan baris per halaman — satu daftar untuk seluruh aplikasi. */
+  readonly pilihanBaris = PILIHAN_BARIS;
+
   private readonly hapusTunda = inject(HapusTundaService);
   private readonly serverMessage = inject(ServerMessageService);
   constructor(

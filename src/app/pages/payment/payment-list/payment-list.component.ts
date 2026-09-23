@@ -28,6 +28,7 @@ import { DeleteConfirmationComponent } from '../../../components/delete-confirma
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
+import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
 
 @Component({
   selector: 'app-payment-list',
@@ -57,6 +58,9 @@ import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
   standalone: true,
 })
 export class PaymentListComponent implements OnInit, OnDestroy {
+  /** Pilihan baris per halaman — satu daftar untuk seluruh aplikasi. */
+  readonly pilihanBaris = PILIHAN_BARIS;
+
   private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   constructor(

@@ -68,6 +68,7 @@ import { SetujuiPoDialogComponent } from '../setujui-po-dialog/setujui-po-dialog
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
 import { NamaBadanComponent, inisialBadan } from '../../../components/nama-badan/nama-badan.component';
+import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
 
 @Component({
   selector: 'app-purchase-order-list',
@@ -98,6 +99,9 @@ import { NamaBadanComponent, inisialBadan } from '../../../components/nama-badan
   styleUrl: './purchase-order-list.component.scss',
 })
 export class PurchaseOrderListComponent {
+  /** Pilihan baris per halaman — satu daftar untuk seluruh aplikasi. */
+  readonly pilihanBaris = PILIHAN_BARIS;
+
   /**
    * Status yang ditampilkan. PO terhapus ditandai lewat `isDelete`,
    * bukan kolom status, sehingga perlu diperiksa terpisah.

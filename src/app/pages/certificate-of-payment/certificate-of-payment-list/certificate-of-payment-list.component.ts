@@ -35,9 +35,11 @@ import {
 import { PermissionService } from 'src/app/services/permission.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { CanDirective } from 'src/app/directives/can.directive';
+import { SettingsService } from 'src/app/services/setting.service';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
 import { NamaBadanComponent, inisialBadan } from '../../../components/nama-badan/nama-badan.component';
+import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
 
 /**
  * Daftar Certificate of Payment.
@@ -74,6 +76,9 @@ import { NamaBadanComponent, inisialBadan } from '../../../components/nama-badan
   styleUrl: './certificate-of-payment-list.component.scss',
 })
 export class CertificateOfPaymentListComponent implements OnInit {
+  /** Pilihan baris per halaman — satu daftar untuk seluruh aplikasi. */
+  readonly pilihanBaris = PILIHAN_BARIS;
+
   /** track by id: hindari render ulang seluruh baris saat data berubah. */
   trackById = (_: number, row: any): any => row?.id ?? _;
 
@@ -82,6 +87,7 @@ export class CertificateOfPaymentListComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
+  private readonly setelan = inject(SettingsService);
   private readonly translate = inject(TranslateService);
   private readonly pesanServer = inject(ServerMessageService);
   readonly izin = inject(PermissionService);
@@ -161,7 +167,14 @@ export class CertificateOfPaymentListComponent implements OnInit {
   readonly memuat = signal(false);
 
   halaman = 0;
-  ukuran = 20;
+  /*
+   * Ikut setelan "baris per halaman" milik pengguna, bukan angka tetap.
+   *
+   * Sebelumnya daftar ini menetapkan 20 sendiri — sehingga pengguna yang
+   * memilih 10 di Pengaturan tetap mendapat 20 di sini, dan satu-satunya
+   * daftar yang berbeda itu terbaca sebagai setelannya tidak bekerja.
+   */
+  ukuran: number = this.setelan.pageSize;
 
   readonly bolehLihatNilai = computed(() => this.izin.level() >= 2);
   readonly bolehBuat = computed(() =>

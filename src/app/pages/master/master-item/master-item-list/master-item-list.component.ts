@@ -31,6 +31,7 @@ import { SettingsService } from '../../../../services/setting.service';
 import { RefreshButtonComponent } from '../../../../components/refresh-button/refresh-button.component';
 import { ServerMessageService } from '../../../../services/server-message.service';
 import { KerangkaTabelDirective } from '../../../../directives/kerangka-tabel.directive';
+import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
 
 /* Ingatan per baris di tingkat modul — lihat catatan di `kpi-antrean`. */
 const chipsBaris = memoPerBaris((item: any): string[] => {
@@ -72,6 +73,9 @@ const chipsBaris = memoPerBaris((item: any): string[] => {
   styleUrl: './master-item-list.component.scss',
 })
 export class MasterItemListComponent {
+  /** Pilihan baris per halaman — satu daftar untuk seluruh aplikasi. */
+  readonly pilihanBaris = PILIHAN_BARIS;
+
   private readonly hapusTunda = inject(HapusTundaService);
   constructor(
     private serverMessage: ServerMessageService,

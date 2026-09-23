@@ -64,7 +64,7 @@ KUANTITAS_MANUAL = {
     ("pages/certificate-of-payment/certificate-of-payment-pratinjau/"
      "certificate-of-payment-pratinjau.component.html", 110),
     ("pages/certificate-of-payment/certificate-of-payment-view/"
-     "certificate-of-payment-view.component.html", 252),
+     "certificate-of-payment-view.component.html", 275),
     ("mobile/persetujuan-cop/persetujuan-cop.component.html", 143),
 }
 

@@ -19,6 +19,7 @@ import { HeaderTitleComponent } from 'src/app/components/header-title/header-tit
 import { RefreshButtonComponent } from 'src/app/components/refresh-button/refresh-button.component';
 import { SettingsService } from 'src/app/services/setting.service';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
+import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
 
 @Component({
   selector: 'app-tender-list',
@@ -43,6 +44,9 @@ import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.direc
   styleUrl: './tender-list.component.scss',
 })
 export class TenderListComponent implements OnInit {
+  /** Pilihan baris per halaman — satu daftar untuk seluruh aplikasi. */
+  readonly pilihanBaris = PILIHAN_BARIS;
+
   private readonly service = inject(TenderService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
