@@ -205,12 +205,7 @@
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
 
-        <app-bank-account-selector
-          formControlName="bankAccountID"
-          [label]="'salesInvoicePayment.destinationAccount' | translate"
-        />
-
-        <mat-form-field appearance="outline" class="sip-span2">
+        <mat-form-field appearance="outline">
           <mat-label>{{
             "salesInvoicePayment.receivedAmount" | translate
           }}</mat-label>
@@ -224,6 +219,21 @@
           />
           <mat-hint>Sisa tagihan Rp {{ remaining | number: "1.2-2" }}</mat-hint>
         </mat-form-field>
+
+        <!--
+          Rekening mengambil SELEBAR BARIS, dan berada di baris terakhir.
+
+          Kolomnya kini membawa keterangan rekening di bawahnya — nama bank
+          dan nama pemilik — yang pada setengah lebar terpotong justru di
+          bagian yang membedakan satu rekening dari yang lain. Pada rekening
+          yang sudah dihapus keterangannya lebih panjang lagi, dan itulah
+          keterangan yang paling tidak boleh terlewat dibaca.
+        -->
+        <app-bank-account-selector
+          class="sip-span2"
+          formControlName="bankAccountID"
+          [label]="'salesInvoicePayment.destinationAccount' | translate"
+        />
       </div>
     </form>
   </mat-dialog-content>

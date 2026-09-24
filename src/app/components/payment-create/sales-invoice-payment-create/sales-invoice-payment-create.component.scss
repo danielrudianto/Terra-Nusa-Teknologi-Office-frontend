@@ -195,6 +195,15 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.25rem 1.25rem;
+  /*
+   * Isi petak DIRAPATKAN KE ATAS, tidak diregangkan.
+   *
+   * Pemilih rekening kini membawa blok keterangan di bawah kolomnya,
+   * sehingga petaknya lebih tinggi — dan tanpa baris ini kolom tanggal di
+   * sebelahnya ikut memanjang mengikutinya, tampak seperti kotak teks
+   * bertingkat yang menunggu diisi banyak baris.
+   */
+  align-items: start;
 }
 .sip-span2 {
   grid-column: 1 / -1;
