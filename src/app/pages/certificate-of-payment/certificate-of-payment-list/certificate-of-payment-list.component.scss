@@ -122,6 +122,85 @@
 }
 
 /*
+ * SELURUH kolom diberi lebar, bukan hanya dua yang terakhir.
+ *
+ * Dua kolom terpaku sudah menjaga nilai bersih dari terlempar ke tepi,
+ * tetapi enam kolom sisanya tetap membagi rata ruang yang tersisa. Pada
+ * meja selebar 2000px, "R501" mendapat kolom selebar dua ratus piksel dan
+ * di antara setiap kolom menganga ruang kosong — satu baris harus dibaca
+ * dengan menyeberangi padang kosong, dan mata kehilangan barisnya di
+ * tengah jalan.
+ *
+ * Yang melar tinggal SATU: nama pemasok. Ia satu-satunya yang isinya
+ * benar-benar berbeda panjang antarbaris, jadi kelebihan ruang berkumpul
+ * di tempat yang memang memakainya. Sisanya dipatok selebar isinya.
+ *
+ * `max-width` ikut disebut: `width` saja pada tabel CSS hanyalah usulan,
+ * dan Material membagi ulang sisa ruang tanpanya.
+ */
+:host ::ng-deep {
+  .mat-column-nomor {
+    width: 195px;
+    max-width: 195px;
+  }
+
+  /* Tanpa lebar — inilah yang menyerap sisa ruangnya. */
+  .mat-column-pemasok {
+    min-width: 200px;
+  }
+
+  /* 110px, bukan 100: kepala kolomnya sendiri ("PROYEK" + ikon urut)
+     lebih lebar daripada isinya, dan pada 100px justru kepalanya yang
+     terpotong. */
+  .mat-column-proyek {
+    width: 110px;
+    max-width: 110px;
+  }
+
+  .mat-column-tanggal {
+    width: 150px;
+    max-width: 150px;
+  }
+
+  /* Diukur dari lencana TERPANJANG ("BAP disetujui"), bukan dari yang
+     paling sering muncul: lencana yang terpotong justru pada keadaan yang
+     paling jarang adalah keadaan yang paling perlu terbaca. */
+  .mat-column-keadaan {
+    width: 160px;
+    max-width: 160px;
+  }
+
+  /* Nama lengkap tiga kata adalah yang BIASA di sini, bukan perkecualian. */
+  .mat-column-pembuat {
+    width: 230px;
+    max-width: 230px;
+  }
+}
+
+/*
+ * "Dibuat oleh" adalah ISI KOLOMNYA SENDIRI, bukan baris kecil di bawah
+ * sesuatu.
+ *
+ * Ia memakai `cl-secondary` — 0,74rem dengan warna `--faint` — yang memang
+ * dibuat untuk keterangan yang menempel di bawah nilai utamanya. Dipakai
+ * sebagai satu-satunya isi sebuah kolom, hasilnya satu lajur penuh teks
+ * abu pucat setinggi sebelas piksel yang praktis tidak terbaca, dan
+ * kepalanya sendiri jauh lebih tegas daripada datanya.
+ *
+ * Tetap lebih redup daripada nama pemasok — ia memang keterangan, bukan
+ * pokoknya — tetapi dengan ukuran dan warna yang dapat dibaca.
+ */
+.cl-pembuat {
+  display: block;
+  font-size: 0.82rem;
+  line-height: 1.25;
+  color: var(--muted, #5f6672);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/*
  * Baris yang dapat difokus.
  *
  * Latar sorot dan `cursor: pointer` sudah datang dari campuran `daftar`;
