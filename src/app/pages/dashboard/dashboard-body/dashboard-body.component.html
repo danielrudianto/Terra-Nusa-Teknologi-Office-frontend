@@ -124,7 +124,15 @@
         </div>
       </div>
 
-      <div class="col-12 mt-3" *appCan="'payment_outgoing:read'" appMunculGulir [mgJeda]="60">
+      <!--
+        `payment_calendar:read`, MENGIKUTI RUTENYA.
+
+        Kartu ini memanggil `calendar/daily`, yang kini dijaga modul kalender
+        sendiri. Dijaga izin lain, kartunya tampil bagi orang yang pasti
+        ditolak servernya — dan yang terlihat olehnya kartu yang memuat
+        selamanya, bukan halaman yang memang bukan haknya.
+      -->
+      <div class="col-12 mt-3" *appCan="'payment_calendar:read'" appMunculGulir [mgJeda]="60">
         <app-today-payment></app-today-payment>
       </div>
     </div>

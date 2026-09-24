@@ -810,14 +810,16 @@ export const routes: Routes = [
 
       {
         path: 'Calendar',
-        // Kalender memuat jadwal pembayaran, bukan sekadar agenda — jadi
-        // wilayahnya mengikuti pembayaran keluar, bukan dibiarkan terbuka.
+        // Kalender memuat jadwal pembayaran DAN rencana pembayaran, bukan
+        // sekadar agenda — jadi ia punya modulnya sendiri, bukan menumpang
+        // `payment_outgoing`. Pemeriksa dari luar perlu melihat pembayaran
+        // yang sudah terjadi; rencana kas perusahaan bukan urusannya.
         canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/calendar/calendar.component').then(
             (m) => m.CalendarComponent,
           ),
-        data: { title: 'Calendar', permission: 'payment_outgoing:read' , panduan: 'kalender' },
+        data: { title: 'Calendar', permission: 'payment_calendar:read' , panduan: 'kalender' },
       },
       {
         path: 'Interpayment',
