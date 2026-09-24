@@ -345,7 +345,7 @@
                tooltip, karena "siapa yang membuat" kerap dijawab dengan
                nama depan yang sama pada dua orang berbeda. -->
           <span class="cl-pembuat" [matTooltip]="c.createdByName || ''">{{
-            c.createdByName || "—"
+            namaRingkas(c.createdByName)
           }}</span>
           @if (c.isDelete) {
             <span class="cl-hapus-oleh">

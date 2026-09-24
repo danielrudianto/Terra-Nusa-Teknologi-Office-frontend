@@ -382,13 +382,14 @@
     max-width: 152px;
   }
 
-  /* Nama lengkap tiga kata adalah yang BIASA di sini, bukan perkecualian.
-     195px, turun dari 230: dua kolom baru mengambil ruangnya, dan nama
-     yang tersisa dipangkas dengan elipsis yang sudah ada pada
-     `cl-pembuat` — bukan terpotong di tengah huruf. */
+  /* 150px, turun dari 184: nama tiga kata kini diringkas menjadi
+     "Nazula L. R." (lihat `namaRingkas`), jadi kolom ini tidak perlu lagi
+     seukuran nama terpanjang yang mungkin ada. Ruang yang dilepas jatuh ke
+     kolom pemasok — satu-satunya yang melar, dan satu-satunya yang isinya
+     memang tidak boleh diringkas. */
   .mat-column-pembuat {
-    width: 184px;
-    max-width: 184px;
+    width: 150px;
+    max-width: 150px;
   }
 }
 

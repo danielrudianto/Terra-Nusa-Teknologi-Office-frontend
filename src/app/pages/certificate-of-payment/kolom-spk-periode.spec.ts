@@ -93,11 +93,30 @@ describe('Daftar CoP — kolom SPK & periode', () => {
     const k = komponen().kolom;
     expect(k).toContain('spk');
     expect(k).toContain('periode');
-    // Urutannya ikut diperiksa: nomor SPK harus bersebelahan dengan nomor
-    // CoP, dan periode bersebelahan dengan tanggal. Dipisah kolom lain,
-    // keduanya tidak lagi dapat dibandingkan dengan sekali lihat.
+    // TANGGAL PALING KIRI, seperti daftar Pembelian — lalu periode
+    // menempel padanya. Keduanya tanggal; dipisahkan kolom lain, mereka
+    // harus dibandingkan dengan menyeberangi nama pemasok.
+    expect(k[0]).toBe('tanggal');
+    expect(k[1]).toBe('periode');
+    // Nomor SPK tetap bersebelahan dengan nomor CoP.
     expect(k.indexOf('spk')).toBe(k.indexOf('nomor') + 1);
-    expect(k.indexOf('periode')).toBe(k.indexOf('tanggal') + 1);
+  });
+
+  it('nama tiga kata diringkas; nama pendek tidak disentuh', () => {
+    const c = komponen();
+    expect(c.namaRingkas('Nazula Lintang Rahmadhani')).toBe('Nazula L. R.');
+    // Muat apa adanya -> dibiarkan. Meringkasnya tidak memenangkan apa pun.
+    expect(c.namaRingkas('Daniel Tri')).toBe('Daniel Tri');
+    expect(c.namaRingkas('Dudung')).toBe('Dudung');
+    // Nama depan SELALU utuh — itu yang dipakai mengenali orang di sini.
+    expect(c.namaRingkas('Reynaldi Pradita Budiman')).toBe('Reynaldi P. B.');
+    // Satu kata yang kebetulan panjang tidak dapat diringkas tanpa
+    // menghilangkan namanya sendiri.
+    expect(c.namaRingkas('Wirosableng2525wirosableng')).toBe(
+      'Wirosableng2525wirosableng',
+    );
+    expect(c.namaRingkas(null)).toBe('—');
+    expect(c.namaRingkas('   ')).toBe('—');
   });
 
   it('rentang sebulan menulis bulan dan tahun SEKALI, di ujung', () => {

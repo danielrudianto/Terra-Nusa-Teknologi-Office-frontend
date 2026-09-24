@@ -283,14 +283,28 @@ export class CertificateOfPaymentListComponent implements OnInit {
    * pengurutan seperti kolom lain — dan barisnya kembali setinggi satu
    * baris.
    */
+  /*
+   * TANGGAL PALING KIRI, dan periode menyusul di sebelahnya.
+   *
+   * Bentuk yang sama dengan daftar Pembelian: `date`, lalu `masaPajak`,
+   * baru `invoiceName`. Dua kolom tanggal berdampingan di tepi kiri, nomor
+   * dokumen sesudahnya. Yang berpindah antar kedua daftar sepanjang hari
+   * mencari tanggal di tempat yang sama, dan satu daftar yang menaruhnya
+   * di tengah menuntut pencarian ulang tiap kali.
+   *
+   * Periode menempel pada tanggal, bukan tertinggal di tengah: keduanya
+   * tanggal, dan yang membaca "17 Sep" hampir selalu perlu tahu pekerjaan
+   * minggu mana yang diakui di dalamnya. Dipisahkan empat kolom, keduanya
+   * harus dibandingkan dengan menyeberangi nama pemasok.
+   */
   get kolom(): string[] {
     const dasar = [
+      'tanggal',
+      'periode',
       'nomor',
       'spk',
       'pemasok',
       'proyek',
-      'tanggal',
-      'periode',
       'keadaan',
       'pembuat',
     ];
@@ -493,6 +507,45 @@ export class CertificateOfPaymentListComponent implements OnInit {
     if (!nilai) return null;
     const d = new Date(nilai);
     return isNaN(d.getTime()) ? null : d;
+  }
+
+  /**
+   * Nama panjang diringkas: "Nazula Lintang Rahmadhani" -> "Nazula L. R."
+   *
+   * Kolom "dibuat oleh" selebar 184px memuat sekitar dua puluh enam
+   * aksara. Nama tiga kata melewatinya, dan yang tampil adalah elipsis di
+   * tempat yang sama pada setiap baris — satu lajur berisi "Nazula Lintang
+   * Rahma…" berulang-ulang, yang tidak membedakan apa pun sekaligus
+   * memakan ruang paling banyak di seluruh tabel.
+   *
+   * NAMA DEPAN TETAP UTUH. Itulah yang dipakai orang memanggil dan
+   * mengenali satu sama lain di sini; yang boleh menyusut sisanya.
+   *
+   * Hanya nama yang MEMANG tidak muat yang diringkas. "Daniel Tri" tidak
+   * disentuh: meringkasnya menjadi "Daniel T." tidak memenangkan apa pun
+   * dan hanya membuat satu nama tertulis lebih pendek daripada yang
+   * sebenarnya tanpa sebab yang terlihat.
+   *
+   * Penuhnya tetap ada di tooltip — dua orang bernama depan sama tetap
+   * dapat dibedakan tanpa meninggalkan layar.
+   */
+  private static readonly BATAS_NAMA = 20;
+
+  namaRingkas(nama: string | null | undefined): string {
+    const penuh = (nama || '').trim();
+    if (!penuh) return '—';
+    if (penuh.length <= CertificateOfPaymentListComponent.BATAS_NAMA) {
+      return penuh;
+    }
+    const kata = penuh.split(/\s+/);
+    if (kata.length < 2) return penuh;
+    const inisial = kata
+      .slice(1)
+      .map((k) => k[0])
+      .filter(Boolean)
+      .map((h) => `${h.toUpperCase()}.`)
+      .join(' ');
+    return inisial ? `${kata[0]} ${inisial}` : penuh;
   }
 
   /**
