@@ -269,6 +269,22 @@ export class CertificateOfPaymentListComponent implements OnInit {
   readonly bolehSetujuiBap = computed(() => this.izin.level() >= 4);
   readonly bolehSetujui = computed(() => this.izin.level() >= 4);
 
+  /**
+   * Boleh membuka dokumen SPK-nya?
+   *
+   * Penjaga yang SAMA dengan kolom Purchase Order pada daftar Pembelian.
+   * Tanpa ini nomornya tetap tampil sebagai tautan bagi yang tidak berhak;
+   * menekannya menghasilkan penolakan dari server tanpa penjelasan, dan
+   * yang membacanya menyangka dokumennya rusak.
+   *
+   * Nomornya sendiri tetap terbaca — menyembunyikannya membuat berita
+   * acara kehilangan asal-usul di mata orang yang memang berhak
+   * membacanya.
+   */
+  readonly bolehLihatSpk = computed(() =>
+    this.izin.can('purchase_order', 'read'),
+  );
+
   /*
    * SPK dan PERIODE berdiri sebagai kolom sendiri.
    *

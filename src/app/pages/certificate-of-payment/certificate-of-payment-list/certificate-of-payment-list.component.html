@@ -219,18 +219,35 @@
           </span>
         </th>
         <td mat-cell *matCellDef="let c">
-          @if (c.purchaseOrderID) {
+          <!--
+            BENTUKNYA SAMA PERSIS dengan kolom Purchase Order pada daftar
+            Pembelian (`pl-polink`): teks warna merek, tebal 600, bergaris
+            bawah saat disentuh, TANPA ikon.
+
+            Ikon `open_in_new` yang dulu ada di sini bukan cuma hiasan lebih
+            — ia membuat satu-satunya tautan bernomor di aplikasi ini
+            berbentuk lain dari tautan bernomor yang sudah ada lebih dulu.
+            Yang berpindah antar kedua daftar sepanjang hari membaca
+            perbedaan itu sebagai "ini bukan hal yang sama".
+
+            Nomornya tetap TERBACA bagi yang tidak berhak membuka purchase
+            order; yang dijaga hanya tautannya — sama seperti di sana.
+            Menampilkannya sebagai tautan lalu ditolak server menghasilkan
+            penolakan tanpa keterangan.
+          -->
+          @if (c.purchaseOrderName && c.purchaseOrderID && bolehLihatSpk()) {
             <button
               type="button"
               class="cl-spk"
-              [matTooltip]="'cop.lihatSpk' | translate"
+              [title]="'cop.lihatSpk' | translate"
               (click)="bukaSpk(c, $event)"
             >
-              <span class="cl-spk__teks">{{ c.purchaseOrderName || "—" }}</span>
-              <mat-icon class="cl-spk__ikon">open_in_new</mat-icon>
+              {{ c.purchaseOrderName }}
             </button>
+          } @else if (c.purchaseOrderName) {
+            <span class="cl-primary">{{ c.purchaseOrderName }}</span>
           } @else {
-            <span class="cl-pembuat">—</span>
+            <span class="cl-primary">—</span>
           }
         </td>
       </ng-container>

@@ -166,6 +166,44 @@ describe('Daftar CoP — kolom SPK & periode', () => {
     expect(dibuka[0].cfg.data).toEqual({ id: 77 });
   });
 
+  it('yang tidak berhak membaca SPK tidak mendapat tautannya', () => {
+    /*
+     * Penjaga yang SAMA dengan kolom Purchase Order di daftar Pembelian.
+     * Nomornya tetap terbaca — templatnya menggambarnya sebagai teks —
+     * tetapi tautannya tidak ditawarkan. Ditawarkan lalu ditolak server,
+     * yang menekannya menyangka dokumennya rusak.
+     */
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: LOCALE_ID, useValue: 'id' },
+        { provide: CertificateOfPaymentService, useValue: { daftar: () => of({ data: [], total: 0 }) } },
+        { provide: Router, useValue: { navigate: () => {} } },
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => null } } } },
+        { provide: MatSnackBar, useValue: { open: () => {} } },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(undefined) }) } },
+        { provide: SettingsService, useValue: { pageSize: 20 } },
+        { provide: TranslateService, useValue: { instant: (k: string) => k } },
+        { provide: ServerMessageService, useValue: { terjemahkan: () => 'x' } },
+        {
+          provide: PermissionService,
+          useValue: {
+            level: () => 5,
+            can: (m: string) => m !== 'purchase_order',
+          },
+        },
+      ],
+    });
+    const c: any = TestBed.runInInjectionContext(
+      () => new (CertificateOfPaymentListComponent as any)(),
+    );
+    expect(c.bolehLihatSpk()).toBeFalse();
+  });
+
+  it('yang berhak tetap mendapatkannya', () => {
+    expect(komponen().bolehLihatSpk()).toBeTrue();
+  });
+
   it('CoP tanpa purchaseOrderID tidak membuka dialog kosong', () => {
     const c = komponen();
     c.bukaSpk({ id: 1, purchaseOrderID: null }, {

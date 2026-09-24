@@ -129,51 +129,46 @@
 }
 
 /*
- * Nomor SPK sebagai tombol.
+ * Nomor SPK sebagai tautan — BENTUKNYA SAMA dengan `pl-polink` pada daftar
+ * Pembelian.
  *
- * Bentuknya harus menyatakan "dapat ditekan" tanpa menjadi lebih menonjol
- * daripada nomor CoP di sebelah kirinya — yang pokok di baris ini tetap
- * berita acaranya. Karena itu warna merek tetapi TANPA garis bawah, dan
- * ikon `open_in_new` yang redup di belakangnya: garis bawah pada satu
- * lajur penuh membuat kolom ini yang paling ramai di seluruh tabel.
+ * Disalin sifat demi sifat dari sana, bukan ditafsir ulang: warna merek,
+ * tebal 600, latar dan bingkai tombolnya dilepas, garis bawah hanya saat
+ * disentuh. Kolom "Purchase Order" di daftar Pembelian sudah memakai
+ * bentuk ini lebih dulu, dan keduanya menunjukkan hal yang sama — nomor
+ * dokumen yang dapat dibuka.
  *
- * `background: none` dan `padding: 0` wajib disebut — tombol membawa
- * latar abu dan lapisan padding dari peramban, dan tanpa dilepas ia
- * tampil sebagai kotak abu di tengah sel yang lain polos.
+ * Yang dibuang: ikon `open_in_new`. Ia membuat satu-satunya tautan
+ * bernomor yang baru berbeda dari yang sudah ada, dan perbedaan itu
+ * terbaca sebagai "ini bukan hal yang sama".
+ *
+ * `background: none` dan `padding: 0` wajib disebut — tombol membawa latar
+ * abu dan lapisan padding dari peramban.
+ *
+ * `inline-block`, bukan `inline-flex` seperti aslinya: di sana flex
+ * dibutuhkan untuk ikon peringatan "dokumen belum tersedia"; di sini
+ * isinya teks saja, dan `text-overflow` tidak berlaku pada wadah flex —
+ * nomor adendum yang panjang akan menyembul dari kolomnya alih-alih
+ * dipangkas.
  */
 .cl-spk {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  display: inline-block;
   max-width: 100%;
-  padding: 0;
-  border: 0;
+  border: none;
   background: none;
+  padding: 0;
   font: inherit;
-  font-size: 0.82rem;
   color: var(--brand, #154dec);
+  font-weight: 600;
   cursor: pointer;
   text-align: left;
-}
-
-.cl-spk__teks {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  vertical-align: bottom;
 }
 
-.cl-spk__ikon {
-  flex: none;
-  width: 14px;
-  height: 14px;
-  font-size: 14px;
-  line-height: 14px;
-  color: var(--faint, #9aa0ab);
-}
-
-/* Garis bawah HANYA saat disentuh — penegasan bahwa yang di bawah kursor
-   inilah yang akan terbuka, bukan hiasan tetap. */
-.cl-spk:hover .cl-spk__teks {
+.cl-spk:hover {
   text-decoration: underline;
 }
 
@@ -320,12 +315,12 @@
    */
   table-layout: fixed;
   /*
-   * Lantai 1557px = jumlah kesembilan kolom tetap (1367) ditambah lebar
+   * Lantai 1571px = jumlah kesembilan kolom tetap (1381) ditambah lebar
    * terkecil kolom pemasok (190). Di bawah itu pembungkus
    * `table-responsive` yang menggulir — bukan kolom yang dipampatkan
    * sampai nomor CoP pecah menjadi empat baris.
    */
-  min-width: 1557px;
+  min-width: 1571px;
 }
 
 :host ::ng-deep .mat-column-aksi {
@@ -378,8 +373,8 @@
      CoP — `spk_kandidat` membuangnya di SQL — sehingga menyediakan ruang
      untuknya berarti memangkas kolom lain demi baris yang tidak ada. */
   .mat-column-spk {
-    width: 198px;
-    max-width: 198px;
+    width: 212px;
+    max-width: 212px;
   }
 
   /* Tanpa lebar — inilah yang menyerap sisa ruangnya. Sembilan kolom lain
