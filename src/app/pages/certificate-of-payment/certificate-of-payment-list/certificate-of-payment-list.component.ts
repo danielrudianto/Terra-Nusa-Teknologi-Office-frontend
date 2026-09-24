@@ -585,12 +585,42 @@ export class CertificateOfPaymentListComponent implements OnInit {
    */
   keadaan(
     c: CertificateOfPayment,
-  ): 'draft' | 'bap' | 'dibuat' | 'disetujui' | 'dihapus' {
+  ): 'draft' | 'bap' | 'dibuat' | 'siap' | 'ditagih' | 'dihapus' {
     if (c.isDelete) return 'dihapus';
-    if (c.isApproved) return 'disetujui';
+    /*
+     * DITAGIH mendahului SIAP, dan keduanya menggantikan "Disetujui".
+     *
+     * Penagihan bukan dimensi lain melainkan tahap berikutnya: di depan
+     * CoP yang sudah disetujui, satu-satunya pertanyaan yang tersisa
+     * adalah "sudah dibuatkan tagihannya belum".
+     *
+     * Lencana "Disetujui" menjawab pertanyaan yang sudah tidak ditanya
+     * siapa pun — seratus tiga puluh lima baris bertuliskan hal yang sama,
+     * dan enam di antaranya yang benar-benar sudah ditagih tidak dapat
+     * dibedakan dari seratus dua puluh sembilan yang belum.
+     */
+    if (c.isApproved) return c.tagihanID ? 'ditagih' : 'siap';
     if (c.isCopCreated) return 'dibuat';
     if (c.isBapApproved) return 'bap';
     return 'draft';
+  }
+
+  /**
+   * Nomor tagihannya, untuk tooltip lencana "Sudah ditagih".
+   *
+   * Yang melihat lencana itu berikutnya bertanya "tagihan yang mana" —
+   * dan tanpa nomornya jawabannya harus dicari di daftar Pembelian dengan
+   * mencocokkan pemasok dan tanggal.
+   */
+  tagihanKet(c: CertificateOfPayment): string {
+    if (!c.tagihanID) return '';
+    const nomor = (c.tagihanNomor || '').trim();
+    const nama = nomor
+      ? this.translate.instant('cop.ditagihLewat', { nomor })
+      : this.translate.instant('cop.ditagihTanpaNomor');
+    return c.tagihanLunas
+      ? `${nama} · ${this.translate.instant('cop.tagihanLunas')}`
+      : nama;
   }
 
   nilaiTotal(c: CertificateOfPayment): number | null {

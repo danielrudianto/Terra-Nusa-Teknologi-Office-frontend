@@ -227,3 +227,66 @@ describe('Daftar CoP — penyaring tanggal', () => {
     expect(terakhir.end).toBeUndefined();
   });
 });
+
+describe('Daftar CoP — tahap kelima: sudah ditagihkan', () => {
+  function cop2(t: any): any {
+    return { id: 1, isApproved: 1, ...t };
+  }
+
+  it('disetujui + belum ada tagihan = SIAP DITAGIH', () => {
+    const c = komponen();
+    expect(c.keadaan(cop2({ tagihanID: null }))).toBe('siap');
+    expect(c.keadaan(cop2({}))).toBe('siap');
+  });
+
+  it('disetujui + ada tagihan = SUDAH DITAGIH', () => {
+    const c = komponen();
+    expect(c.keadaan(cop2({ tagihanID: 77 }))).toBe('ditagih');
+  });
+
+  it('tahap sebelum disetujui tidak terpengaruh tagihan', () => {
+    /*
+     * Penjaga: `tagihanID` yang tersisa dari data lama tidak boleh
+     * melompati tiga gerbang persetujuan sekaligus.
+     */
+    const c = komponen();
+    expect(
+      c.keadaan({ id: 1, isApproved: 0, isCopCreated: 1, tagihanID: 77 } as any),
+    ).toBe('dibuat');
+    expect(
+      c.keadaan({ id: 1, isApproved: 0, isBapApproved: 1, tagihanID: 77 } as any),
+    ).toBe('bap');
+    expect(c.keadaan({ id: 1, tagihanID: 77 } as any)).toBe('draft');
+  });
+
+  it('TERHAPUS tetap menang atas segalanya', () => {
+    // Dokumen yang dihapus membawa seluruh penanda tahapnya. Diperiksa
+    // belakangan, CoP terhapus yang sudah ditagih tampil "Sudah ditagih".
+    const c = komponen();
+    expect(c.keadaan(cop2({ isDelete: 1, tagihanID: 77 }))).toBe('dihapus');
+  });
+
+  it('keterangan tagihan menyebut nomornya, dan lunas bila lunas', () => {
+    const c = komponen();
+    expect(c.tagihanKet(cop2({ tagihanID: null }))).toBe('');
+    expect(c.tagihanKet(cop2({ tagihanID: 77, tagihanNomor: 'INV-9' }))).toBe(
+      'cop.ditagihLewat',
+    );
+    expect(c.tagihanKet(cop2({ tagihanID: 77, tagihanNomor: '  ' }))).toBe(
+      'cop.ditagihTanpaNomor',
+    );
+    expect(
+      c.tagihanKet(cop2({ tagihanID: 77, tagihanNomor: 'INV-9', tagihanLunas: 1 })),
+    ).toBe('cop.ditagihLewat · cop.tagihanLunas');
+  });
+
+  it('keping siap/ditagih diteruskan ke server apa adanya', async () => {
+    const c = komponen();
+    c.pilihSaring('siap');
+    await c.muat();
+    expect(terakhir.keadaan).toBe('siap');
+    c.pilihSaring('ditagih');
+    await c.muat();
+    expect(terakhir.keadaan).toBe('ditagih');
+  });
+});

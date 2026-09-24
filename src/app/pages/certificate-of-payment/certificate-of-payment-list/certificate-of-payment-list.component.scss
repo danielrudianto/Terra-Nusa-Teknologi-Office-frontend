@@ -16,7 +16,12 @@
 @include daftar.fchip("cl", "draft", var(--warn-bg, #fdf0e3), var(--warn-fg, #a2651a), var(--warn-fg, #e0942e));
 @include daftar.fchip("cl", "bap", var(--surface-2, #eef1f6), var(--muted, #5f6672), var(--muted, #9aa0ab));
 @include daftar.fchip("cl", "dibuat", var(--brand-soft, #e7ecfb), var(--brand, #154dec), var(--brand, #154dec));
-@include daftar.fchip("cl", "disetujui", var(--ok-bg, #e6f6ec), var(--ok-fg, #1a7f45), var(--ok-fg, #22a75a));
+@include daftar.fchip("cl", "siap", var(--ok-bg, #e6f6ec), var(--ok-fg, #1a7f45), var(--ok-fg, #22a75a));
+/* Sudah ditagih — UNGU. Lihat catatan `--checked-bg` di `styles.scss`:
+   warnanya sengaja dipilih berjarak jauh dari ketiga lencana lain, dan di
+   sinilah jaraknya paling dibutuhkan — ia bersebelahan langsung dengan
+   "Siap ditagih" yang hijau. */
+@include daftar.fchip("cl", "ditagih", var(--checked-bg, #e3cef7), var(--checked-fg, #5b1d91), var(--checked-fg, #7b2fbf));
 @include daftar.fchip("cl", "dihapus", var(--bad-bg, #fdecea), var(--bad-fg, #b3261e), var(--bad-fg, #d64b3f));
 
 /*
@@ -53,10 +58,34 @@
   color: var(--brand, #154dec);
   .cl-chip__dot { background: var(--brand, #154dec); }
 }
+/*
+ * SIAP DITAGIH — hijau, warna yang dulu dipakai "Disetujui".
+ *
+ * Artinya memang itu: pekerjaannya sudah sah. Yang berubah cuma NAMANYA,
+ * supaya menyebut apa yang tersisa untuk dikerjakan, bukan apa yang sudah
+ * lewat.
+ */
+.cl-chip--siap,
 .cl-chip--disetujui {
   background: var(--ok-bg, #e6f6ec);
   color: var(--ok-fg, #1a7f45);
   .cl-chip__dot { background: var(--ok-fg, #22a75a); }
+}
+
+/*
+ * SUDAH DITAGIH — tahap terakhir, dan satu-satunya yang tidak menunggu
+ * siapa pun.
+ *
+ * Ungu, bukan hijau yang lebih tua: ia bersebelahan langsung dengan "Siap
+ * ditagih" di seluruh daftar, dan dua nuansa hijau yang berdekatan tidak
+ * dapat dibedakan sambil menyapu satu lajur dengan mata. `--checked-bg`
+ * dipilih justru karena jaraknya jauh dari lencana lain — catatan
+ * pengukurannya ada di `styles.scss`.
+ */
+.cl-chip--ditagih {
+  background: var(--checked-bg, #e3cef7);
+  color: var(--checked-fg, #5b1d91);
+  .cl-chip__dot { background: var(--checked-fg, #7b2fbf); }
 }
 /*
  * Terhapus — MERAH, dan sengaja tidak senada dengan ketiga tahap di atas.
@@ -200,11 +229,22 @@
   flex-wrap: wrap;
 }
 
-/* Kotak pencarian: bentuknya sama dengan daftar purchase order (`pol-search`)
-   supaya yang berpindah antar daftar tidak mencarinya di tempat lain. */
+/*
+ * Kotak pencarian: bentuknya sama dengan daftar purchase order
+ * (`pol-search`) supaya yang berpindah antar daftar tidak mencarinya di
+ * tempat lain — tetapi LEBIH SEMPIT di sini.
+ *
+ * Daftar ini punya TUJUH keping penyaring, bukan empat. Pada 400px,
+ * keping + rentang tanggal + pencarian + muat ulang melewati lebar
+ * kartunya, dan yang terdorong ke baris kedua adalah tombol muat ulang
+ * SENDIRIAN — terbaca seperti tombol yang tercecer, bukan seperti bilah
+ * yang melipat.
+ *
+ * 300px masih memuat "084-SPK-R501-H2" berikut label dan ikonnya.
+ */
 .cl-search {
   width: 100%;
-  max-width: 400px;
+  max-width: 300px;
 }
 
 :host ::ng-deep .cl-search .mat-mdc-text-field-wrapper {
@@ -377,9 +417,13 @@
   /* Diukur dari lencana TERPANJANG ("BAP disetujui"), bukan dari yang
      paling sering muncul: lencana yang terpotong justru pada keadaan yang
      paling jarang adalah keadaan yang paling perlu terbaca. */
+  /* 170px, naik dari 152: lencana TERPANJANG bukan lagi "BAP disetujui"
+     melainkan "Sudah ditagih" berikut titik di depannya — tahap kelima.
+     Pada 152px ujungnya terpotong elipsis, dan lencana yang terpotong pada
+     keadaan yang paling ingin dibedakan adalah kebalikan dari gunanya. */
   .mat-column-keadaan {
-    width: 152px;
-    max-width: 152px;
+    width: 170px;
+    max-width: 170px;
   }
 
   /* 150px, turun dari 184: nama tiga kata kini diringkas menjadi
@@ -388,8 +432,8 @@
      kolom pemasok — satu-satunya yang melar, dan satu-satunya yang isinya
      memang tidak boleh diringkas. */
   .mat-column-pembuat {
-    width: 150px;
-    max-width: 150px;
+    width: 132px;
+    max-width: 132px;
   }
 }
 

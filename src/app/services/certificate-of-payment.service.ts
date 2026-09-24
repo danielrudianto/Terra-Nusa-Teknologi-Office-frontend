@@ -177,6 +177,19 @@ export interface CertificateOfPayment {
   status: 'draft' | 'approved' | 'cancelled';
   createdBy: number;
   createdByName?: string;
+  /*
+   * TAHAP KELIMA — sudah ditagihkan.
+   *
+   * Dibaca server dari `purchases`, bukan dari penanda pada CoP: tidak ada
+   * penanda kedua yang harus dijaga sejalan, dan menghapus pembeliannya
+   * membuka kembali CoP-nya dengan sendirinya.
+   *
+   * `tagihanID` kosong berarti BELUM ditagih — itulah satu-satunya
+   * pertanyaan yang tersisa di depan CoP yang sudah disetujui.
+   */
+  tagihanID?: number | null;
+  tagihanNomor?: string | null;
+  tagihanLunas?: boolean | number | null;
   /** Terhapus — hanya keping penyaring "Dihapus" yang menampilkannya. */
   isDelete?: boolean | number;
   deletedBy?: number | null;

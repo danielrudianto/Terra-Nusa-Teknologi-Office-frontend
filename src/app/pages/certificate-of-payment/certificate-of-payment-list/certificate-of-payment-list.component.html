@@ -34,8 +34,24 @@
       <mat-chip-option class="cl-fchip cl-fchip--dibuat" value="dibuat">{{
         "cop.keadaan_dibuat" | translate
       }}</mat-chip-option>
-      <mat-chip-option class="cl-fchip cl-fchip--disetujui" value="disetujui">{{
-        "cop.keadaan_disetujui" | translate
+      <!--
+        DUA KEPING, bukan satu "Disetujui".
+
+        Penagihan adalah tahap KELIMA, bukan dimensi lain: sesudah CoP
+        disetujui, satu-satunya yang tersisa adalah membuatkan tagihannya.
+        Satu keping "Disetujui" berisi keduanya menjawab pertanyaan yang
+        sudah tidak ditanya siapa pun, sementara yang benar-benar ditanya —
+        "mana yang belum gw tagihkan" — tidak terjawab sama sekali.
+
+        Nilai `disetujui` yang lama TETAP dikenali server (dan tetap
+        berarti keduanya), supaya tautan tersimpan dan beranda ponsel tidak
+        mendadak kosong.
+      -->
+      <mat-chip-option class="cl-fchip cl-fchip--siap" value="siap">{{
+        "cop.keadaan_siap" | translate
+      }}</mat-chip-option>
+      <mat-chip-option class="cl-fchip cl-fchip--ditagih" value="ditagih">{{
+        "cop.keadaan_ditagih" | translate
       }}</mat-chip-option>
       <!--
         TERHAPUS — keping tersendiri, dan hanya ia yang menampilkannya.
@@ -324,7 +340,11 @@
           </span>
         </th>
         <td mat-cell *matCellDef="let c">
-          <span class="cl-chip" [class]="'cl-chip--' + keadaan(c)">
+          <span
+            class="cl-chip"
+            [class]="'cl-chip--' + keadaan(c)"
+            [matTooltip]="tagihanKet(c)"
+          >
             <span class="cl-chip__dot"></span>
             {{ "cop.keadaan_" + keadaan(c) | translate }}
           </span>
