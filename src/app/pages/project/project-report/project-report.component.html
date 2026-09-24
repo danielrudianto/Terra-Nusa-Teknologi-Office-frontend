@@ -998,40 +998,33 @@
             }}</span>
           </div>
 
-          <ng-container *ngIf="proyeksiBiaya() !== null">
-            <div class="prp-prog__wipbaris prp-prog__wippisah">
-              <span class="prp-prog__wiplabel">
-                {{ "projectProgress.forecastCost" | translate }}
-              </span>
-              <span class="prp-prog__wipnilai">
-                {{ proyeksiBiaya() | number: "1.2-2" }}
-              </span>
-              <span class="prp-prog__wipket">
-                {{ "projectProgress.forecastCostHint" | translate }}
-              </span>
-            </div>
+          <!--
+            PROYEKSI BIAYA AKHIR DAN PROYEKSI MARGIN DILEPAS — sementara.
 
-            <div
-              class="prp-prog__wipbaris prp-prog__wipbaris--tegas"
-              [class.prp-prog__wipbaris--buruk]="(proyeksiMargin() ?? 0) < 0"
-            >
-              <span class="prp-prog__wiplabel">
-                {{ "projectProgress.forecastMargin" | translate }}
-              </span>
-              <span class="prp-prog__wipnilai">
-                {{ proyeksiMargin() | number: "1.2-2" }}
-                <small>({{ proyeksiMarginPersen() | number: "1.0-1" }}%)</small>
-              </span>
-              <span class="prp-prog__wipket">
-                {{ "projectProgress.forecastMarginHint" | translate }}
-              </span>
-            </div>
-          </ng-container>
+            Keduanya membagi biaya sampai kini dengan kemajuan, yang berarti
+            menganggap biaya mengalir SEBANDING dengan pekerjaan. Dua keadaan
+            yang biasa di sini mematahkan anggapan itu:
 
-          <div class="prp-banner" *ngIf="proyeksiBelumLayak()">
-            <mat-icon>hourglass_top</mat-icon>
-            <span>{{ "projectProgress.forecastTooEarly" | translate }}</span>
-          </div>
+              * material kerap dibeli DI MUKA, sehingga biaya besar sudah
+                keluar ketika pekerjaannya baru mulai;
+              * kemajuan lapangan tidak linear — ada tahap yang lama tanpa
+                banyak biaya, dan tahap yang sebaliknya.
+
+            Akibatnya angkanya melompat pada masa awal dan baru mendekati
+            masuk akal ketika proyeknya hampir selesai — justru ketika
+            proyeksi sudah tidak diperlukan lagi. Angka yang dibaca orang
+            sebagai ramalan kerugian, padahal ia hanya cerminan urutan
+            belanja, lebih buruk daripada tidak ada angka sama sekali.
+
+            Penahan `proyeksiBelumLayak` (kemajuan di bawah ambang) tidak
+            cukup: ia hanya menunda gejalanya, bukan memperbaiki
+            anggapannya.
+
+            Perhitungannya SENGAJA ditinggalkan di komponen — lihat
+            `proyeksiBiaya`. Yang perlu diperbaiki dasarnya, bukan kodenya,
+            dan menghapusnya berarti menulis ulang dari nol ketika dasarnya
+            sudah ada (mis. kurva rencana biaya, atau bobot per tahap).
+          -->
         </div>
 
         <div class="prp-prog__grafik" *ngIf="adaKurvaS()">

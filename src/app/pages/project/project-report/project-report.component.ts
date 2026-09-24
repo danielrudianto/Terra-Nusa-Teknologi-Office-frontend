@@ -1719,6 +1719,19 @@ export class ProjectReportComponent implements OnInit {
    * Perkiraan biaya sampai proyek selesai, bila lajunya tetap seperti
    * sekarang: biaya sampai kini dibagi porsi pekerjaan yang sudah jadi.
    */
+  /*
+   * TIDAK DITAMPILKAN sejak 24 Sep 2026 — lihat keterangan di templatnya.
+   *
+   * Perhitungannya membagi biaya sampai kini dengan kemajuan, yang berarti
+   * menganggap biaya mengalir sebanding dengan pekerjaan. Di sini material
+   * kerap dibeli di muka dan kemajuan lapangan tidak linear, sehingga
+   * anggapan itu patah pada masa yang justru paling sering dibaca.
+   *
+   * Dibiarkan hidup, bukan dihapus: yang perlu diperbaiki DASARNYA — kurva
+   * rencana biaya, atau bobot per tahap — dan itu memerlukan data yang
+   * belum ada. Menghapusnya berarti menulis ulang dari nol ketika datanya
+   * sudah ada nanti.
+   */
   readonly proyeksiBiaya = computed<number | null>(() => {
     const p = this.persenProgres();
     if (p === null || p < this.BATAS_PROYEKSI) return null;
