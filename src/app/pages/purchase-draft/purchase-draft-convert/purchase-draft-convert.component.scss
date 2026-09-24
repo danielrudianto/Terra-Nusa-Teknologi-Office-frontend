@@ -204,6 +204,56 @@
   font-family: "Montserrat", sans-serif;
 }
 
+/* ============ KETERANGAN PPh ============ */
+
+/*
+ * Bentuknya sama persis dengan `.pc-banner` di layar pembelian: dua pintu
+ * yang sama harus terbaca sebagai satu aplikasi, bukan dua.
+ *
+ * Seluruh warnanya lewat token `--*`; tema gelap mengganti token yang sama,
+ * dan warna yang ditulis langsung tidak ikut berganti.
+ */
+.pdc-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  border: 0.5px solid var(--brand-soft, #cdd7f7);
+  color: var(--brand-strong, #0f3fd0);
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    margin-top: 1px;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  strong {
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+
+  span {
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+}
+
+.pdc-tanpapph {
+  margin: -0.35rem 0 0.9rem;
+}
+
 /* ============ RESPONSIVE ============ */
 @media (max-width: 600px) {
   :host ::ng-deep .mat-horizontal-content-container {

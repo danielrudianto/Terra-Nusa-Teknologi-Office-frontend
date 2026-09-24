@@ -567,10 +567,28 @@
           <div class="col-6">
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>{{ "purchaseCreate.pph" | translate }}</mat-label>
+              <!--
+                KODENYA DIPILIH, TIDAK DIKETIK.
+
+                Seluruh formulir SPK sudah `readonly` dan hanya menerima
+                hasil pemilih; layar ini dan konversi draf dua-duanya tidak,
+                dan hanya dari dua pintu inilah faktur masuk. Akibatnya
+                terbaca di basis data: kode `21-100-24NL` yang tidak ada
+                sama sekali di `utils/pph.ts`, dan kode-kode yang berakhir
+                dengan baris-baru sehingga terhitung sebagai kode lain.
+
+                Yang lebih berbahaya bukan kodenya, melainkan tarifnya:
+                mengetik ulang kode TIDAK mengubah `pphPercentage`, jadi
+                fakturnya tersimpan dengan kode satu dan potongan dari kode
+                lain. Mengosongkan pilihan tetap bisa — lewat "Tanpa PPh" di
+                dalam pemilihnya, yang juga mencabut pernyataan di bawah.
+              -->
               <input
                 matInput
                 type="text"
                 formControlName="pphCode"
+                readonly
+                (click)="openPPHSelector()"
                 [placeholder]="'purchaseCreate.pphCode' | translate"
               />
               <button

@@ -365,22 +365,32 @@ export class PurchaseUpdateComponent {
          * Layar ini tidak menyunting jenis pengadaan, jadi kolomnya tidak
          * dikirim sama sekali — tidak dikirim berarti tidak diubah.
          */
-        dpp: this.valueFormGroup.controls['dpp'].value,
-        ppn: this.valueFormGroup.controls['ppn'].value,
-        pbbkb: this.valueFormGroup.controls['pbbkb'].value,
-        pphCode:
-          this.valueFormGroup.controls['pphCode'].value == ''
-            ? null
-            : this.valueFormGroup.controls['pphCode'].value,
-        pphTaxObject:
-          this.valueFormGroup.controls['pphCode'].value == ''
-            ? null
-            : this.valueFormGroup.controls['pphTaxObject'].value,
-        pphPercentage:
-          this.valueFormGroup.controls['pphCode'].value == ''
-            ? 0
-            : this.valueFormGroup.controls['pphPercentage'].value,
-        otherValue: this.valueFormGroup.controls['otherValue'].value,
+        /*
+         * NILAI KEUANGANNYA SENGAJA TIDAK DIKIRIM.
+         *
+         * Alasannya sama persis dengan `procurementType` di atas: layar ini
+         * tidak menyuntingnya. DPP, PPN, PBBKB, kode PPh, objek pajaknya,
+         * tarifnya, dan nilai lain semuanya `readonly` di templat — yang
+         * dikirimkan dulu hanyalah nilai yang baru saja dimuat, dipantulkan
+         * kembali ke server. Tidak dikirim berarti tidak diubah; repository
+         * hanya menulis kolom yang ada di muatan.
+         *
+         * Yang hilang bersamanya dua bahaya:
+         *
+         * 1. `pphCode == '' ? null : ...` — bila pemuatannya gagal atau
+         *    kolomnya belum sempat terisi, menyimpan perbaikan nomor faktur
+         *    ikut menulis `pphCode = NULL` dan `pphPercentage = 0`. Potongan
+         *    pada pembelian yang tidak ada niat disentuh lenyap tanpa bunyi.
+         *
+         * 2. `update_purchase` membandingkan nilai kiriman dengan nilai
+         *    tersimpan sebagai TEKS untuk menentukan perlu-tidaknya izin
+         *    level 4 saat pembayarannya sudah ada. Selisih penulisan belaka
+         *    — "2.5" lawan "2.50" — sudah cukup membuat penyuntingan nomor
+         *    faktur ditolak 409 yang tidak dapat dijelaskan kepada siapa pun.
+         *
+         * `otherValueNote` TETAP dikirim: ia satu-satunya di kelompok ini
+         * yang benar-benar dapat dipilih di layar.
+         */
         otherValueNote:
           this.valueFormGroup.controls['otherValue'].value == 0
             ? null

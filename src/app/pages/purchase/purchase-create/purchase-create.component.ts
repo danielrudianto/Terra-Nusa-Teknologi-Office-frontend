@@ -1276,11 +1276,16 @@ export class PurchaseCreateComponent {
               nilaiUang(pphValue),
             );
           } else {
-            this.valueFormGroup.patchValue({
-              pphCode: '',
-              pphTaxObject: '',
-              pphPercentage: 0,
-            });
+            /*
+             * MEMBATALKAN tidak menghapus apa pun.
+             *
+             * Keterangan di atas sudah membedakan "Tanpa PPh" dari
+             * membatalkan, tetapi cabang ini tetap mengosongkan pilihan —
+             * sehingga menekan Esc atau mengeklik di luar dialog membuang
+             * kode yang sudah benar. Sejak kolomnya `readonly`, pemilih ini
+             * satu-satunya jalan, dan kehilangan karena salah tekan tidak
+             * lagi dapat diketik ulang.
+             */
           }
         });
 

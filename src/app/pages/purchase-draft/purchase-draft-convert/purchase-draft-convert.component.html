@@ -233,60 +233,114 @@
         />
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>{{ "draftConvert.pph" | translate }}</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="pphCode"
-          [placeholder]="'expense.pphCode' | translate"
-        />
-        <button
-          mat-icon-button
-          matPrefix
-          type="button"
-          (click)="openPPHSelector()"
-        >
-          <mat-icon>search</mat-icon>
-        </button>
-      </mat-form-field>
+      <!--
+        PPh hanya berlaku atas pembelian JASA — sama seperti layar pembelian.
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>{{ "draftConvert.pphObjectName" | translate }}</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="pphTaxObject"
-          [placeholder]="'expense.pphObjectName' | translate"
-          readonly
-        />
-      </mat-form-field>
+        Pada pembelian barang isiannya bukan sekadar kosong: memang tidak ada
+        yang boleh diisi, dan `openPPHSelector()` sudah menolak membukanya.
+        Empat isian mati yang tetap terpampang membuat orang mengiranya lupa
+        diisi, lalu mencari alasan kenapa pencariannya tidak mau terbuka.
+      -->
+      @if (pphBerlaku) {
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ "draftConvert.pph" | translate }}</mat-label>
+          <!--
+            KODENYA DIPILIH, TIDAK DIKETIK.
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>{{ "draftConvert.pphPercentage" | translate }}</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="pphPercentage"
-          [placeholder]="'purchaseDraft.pphPercentage' | translate"
-          readonly
-        />
-      </mat-form-field>
+            Layar ini dan layar pembelian dua-duanya membiarkan kodenya
+            diketik, dan hanya dari dua pintu inilah faktur masuk. Mengetik
+            ulang kode TIDAK mengubah `pphPercentage`, sehingga fakturnya
+            tersimpan dengan kode satu dan potongan dari kode lain.
+          -->
+          <input
+            matInput
+            type="text"
+            formControlName="pphCode"
+            readonly
+            (click)="openPPHSelector()"
+            [placeholder]="'expense.pphCode' | translate"
+          />
+          <button
+            mat-icon-button
+            matPrefix
+            type="button"
+            (click)="openPPHSelector()"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>{{ "draftConvert.pphValue" | translate }}</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="pphValue"
-          [placeholder]="'expense.pphValue' | translate"
-          readonly
-          prefix="Rp. "
-          thousandSeparator=" "
-          decimalScale="4"
-          mask="separator"
-        />
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ "draftConvert.pphObjectName" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="pphTaxObject"
+            [placeholder]="'expense.pphObjectName' | translate"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ "draftConvert.pphPercentage" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="pphPercentage"
+            [placeholder]="'purchaseDraft.pphPercentage' | translate"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ "draftConvert.pphValue" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="pphValue"
+            [placeholder]="'expense.pphValue' | translate"
+            readonly
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="4"
+            mask="separator"
+          />
+        </mat-form-field>
+
+        @if (pphBelumDiputuskan) {
+          <div class="pdc-banner">
+            <mat-icon>gavel</mat-icon>
+            <div>
+              <strong>{{ "purchaseCreate.pphWajibJudul" | translate }}</strong>
+              <span>{{ "purchaseCreate.pphWajibKeterangan" | translate }}</span>
+            </div>
+          </div>
+        }
+
+        @if (pphNol) {
+          <div class="pdc-banner">
+            <mat-icon>report</mat-icon>
+            <div>
+              <strong>{{ "purchaseCreate.pphNolJudul" | translate }}</strong>
+              <span>{{ "purchaseCreate.pphNolKeterangan" | translate }}</span>
+            </div>
+          </div>
+        }
+
+        <div class="pdc-tanpapph">
+          <mat-checkbox formControlName="tanpaPph">
+            {{ "purchaseCreate.tanpaPph" | translate }}
+          </mat-checkbox>
+        </div>
+      } @else {
+        <div class="pdc-banner">
+          <mat-icon>info</mat-icon>
+          <div>
+            <strong>{{ "purchaseCreate.pphBarangJudul" | translate }}</strong>
+            <span>{{ "purchaseCreate.pphBarangKet" | translate }}</span>
+          </div>
+        </div>
+      }
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>{{ "draftConvert.otherValue" | translate }}</mat-label>

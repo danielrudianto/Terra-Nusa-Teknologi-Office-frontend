@@ -29,8 +29,10 @@ import { ProxyPaymentHelper } from 'src/app/helpers/proxy-payment.helper';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
 import { IPPh } from 'src/app/utils/pph';
+import { pphDiputuskan, tarifPphNol } from 'src/app/utils/pph-wajib';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
@@ -99,6 +101,7 @@ function bankAccountIDRequired(): ValidatorFn {
     TranslatePipe,
     RouterModule,
     MatTooltipModule,
+    MatCheckboxModule,
     MatSlideToggleModule,
     MatButtonModule,
     CommonModule,
@@ -144,8 +147,28 @@ export class PurchaseDraftConvertComponent {
     return (
       this.valueFormGroup.controls['dpp'].valid &&
       this.valueFormGroup.controls['ppn'].valid &&
-      this.valueFormGroup.controls['pbbkb'].valid
+      this.valueFormGroup.controls['pbbkb'].valid &&
+      // Gerbang yang SAMA dengan layar pembelian.
+      //
+      // Layar ini pintu KEDUA yang membuat pembelian, dan selama ia tidak
+      // dijaga, gerbang di pintu pertama hanya memindahkan jalannya: draf
+      // yang dikonversi tetap terbit tanpa PPh diputuskan.
+      !this.pphBelumDiputuskan
     );
+  }
+
+  /** Tarif terpilih nol — ditegaskan, karena nol tidak terlihat sebagai nol. */
+  get pphNol(): boolean {
+    return tarifPphNol(this.valueFormGroup);
+  }
+
+  get pphBelumDiputuskan(): boolean {
+    return !!this.valueFormGroup.errors?.['pphBelumDiputuskan'];
+  }
+
+  /** Jenis dokumennya jasa — hanya di situ PPh punya arti. */
+  get pphBerlaku(): boolean {
+    return this.metaFormGroup.value['documentType'] === 'other';
   }
 
   metaFormGroup: FormGroup = new FormGroup(
@@ -196,10 +219,16 @@ export class PurchaseDraftConvertComponent {
     pphTaxObject: new FormControl(''),
     pphPercentage: new FormControl(0, [Validators.required, Validators.min(0)]),
     pphValue: new FormControl(0),
+    /*
+     * Pernyataan "memang tidak dipotong" — sama seperti layar pembelian.
+     *
+     * TIDAK dikirim ke server dan bukan kolom; lihat `utils/pph-wajib.ts`.
+     */
+    tanpaPph: new FormControl(false),
     otherValue: new FormControl(0, [Validators.required, Validators.min(0)]),
     otherValueNote: new FormControl(''),
     total: new FormControl(0, [Validators.required, Validators.min(0)]),
-  });
+  }, { validators: pphDiputuskan() });
 
   attachmentFormGroup: FormGroup = new FormGroup({
     isInvoiceAttached: new FormControl(false, Validators.requiredTrue),
@@ -238,14 +267,44 @@ export class PurchaseDraftConvertComponent {
     this.fetchBankAccounts();
     this.fetchPurchaseDraft();
 
-    this.metaFormGroup.controls['documentType'].valueChanges.subscribe(() => {
-      const documentType = this.metaFormGroup.value['documentType'];
+    /*
+     * Nilainya dibaca DARI YANG DIPANCARKAN, bukan dari `metaFormGroup.value`.
+     *
+     * `AbstractControl.setValue()` memancarkan `valueChanges` kendalinya
+     * SEBELUM memperbarui induknya, sehingga `metaFormGroup.value` di dalam
+     * langganan ini masih berisi jenis yang LAMA — pada konversi pertama,
+     * ketika jenis sebelumnya masih kosong, hasilnya `''` dan cabang
+     * "barang" tidak pernah dimasuki. PPh yang terbawa dari purchase order
+     * tetap menempel pada pembelian barang. Bug yang sama sudah dibetulkan
+     * di layar pembelian; keduanya disalin dari satu sumber.
+     */
+    this.metaFormGroup.controls['documentType'].valueChanges.subscribe((jenis) => {
+      const documentType = jenis;
       if (documentType == 'goods') {
         this.valueFormGroup.patchValue({
           pphCode: '',
           pphTaxObject: '',
           pphPercentage: 0,
+          /*
+           * `pphValue` ikut dikosongkan.
+           *
+           * Tarifnya dinolkan sejak dulu, rupiahnya tidak — dan sejak
+           * isiannya disembunyikan pada pembelian barang, nilai lama
+           * bertahan tanpa terlihat siapa pun.
+           */
+          pphValue: 0,
+          /*
+           * Pembelian BARANG menyatakan dirinya sendiri "tanpa PPh".
+           *
+           * Isiannya tidak ditampilkan pada jenis ini, jadi tanpa baris ini
+           * gerbangnya mengunci SETIAP konversi draf barang tanpa satu pun
+           * centang yang dapat dijangkau orangnya.
+           */
+          tanpaPph: true,
         });
+      } else {
+        // Berganti ke jasa mengembalikan keputusannya kepada orangnya.
+        this.valueFormGroup.patchValue({ tanpaPph: false });
       }
     });
   }
@@ -328,10 +387,14 @@ export class PurchaseDraftConvertComponent {
            * pernah hilang.
            */
           if (data?.hapus) {
+            // Kembali ke "belum diputuskan" — pernyataan tanpa-PPh
+            // dicentang sendiri, bukan diwariskan dari pilihan sebelumnya.
             this.valueFormGroup.patchValue({
               pphCode: '',
               pphTaxObject: '',
               pphPercentage: 0,
+              pphValue: 0,
+              tanpaPph: false,
             });
             return;
           }
@@ -341,6 +404,8 @@ export class PurchaseDraftConvertComponent {
               pphCode: pph.code,
               pphTaxObject: pph.taxObjectName,
               pphPercentage: pph.tariff,
+              // Memilih kode berarti bukan "tanpa PPh".
+              tanpaPph: false,
             });
 
             const pphPercentage =
@@ -351,11 +416,16 @@ export class PurchaseDraftConvertComponent {
               nilaiUang(pphValue),
             );
           } else {
-            this.valueFormGroup.patchValue({
-              pphCode: '',
-              pphTaxObject: '',
-              pphPercentage: 0,
-            });
+            /*
+             * MEMBATALKAN tidak menghapus apa pun.
+             *
+             * Keterangan di atas sudah membedakan "Tanpa PPh" dari
+             * membatalkan, tetapi cabang ini tetap mengosongkan pilihan —
+             * sehingga menekan Esc atau mengeklik di luar dialog membuang
+             * kode yang sudah benar. Sejak kolomnya `readonly`, pemilih ini
+             * satu-satunya jalan, dan kehilangan karena salah tekan tidak
+             * lagi dapat diketik ulang.
+             */
           }
         });
 
@@ -545,6 +615,7 @@ export class PurchaseDraftConvertComponent {
                     pphTaxObject: '',
                     pphPercentage: 0,
                     pphValue: 0,
+                    tanpaPph: false,
                     otherValue: 0,
                     otherValueNote: '',
                     total: 0,
@@ -650,6 +721,7 @@ export class PurchaseDraftConvertComponent {
               pphTaxObject: '',
               pphPercentage: 0,
               pphValue: 0,
+              tanpaPph: false,
               otherValue: 0,
               otherValueNote: '',
               total: 0,
