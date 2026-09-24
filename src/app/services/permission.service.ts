@@ -35,6 +35,17 @@ export class PermissionService {
   readonly departments = signal<string[]>([]);
   readonly loaded = signal<boolean>(false);
 
+  /**
+   * Akun PEMERIKSA — boleh membaca, tidak boleh mengubah apa pun.
+   *
+   * Peta izin di atas sudah menutup seluruh aksi tulis, sehingga tombolnya
+   * memang tidak muncul. Tanda ini ada untuk MENGATAKANNYA: layar tanpa
+   * tombol dan tanpa sebab terbaca seperti aplikasi yang rusak, dan yang
+   * memakainya — konsultan dari luar — tidak punya siapa-siapa di
+   * sebelahnya untuk bertanya.
+   */
+  readonly readOnly = signal<boolean>(false);
+
   private pending: Promise<void> | null = null;
 
   /**
@@ -85,6 +96,7 @@ export class PermissionService {
         this.permissions.set(res?.permissions ?? {});
         this.level.set(Number(res?.level) || 1);
         this.departments.set(res?.departments ?? []);
+        this.readOnly.set(res?.readOnly === true);
         this.loaded.set(true);
       })
       .catch((err) => {
@@ -146,6 +158,7 @@ export class PermissionService {
     this.permissions.set({});
     this.level.set(1);
     this.departments.set([]);
+    this.readOnly.set(false);
     this.loaded.set(false);
     this.pending = null;
   }

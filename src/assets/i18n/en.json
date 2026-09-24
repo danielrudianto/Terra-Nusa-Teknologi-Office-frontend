@@ -1378,6 +1378,11 @@
     "tender": "Tenders",
     "karyawan": "Employees"
   },
+  "izin": {
+    "hanyaBaca": "Read only",
+    "hanyaBacaKet": "This account can read every record it is entitled to, but cannot create, change, approve, or delete anything.",
+    "hanyaBacaJudul": "Reviewer account — read only"
+  },
   "notifikasi": {
     "judul": "Waiting for you",
     "kosong": "Nothing is waiting for you. All clear!"

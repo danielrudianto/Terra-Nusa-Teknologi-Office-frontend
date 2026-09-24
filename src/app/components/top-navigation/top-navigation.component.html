@@ -4,6 +4,25 @@
   </button>
   <app-top-navigation-bookmark [label]="label" />
 
+  <!--
+    Akun PEMERIKSA — dikatakan, bukan disiratkan.
+
+    Peta izinnya sudah menutup seluruh aksi tulis, sehingga tombolnya tidak
+    muncul di mana-mana. Tanpa penanda ini, layar tanpa tombol terbaca
+    seperti aplikasi yang rusak atau akun yang salah setel — dan yang
+    memakainya, konsultan dari luar, tidak punya siapa-siapa di sebelahnya
+    untuk bertanya.
+
+    Ditaruh di bilah atas, bukan di satu halaman: sifatnya melekat pada
+    akunnya, bukan pada layar tertentu.
+  -->
+  @if (izin.readOnly()) {
+    <span class="tn-baca" [matTooltip]="'izin.hanyaBacaKet' | translate">
+      <mat-icon>visibility</mat-icon>
+      <span class="tn-baca__teks">{{ "izin.hanyaBaca" | translate }}</span>
+    </span>
+  }
+
   <div class="spacer"></div>
 
   <!-- Pencarian global: tombol yang terlihat untuk Ctrl+K. -->

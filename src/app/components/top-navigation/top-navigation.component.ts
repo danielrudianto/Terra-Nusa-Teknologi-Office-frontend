@@ -22,6 +22,7 @@ import { AccountService } from '../../services/account.service';
 import { AvatarComponent } from '../avatar/avatar.component';
 import { CanDirective } from '../../directives/can.directive';
 import { LencanaService, RUTE_LENCANA, HitunganLencana } from '../../services/lencana.service';
+import { PermissionService } from '../../services/permission.service';
 
 @Component({
   selector: 'app-top-navigation',
@@ -52,6 +53,8 @@ export class TopNavigationComponent {
   @Output() cari = new EventEmitter<void>();
 
   readonly lencana = inject(LencanaService);
+  /** Dipakai templat untuk menandai akun pemeriksa. */
+  readonly izin = inject(PermissionService);
 
   /** ⌘ di Mac, Ctrl di tempat lain — yang tertulis harus yang ditekan. */
   readonly tombolPintas =

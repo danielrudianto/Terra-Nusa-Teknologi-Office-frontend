@@ -390,3 +390,43 @@ mat-toolbar {
     color: var(--ok-fg);
   }
 }
+
+/*
+ * Penanda akun PEMERIKSA.
+ *
+ * Bukan tombol dan tidak dapat ditekan — ia menyatakan keadaan, bukan
+ * menawarkan tindakan. Warnanya lewat token `--warn-*` supaya terbaca
+ * sebagai "perhatikan ini", bukan sebagai galat.
+ */
+.tn-baca {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  margin-left: 10px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--warn-bg, #fcf0d9);
+  color: var(--warn-fg, #8f5914);
+  border: 0.5px solid var(--warn-fg, #e0a54e);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+
+  .mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+}
+
+/* Di layar sempit cukup ikonnya; teksnya sudah ada di tooltip. */
+@media (max-width: 720px) {
+  .tn-baca__teks {
+    display: none;
+  }
+  .tn-baca {
+    padding: 0 7px;
+  }
+}

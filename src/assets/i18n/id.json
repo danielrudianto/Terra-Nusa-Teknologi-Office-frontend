@@ -1378,6 +1378,11 @@
     "tender": "Tender",
     "karyawan": "Karyawan"
   },
+  "izin": {
+    "hanyaBaca": "Hanya baca",
+    "hanyaBacaKet": "Akun ini dapat membaca seluruh data yang menjadi haknya, tetapi tidak dapat membuat, mengubah, menyetujui, atau menghapus apa pun.",
+    "hanyaBacaJudul": "Akun pemeriksa — hanya baca"
+  },
   "notifikasi": {
     "judul": "Menunggu Anda",
     "kosong": "Tidak ada yang menunggu Anda. Semua beres!"
