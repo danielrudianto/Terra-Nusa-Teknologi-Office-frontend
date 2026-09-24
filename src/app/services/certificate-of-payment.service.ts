@@ -177,6 +177,11 @@ export interface CertificateOfPayment {
   status: 'draft' | 'approved' | 'cancelled';
   createdBy: number;
   createdByName?: string;
+  /** Terhapus — hanya keping penyaring "Dihapus" yang menampilkannya. */
+  isDelete?: boolean | number;
+  deletedBy?: number | null;
+  deletedByName?: string | null;
+  deletedAt?: string | null;
   /** Gerbang 1 — BAP disetujui (level 4+). Membuka pengisian harga. */
   isBapApproved: boolean | number;
   bapApprovedBy?: number | null;

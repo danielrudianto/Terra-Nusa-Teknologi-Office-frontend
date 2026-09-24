@@ -17,6 +17,7 @@
 @include daftar.fchip("cl", "bap", var(--surface-2, #eef1f6), var(--muted, #5f6672), var(--muted, #9aa0ab));
 @include daftar.fchip("cl", "dibuat", var(--brand-soft, #e7ecfb), var(--brand, #154dec), var(--brand, #154dec));
 @include daftar.fchip("cl", "disetujui", var(--ok-bg, #e6f6ec), var(--ok-fg, #1a7f45), var(--ok-fg, #22a75a));
+@include daftar.fchip("cl", "dihapus", var(--bad-bg, #fdecea), var(--bad-fg, #b3261e), var(--bad-fg, #d64b3f));
 
 /*
  * Keadaan dokumen.
@@ -56,6 +57,18 @@
   background: var(--ok-bg, #e6f6ec);
   color: var(--ok-fg, #1a7f45);
   .cl-chip__dot { background: var(--ok-fg, #22a75a); }
+}
+/*
+ * Terhapus — MERAH, dan sengaja tidak senada dengan ketiga tahap di atas.
+ *
+ * Ketiganya adalah perjalanan satu dokumen yang hidup; yang ini bukan tahap
+ * berikutnya melainkan keluar dari perjalanan itu. Warnanya harus menyatakan
+ * "bukan bagian dari deret ini", bukan "tahap keempat".
+ */
+.cl-chip--dihapus {
+  background: var(--bad-bg, #fdecea);
+  color: var(--bad-fg, #b3261e);
+  .cl-chip__dot { background: var(--bad-fg, #d64b3f); }
 }
 
 /* Periode kerja di bawah tanggalnya — keterangan, bukan baris tersendiri. */
@@ -211,4 +224,16 @@
 .cl-baris:focus-visible {
   outline: 2px solid var(--brand, #154dec);
   outline-offset: -2px;
+}
+
+/* Siapa yang menghapus — baris kecil di bawah nama pembuatnya. */
+.cl-hapus-oleh {
+  display: block;
+  font-size: 0.72rem;
+  line-height: 1.2;
+  margin-top: 1px;
+  color: var(--bad-fg, #b3261e);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

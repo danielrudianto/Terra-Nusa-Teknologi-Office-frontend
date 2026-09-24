@@ -161,7 +161,7 @@ export class CertificateOfPaymentListComponent implements OnInit {
     return this.urutArah() === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down';
   }
 
-  /** Penyaring keadaan: '', 'draft', 'diperiksa', 'disetujui'. */
+  /** Penyaring keadaan: '', 'draft', 'bap', 'dibuat', 'disetujui', 'dihapus'. */
   readonly saring = signal<string>('');
   readonly total = signal(0);
   readonly memuat = signal(false);
@@ -308,8 +308,19 @@ export class CertificateOfPaymentListComponent implements OnInit {
     return inisialBadan(c.supplierName, c.supplierPrefix);
   }
 
-  /** Keadaan dokumen, untuk lencana. */
-  keadaan(c: CertificateOfPayment): 'draft' | 'bap' | 'dibuat' | 'disetujui' {
+  /**
+   * Keadaan dokumen, untuk lencana.
+   *
+   * "Dihapus" didahulukan: ia BUKAN tahap perjalanan dokumen melainkan
+   * keadaan lain sama sekali, dan dokumen yang terhapus tetap membawa
+   * seluruh penanda tahapnya. Diperiksa belakangan, CoP yang sudah
+   * disetujui lalu dihapus akan tampil sebagai "Disetujui" — persis
+   * kebalikan dari yang perlu diketahui.
+   */
+  keadaan(
+    c: CertificateOfPayment,
+  ): 'draft' | 'bap' | 'dibuat' | 'disetujui' | 'dihapus' {
+    if (c.isDelete) return 'dihapus';
     if (c.isApproved) return 'disetujui';
     if (c.isCopCreated) return 'dibuat';
     if (c.isBapApproved) return 'bap';
