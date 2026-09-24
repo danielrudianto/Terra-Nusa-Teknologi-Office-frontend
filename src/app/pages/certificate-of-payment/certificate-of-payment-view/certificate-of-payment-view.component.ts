@@ -272,7 +272,24 @@ export class CertificateOfPaymentViewComponent implements OnInit {
       })
       .afterClosed()
       .subscribe((ok) => {
-        if (ok) void this.muat();
+        if (!ok) return;
+        /*
+         * `adaPerubahan` WAJIB, bukan cuma `muat()`.
+         *
+         * `muat()` hanya memuat ulang isi DIALOG INI. Daftar di belakangnya
+         * baru memuat ulang bila dialog ditutup dengan `true` — lihat
+         * catatan pada `adaPerubahan` di atas, yang sudah menyebutkan
+         * persis kegagalan ini untuk tindakan menyetujui.
+         *
+         * Penautan datang belakangan dan tidak ikut menyetel penandanya.
+         * Akibatnya tidak terlihat selama lencana daftar cuma mengenal
+         * "Disetujui": menautkan pembelian memang tidak mengubah apa-apa di
+         * sana. Begitu lencananya membedakan "Siap ditagih" dari "Sudah
+         * ditagih", barisnya berhenti di "Siap ditagih" sesudah ditautkan —
+         * dan yang menautkannya menyimpulkan tautannya gagal.
+         */
+        this.adaPerubahan = true;
+        void this.muat();
       });
   }
 
@@ -281,7 +298,12 @@ export class CertificateOfPaymentViewComponent implements OnInit {
     const beli = this.tagihan()?.pembelian;
     if (!c || !beli) return;
     this.tautanService.lepas(c.id, beli.id).subscribe({
-      next: () => void this.muat(),
+      next: () => {
+        // Sama seperti menautkan, dan karena alasan yang sama: melepas
+        // tautan memindahkan barisnya kembali ke "Siap ditagih".
+        this.adaPerubahan = true;
+        void this.muat();
+      },
       error: (e) => this.pesan(e),
     });
   }
