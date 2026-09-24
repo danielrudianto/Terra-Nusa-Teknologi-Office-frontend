@@ -57,6 +57,33 @@
           </div>
         }
 
+        <!--
+          Proyek yang DIBEBANI — dapat berbeda dari proyek purchase order-nya.
+
+          Mengganti nomor PO tetap memindahkannya; isian ini untuk keadaan
+          yang tidak terjawab oleh itu: PO yang tidak dapat diterbitkan atas
+          nama proyek yang membiayainya, sementara biayanya jelas milik
+          proyek tersebut. Tanpa isian ini, satu-satunya jalan adalah
+          menghapus pembeliannya lalu mencatat ulang.
+        -->
+        <app-project-selector
+          formControlName="projectName"
+          [label]="'purchaseMeta.proyekDibebani' | translate"
+        />
+
+        @if (proyekMenyimpang) {
+          <div class="pum-banner pum-banner--awas">
+            <mat-icon>alt_route</mat-icon>
+            <div>
+              <strong>{{ "purchaseMeta.proyekBedaJudul" | translate }}</strong>
+              <span>{{
+                "purchaseMeta.proyekBedaKet"
+                  | translate: { po: proyekPo || "—" }
+              }}</span>
+            </div>
+          </div>
+        }
+
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>{{ "purchaseMeta.date" | translate }}</mat-label>
           <input

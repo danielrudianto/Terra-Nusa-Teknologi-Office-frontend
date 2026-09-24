@@ -34,6 +34,7 @@ import {
   PoRingkas,
   PurchaseOrderAutocompleteComponent,
 } from 'src/app/components/purchase-order-autocomplete/purchase-order-autocomplete.component';
+import { ProjectSelectorComponent } from 'src/app/components/project-selector/project-selector.component';
 
 /**
  * Sunting META pembelian LUAR — hanya level 5.
@@ -73,6 +74,7 @@ import {
     NgxMaskDirective,
     DialogGeserDirective,
     PurchaseOrderAutocompleteComponent,
+    ProjectSelectorComponent,
   ],
   providers: [provideNgxMask()],
 })
@@ -141,6 +143,33 @@ export class PurchaseUpdateMetaComponent {
     this.poBelumSah = po === null;
     this.proyek =
       po?.asal === 'daftar' ? po.projectName || '' : this.proyekAwal;
+
+    // Isian proyek IKUT berpindah — itu tetap bawaannya. Yang membebankan
+    // ke proyek lain tinggal mengubahnya sesudah ini, dan perbedaannya
+    // dinyatakan di layar.
+    if (po?.asal === 'daftar' && po.projectName) {
+      this.meta.get('projectName')?.setValue(po.projectName);
+    }
+  }
+
+  /** Proyek purchase order yang berlaku sesudah penyuntingan ini. */
+  get proyekPo(): string {
+    return this.poBaru?.asal === 'daftar'
+      ? this.poBaru.projectName || ''
+      : this.proyekAwal;
+  }
+
+  /**
+   * Biayanya dibebankan ke proyek LAIN daripada purchase order-nya.
+   *
+   * Dinyatakan di layar, bukan didiamkan: inilah satu-satunya keadaan yang
+   * membuat rekap per proyek berbeda dari daftar purchase order, dan yang
+   * menemukannya setahun kemudian harus tahu itu disengaja.
+   */
+  get proyekMenyimpang(): boolean {
+    const dipilih = String(this.meta.get('projectName')?.value || '').trim();
+    const po = String(this.proyekPo || '').trim();
+    return !!dipilih && !!po && dipilih.toUpperCase() !== po.toUpperCase();
   }
 
   meta: FormGroup = new FormGroup({
@@ -159,6 +188,18 @@ export class PurchaseUpdateMetaComponent {
     // Kode & objek PPh: KLASIFIKASI, bukan nominal. Selalu boleh dibetulkan
     // (mis. kode lupa diisi) meski sudah ada pembayaran — dipilih lewat
     // pemilih PPh, tidak diketik bebas.
+    /*
+     * Proyek yang DIBEBANI biaya pembelian ini.
+     *
+     * Boleh berbeda dari proyek purchase order-nya. Sebagian PO memang tidak
+     * dapat diterbitkan atas nama proyek yang membiayainya, sementara
+     * biayanya jelas milik proyek itu — dan tanpa isian ini, satu-satunya
+     * cara membetulkannya adalah menghapus pembeliannya lalu mencatat ulang.
+     *
+     * Mengganti nomor PO tetap MEMINDAHKAN isian ini, selama orangnya belum
+     * memilih proyek lain dengan sengaja.
+     */
+    projectName: new FormControl(''),
     pphCode: new FormControl(''),
     pphTaxObject: new FormControl(''),
   });
@@ -186,6 +227,7 @@ export class PurchaseUpdateMetaComponent {
         this.nomorPO = d?.purchaseOrderName ?? '';
         this.proyekAwal = d?.projectName ?? '';
         this.proyek = this.proyekAwal;
+        this.meta.get('projectName')?.setValue(this.proyekAwal);
 
         this.meta.patchValue({
           date: d?.date,
@@ -423,6 +465,21 @@ export class PurchaseUpdateMetaComponent {
      */
     if (this.poBaru?.asal === 'daftar' && this.poBaru.name !== this.nomorPO) {
       muatan.purchaseOrderName = this.poBaru.name;
+    }
+
+    /*
+     * Proyek HANYA dikirim bila memang berbeda dari yang tersimpan.
+     *
+     * Mengirimnya setiap kali membuat server memeriksa ulang kode yang tidak
+     * disentuh siapa pun — dan pada pembelian lama yang proyeknya sudah
+     * dihapus, pemeriksaan itu menolak penyuntingan nomor faktur yang tidak
+     * ada hubungannya dengan proyek.
+     */
+    const proyekPilihan = String(
+      this.meta.get('projectName')?.value || '',
+    ).trim();
+    if (proyekPilihan && proyekPilihan !== this.proyekAwal) {
+      muatan.projectName = proyekPilihan;
     }
 
     // Nilai HANYA dikirim bila memang boleh diubah dan memang berubah —

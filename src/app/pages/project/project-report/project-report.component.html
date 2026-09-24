@@ -75,22 +75,26 @@
       <div class="prp-sel">
         <div class="prp-label">{{ "projectReport.contract" | translate }}</div>
         <!--
-          Nominal dokumen — SUDAH termasuk PPN.
+          DPP — dasar yang dipakai SELURUH hitungan di halaman ini.
 
-          Disamakan dengan cara tertagih dan biaya ditampilkan: keduanya
-          memakai nilai berikut PPN. Sebelumnya kontraknya sendirian memakai
-          DPP, sehingga membandingkan ketiganya di layar yang sama
-          menghasilkan selisih sebelas persen yang tidak ada sebabnya.
+          Dahulu yang besar di sini nominal dokumen berikut PPN, karena saat
+          itu tertagih dan biaya pun ditampilkan berikut PPN. Keduanya sudah
+          lama berpindah ke DPP — biaya, tertagih, porsi terhadap kontrak,
+          bilah margin, dan kurva S seluruhnya membagi dengan `nilaiKontrak`.
+          Kontraknya tinggal sendirian memakai dasar yang lain, dan selisih
+          sebelas persen yang tidak ada sebabnya itu kembali — hanya
+          terbalik arahnya.
 
-          DPP tetap disebut di bawahnya — ia yang dipakai menghitung margin,
-          dan yang membaca perlu tahu angka mana yang mana.
+          Nominal dokumennya TETAP disebut di bawah: itu angka yang tertulis
+          pada kontraknya, dan yang mencocokkan dengan berkas aslinya
+          mencarinya.
         -->
-        <div class="prp-nilai" [appHitungNaik]="nominalKontrak()"></div>
+        <div class="prp-nilai" [appHitungNaik]="nilaiKontrak()"></div>
         <div class="prp-ket">
-          {{ "projectReport.contractGrossHint" | translate }}
+          {{ "projectReport.contractDppHint" | translate }}
           <span *ngIf="nominalKontrak() !== nilaiKontrak()">
-            &middot; {{ "projectReport.dppValue" | translate }}
-            {{ nilaiKontrak() | number: "1.2-2" }}
+            &middot; {{ "projectReport.contractGrossHint" | translate }}
+            {{ nominalKontrak() | number: "1.2-2" }}
           </span>
         </div>
       </div>
@@ -642,17 +646,37 @@
 
         <ng-container *ngIf="adaArusKas()">
           <div class="prp-prog__kpi">
+            <!--
+              DASARNYA DISEBUT, karena berbeda dari seluruh halaman ini.
+
+              Kontrak, biaya, tertagih, dan kemajuan semuanya DPP — itu
+              bahasa PEKERJAAN, dan PPN bukan pendapatan. Kas tidak bisa
+              ikut: yang masuk rekening memang DPP + PPN - PPh, dan yang
+              keluar memang berikut PPN. Menyamakannya ke DPP akan membuat
+              angka yang bukan kas lagi.
+
+              Karena itu yang disamakan bukan dasarnya, melainkan
+              KETERANGANNYA: dua angka ini menyebut dirinya kas, sehingga
+              tidak ada yang membandingkannya dengan "Sudah tertagih" di
+              kartu sebelah dan menyimpulkan ada selisih yang tidak ada.
+            -->
             <div class="prp-sel">
               <div class="prp-label">
                 {{ "projectCashflow.totalIn" | translate }}
               </div>
               <div class="prp-nilai" [appHitungNaik]="totalKasMasuk()"></div>
+              <div class="prp-ket">
+                {{ "projectCashflow.dasarMasuk" | translate }}
+              </div>
             </div>
             <div class="prp-sel">
               <div class="prp-label">
                 {{ "projectCashflow.totalOut" | translate }}
               </div>
               <div class="prp-nilai" [appHitungNaik]="totalKasKeluar()"></div>
+              <div class="prp-ket">
+                {{ "projectCashflow.dasarKeluar" | translate }}
+              </div>
             </div>
             <!--
               Saldo kas: angka yang sebenarnya dicari. Merah bila minus —

@@ -2231,6 +2231,16 @@ export class ProjectReportComponent implements OnInit {
       margin: this.margin(),
       tertagih: this.tertagih(),
       /*
+       * Tertagih TANPA PPN ikut dikirim.
+       *
+       * Berkasnya membagi tertagih dengan `nilaiKontrak`, yang DPP —
+       * sementara `tertagih` di atas berikut PPN. Persentasenya karena itu
+       * terlalu besar sebelas persen, dan tidak ada apa pun di berkas itu
+       * yang menyebutkan sebabnya. Angka rupiahnya tetap ditampilkan kotor;
+       * yang diperbaiki pembaginya.
+       */
+      tertagihDpp: this.tertagihDpp(),
+      /*
        * Biaya tahun terpilih, dan periodenya.
        *
        * Keduanya WAJIB ikut ke berkasnya. Berkas yang beredar tidak membawa

@@ -54,6 +54,8 @@ export interface DataLaporanProyek {
   biayaSeumurProyek: number;
   margin: number;
   tertagih: number;
+  /** Tertagih tanpa PPN — sebanding dengan `nilaiKontrak`, yang juga DPP. */
+  tertagihDpp?: number;
   /**
    * Biaya TAHUN TERPILIH.
    *
@@ -111,7 +113,7 @@ export async function unduhLaporanProyekExcel(
     { label: 'Nilai kontrak (termasuk PPN)', nilai: d.nominalKontrak, ket: '' },
     { label: 'Total biaya (seumur proyek)', nilai: d.biayaSeumurProyek, ket: persen(d.biayaSeumurProyek, d.nilaiKontrak) + ' dari kontrak' },
     { label: 'Margin atas kontrak (seumur proyek)', nilai: d.margin, ket: persen(d.margin, d.nilaiKontrak) + ' dari kontrak' },
-    { label: 'Sudah tertagih', nilai: d.tertagih, ket: persen(d.tertagih, d.nilaiKontrak) + ' dari kontrak' },
+    { label: 'Sudah tertagih (termasuk PPN)', nilai: d.tertagih, ket: persen(d.tertagihDpp ?? d.tertagih, d.nilaiKontrak) + ' dari kontrak (DPP)' },
   ];
 
   /*
@@ -250,7 +252,7 @@ export function unduhLaporanProyekPdf(d: DataLaporanProyek): void {
       { text: rupiah(d.margin), bold: true, ...kanan },
       { text: persen(d.margin, d.nilaiKontrak), bold: true, ...kanan },
     ],
-    ['Sudah tertagih', { text: rupiah(d.tertagih), ...kanan }, { text: persen(d.tertagih, d.nilaiKontrak), ...kanan }],
+    ['Sudah tertagih (termasuk PPN)', { text: rupiah(d.tertagih), ...kanan }, { text: persen(d.tertagihDpp ?? d.tertagih, d.nilaiKontrak), ...kanan }],
   ];
 
   /*
