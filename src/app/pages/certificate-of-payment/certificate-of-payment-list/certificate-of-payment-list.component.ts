@@ -1,9 +1,20 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, inject, signal, ChangeDetectionStrategy} from '@angular/core';
+import { CommonModule, formatDate } from '@angular/common';
+import {
+  Component,
+  LOCALE_ID,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialog } from '@angular/material/dialog';
@@ -19,15 +30,17 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import moment from 'moment';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { RefreshButtonComponent } from 'src/app/components/refresh-button/refresh-button.component';
 import { CertificateOfPaymentViewComponent } from '../certificate-of-payment-view/certificate-of-payment-view.component';
+import { PurchaseOrderViewComponent } from '../../purchase-order/purchase-order-view/purchase-order-view.component';
 import {
   CertificateOfPayment,
   CertificateOfPaymentService,
@@ -40,6 +53,29 @@ import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.direc
 import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
 import { NamaBadanComponent, inisialBadan } from '../../../components/nama-badan/nama-badan.component';
 import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
+
+/**
+ * Bentuk tanggal KHUSUS untuk kotak rentang di bilah perkakas.
+ *
+ * Bawaan aplikasi `DD MMMM yyyy` menulis "05 September 2026" — tujuh belas
+ * aksara. DUA di antaranya berikut pemisah dan tombol silang tidak muat di
+ * kotak penyaring mana pun yang masih menyisakan tempat bagi pencarian di
+ * sebelahnya; yang tampil "05 Septem – 12 Septeml", dan rentang yang
+ * SEDANG BERLAKU menjadi satu-satunya hal di layar yang tidak terbaca.
+ *
+ * Yang diperpendek hanya BENTUK KETIKNYA. Nama bulan penuh tetap dipakai
+ * kalendernya, dan `parse` tetap menerima bentuk panjang — tanggal yang
+ * disalin dari layar lain lalu ditempel di sini tetap terbaca.
+ */
+export const BENTUK_TANGGAL_SARING = {
+  parse: { dateInput: ['DD MMM YYYY', 'DD MMMM YYYY', 'LL'] },
+  display: {
+    dateInput: 'DD MMM yyyy',
+    monthYearLabel: 'MMMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 /**
  * Daftar Certificate of Payment.
@@ -62,11 +98,13 @@ import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
+    MatDatepickerModule,
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
     MatChipsModule,
+    MatTooltipModule,
     MatProgressBarModule,
     TranslateModule,
     HeaderTitleComponent,
@@ -74,6 +112,9 @@ import { PILIHAN_BARIS } from 'src/app/constants/paginasi.constant';
   ],
   templateUrl: './certificate-of-payment-list.component.html',
   styleUrl: './certificate-of-payment-list.component.scss',
+  // Hanya untuk layar ini — bentuk tanggal di seluruh formulir lain tidak
+  // ikut berubah.
+  providers: [{ provide: MAT_DATE_FORMATS, useValue: BENTUK_TANGGAL_SARING }],
 })
 export class CertificateOfPaymentListComponent implements OnInit {
   /** Pilihan baris per halaman — satu daftar untuk seluruh aplikasi. */
@@ -91,6 +132,8 @@ export class CertificateOfPaymentListComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly pesanServer = inject(ServerMessageService);
   readonly izin = inject(PermissionService);
+  /** Dipakai `formatDate` pada ringkasan periode — "Sep" vs "Sept" vs "9月". */
+  private readonly lokal = inject(LOCALE_ID);
 
   readonly data = signal<CertificateOfPayment[]>([]);
   /**
@@ -101,6 +144,48 @@ export class CertificateOfPaymentListComponent implements OnInit {
    * kebetulan sedang terbuka.
    */
   readonly cari = new FormControl<string>('');
+
+  /**
+   * Rentang tanggal dokumen. KOSONG saat layar dibuka.
+   *
+   * Daftar Beban memulai dengan bulan berjalan karena beban memang dibaca
+   * per bulan. Berita acara tidak: yang dicari di sini hampir selalu satu
+   * dokumen tertentu, dan separuhnya berumur lebih tua dari bulan ini.
+   * Memasang bulan berjalan sebagai bawaan berarti layar yang baru dibuka
+   * DIAM-DIAM menyembunyikan sebagian besar isinya — dan yang mencari CoP
+   * bulan lalu mendapat "belum ada CoP" untuk dokumen yang jelas ada.
+   *
+   * Karena itu juga TIDAK wajib, dan kedua ujungnya berdiri sendiri:
+   * mengisi "dari" saja berarti "sejak", mengisi "sampai" saja berarti
+   * "hingga".
+   */
+  readonly rentang = new FormGroup({
+    dari: new FormControl<moment.Moment | null>(null),
+    sampai: new FormControl<moment.Moment | null>(null),
+  });
+
+  /** Ada tanggal terpasang? Menentukan tombol hapus rentang muncul. */
+  readonly adaRentang = signal(false);
+
+  /**
+   * Nilai datepicker -> `YYYY-MM-DD`, atau `undefined`.
+   *
+   * Lewat `toISOString()` tanggalnya digeser ke UTC lebih dulu, dan bagi
+   * WIB (+7) setiap tanggal mundur satu hari: rentang yang dipilih
+   * 1–30 September terkirim sebagai 31 Agustus–29 September. Tidak ada
+   * galat — hanya baris yang hilang di satu ujung dan baris asing di
+   * ujung lain.
+   */
+  private tanggalKirim(nilai: moment.Moment | null | undefined): string | undefined {
+    if (!nilai) return undefined;
+    const m = moment(nilai);
+    return m.isValid() ? m.format('YYYY-MM-DD') : undefined;
+  }
+
+  /** Lepas rentang tanggal — kembali ke seluruh daftar. */
+  bersihkanRentang(): void {
+    this.rentang.reset({ dari: null, sampai: null });
+  }
 
   /*
    * Pengurutan DI SERVER, sama seperti pencariannya.
@@ -184,10 +269,31 @@ export class CertificateOfPaymentListComponent implements OnInit {
   readonly bolehSetujuiBap = computed(() => this.izin.level() >= 4);
   readonly bolehSetujui = computed(() => this.izin.level() >= 4);
 
+  /*
+   * SPK dan PERIODE berdiri sebagai kolom sendiri.
+   *
+   * Keduanya dulu menumpang sebagai baris kedua di dalam sel tetangganya —
+   * nomor SPK di bawah nomor CoP, periode kerja di bawah tanggal. Yang
+   * didapat bukan kolom yang ringkas melainkan dua sel yang setinggi dua
+   * baris dengan angka berbeda arti yang ditumpuk tanpa label: mana yang
+   * nomor CoP dan mana yang nomor SPK hanya dapat dibedakan dari bentuk
+   * penomorannya, dan keduanya tidak dapat diurutkan sama sekali.
+   *
+   * Sebagai kolom, keduanya mendapat kepala kolom yang menamainya dan ikon
+   * pengurutan seperti kolom lain — dan barisnya kembali setinggi satu
+   * baris.
+   */
   get kolom(): string[] {
-    // Nomor SPK ikut di dalam sel nomor CoP sebagai baris kedua, sehingga
-    // tidak perlu kolom sendiri — daftar jadi muat tanpa digulir menyamping.
-    const dasar = ['nomor', 'pemasok', 'proyek', 'tanggal', 'keadaan', 'pembuat'];
+    const dasar = [
+      'nomor',
+      'spk',
+      'pemasok',
+      'proyek',
+      'tanggal',
+      'periode',
+      'keadaan',
+      'pembuat',
+    ];
     return this.bolehLihatNilai()
       ? [...dasar, 'nilai', 'aksi']
       : [...dasar, 'aksi'];
@@ -264,6 +370,32 @@ export class CertificateOfPaymentListComponent implements OnInit {
         this.halaman = 0;
         void this.muat();
       });
+
+    /*
+     * Rentang tanggal memuat ulang HANYA bila kedua ujungnya sudah tenang.
+     *
+     * `mat-date-range-input` menembakkan perubahan dua kali untuk satu kali
+     * pilih — sekali saat tanggal awal dipilih, sekali saat akhirnya. Tanpa
+     * jeda, permintaan pertama dikirim untuk rentang setengah jadi
+     * "1 Sep – kosong", dan jawabannya dapat tiba SESUDAH jawaban untuk
+     * rentang yang benar lalu menimpanya.
+     *
+     * 250ms, bukan 300 seperti pencarian: memilih tanggal kedua pada
+     * kalender selalu lebih lambat daripada mengetik huruf berikutnya, jadi
+     * jeda yang lebih pendek pun tidak pernah memecah satu pilihan menjadi
+     * dua permintaan.
+     */
+    this.rentang.valueChanges
+      .pipe(debounceTime(250))
+      .subscribe((nilai) => {
+        // Dibaca dari nilai yang DITEMBAKKAN, bukan dari `rentang.value`:
+        // di dalam langganan sebuah grup, nilai induknya belum tentu sudah
+        // diperbarui.
+        this.adaRentang.set(!!(nilai?.dari || nilai?.sampai));
+        this.halaman = 0;
+        void this.muat();
+      });
+
     void this.muat();
   }
 
@@ -286,6 +418,8 @@ export class CertificateOfPaymentListComponent implements OnInit {
           sortBy: this.urutKolom() || undefined,
           sortDir: this.urutArah() || undefined,
           keadaan: this.saring() || undefined,
+          start: this.tanggalKirim(this.rentang.value.dari),
+          end: this.tanggalKirim(this.rentang.value.sampai),
         }),
       );
       this.data.set(hasil?.data || []);
@@ -306,6 +440,85 @@ export class CertificateOfPaymentListComponent implements OnInit {
   /** Huruf pertama nama pemasok; "?" bila tidak ada. */
   inisialPemasok(c: CertificateOfPayment): string {
     return inisialBadan(c.supplierName, c.supplierPrefix);
+  }
+
+  /**
+   * Periode kerja sebagai SATU kalimat, bukan dua tanggal utuh.
+   *
+   * "10 Sep 2026 – 16 Sep 2026" mengulang bulan dan tahun yang sama persis
+   * dua kali dalam satu sel selebar 150px, dan yang benar-benar dibaca —
+   * angka 10 dan 16 — tenggelam di antara pengulangannya. Bagian yang sama
+   * karena itu ditulis sekali, di ujung:
+   *
+   *   sebulan, setahun   10 – 16 Sep 2026
+   *   beda bulan         28 Sep – 4 Okt 2026
+   *   beda tahun         28 Des 2025 – 4 Jan 2026
+   *   satu hari          10 Sep 2026
+   *
+   * TAHUNNYA tidak pernah dibuang, meski hampir selalu tahun berjalan.
+   * Daftar ini memuat dokumen lintas tahun, dan "10 – 16 Sep" yang
+   * ternyata milik 2025 terbaca sebagai milik tahun ini tanpa ada apa pun
+   * yang membantahnya.
+   *
+   * Nama bulannya lewat `formatDate` dengan lokal aktif — bukan disusun
+   * dari daftar nama bulan sendiri, yang akan tetap berbahasa Indonesia
+   * saat aplikasinya dipindah ke bahasa Inggris.
+   */
+  periodeTeks(c: CertificateOfPayment): string {
+    const a = this.keTanggal(c.periodStart);
+    const b = this.keTanggal(c.periodEnd);
+    if (!a || !b) return '';
+
+    const hari = (d: Date) => formatDate(d, 'd', this.lokal);
+    const hariBulan = (d: Date) => formatDate(d, 'd MMM', this.lokal);
+    const penuh = (d: Date) => formatDate(d, 'd MMM y', this.lokal);
+    const tahun = (d: Date) => formatDate(d, 'y', this.lokal);
+
+    if (a.getTime() === b.getTime()) return penuh(a);
+    if (tahun(a) !== tahun(b)) return `${penuh(a)} – ${penuh(b)}`;
+    if (a.getMonth() !== b.getMonth())
+      return `${hariBulan(a)} – ${penuh(b)}`;
+    return `${hari(a)} – ${penuh(b)}`;
+  }
+
+  /**
+   * Teks tanggal dari server -> `Date`, atau `null`.
+   *
+   * `null` untuk yang tidak dapat diurai, BUKAN `new Date(teks)` apa
+   * adanya: tanggal yang tidak sah menghasilkan `Invalid Date`, dan
+   * `formatDate` melemparkan galat atasnya — satu baris berdata rusak
+   * menjatuhkan seluruh tabel.
+   */
+  private keTanggal(nilai: string | null | undefined): Date | null {
+    if (!nilai) return null;
+    const d = new Date(nilai);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  /**
+   * Buka SPK-nya, dari daftar CoP.
+   *
+   * Pertanyaan yang muncul di depan sebuah berita acara hampir selalu
+   * "pagunya berapa" atau "isi SPK-nya apa" — dan sampai sekarang
+   * jawabannya harus dicari dengan meninggalkan layar ini, membuka daftar
+   * Purchase Order, lalu mengetik ulang nomor yang barusan dibaca.
+   *
+   * DIALOG yang sama dengan yang dipakai daftar Purchase Order, bukan
+   * salinan: SPK yang dibuka dari sini harus terbaca persis seperti SPK
+   * yang dibuka dari sana.
+   *
+   * `stopPropagation` wajib — tanpanya baris di belakangnya ikut terpicu
+   * dan dua dialog terbuka bertumpuk, dengan CoP menutupi SPK yang barusan
+   * diminta.
+   */
+  bukaSpk(c: CertificateOfPayment, ev: Event): void {
+    ev.stopPropagation();
+    if (!c.purchaseOrderID) return;
+    this.dialog.open(PurchaseOrderViewComponent, {
+      data: { id: c.purchaseOrderID },
+      maxWidth: '94vw',
+      autoFocus: false,
+    });
   }
 
   /**

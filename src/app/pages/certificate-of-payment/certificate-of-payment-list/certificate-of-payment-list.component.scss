@@ -71,11 +71,133 @@
   .cl-chip__dot { background: var(--bad-fg, #d64b3f); }
 }
 
-/* Periode kerja di bawah tanggalnya — keterangan, bukan baris tersendiri. */
+/*
+ * Periode kerja — kini ISI KOLOMNYA SENDIRI, bukan baris kecil di bawah
+ * tanggal.
+ *
+ * Sebagai keterangan yang menempel ia 11,5px — seukuran catatan kaki.
+ * Dipakai sebagai satu-satunya isi sebuah kolom, ukuran itu menghasilkan
+ * lajur penuh teks abu yang praktis tidak terbaca sementara kepala
+ * kolomnya jauh lebih tegas daripada datanya. Sama persis dengan yang
+ * terjadi pada kolom "dibuat oleh", dan diperbaiki dengan cara yang sama:
+ * seukuran `cl-pembuat`, tetap lebih redup daripada nomor dan nama.
+ *
+ * `nowrap` — rentangnya adalah SATU satuan. Terpotong jadi dua baris,
+ * "28 Sep –" dan "4 Okt 2026" terbaca sebagai dua tanggal terpisah.
+ */
 .cl-periode {
   display: block;
-  font-size: 11.5px;
+  font-size: 0.82rem;
+  line-height: 1.25;
   color: var(--muted, #5f6672);
+  white-space: nowrap;
+}
+
+/* Yang tidak punya periode: tanda hubung yang lebih redup lagi, supaya
+   lajur berisi data tidak terpecah oleh baris yang sama tegasnya. */
+.cl-periode--kosong {
+  color: var(--faint, #9aa0ab);
+}
+
+/*
+ * Nomor SPK sebagai tombol.
+ *
+ * Bentuknya harus menyatakan "dapat ditekan" tanpa menjadi lebih menonjol
+ * daripada nomor CoP di sebelah kirinya — yang pokok di baris ini tetap
+ * berita acaranya. Karena itu warna merek tetapi TANPA garis bawah, dan
+ * ikon `open_in_new` yang redup di belakangnya: garis bawah pada satu
+ * lajur penuh membuat kolom ini yang paling ramai di seluruh tabel.
+ *
+ * `background: none` dan `padding: 0` wajib disebut — tombol membawa
+ * latar abu dan lapisan padding dari peramban, dan tanpa dilepas ia
+ * tampil sebagai kotak abu di tengah sel yang lain polos.
+ */
+.cl-spk {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.82rem;
+  color: var(--brand, #154dec);
+  cursor: pointer;
+  text-align: left;
+}
+
+.cl-spk__teks {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cl-spk__ikon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+  line-height: 14px;
+  color: var(--faint, #9aa0ab);
+}
+
+/* Garis bawah HANYA saat disentuh — penegasan bahwa yang di bawah kursor
+   inilah yang akan terbuka, bukan hiasan tetap. */
+.cl-spk:hover .cl-spk__teks {
+  text-decoration: underline;
+}
+
+.cl-spk:focus-visible {
+  outline: 2px solid var(--brand, #154dec);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/*
+ * Kotak rentang tanggal.
+ *
+ * 290px, diukur dari isi TERPENUHNYA: "05 Sep 2026 – 12 Sep 2026" berikut
+ * ikon kalender di depan dan tombol silang di belakang. Pada lebar bawaan
+ * `mat-form-field` ujung keduanya terpotong, dan rentang yang sedang
+ * berlaku menjadi satu-satunya hal di layar yang tidak terbaca.
+ */
+.cl-rentang {
+  width: 100%;
+  max-width: 290px;
+}
+
+:host ::ng-deep .cl-rentang .mat-mdc-text-field-wrapper {
+  border-radius: 14px;
+  background: var(--surface, #fff);
+}
+
+:host ::ng-deep .cl-rentang .mat-mdc-form-field-icon-prefix > .mat-datepicker-toggle {
+  color: var(--faint, #9aa0ab);
+}
+
+/* Tombol silang dikecilkan: sebesar bawaannya (40px) ia menaikkan tinggi
+   seluruh kotak dan membuat rentang berdiri lebih tinggi daripada
+   pencarian di sebelahnya. */
+:host ::ng-deep .cl-rentang__hapus.mat-mdc-icon-button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  line-height: 0;
+  --mdc-icon-button-icon-size: 18px;
+}
+
+/*
+ * Bilah perkakas boleh MELIPAT.
+ *
+ * Enam keping penyaring, rentang tanggal, pencarian, dan tombol muat ulang
+ * tidak muat berjajar di bawah 1200px — dan campuran `daftar` baru
+ * menumpuknya di bawah 900px. Di antara keduanya isinya terdorong keluar
+ * kartu: tombol muat ulang terpotong tepi kanan layar, tanpa gulir
+ * menyamping yang dapat mencapainya.
+ */
+.cl-toolbar {
+  flex-wrap: wrap;
 }
 
 /* Kotak pencarian: bentuknya sama dengan daftar purchase order (`pol-search`)
@@ -124,8 +246,46 @@
  * sisa halaman.
  */
 :host ::ng-deep .mat-column-nilai {
-  width: 150px;
-  max-width: 150px;
+  width: 153px;
+  max-width: 153px;
+}
+
+/*
+ * Tabelnya punya lebar TERKECIL, dan pembungkusnya yang menggulir.
+ *
+ * Angka 1575px adalah jumlah kesepuluh kolom di bawah — diukur dari isi
+ * TERPANJANG masing-masing, bukan ditebak. Tanpa lantai ini, Material
+ * memampatkan kolom mengikuti lebar jendela: pada 1366px nomor CoP pecah
+ * menjadi empat baris ("001-", "911-", "R501-", "2026") dan setiap baris
+ * tabel menjadi setinggi empat baris teks.
+ *
+ * Dengan lantai ini, meja sempit mendapat gulir menyamping — dan barisnya
+ * tetap setinggi satu baris.
+ */
+:host ::ng-deep table.mat-mdc-table {
+  /*
+   * `table-layout: fixed` — lebar yang ditulis di bawah benar-benar
+   * BERLAKU, bukan sekadar usulan.
+   *
+   * Pada tata letak otomatis (bawaannya), `width` hanyalah saran: peramban
+   * tetap melebarkan kolom yang isinya tidak muat. Kolom pemasok — satu-
+   * satunya yang sengaja tanpa `max-width` — karena itu mengambil lebar
+   * nama terpanjangnya, mendorong tabel menjadi 1670px di dalam kartu
+   * selebar 1604px, dan MENU TINDAKAN terdorong keluar layar. Tidak ada
+   * galat; hanya kolom terakhir yang tidak ada.
+   *
+   * Dengan `fixed`, kesembilan kolom berlebar tetap mendapat persis yang
+   * ditulis dan pemasok mendapat SISANYA — melebar pada meja lebar,
+   * menyusut dengan elipsis pada meja sempit.
+   */
+  table-layout: fixed;
+  /*
+   * Lantai 1557px = jumlah kesembilan kolom tetap (1367) ditambah lebar
+   * terkecil kolom pemasok (190). Di bawah itu pembungkus
+   * `table-responsive` yang menggulir — bukan kolom yang dipampatkan
+   * sampai nomor CoP pecah menjadi empat baris.
+   */
+  min-width: 1557px;
 }
 
 :host ::ng-deep .mat-column-aksi {
@@ -152,14 +312,41 @@
  * dan Material membagi ulang sisa ruang tanpanya.
  */
 :host ::ng-deep {
+  /*
+   * 185px, diukur dari "001-911-R501-2026" berikut ikon urut di kepalanya.
+   *
+   * Sempat 175 — empat piksel di bawah kebutuhannya — dan akibatnya bukan
+   * elipsis melainkan PECAH MENJADI DUA BARIS, karena nomor CoP berisi
+   * tanda hubung yang boleh dijadikan titik potong. Satu baris tabel lalu
+   * setinggi dua baris teks di seluruh daftar.
+   */
   .mat-column-nomor {
-    width: 195px;
-    max-width: 195px;
+    width: 180px;
+    max-width: 180px;
   }
 
-  /* Tanpa lebar — inilah yang menyerap sisa ruangnya. */
+  /* Dan nomornya TIDAK BOLEH pecah: tanda hubung di dalamnya adalah titik
+     potong yang sah bagi peramban, jadi kolom yang kurang beberapa piksel
+     saja langsung menjadikannya dua baris. */
+  .mat-column-nomor .cl-primary {
+    white-space: nowrap;
+  }
+
+  /* Memuat "131-SPK-BPBP-F" berikut ikon bukanya dengan lapang, dan masih
+     cukup untuk nomor tiga aksara lebih panjang. TIDAK diukur dari nomor
+     adendum ("013-ADD1-SPK-R501-D"): adendum tidak pernah menjadi dasar
+     CoP — `spk_kandidat` membuangnya di SQL — sehingga menyediakan ruang
+     untuknya berarti memangkas kolom lain demi baris yang tidak ada. */
+  .mat-column-spk {
+    width: 198px;
+    max-width: 198px;
+  }
+
+  /* Tanpa lebar — inilah yang menyerap sisa ruangnya. Sembilan kolom lain
+     dipatok selebar isinya, jadi kelebihan ruang berkumpul di satu-satunya
+     kolom yang isinya benar-benar berbeda panjang antarbaris. */
   .mat-column-pemasok {
-    min-width: 200px;
+    min-width: 190px;
   }
 
   /* 110px, bukan 100: kepala kolomnya sendiri ("PROYEK" + ikon urut)
@@ -170,23 +357,38 @@
     max-width: 110px;
   }
 
+  /* 130px, turun dari 150: periode kerja yang dulu menumpang di bawahnya
+     sudah pindah, dan yang tersisa hanya satu tanggal — "17 Sep 2026"
+     berikut ikon urut di kepalanya. */
   .mat-column-tanggal {
-    width: 150px;
-    max-width: 150px;
+    width: 134px;
+    max-width: 134px;
+  }
+
+  /* Diukur dari bentuk TERPANJANG — "28 Des 2025 – 4 Jan 2026", rentang
+     yang melompati tahun. Ia jarang, tetapi satu-satunya yang tidak boleh
+     terpotong: justru di sanalah tahunnya menjadi keterangan yang
+     menentukan. */
+  .mat-column-periode {
+    width: 200px;
+    max-width: 200px;
   }
 
   /* Diukur dari lencana TERPANJANG ("BAP disetujui"), bukan dari yang
      paling sering muncul: lencana yang terpotong justru pada keadaan yang
      paling jarang adalah keadaan yang paling perlu terbaca. */
   .mat-column-keadaan {
-    width: 160px;
-    max-width: 160px;
+    width: 152px;
+    max-width: 152px;
   }
 
-  /* Nama lengkap tiga kata adalah yang BIASA di sini, bukan perkecualian. */
+  /* Nama lengkap tiga kata adalah yang BIASA di sini, bukan perkecualian.
+     195px, turun dari 230: dua kolom baru mengambil ruangnya, dan nama
+     yang tersisa dipangkas dengan elipsis yang sudah ada pada
+     `cl-pembuat` — bukan terpotong di tengah huruf. */
   .mat-column-pembuat {
-    width: 230px;
-    max-width: 230px;
+    width: 184px;
+    max-width: 184px;
   }
 }
 
@@ -211,6 +413,36 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/*
+ * Nama pemasok DIPANGKAS, tidak dipecah menjadi dua baris.
+ *
+ * Kolom ini satu-satunya yang melar, jadi pada meja sempit ia yang
+ * pertama kehabisan ruang. Bawaannya membungkus: "Dede Sahbudin" menjadi
+ * "Dede" di atas "Sahbudin", dan SELURUH baris tabel — kesembilan kolom
+ * lain yang isinya satu baris — ikut setinggi dua baris demi satu nama.
+ *
+ * `min-width: 0` pada pembungkus fleksnya wajib disebut: anak flex
+ * menolak menyusut di bawah lebar isinya sendiri, sehingga tanpa baris itu
+ * `text-overflow` tidak pernah sempat berlaku.
+ */
+:host ::ng-deep .mat-column-pemasok {
+  .cl-supplier {
+    min-width: 0;
+  }
+
+  .cl-supplier__text {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .cl-supplier__text .cl-primary {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 /*
