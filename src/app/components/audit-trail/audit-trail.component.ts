@@ -137,6 +137,15 @@ export class AuditTrailComponent implements OnChanges {
         return 'note_add';
       case 'contract_update':
         return 'edit_note';
+      /*
+       * Disesuaikan SISTEM, bukan diketik orang.
+       *
+       * Ikonnya sengaja berbeda dari `edit`: baris ini lahir karena nilai
+       * kontraknya berganti, dan yang membaca riwayat setahun kemudian
+       * tidak boleh mencari orang yang mengubah angkanya.
+       */
+      case 'progress_rebase':
+        return 'auto_fix_high';
       case 'move_date':
         return 'event_repeat';
       case 'update_status':

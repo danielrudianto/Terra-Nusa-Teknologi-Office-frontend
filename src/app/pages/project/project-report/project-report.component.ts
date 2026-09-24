@@ -894,7 +894,30 @@ export class ProjectReportComponent implements OnInit {
     };
   });
 
-  readonly opsiKurvaS: ChartConfiguration<'line'>['options'] = {
+  /**
+   * Batas atas sumbu Y kurva S.
+   *
+   * 100 pada keadaan biasa — lihat alasannya pada sumbu di bawah. Tetapi
+   * kemajuan DAPAT melewati seratus sejak persennya disusun ulang mengikuti
+   * nilai kontrak: lingkup yang dipangkas di bawah pekerjaan yang sudah jadi
+   * menghasilkan angka di atas seratus, dan itu justru keadaan yang paling
+   * perlu terlihat.
+   *
+   * Dikunci mati di 100, garisnya terpotong di tepi atas dan terbaca seperti
+   * pekerjaan yang berhenti tepat saat selesai — gambar yang salah tanpa
+   * satu pun galat. Karena itu batasnya HANYA tumbuh, tidak pernah menyusut
+   * di bawah 100.
+   */
+  readonly batasKurvaS = computed<number>(() => {
+    const semua = (this.dataKurvaS().datasets ?? [])
+      .flatMap((d) => (d.data ?? []) as any[])
+      .map((v) => Number(v))
+      .filter((v) => Number.isFinite(v));
+    const tertinggi = semua.length ? Math.max(...semua) : 0;
+    return Math.max(100, Math.ceil(tertinggi / 10) * 10);
+  });
+
+  readonly opsiKurvaS = computed<ChartConfiguration<'line'>['options']>(() => ({
     responsive: true,
     maintainAspectRatio: false,
     interaction: { mode: 'index', intersect: false },
@@ -938,17 +961,20 @@ export class ProjectReportComponent implements OnInit {
         ticks: { maxRotation: 0, autoSkip: true },
       },
       y: {
-        // Sengaja dikunci 0-100 dan TIDAK menyesuaikan isinya.
+        // Sengaja TIDAK menyesuaikan diri pada isinya.
         //
         // Sumbu yang menyesuaikan diri membuat proyek yang baru 8% terlihat
         // sama penuhnya dengan proyek yang sudah 80%. Yang dibaca di sini
         // adalah posisi terhadap keseluruhan pekerjaan, bukan bentuk garisnya.
+        //
+        // Satu-satunya yang menggesernya: angka yang memang melewati
+        // seratus. Lihat `batasKurvaS`.
         min: 0,
-        max: 100,
+        max: this.batasKurvaS(),
         ticks: { callback: (v) => `${v}%` },
       },
     },
-  };
+  }));
 
   lacakProgress = (_: number, p: any) => p.id;
 

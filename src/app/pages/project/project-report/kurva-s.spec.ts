@@ -218,3 +218,43 @@ describe('ProjectReport — kurva S', () => {
     expect(f.componentInstance.galat()).toBeNull();
   }));
 });
+
+/*
+ * BATAS ATAS SUMBU Y IKUT TUMBUH.
+ *
+ * Kemajuan dapat melewati seratus sejak persennya disusun ulang mengikuti
+ * nilai kontrak: lingkup yang dipangkas di bawah pekerjaan yang sudah jadi
+ * menghasilkan angka di atas seratus. Dikunci mati di 100, garisnya
+ * terpotong di tepi atas dan terbaca seperti pekerjaan yang berhenti tepat
+ * saat selesai — gambar yang salah tanpa satu pun galat.
+ */
+describe('kurva S: batas sumbu Y', () => {
+  function batas(nilai: number[]): number {
+    // Rumus yang sama dengan `batasKurvaS`, diuji sebagai aritmatika murni
+    // supaya tidak perlu membangun seluruh halaman laporan.
+    const tertinggi = nilai.length ? Math.max(...nilai) : 0;
+    return Math.max(100, Math.ceil(tertinggi / 10) * 10);
+  }
+
+  it('proyek biasa tetap berbingkai 0-100', () => {
+    // Inilah alasan sumbunya dikunci: yang baru 8% tidak boleh terlihat
+    // sama penuhnya dengan yang sudah 80%.
+    expect(batas([8, 12, 30])).toBe(100);
+    expect(batas([100])).toBe(100);
+  });
+
+  it('tanpa data pun tetap 100', () => {
+    expect(batas([])).toBe(100);
+  });
+
+  it('tumbuh ketika kemajuannya melewati seratus', () => {
+    expect(batas([60, 120])).toBe(120);
+    expect(batas([101])).toBe(110);
+    expect(batas([133.33])).toBe(140);
+  });
+
+  it('tidak pernah menyusut di bawah seratus', () => {
+    expect(batas([5])).toBe(100);
+    expect(batas([0])).toBe(100);
+  });
+});

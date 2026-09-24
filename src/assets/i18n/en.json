@@ -3693,6 +3693,7 @@
     "create_items": "Items added",
     "move_date": "Date moved",
     "disetujuiOlehPembuatnyaSendiri": "Disetujui oleh pembuatnya sendiri",
+    "progress_rebase": "Adjusted by the system (contract changed)",
     "contract_create": "Contract added",
     "contract_update": "Contract updated",
     "contract_delete": "Contract deleted",
