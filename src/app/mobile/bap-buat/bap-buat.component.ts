@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
@@ -55,8 +56,14 @@ import { tanggalLokal } from '../../utils/tanggal';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    NgxMaskDirective,
     TranslatePipe,
   ],
+  // Direktifnya saja tidak cukup: tanpa penyedianya di injektor komponen,
+  // atribut `mask` diam-diam menjadi teks yang diabaikan Angular — tanpa
+  // galat, tanpa peringatan. Pola yang sama dipakai layar CoP desktop, dan
+  // `scripts/pemeriksa/maskcek.py` menegakkannya.
+  providers: [provideNgxMask()],
   templateUrl: './bap-buat.component.html',
   styleUrls: ['./bap-buat.component.scss'],
 })
@@ -87,6 +94,59 @@ export class BapBuatComponent implements OnInit {
 
   /** Volume yang diketik, per `purchaseOrderItemID`. */
   readonly isian = signal<Record<number, string>>({});
+
+  /*
+   * KOTAK VOLUME MEMAKAI FormControl + ngx-mask, sama seperti layar CoP
+   * desktop — bukan `[value]` + `(input)` seperti sebelumnya.
+   *
+   * KENAPA. Di lapangan, volume diketik di papan tik angka ponsel, dan
+   * sebagian papan tik tidak menawarkan pemisah desimal sama sekali. Yang
+   * mengukur 720,404 meter mengetik "720404", dan tanpa pemisah ribuan
+   * angka itu terbaca persis seperti angka yang benar. Itu yang terjadi
+   * pada tiga berita acara 007-SPK-R501-D: 720404 m' x Rp 3.000 =
+   * Rp 2.161.212.000 untuk dua minggu kerja satu operator.
+   *
+   * Dengan mask, yang sama tampil "720 404" — enam digit yang terlihat
+   * SEBAGAI enam digit. Itu tidak menghalangi siapa pun, tetapi ia
+   * satu-satunya hal di layar ini yang membuat besarannya terbaca.
+   *
+   * `[value]` TIDAK BISA dipakai bersama ngx-mask: pustaka itu memformat
+   * lewat ControlValueAccessor, dan `[value]` yang dipasang ulang tiap
+   * deteksi perubahan menimpa hasilnya seketika — mask terpasang tetapi
+   * tidak pernah terlihat bekerja. Catatan yang sama sudah ada di layar
+   * CoP desktop.
+   *
+   * `isian` TETAP menjadi sumber kebenarannya: `adaIsian` dan `bolehSimpan`
+   * adalah computed atas sinyal itu, dan peta FormControl tidak
+   * membangunkan sinyal. Kontrolnya menulis ke sana lewat langganan.
+   */
+  private readonly kontrol = new Map<number, FormControl<string | null>>();
+
+  kontrolVol(barisId: number): FormControl<string | null> {
+    let c = this.kontrol.get(barisId);
+    if (!c) {
+      c = new FormControl<string | null>(this.volume(barisId));
+      c.valueChanges.subscribe((v) => this.ubahVolume(barisId, v ?? ''));
+      this.kontrol.set(barisId, c);
+    }
+    return c;
+  }
+
+  /**
+   * Kosongkan isian BERIKUT kotak-kotaknya.
+   *
+   * `isian.set({})` saja tidak cukup sejak kotaknya punya FormControl
+   * sendiri: sinyalnya kosong sementara yang tertulis di layar tetap ada,
+   * dan yang berpindah SPK melihat volume milik SPK sebelumnya di baris
+   * SPK yang baru.
+   */
+  private kosongkanIsian(): void {
+    this.isian.set({});
+    for (const c of this.kontrol.values()) {
+      c.setValue('', { emitEvent: false });
+    }
+    this.kontrol.clear();
+  }
 
   readonly periodeAwal = new FormControl<string>('');
   readonly periodeAkhir = new FormControl<string>('');
@@ -134,7 +194,7 @@ export class BapBuatComponent implements OnInit {
 
   async pilih(s: SpkKandidat): Promise<void> {
     this.spk.set(s);
-    this.isian.set({});
+    this.kosongkanIsian();
     this.daftar.set([]);
     this.tagihanFaktur.set(0);
 
@@ -171,7 +231,7 @@ export class BapBuatComponent implements OnInit {
   lepas(): void {
     this.spk.set(null);
     this.baris.set([]);
-    this.isian.set({});
+    this.kosongkanIsian();
     this.tagihanFaktur.set(0);
     this.cari.setValue('');
     this.sudahMencari.set(false);
@@ -185,10 +245,45 @@ export class BapBuatComponent implements OnInit {
     return this.isian()[barisId] ?? '';
   }
 
+  /**
+   * Teks -> angka, untuk bentuk yang benar-benar diketik orang.
+   *
+   * Yang LAMA: `Number(String(v).replace(',', '.'))` — satu koma saja.
+   * Benar untuk "1,5", dan diam-diam salah untuk bentuk Indonesia yang
+   * lengkap: "1.234,5" menjadi "1.234.5", yang bukan bilangan, sehingga
+   * hasilnya NOL.
+   *
+   * Nol itu tidak terlihat sebagai galat — ia terlihat seperti baris yang
+   * memang tidak diisi. Berita acaranya terbit tanpa baris itu, dan upah
+   * seminggu hilang dari dokumen yang ditandatangani.
+   *
+   * ATURANNYA, berurutan:
+   *   1. spasi dibuang — itu pemisah ribuan yang dipasang mask;
+   *   2. bila ada titik DAN koma, yang TERAKHIR muncul adalah pemisah
+   *      desimalnya dan yang lain pemisah ribuan ("1.234,5" -> 1234.5;
+   *      "1,234.5" -> 1234.5);
+   *   3. bila hanya ada satu jenis, ia pemisah desimal — sejalan dengan
+   *      mask yang memakai titik sebagai desimal dan spasi sebagai ribuan.
+   *
+   * Yang tidak dapat diurai tetap mengembalikan 0; bedanya, sekarang yang
+   * mengembalikan nol hanya yang memang bukan angka.
+   */
   private angka(v: unknown): number {
-    // Koma diterima sebagai pemisah desimal: papan ketik angka di sebagian
-    // ponsel hanya menawarkan koma, dan `Number('1,5')` adalah NaN.
-    const n = Number(String(v ?? '').replace(',', '.'));
+    let t = String(v ?? '').trim().replace(/\s/g, '');
+    if (!t) return 0;
+
+    const titik = t.lastIndexOf('.');
+    const koma = t.lastIndexOf(',');
+    if (titik >= 0 && koma >= 0) {
+      const desimal = Math.max(titik, koma);
+      const ribuan = desimal === titik ? ',' : '.';
+      t = t.split(ribuan).join('');
+      t = t.replace(',', '.');
+    } else if (koma >= 0) {
+      t = t.replace(',', '.');
+    }
+
+    const n = Number(t);
     return Number.isFinite(n) ? n : 0;
   }
 

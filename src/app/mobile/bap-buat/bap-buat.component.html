@@ -146,15 +146,31 @@
                 {{ b.sisa | number: "1.0-2" }} {{ b.unit }}
               }
             </span>
+            <!--
+              PEMISAH RIBUAN, sama seperti kotak volume di layar CoP
+              desktop.
+
+              Papan tik angka sebagian ponsel tidak menawarkan pemisah
+              desimal, sehingga yang mengukur 720,404 m' mengetik "720404"
+              — dan tanpa pemisah ribuan angka itu terbaca persis seperti
+              angka yang benar. Sebagai "720 404" ia terbaca sebagai enam
+              digit.
+
+              `formControl`, BUKAN `[value]` + `(input)`: ngx-mask
+              memformat lewat ControlValueAccessor, dan `[value]` yang
+              dipasang ulang tiap deteksi perubahan menimpa hasilnya
+              seketika. Lihat `kontrolVol()` pada komponennya.
+            -->
             <input
               class="mbap-baris__isian"
               type="text"
               inputmode="decimal"
               autocomplete="off"
-              [value]="volume(b.purchaseOrderItemID)"
-              (input)="
-                ubahVolume(b.purchaseOrderItemID, $any($event.target).value)
-              "
+              thousandSeparator=" "
+              decimalScale="2"
+              mask="separator.2"
+              [validation]="false"
+              [formControl]="kontrolVol(b.purchaseOrderItemID)"
               [attr.aria-label]="b.task"
               [placeholder]="'0'"
             />

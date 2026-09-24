@@ -33,30 +33,47 @@ describe('BAP ponsel — penguraian volume', () => {
     expect(angka(null)).toBe(0);
   });
 
-  it('BENTUK INDONESIA LENGKAP menjadi NOL — inilah lubangnya', () => {
+  it('BENTUK INDONESIA LENGKAP terbaca benar — lubangnya sudah ditutup', () => {
     /*
-     * "1.234,5" = seribu dua ratus tiga puluh empat koma lima.
-     * Ditulis begitu oleh siapa pun yang menulis angka di Indonesia.
+     * "1.234,5" = seribu dua ratus tiga puluh empat koma lima. Ditulis
+     * begitu oleh siapa pun yang menulis angka di Indonesia.
      *
-     * `replace(',', '.')` menghasilkan "1.234.5" -> NaN -> 0.
+     * Yang LAMA: `replace(',', '.')` menghasilkan "1.234.5" -> NaN -> 0.
+     * Nol itu tidak terlihat sebagai galat, melainkan seperti baris yang
+     * memang tidak diisi — berita acaranya terbit tanpa baris itu.
      *
-     * Diperiksa sebagai KEADAAN SEKARANG, bukan sebagai yang benar. Begitu
-     * penguraiannya diperbaiki, uji ini yang harus diubah — dan perubahan
-     * itulah tandanya lubangnya benar-benar ditutup.
+     * Aturannya sekarang: bila ada DUA jenis pemisah, yang muncul terakhir
+     * adalah desimalnya.
      */
-    expect(angka('1.234,5')).toBe(0);
-    expect(angka('12.000,75')).toBe(0);
+    expect(angka('1.234,5')).toBeCloseTo(1234.5, 4);
+    expect(angka('12.000,75')).toBeCloseTo(12000.75, 4);
+    // Bentuk Inggris juga, karena keduanya beredar di berkas yang disalin.
+    expect(angka('1,234.5')).toBeCloseTo(1234.5, 4);
   });
 
-  it('TIDAK ADA yang menahan angka tanpa pemisah', () => {
+  it('spasi dari mask dibuang, bukan bikin NaN', () => {
+    // Nilai kontrolnya datang dari ngx-mask berpemisah ribuan spasi.
+    expect(angka('720 404')).toBe(720404);
+    expect(angka('67 095.22')).toBeCloseTo(67095.22, 2);
+  });
+
+  it('yang benar-benar bukan angka tetap nol', () => {
+    expect(angka('abc')).toBe(0);
+    expect(angka('-')).toBe(0);
+    expect(angka('  ')).toBe(0);
+  });
+
+  it('angka tanpa pemisah tetap diterima apa adanya', () => {
     /*
      * Asal 2,16 miliar: "720404" diketik utuh, dimaksudkan 720,404 m'.
      *
-     * Diuraikan apa adanya — memang tidak ada yang salah pada
-     * penguraiannya. Yang tidak ada adalah apa pun yang bertanya "yakin?"
-     * sesudahnya: SPK D sengaja tanpa plafon (`tanpaPagu`), sehingga
-     * `lebih()` mengembalikan false, tombol simpannya hidup, dan servernya
-     * menerima.
+     * Penguraiannya memang tidak salah — 720404 ya 720404. Yang berubah
+     * bukan di sini melainkan di KOTAKNYA: dengan mask, angka itu tampil
+     * "720 404", dan enam digit terbaca sebagai enam digit.
+     *
+     * Gerbang yang benar-benar menahannya tetap persetujuan BAP oleh
+     * manusia — dan pada ketiga berita acara itu, gerbang tersebut memang
+     * menahannya: tidak satu pun pernah disetujui.
      */
     expect(angka('720404')).toBe(720404);
     expect(angka('126394')).toBe(126394);
