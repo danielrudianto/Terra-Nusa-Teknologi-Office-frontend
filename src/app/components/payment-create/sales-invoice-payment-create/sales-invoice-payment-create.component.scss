@@ -299,16 +299,131 @@ $brandSoft: var(--brand-soft, #e7ecfb);
     background: var(--ok-bg, #e6f6ec);
     color: var(--ok-fg, #1a7f45);
   }
-  &__date {
+  &__teks {
     flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+  &__baris1 {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  &__date {
     font-size: 0.85rem;
     color: var(--ink, #16181d);
+  }
+  &__bank {
+    font-size: 0.74rem;
+    color: var(--faint, #9aa0ab);
+    font-variant-numeric: tabular-nums;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   &__amt {
     font-weight: 700;
     color: var(--ok-fg, #1a7f45);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
+  }
+  &__aksi {
+    flex: 0 0 auto;
+    display: flex;
+    gap: 4px;
+  }
+  &__btn {
+    border: none;
+    background: transparent;
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--brand, #154dec);
+    padding: 4px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--hover, #f3f6ff);
+    }
+
+    &--hapus {
+      color: var(--bad-fg, #b3261e);
+
+      &:hover {
+        background: var(--bad-bg, #fdecea);
+      }
+    }
+  }
+
+  /* Baris yang sedang dibetulkan — ditandai, supaya jelas yang mana. */
+  &--sunting {
+    border-color: var(--brand, #154dec);
+    background: var(--brand-soft, #eef2fe);
+  }
+}
+
+/*
+ * Spanduk "sedang membetulkan".
+ *
+ * Ikon + blok teks, bukan hint kecil: ia menyatakan bahwa tombol simpan
+ * MENIMPA baris yang sudah ada, dan itu tidak boleh terlewat dibaca.
+ */
+.sip-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0 0 0.85rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  border: 0.5px solid var(--brand-soft, #cdd7f7);
+  color: var(--brand-strong, #0f3fd0);
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+    margin-top: 1px;
+  }
+
+  > div {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  strong {
+    font-size: 0.83rem;
+    font-weight: 700;
+  }
+
+  span {
+    font-size: 0.76rem;
+    line-height: 1.4;
+  }
+
+  &__batal {
+    flex: 0 0 auto;
+    border: none;
+    background: transparent;
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--brand-strong, #0f3fd0);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+
+    &:hover {
+      background: var(--hover, #f3f6ff);
+    }
   }
 }
 .sip-pos {

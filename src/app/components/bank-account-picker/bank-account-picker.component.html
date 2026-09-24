@@ -1,0 +1,89 @@
+<div class="bap">
+  <div mat-dialog-title class="bap-head" appDialogGeser>
+    <div class="bap-head__teks">
+      <h2 class="bap-title">{{ "bank.pickerTitle" | translate }}</h2>
+      <span class="bap-sub">{{ "bank.pickerSub" | translate }}</span>
+    </div>
+    <button
+      type="button"
+      class="bap-x"
+      (click)="tutup()"
+      [attr.aria-label]="'common.close' | translate"
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+      >
+        <path d="M18 6 6 18M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <mat-dialog-content class="bap-content">
+    <mat-form-field appearance="outline" class="bap-search">
+      <svg
+        matPrefix
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        class="bap-search__ikon"
+      >
+        <circle cx="11" cy="11" r="7" />
+        <path d="m21 21-4.3-4.3" />
+      </svg>
+      <mat-label>{{ "bank.pickerSearch" | translate }}</mat-label>
+      <input
+        matInput
+        type="search"
+        autocomplete="off"
+        [value]="kata()"
+        (input)="onKetik($event)"
+        [placeholder]="'bank.pickerSearchPlaceholder' | translate"
+      />
+    </mat-form-field>
+
+    <div class="bap-list">
+      @for (r of hasil(); track r.id) {
+        <button
+          type="button"
+          class="bap-row"
+          [class.bap-row--terpilih]="r.id === terpilihID"
+          (click)="pilih(r)"
+        >
+          <span class="bap-row__nomor">{{ r.bankAccountNumber }}</span>
+          <span class="bap-row__nama">{{ r.bankAccountName }}</span>
+          <span class="bap-row__bank">{{ r.bankName }}</span>
+        </button>
+      }
+
+      @if (hasil().length === 0) {
+        <div class="bap-kosong">
+          @if (memuat()) {
+            {{ "bank.pickerLoading" | translate }}
+          } @else if (kata()) {
+            {{ "bank.noMatch" | translate }}
+          } @else {
+            {{ "bank.pickerTakAda" | translate }}
+          }
+        </div>
+      }
+    </div>
+  </mat-dialog-content>
+
+  @if (bolehKosong) {
+    <mat-dialog-actions class="bap-actions">
+      <button mat-button class="bap-hapus" type="button" (click)="kosongkan()">
+        {{ "bank.pickerKosongkan" | translate }}
+      </button>
+    </mat-dialog-actions>
+  }
+</div>

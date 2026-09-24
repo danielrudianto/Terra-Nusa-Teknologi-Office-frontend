@@ -7,6 +7,16 @@ export interface RekeningRingkas {
   bankName: string;
   bankAccountName: string;
   bankAccountNumber: string;
+  /**
+   * Rekening yang sudah dihapus.
+   *
+   * `banks/all` SENGAJA mengembalikannya — halaman daftar rekening perlu
+   * menampilkannya, dan kalender perlu menerjemahkan id lama menjadi nama.
+   * Yang tidak boleh adalah MENAWARKANNYA pada pemilih: uang tidak dapat
+   * dikirim ke rekening yang sudah ditutup, dan nama yang masih muncul di
+   * daftar pilihan terbaca sebagai rekening yang masih hidup.
+   */
+  isDelete?: boolean;
 }
 
 /**
@@ -86,14 +96,29 @@ export class BankLookupService {
   }
 
   /**
+   * Rekening yang MASIH HIDUP — yang boleh ditawarkan pada pemilih.
+   *
+   * `cari()` sengaja TIDAK menyaring: dokumen lama dapat menunjuk rekening
+   * yang sudah dihapus, dan kolomnya harus tetap menyebut nama rekening itu
+   * — bukan berubah menjadi kosong seolah tidak pernah ada.
+   */
+  readonly aktif = computed(() =>
+    this._rekening().filter((r) => !r.isDelete),
+  );
+
+  /**
    * Saring menurut kata kunci.
    *
    * Nama bank ikut dicari meski tidak ditampilkan di label: orang biasanya
    * ingat "yang BCA", bukan nomor rekeningnya.
+   *
+   * Rekening terhapus TIDAK pernah ikut. Ini pintu masuk satu-satunya bagi
+   * seluruh pemilih rekening di aplikasi, jadi menyaringnya di sini menutup
+   * kedua belas layarnya sekaligus.
    */
   saring(kata: string | null | undefined): RekeningRingkas[] {
     const q = (kata ?? '').trim().toLowerCase();
-    const semua = this._rekening();
+    const semua = this.aktif();
     if (!q) return semua;
     return semua.filter((r) =>
       [r.bankAccountNumber, r.bankAccountName, r.bankName]

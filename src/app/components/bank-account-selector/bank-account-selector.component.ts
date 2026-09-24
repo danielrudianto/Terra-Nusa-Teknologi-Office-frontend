@@ -14,10 +14,14 @@ import {
 } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslatePipe } from '@ngx-translate/core';
 
+import {
+  BankAccountPickerComponent,
+  HasilPemilihRekening,
+} from '../bank-account-picker/bank-account-picker.component';
 import { BankLookupService, RekeningRingkas } from '../../services/bank-lookup.service';
 
 /**
@@ -30,12 +34,19 @@ import { BankLookupService, RekeningRingkas } from '../../services/bank-lookup.s
  * Nilai yang ditulis tetap berupa ID rekening — tidak ada perubahan di sisi
  * server.
  *
- * WAJIB DIPILIH DARI DAFTAR. Berbeda dari pemilih proyek yang menerima kode
- * asing dengan peringatan, di sini nilainya adalah id: teks yang tidak cocok
- * dengan rekening mana pun tidak punya arti sama sekali. Karena itu, isian
- * yang tidak cocok menjadikan nilainya `null` — bukan disimpan apa adanya —
- * sehingga validator `required` menangkapnya dan formulir tidak dapat
- * dikirim dengan rekening yang tidak ada.
+ * DIALOG, BUKAN AUTOCOMPLETE.
+ *
+ * Keterangan satu rekening sudah tidak muat dalam satu baris saran: nomor,
+ * nama pemilik, dan nama bank bertiga menjadi satu baris panjang yang
+ * terpotong justru di bagian yang membedakan. Daftar saran juga hanya hidup
+ * selama kolomnya disorot, sehingga membandingkan dua rekening berarti
+ * mengetik ulang.
+ *
+ * Kolomnya kini `readonly` dan hanya menerima hasil dialog. Konsekuensinya
+ * dikehendaki: nilainya adalah id, dan teks yang tidak cocok dengan rekening
+ * mana pun tidak punya arti sama sekali — dulu isian semacam itu harus
+ * dijadikan `null` lewat penanganan blur tersendiri, sekarang keadaannya
+ * tidak mungkin muncul.
  */
 @Component({
   selector: 'app-bank-account-selector',
@@ -46,7 +57,6 @@ import { BankLookupService, RekeningRingkas } from '../../services/bank-lookup.s
     FormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatAutocompleteModule,
     MatIconModule,
     TranslatePipe,
   ],
@@ -63,80 +73,106 @@ import { BankLookupService, RekeningRingkas } from '../../services/bank-lookup.s
 
       <input
         matInput
-        [matAutocomplete]="auto"
+        readonly
         [value]="teks()"
         [disabled]="nonaktif()"
         [placeholder]="'bank.selectorPlaceholder' | translate"
-        (input)="onKetik($event)"
-        (blur)="onKehilanganFokus()"
+        (click)="buka()"
+        (focus)="buka()"
       />
       <mat-icon matSuffix>search</mat-icon>
-
-      <mat-autocomplete
-        #auto="matAutocomplete"
-        (optionSelected)="onPilih($event.option.value)"
-      >
-        @for (r of saran(); track r.id) {
-          <mat-option [value]="r.id">
-            <span class="bas-nomor">{{ r.bankAccountNumber }}</span>
-            <span class="bas-nama">{{ r.bankAccountName }}</span>
-            <span class="bas-bank">{{ r.bankName }}</span>
-          </mat-option>
-        }
-        @if (saran().length === 0) {
-          <mat-option [disabled]="true">
-            {{ 'bank.noMatch' | translate }}
-          </mat-option>
-        }
-      </mat-autocomplete>
-
-      @if (terpilih(); as r) {
-        <mat-hint>{{ r.bankName }} &middot; {{ r.bankAccountName }}</mat-hint>
-      } @else if (teks()) {
-        <mat-hint class="bas-hint--asing">
-          <mat-icon>error_outline</mat-icon>
-          {{ 'bank.mustPick' | translate }}
-        </mat-hint>
-      }
     </mat-form-field>
+
+    <!--
+      Keterangan rekening sebagai BLOK, bukan mat-hint.
+
+      Nama bank dan nama pemilik rekening terlalu panjang untuk teks kecil
+      di bawah kolom — yang paling sering dibaca justru yang paling tidak
+      terbaca. Bentuknya sama dengan spanduk di layar pembelian.
+    -->
+    @if (terpilih(); as r) {
+      @if (r.isDelete) {
+        <div class="bas-blok bas-blok--awas">
+          <mat-icon>report</mat-icon>
+          <div>
+            <strong>{{ 'bank.terhapusJudul' | translate }}</strong>
+            <span>{{ r.bankName }} &middot; {{ r.bankAccountName }}</span>
+            <span>{{ 'bank.terhapusKet' | translate }}</span>
+          </div>
+        </div>
+      } @else {
+        <div class="bas-blok">
+          <mat-icon>account_balance</mat-icon>
+          <div>
+            <strong>{{ r.bankAccountName }}</strong>
+            <span>{{ r.bankName }}</span>
+          </div>
+        </div>
+      }
+    }
   `,
   styles: [
     `
       .bas {
         width: 100%;
       }
-      .bas-nomor {
-        font-weight: 600;
-        margin-right: 0.6rem;
+      .bas input {
+        cursor: pointer;
       }
-      .bas-nama {
-        color: var(--muted);
-        font-size: 0.9em;
-        margin-right: 0.5rem;
+      .bas-blok {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+        margin: -0.6rem 0 0.9rem;
+        padding: 0.7rem 0.85rem;
+        border-radius: 12px;
+        background: var(--brand-soft, #e7ecfb);
+        border: 0.5px solid var(--brand-soft, #cdd7f7);
+        color: var(--brand-strong, #0f3fd0);
       }
-      .bas-bank {
-        color: var(--faint);
-        font-size: 0.8em;
+      .bas-blok .mat-icon {
+        flex: 0 0 auto;
+        width: 19px;
+        height: 19px;
+        font-size: 19px;
+        margin-top: 1px;
       }
-      .bas-hint--asing {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        color: var(--warn-fg);
+      .bas-blok > div {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        min-width: 0;
       }
-      .bas-hint--asing .mat-icon {
-        width: 1em;
-        height: 1em;
-        font-size: 1em;
-        line-height: 1em;
+      .bas-blok strong {
+        font-size: 0.83rem;
+        font-weight: 700;
+      }
+      .bas-blok span {
+        font-size: 0.76rem;
+        line-height: 1.4;
+      }
+      .bas-blok--awas {
+        background: var(--warn-bg, #fdf3e3);
+        border-color: var(--warn-bg, #f4dcb4);
+        color: var(--warn-fg, #8a5300);
       }
     `,
   ],
 })
 export class BankAccountSelectorComponent implements ControlValueAccessor {
   readonly lookup = inject(BankLookupService);
+  private readonly dialog = inject(MatDialog);
 
   readonly label = input<string>('');
+
+  /**
+   * Boleh dikosongkan dari dalam dialog.
+   *
+   * Kolom rekening pembayaran wajib; kolom slip pembayaran pada pembelian
+   * tidak. Bawaannya `true` supaya pemakaian yang sudah ada tidak berubah
+   * perilakunya.
+   */
+  readonly bolehKosong = input<boolean>(true);
 
   /** Teks yang tampil di kolom. */
   readonly teks = signal('');
@@ -144,6 +180,9 @@ export class BankAccountSelectorComponent implements ControlValueAccessor {
 
   /** ID rekening yang sedang terpilih; `null` bila belum ada yang sah. */
   private readonly idTerpilih = signal<number | null>(null);
+
+  /** Dialognya sedang terbuka — `focus` dan `click` jangan membukanya dua kali. */
+  private terbuka = false;
 
   private ubah: (v: number | null) => void = () => {};
   private sentuh: () => void = () => {};
@@ -156,14 +195,6 @@ export class BankAccountSelectorComponent implements ControlValueAccessor {
       const id = this.idTerpilih();
       if (id !== null) this.teks.set(this.lookup.label(this.lookup.cari(id)));
     });
-  }
-
-  saran(): RekeningRingkas[] {
-    // Bila sudah ada yang terpilih, teksnya adalah label lengkap dan tidak
-    // cocok dengan kata kunci mana pun. Daftar penuh ditampilkan agar
-    // penggantian rekening tidak memaksa menghapus isian dulu.
-    const q = this.terpilih() ? '' : this.teks();
-    return this.lookup.saring(q);
   }
 
   terpilih(): RekeningRingkas | undefined {
@@ -192,36 +223,41 @@ export class BankAccountSelectorComponent implements ControlValueAccessor {
 
   // ---- Interaksi --------------------------------------------------------
 
-  onKetik(ev: Event): void {
-    this.teks.set((ev.target as HTMLInputElement).value ?? '');
-
-    /*
-     * Mengetik membatalkan pilihan sebelumnya.
-     *
-     * Tanpa ini, mengubah teks tanpa memilih ulang akan meninggalkan id
-     * lama — kolomnya menampilkan satu rekening sementara yang tersimpan
-     * rekening lain, dan tidak ada yang tahu sampai uangnya salah kirim.
-     */
-    if (this.idTerpilih() !== null) {
-      this.idTerpilih.set(null);
-      this.ubah(null);
-    }
-  }
-
-  onPilih(id: number): void {
-    this.idTerpilih.set(Number(id));
-    this.teks.set(this.lookup.label(this.lookup.cari(id)));
-    this.ubah(Number(id));
-  }
-
-  onKehilanganFokus(): void {
+  buka(): void {
+    if (this.nonaktif() || this.terbuka) return;
+    this.terbuka = true;
     this.sentuh();
 
-    // Teks yang tidak berujung pada pilihan dikosongkan, bukan dibiarkan.
-    // Isian yang terlihat terisi padahal nilainya kosong adalah bentuk
-    // kekeliruan yang paling sulit disadari.
-    if (this.idTerpilih() === null && this.teks()) {
-      this.teks.set('');
-    }
+    this.dialog
+      .open(BankAccountPickerComponent, {
+        data: {
+          terpilihID: this.idTerpilih(),
+          bolehKosong: this.bolehKosong(),
+        },
+        autoFocus: false,
+        maxWidth: '94vw',
+      })
+      .afterClosed()
+      .subscribe((hasil: HasilPemilihRekening | undefined) => {
+        this.terbuka = false;
+
+        // Ditutup tanpa memilih: TIDAK mengubah apa pun. Berbeda dari
+        // "kosongkan pilihan", yang mengembalikan `{ hapus: true }`.
+        if (!hasil) return;
+
+        if (hasil.hapus) {
+          this.idTerpilih.set(null);
+          this.teks.set('');
+          this.ubah(null);
+          return;
+        }
+
+        if (hasil.rekening) {
+          const id = Number(hasil.rekening.id);
+          this.idTerpilih.set(id);
+          this.teks.set(this.lookup.label(this.lookup.cari(id)));
+          this.ubah(id);
+        }
+      });
   }
 }

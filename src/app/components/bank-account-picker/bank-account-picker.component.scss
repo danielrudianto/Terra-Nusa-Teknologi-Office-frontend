@@ -1,0 +1,160 @@
+/*
+ * Bentuknya mengikuti pemilih PPh (`pp-*`) — kepala, pencarian, daftar
+ * baris. Keduanya dibuka dari formulir yang sama oleh orang yang sama;
+ * tampil berbeda membuatnya terbaca seperti dua aplikasi.
+ *
+ * Seluruh warnanya lewat token `--*`: tema gelap mengganti token yang sama,
+ * dan warna yang ditulis langsung tidak ikut berganti.
+ */
+
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+
+.bap {
+  font-family: "Montserrat", sans-serif;
+  box-sizing: border-box;
+  color: $ink;
+  padding: 1rem;
+  min-width: min(480px, 88vw);
+}
+.bap *,
+.bap *::before,
+.bap *::after {
+  box-sizing: border-box;
+}
+
+/* kepala */
+.bap-head {
+  display: flex !important;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0.25rem 0.75rem !important;
+  margin: 0 !important;
+}
+.bap-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+.bap-sub {
+  font-size: 0.78rem;
+  color: $faint;
+}
+.bap-x {
+  border: none;
+  background: var(--surface-2, #f3f5f9);
+  color: $muted;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex: 0 0 auto;
+
+  &:hover {
+    background: var(--surface-2, #e9edf3);
+    color: $ink;
+  }
+}
+
+/* isi */
+.bap-content {
+  padding: 0 0.25rem !important;
+  overflow-x: hidden;
+}
+
+.bap-search {
+  width: 100%;
+  --mdc-outlined-text-field-container-shape: 12px;
+  --mdc-outlined-text-field-focus-outline-color: #{$brand};
+  --mdc-outlined-text-field-caret-color: #{$brand};
+  --mdc-outlined-text-field-focus-label-text-color: #{$brand};
+
+  &__ikon {
+    color: $faint;
+    margin: 0 8px 0 2px;
+  }
+}
+
+/* daftar */
+.bap-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 52vh;
+  overflow-y: auto;
+  margin: 0 -0.25rem;
+}
+
+/*
+ * Tiap rekening BARISNYA SENDIRI, bertumpuk, bukan satu baris panjang.
+ *
+ * Inilah sebab dialognya ada: nomor rekening dan nama pemiliknya berdempet
+ * dalam satu baris saran membuat keduanya terpotong justru di bagian yang
+ * membedakan satu rekening dari yang lain.
+ */
+.bap-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid $line;
+  padding: 0.7rem 0.6rem;
+  cursor: pointer;
+  font-family: "Montserrat", sans-serif;
+  transition: background 0.13s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+  &:hover {
+    background: var(--hover, #f6f8ff);
+  }
+
+  &--terpilih {
+    background: var(--brand-soft, #eef2fe);
+  }
+}
+
+.bap-row__nomor {
+  font-family: "Roboto Mono", ui-monospace, monospace;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: $ink;
+  letter-spacing: 0.01em;
+}
+.bap-row__nama {
+  font-size: 0.82rem;
+  color: $ink;
+  line-height: 1.35;
+}
+.bap-row__bank {
+  font-size: 0.74rem;
+  color: $faint;
+  line-height: 1.35;
+}
+
+.bap-kosong {
+  padding: 1.6rem 0.6rem;
+  text-align: center;
+  font-size: 0.82rem;
+  color: $faint;
+}
+
+.bap-actions {
+  padding: 0.5rem 0.25rem 0 !important;
+  justify-content: flex-start;
+}
+.bap-hapus {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  color: $muted;
+}

@@ -31,10 +31,13 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { CanDirective } from '../../../directives/can.directive';
+import { DeleteConfirmationComponent } from '../../delete-confirmation/delete-confirmation.component';
 
 @Component({
   selector: 'app-sales-invoice-payment-create',
@@ -46,6 +49,7 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
     BankAccountSelectorComponent,
     NgxMaskDirective,
     MatInputModule,
+    MatIconModule,
     MatDialogModule,
     CommonModule,
     FormsModule,
@@ -55,6 +59,7 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
     MatDatepickerModule,
     TranslatePipe,
     DialogGeserDirective,
+    CanDirective,
   ],
 })
 export class SalesInvoicePaymentCreateComponent {
@@ -163,12 +168,25 @@ export class SalesInvoicePaymentCreateComponent {
             total: nilaiDibayarkan(data),
           });
 
+          /*
+           * Rekening IKUT dibawa ke barisnya.
+           *
+           * Tanpa ini riwayat hanya menyebut tanggal dan nominal — dan
+           * justru rekeninglah yang paling sering salah ketik, sehingga
+           * satu-satunya kolom yang perlu diperiksa ulang adalah kolom
+           * yang tidak pernah ditampilkan.
+           */
+          this.t.clear();
           data.payments.forEach((x: any) => {
             this.t.push(
               this.formBuilder.group({
                 id: [x.id],
                 amount: [x.amount],
                 date: [x.date],
+                bankAccountID: [x.bankAccountID],
+                bankAccountNumber: [x.bankAccountNumber],
+                bankAccountName: [x.bankAccountName],
+                bankName: [x.bankName],
               }),
             );
           });
@@ -186,7 +204,84 @@ export class SalesInvoicePaymentCreateComponent {
       });
   }
 
+  /**
+   * Id pembayaran yang sedang dibetulkan; `null` bila sedang mencatat baru.
+   *
+   * SATU formulir dipakai untuk keduanya, bukan dua. Tanggal, nominal, dan
+   * rekeningnya sama persis — formulir kedua berarti dua tempat yang harus
+   * sama-sama diingat setiap kali penjagaannya berubah.
+   */
+  sedangSunting: number | null = null;
+
+  mulaiSunting(baris: any): void {
+    this.sedangSunting = Number(baris.get('id')?.value);
+    this.paymentFormGroup.patchValue({
+      date: baris.get('date')?.value,
+      amount: baris.get('amount')?.value,
+      bankAccountID: baris.get('bankAccountID')?.value,
+    });
+  }
+
+  batalSunting(): void {
+    this.sedangSunting = null;
+    this.paymentFormGroup.reset({ date: '', amount: 0, bankAccountID: '' });
+  }
+
+  /**
+   * Hapus pembayaran yang tidak pernah terjadi.
+   *
+   * Dijaga level 4 di server. Tombolnya disembunyikan `*appCan` sebagai
+   * kenyamanan — bukan pengamanan; rutenya tetap menolak.
+   */
+  hapus(baris: any): void {
+    const id = Number(baris.get('id')?.value);
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: this.translate.instant('salesInvoicePayment.hapusJudul'),
+          prompt: this.translate.instant('salesInvoicePayment.hapusKet'),
+        },
+        width: '440px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((ya) => {
+        if (!ya) return;
+        this.apiService.delete(`incoming-payments/${id}`).subscribe({
+          next: () => {
+            this.snackBar.open(
+              this.translate.instant('notify.deleteSuccess'),
+              'Close',
+              { duration: 3000 },
+            );
+            // Kalau yang dihapus sedang disunting, penyuntingannya ikut
+            // batal — jika tidak, tombol simpan menunjuk baris yang sudah
+            // tidak ada.
+            if (this.sedangSunting === id) this.batalSunting();
+            this.muatUlang();
+          },
+          error: (error) => {
+            this.snackBar.open(this.serverMessage.terjemahkan(error), 'Close', {
+              duration: 4000,
+            });
+          },
+        });
+      });
+  }
+
+  /** Muat ulang faktur beserta riwayat pembayarannya, tanpa menutup dialog. */
+  private muatUlang(): void {
+    this.t.clear();
+    this.fetchData();
+  }
+
   onSubmit() {
+    if (this.sedangSunting !== null) {
+      this.simpanSuntingan();
+      return;
+    }
+
     this.isSubmitting = true;
     this.apiService
       .post('incoming-payments', {
@@ -209,6 +304,46 @@ export class SalesInvoicePaymentCreateComponent {
           this.snackBar.open(
           this.serverMessage.terjemahkan(error), 'Close', {
             duration: 3000,
+          });
+        },
+      })
+      .add(() => {
+        this.isSubmitting = false;
+      });
+  }
+
+  /**
+   * Simpan pembetulan.
+   *
+   * Hanya tiga kolom yang dikirim — rekening, tanggal, nominal. Fakturnya
+   * TIDAK ikut: memindahkan pembayaran ke faktur lain melewati seluruh
+   * penjagaan yang berjalan saat pembayaran dibuat, dan servernya memang
+   * menolaknya.
+   */
+  simpanSuntingan(): void {
+    const id = this.sedangSunting;
+    if (id === null) return;
+
+    this.isSubmitting = true;
+    this.apiService
+      .put(`incoming-payments/${id}`, {
+        date: moment(this.paymentFormGroup.value.date).format('YYYY-MM-DD'),
+        amount: this.paymentFormGroup.value.amount,
+        bankAccountID: this.paymentFormGroup.value.bankAccountID,
+      })
+      .subscribe({
+        next: () => {
+          this.snackBar.open(
+            this.translate.instant('notify.updateSuccess'),
+            'Close',
+            { duration: 3000 },
+          );
+          this.batalSunting();
+          this.muatUlang();
+        },
+        error: (error) => {
+          this.snackBar.open(this.serverMessage.terjemahkan(error), 'Close', {
+            duration: 4000,
           });
         },
       })

@@ -86,7 +86,11 @@
         {{ "common.paymentHistory" | translate }}
       </div>
       <div class="sip-history">
-        <div class="sip-hist" *ngFor="let p of t.controls">
+        <div
+          class="sip-hist"
+          [class.sip-hist--sunting]="sedangSunting === p.get('id')?.value"
+          *ngFor="let p of t.controls"
+        >
           <span class="sip-hist__icon">
             <svg
               width="15"
@@ -101,20 +105,87 @@
               <path d="M20 6 9 17l-5-5" />
             </svg>
           </span>
-          <span class="sip-hist__date">{{
-            p.get("date")?.value | date: "dd MMM yyyy"
-          }}</span>
-          <span class="sip-hist__amt"
-            >Rp {{ p.get("amount")?.value | number: "1.2-2" }}</span
-          >
+
+          <span class="sip-hist__teks">
+            <span class="sip-hist__baris1">
+              <span class="sip-hist__date">{{
+                p.get("date")?.value | date: "dd MMM yyyy"
+              }}</span>
+              <span class="sip-hist__amt"
+                >Rp {{ p.get("amount")?.value | number: "1.2-2" }}</span
+              >
+            </span>
+            <!--
+              REKENINGNYA DISEBUT.
+
+              Inilah kolom yang paling sering salah ketik saat mencatat, dan
+              sampai sekarang satu-satunya yang tidak pernah ditampilkan di
+              riwayat — sehingga kekeliruannya tidak dapat ditemukan dari
+              layar ini sama sekali.
+            -->
+            <span class="sip-hist__bank">
+              {{ p.get("bankAccountNumber")?.value }}
+              @if (p.get("bankName")?.value) {
+                &middot; {{ p.get("bankName")?.value }}
+              }
+            </span>
+          </span>
+
+          <span class="sip-hist__aksi">
+            <button
+              type="button"
+              class="sip-hist__btn"
+              (click)="mulaiSunting(p)"
+              [attr.aria-label]="'common.edit' | translate"
+            >
+              {{ "common.edit" | translate }}
+            </button>
+            <!--
+              Hapus dijaga level 4 di server; tombolnya disembunyikan di sini
+              sebagai kenyamanan. Menyembunyikan tombol bukan pengamanan —
+              rutenya tetap menolak.
+            -->
+            <button
+              type="button"
+              class="sip-hist__btn sip-hist__btn--hapus"
+              *appCan="'payment_incoming:delete'"
+              (click)="hapus(p)"
+            >
+              {{ "common.delete" | translate }}
+            </button>
+          </span>
         </div>
       </div>
     </div>
 
     <!-- payment inputs -->
     <div class="sip-section__title sip-section__title--mt">
-      {{ "salesInvoicePayment.receivePayment" | translate }}
+      @if (sedangSunting !== null) {
+        {{ "salesInvoicePayment.betulkan" | translate }}
+      } @else {
+        {{ "salesInvoicePayment.receivePayment" | translate }}
+      }
     </div>
+
+    <!--
+      Sedang membetulkan — dikatakan, bukan disiratkan.
+
+      Formulirnya satu dan dipakai untuk dua hal. Tanpa baris ini, yang
+      menekan "Simpan" tidak punya cara tahu apakah ia menambah pembayaran
+      baru atau menimpa yang lama.
+    -->
+    @if (sedangSunting !== null) {
+      <div class="sip-banner">
+        <mat-icon>edit_note</mat-icon>
+        <div>
+          <strong>{{ "salesInvoicePayment.betulkanJudul" | translate }}</strong>
+          <span>{{ "salesInvoicePayment.betulkanKet" | translate }}</span>
+        </div>
+        <button type="button" class="sip-banner__batal" (click)="batalSunting()">
+          {{ "common.cancel" | translate }}
+        </button>
+      </div>
+    }
     <form [formGroup]="paymentFormGroup">
       <div class="sip-grid">
         <mat-form-field appearance="outline">
@@ -167,7 +238,13 @@
       (click)="onSubmit()"
       [disabled]="isLoading || isSubmitting || !paymentFormGroup.valid"
     >
-      {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.terimaPembayaran' | translate) }}
+      @if (isSubmitting) {
+        {{ "hardcoded.menyimpan" | translate }}
+      } @else if (sedangSunting !== null) {
+        {{ "salesInvoicePayment.simpanPerubahan" | translate }}
+      } @else {
+        {{ "hardcoded.terimaPembayaran" | translate }}
+      }
     </button>
   </mat-dialog-actions>
 </div>
