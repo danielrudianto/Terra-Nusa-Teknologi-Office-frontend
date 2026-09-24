@@ -1,5 +1,6 @@
 import { panelSamping } from '../../../helpers/panel-samping';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { CanDirective } from '../../../directives/can.directive';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -79,7 +80,22 @@ export class UserListComponent {
     'action',
   ];
 
+  /**
+   * Rute dibaca OPSIONAL.
+   *
+   * Komponen ini juga dibuat di dalam uji tanpa `provideRouter`; meminta
+   * `ActivatedRoute` sebagai kebutuhan wajib membuat ujinya gagal pada
+   * pembuatan, bukan pada hal yang sedang diperiksa.
+   */
+  private readonly ruteCari = inject(ActivatedRoute, { optional: true });
+
   ngOnInit(): void {
+    // Dibuka dari pencarian global (Ctrl+K) dengan `?search=` — kotaknya
+    // terisi lebih dulu, jadi pemuatan pertama sudah tersaring. Pola yang
+    // sama dengan daftar klien dan pemasok.
+    const dariAlamat = this.ruteCari?.snapshot?.queryParamMap?.get('search');
+    if (dariAlamat) this.formControl.setValue(dariAlamat, { emitEvent: false });
+
     this.fetchUsers();
 
     this.formControl.valueChanges.pipe(debounceTime(500)).subscribe(() => {

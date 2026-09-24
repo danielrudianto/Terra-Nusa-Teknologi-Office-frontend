@@ -38,6 +38,9 @@ export const KELOMPOK_INFO: Record<string, { ikon: string; label: string }> = {
   faktur_penjualan: { ikon: 'request_quote', label: 'cariGlobal.fakturPenjualan' },
   tender: { ikon: 'gavel', label: 'cariGlobal.tender' },
   karyawan: { ikon: 'badge', label: 'cariGlobal.karyawan' },
+  // Pengguna BERBEDA dari karyawan: yang satu digaji, yang satu punya akun.
+  // Tidak semua karyawan punya akun, dan sebagian akun bukan karyawan.
+  pengguna: { ikon: 'manage_accounts', label: 'cariGlobal.pengguna' },
 };
 
 /**
@@ -67,6 +70,8 @@ export function tujuanHasil(jenis: string, h: HasilServer): Tujuan | null {
       return { perintah: ['/Master/Supplier'], queryParams: cari };
     case 'karyawan':
       return { perintah: ['/Master/Employee'], queryParams: cari };
+    case 'pengguna':
+      return { perintah: ['/User'], queryParams: cari };
     default:
       return null;
   }
