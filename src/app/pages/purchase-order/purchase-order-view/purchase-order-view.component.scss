@@ -483,6 +483,19 @@
 }
 
 /*
+ * "Volume belum disepakati — angka di atas tarif satuannya."
+ *
+ * Warna peringatan, bukan abu seperti rincian lain: ia bukan keterangan
+ * tambahan melainkan SYARAT BACA bagi angka tepat di atasnya. Yang
+ * melewatinya akan membaca "1 jam" sebagai volume yang benar-benar
+ * disepakati satu jam — dan nilai di kanan baris sebagai nilai kontraknya.
+ */
+.pov-item__tanpa-pagu {
+  color: var(--warn-fg, #8a5a06);
+  font-style: italic;
+}
+
+/*
  * Pernyataan yang belum dapat dicentang.
  *
  * Diredupkan, bukan disembunyikan: yang membaca perlu tahu bahwa langkah ini

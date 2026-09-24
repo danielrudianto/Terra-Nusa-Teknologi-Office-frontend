@@ -118,10 +118,32 @@
                     <span class="pov-item__meta pov-item__rinci">{{ r }}</span>
                   }
 
+                  <!--
+                    `volumeTampil`, bukan `item.quantity`.
+
+                    SPK tenaga kerja yang volumenya sengaja dikosongkan
+                    menyimpan nol, dan dibaca apa adanya barisnya menjadi
+                    "0 jam × 10.000,00 → Rp 0,00" — dokumen yang sah tampil
+                    seolah tidak bernilai, tepat sebelum diterbitkan. Lihat
+                    `tanpaPagu()` pada komponennya.
+                  -->
                   <span class="pov-item__meta">
-                    {{ item.quantity }} {{ item.unit }} ×
+                    {{ volumeTampil(item) }} {{ item.unit }} ×
                     {{ item.price | number: "1.2-4" }}
                   </span>
+                  <!--
+                    Dan disebutkan bahwa angkanya TARIF, bukan kesepakatan.
+
+                    Tanpa baris ini, "1 jam" terbaca sebagai volume yang
+                    benar-benar disepakati satu jam — dan PDF yang dicetak
+                    (yang sengaja tidak ikut berubah) akan tampak berselisih
+                    dengan layar tanpa satu pun keterangan.
+                  -->
+                  @if (tanpaPagu(item)) {
+                    <span class="pov-item__meta pov-item__tanpa-pagu">
+                      {{ "purchaseOrder.viewTanpaPagu" | translate }}
+                    </span>
+                  }
                   <!--
                     Mobilisasi disebut tersendiri.
 

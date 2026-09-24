@@ -704,11 +704,76 @@ export class PurchaseOrderViewComponent
     return 0;
   }
 
+  /*
+   * ------------------------------------------------------------------
+   * SPK D yang VOLUMENYA DIKOSONGKAN
+   * ------------------------------------------------------------------
+   *
+   * SPK tenaga kerja boleh terbit tanpa plafon volume: yang disepakati di
+   * sana harga satuannya — upah per hari, lembur per jam — dan berapa
+   * harinya baru diketahui ketika pekerjaannya berjalan. Formulirnya
+   * menyimpan `quantity` nol untuk menyatakan itu, dan berita acara
+   * kemudian tidak dibatasi angka apa pun.
+   *
+   * Tetapi dialog ini membacanya apa adanya, sehingga SPK yang sah tampil
+   * sebagai "0 jam × 10.000,00 → Rp 0,00" dengan subtotal Rp 0. Yang
+   * membukanya melihat dokumen yang seolah tidak bernilai, tepat sebelum
+   * menekan "Terbitkan Purchase Order".
+   *
+   * Volume nol karena itu DITAMPILKAN sebagai satu, dan nilainya ikut:
+   * "1 jam × 10.000,00 → Rp 10.000,00". Yang terbaca menjadi tarifnya.
+   *
+   * DUA HAL YANG SENGAJA TIDAK IKUT BERUBAH:
+   *
+   *   1. Data yang tersimpan. `quantity` tetap nol di basis data — itulah
+   *      yang membuat berita acaranya tidak berplafon. Penggantian ini
+   *      hidup di layar saja.
+   *
+   *   2. PDF yang dicetak dan ditandatangani. Diminta begitu: yang
+   *      mengganggu adalah layar pratinjaunya, bukan lembarnya.
+   *
+   * Karena (2), angka di dialog ini DAPAT berbeda dari lembar cetaknya —
+   * dan perbedaan yang tidak diterangkan akan dibaca sebagai kekeliruan
+   * salah satunya. Itulah yang dijawab baris keterangan di bawah setiap
+   * baris terdampak (`pov-item__tanpa-pagu` pada templatnya): ia menyebut
+   * bahwa volumenya belum disepakati dan yang tertulis adalah tarifnya.
+   */
+  tanpaPagu(item: any): boolean {
+    // Hanya SPK D. Pada jenis lain volume nol adalah data yang KELIRU, dan
+    // menampilkannya sebagai satu menyembunyikan kekeliruan itu di balik
+    // angka yang tampak wajar.
+    if (String(this.data?.purchaseType || '').toUpperCase() !== 'D') {
+      return false;
+    }
+    const volume = Number(item?.quantity);
+    // `isNaN` ikut dihitung sebagai kosong: baris lama menyimpan `null`.
+    if (!isNaN(volume) && volume > 0) return false;
+    // Harga satuannya harus ADA. Baris yang volumenya nol DAN harganya nol
+    // tidak menyatakan tarif apa pun — menampilkannya sebagai "1 × 0"
+    // tidak menerangkan apa-apa, dan barisnya memang pantas terbaca nol.
+    return Number(item?.price) > 0;
+  }
+
+  /** Volume yang DITAMPILKAN — satu untuk baris tanpa plafon. */
+  volumeTampil(item: any): number {
+    return this.tanpaPagu(item) ? 1 : Number(item?.quantity) || 0;
+  }
+
   lineTotal(item: any): number {
     // Pada dokumen borongan, seluruh nilainya melekat pada satu-satunya
     // baris — bukan dibagi rata, karena memang tidak ada rinciannya.
+    //
+    // TETAP PALING ATAS. Borongan adalah PO-H, jadi ia tidak dapat
+    // berpapasan dengan penggantian volume SPK D di bawahnya hari ini —
+    // tetapi bila suatu saat bisa, nilai borongan yang tertulis di
+    // dokumennya harus menang atas tarif satuan yang disimpulkan layar.
     const b = this.borongan;
     if (b !== null && this.items.length === 1) return b;
+
+    // Baris tanpa plafon dinilai sebagai SATU satuan — sejalan dengan
+    // volume yang ditampilkan di atasnya. Didahulukan atas `nilaiBaris`,
+    // yang akan mengembalikan nol dari `quantity` nol yang tersimpan.
+    if (this.tanpaPagu(item)) return Number(item?.price) || 0;
 
     /*
      * `nilaiBaris`, BUKAN volume × harga langsung.
