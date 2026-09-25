@@ -42,7 +42,6 @@
     "ng2-charts": "^8.0.0",
     "ngx-extended-pdf-viewer": "^30.0.1",
     "ngx-mask": "^19.0.7",
-    "ngx-quill": "^28.0.2",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.3.289",
     "pdfmake": "^0.2.20",

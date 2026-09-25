@@ -710,19 +710,6 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   }
 }
 
-/* wysiwyg notes label */
-.po641-wyslabel {
-  display: block;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--ink, #16181d);
-  margin: 0.2rem 0 0.5rem;
-}
-app-wysiwyg {
-  display: block;
-  margin-bottom: 1.25rem;
-}
-
 /* ===== manpower rows ===== */
 .po641-list {
   display: flex;
@@ -781,12 +768,6 @@ app-wysiwyg {
 }
 :host ::ng-deep .po641-worker__grid .mat-mdc-form-field {
   width: 100%;
-}
-
-/* rich-text notes */
-app-wysiwyg {
-  display: block;
-  margin-bottom: 0.5rem;
 }
 
 @media (max-width: 820px) {

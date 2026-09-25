@@ -712,19 +712,6 @@
   }
 }
 
-/* wysiwyg notes label */
-.pob-wyslabel {
-  display: block;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--ink, #16181d);
-  margin: 0.2rem 0 0.5rem;
-}
-app-wysiwyg {
-  display: block;
-  margin-bottom: 1.25rem;
-}
-
 /* ===== klausul (seragam dengan PO G/D) ===== */
 .pob-addclause {
   display: inline-flex;

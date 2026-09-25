@@ -35,7 +35,6 @@ import { SupplierSelectorComponent } from '../../../../components/supplier-selec
 import { EquipmentSelectorComponent } from '../../../../components/equipment-selector/equipment-selector.component';
 import { MasterItemSelectorComponent } from '../../../../components/master-item-selector/master-item-selector.component';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
-import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
 import { ApiService } from '../../../../services/api.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import {
