@@ -153,56 +153,41 @@
 }
 
 /*
- * Pemilih pemasok — bentuknya BARIS, bukan kotak isian.
+ * Pemilih pemasok — bentuknya sama dengan pemilih proyek.
  *
- * Ia membuka dialog pencarian, tidak menerima ketikan; kotak isian yang
- * tidak dapat diketik adalah janji yang tidak ditepati, dan yang mencobanya
- * menyimpulkan layarnya rusak.
+ * Keduanya berdiri berurutan dan menjawab pertanyaan yang sama ("yang
+ * mana"); kendali yang bentuknya berbeda membuat yang satu terbaca sebagai
+ * jenis isian yang lain.
  */
 .por-pemasok {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
   width: 100%;
-  min-height: 56px;
-  padding: 0.55rem 0.8rem;
-  border: 1px solid var(--border, #e3e6eb);
-  border-radius: 10px;
-  background: var(--surface, #fff);
   cursor: pointer;
-  text-align: left;
-  font-family: "Montserrat", sans-serif;
-  transition:
-    border-color 0.13s ease,
-    background 0.13s ease;
 
-  &:hover {
-    border-color: var(--brand, #154dec);
-    background: var(--hover, #f6f8ff);
+  /* Isinya `readonly` — kursor teks menjanjikan ketikan yang tidak akan
+     diterima; seluruh kotaknya membuka dialog pencarian. */
+  input {
+    cursor: pointer;
   }
 
-  &:focus-visible {
-    outline: 2px solid var(--brand, #154dec);
-    outline-offset: 2px;
-  }
-
-  .mat-icon {
-    flex: 0 0 auto;
-    width: 20px;
-    height: 20px;
-    font-size: 20px;
+  .mat-icon[matSuffix],
+  .mat-mdc-form-field-icon-suffix .mat-icon {
     color: var(--muted, #6b7280);
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
   }
+}
 
-  &__teks {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-    min-width: 0;
-    margin-right: auto;
-  }
+/* Penyempit proyek pada mode pemasok. */
+.por-sempit {
+  margin-top: 0.75rem;
 
   &__label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.35rem;
     font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -210,28 +195,47 @@
     color: var(--faint, #9aa0ab);
   }
 
-  &__nilai {
-    font-size: 0.9rem;
+  /* "Opsional" dibedakan bentuknya, bukan cuma katanya: label yang seluruhnya
+     seragam terbaca sebagai satu kalimat, dan kata terakhirnya terlewat. */
+  &__opsional {
+    text-transform: none;
+    letter-spacing: 0;
     font-weight: 600;
-    color: var(--ink, #16181d);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-size: 0.68rem;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--surface-2, #f3f5f9);
+    color: var(--muted, #6b7280);
+  }
 
-    &.kosong {
-      font-weight: 500;
-      color: var(--muted, #6b7280);
+  &__lepas {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.4rem;
+    padding: 0.25rem 0.6rem;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--brand, #154dec);
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.76rem;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--hover, #f6f8ff);
     }
-  }
 
-  &__panah {
-    color: var(--faint, #9aa0ab);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .por-pemasok {
-    transition: none;
+    .mat-icon {
+      width: 15px;
+      height: 15px;
+      font-size: 15px;
+      line-height: 15px;
+      flex: 0 0 auto;
+      margin: 0;
+    }
   }
 }
 

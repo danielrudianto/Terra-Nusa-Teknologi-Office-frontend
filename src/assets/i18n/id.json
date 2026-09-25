@@ -5109,7 +5109,11 @@
     "perPemasok": "Pemasok",
     "pemasok": "Pemasok",
     "pilihPemasok": "Pilih pemasok…",
-    "kosongPemasok": "Pemasok ini belum punya purchase order."
+    "kosongPemasok": "Pemasok ini belum punya purchase order.",
+    "saringProyek": "Saring proyek",
+    "opsional": "opsional",
+    "semuaProyek": "Semua proyek",
+    "kosongPemasokProyek": "Pemasok ini belum punya purchase order di proyek tersebut."
   },
   "poRingkas": {
     "judul": "Isi purchase order",

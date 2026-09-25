@@ -5109,7 +5109,11 @@
     "perPemasok": "Supplier",
     "pemasok": "Supplier",
     "pilihPemasok": "Choose a supplier…",
-    "kosongPemasok": "This supplier has no purchase orders yet."
+    "kosongPemasok": "This supplier has no purchase orders yet.",
+    "saringProyek": "Filter by project",
+    "opsional": "optional",
+    "semuaProyek": "All projects",
+    "kosongPemasokProyek": "This supplier has no purchase orders on that project."
   },
   "poRingkas": {
     "judul": "Purchase order contents",

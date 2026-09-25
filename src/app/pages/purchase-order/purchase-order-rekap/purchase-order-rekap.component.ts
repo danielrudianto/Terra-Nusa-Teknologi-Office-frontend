@@ -148,8 +148,17 @@ export class PurchaseOrderRekapComponent {
   pilihSudut(v: 'proyek' | 'pemasok'): void {
     if (this.sudut === v) return;
     this.sudut = v;
-    this.proyek.setValue(null);
-    this.pemasok = null;
+    /*
+     * Pilihan lama DIBUANG — kecuali proyeknya saat pindah ke pemasok.
+     *
+     * Kembali ke sudut sebelumnya dengan sasaran lama masih terpasang
+     * membuat orang mengunduh rekap yang bukan yang dimaksudnya. Proyek
+     * dikecualikan satu arah: pada mode pemasok ia menjadi penyempit
+     * PILIHAN, dan yang baru saja memilih proyek lalu menekan "Pemasok"
+     * hampir selalu sedang menuju "vendor ini, di proyek itu".
+     */
+    if (v === 'proyek') this.pemasok = null;
+    else this.proyek.setValue(this.proyek.value);
   }
 
   bukaPemasok(): void {
@@ -191,6 +200,23 @@ export class PurchaseOrderRekapComponent {
   /** Sasaran sudah dipilih — proyeknya, atau pemasoknya. */
   get adaSasaran(): boolean {
     return this.sudut === 'proyek' ? !!this.proyek.value : !!this.pemasok;
+  }
+
+  /**
+   * Proyek ikut menyempitkan rekap pemasok.
+   *
+   * PILIHAN, bukan syarat: yang menanyakan "sudah berapa banyak kita pesan
+   * ke vendor ini" tidak sedang memikirkan proyek tertentu. Yang menagih ke
+   * pemilik proyek justru sebaliknya.
+   */
+  get proyekPenyempit(): string | null {
+    if (this.sudut !== 'pemasok') return null;
+    const k = (this.proyek.value || '').trim();
+    return k || null;
+  }
+
+  lepasProyekPenyempit(): void {
+    this.proyek.setValue(null);
   }
 
   pilihPeriode(v: PeriodeRekap): void {
@@ -248,14 +274,22 @@ export class PurchaseOrderRekapComponent {
      * berkas: judul yang berbeda antara Excel dan PDF untuk permintaan yang
      * sama adalah kekeliruan yang hanya ketahuan setelah berkasnya dikirim.
      */
+    const sempit = this.proyekPenyempit;
     const kode =
-      this.sudut === 'proyek' ? String(this.proyek.value) : this.namaPemasok;
+      this.sudut === 'proyek'
+        ? String(this.proyek.value)
+        : sempit
+          ? `${this.namaPemasok} · ${sempit}`
+          : this.namaPemasok;
 
     const rentang = this.rentang;
     const parameter: Record<string, string> =
       this.sudut === 'proyek'
         ? { proyek: String(this.proyek.value) }
         : { pemasok: String(this.pemasok!.id) };
+    // Proyek penyempit ikut dikirim; server memperlakukan keduanya sebagai
+    // irisan, bukan memilih salah satu.
+    if (sempit) parameter['proyek'] = sempit;
     // Hanya yang terisi yang dikirim: `dari=null` pada querystring sampai ke
     // server sebagai teks "null", bukan sebagai ketiadaan nilai.
     if (rentang.dari) parameter['dari'] = rentang.dari;
@@ -276,7 +310,9 @@ export class PurchaseOrderRekapComponent {
             rentang.dari || rentang.sampai
               ? 'poRekap.kosongRentang'
               : this.sudut === 'pemasok'
-                ? 'poRekap.kosongPemasok'
+                ? sempit
+                  ? 'poRekap.kosongPemasokProyek'
+                  : 'poRekap.kosongPemasok'
                 : 'poRekap.kosong';
           this.snackBar.open(
             this.translate.instant(kunci, { rentang: this.keteranganRentang }),

@@ -5077,7 +5077,11 @@
     "perPemasok": "供应商",
     "pemasok": "供应商",
     "pilihPemasok": "选择供应商…",
-    "kosongPemasok": "该供应商还没有采购订单。"
+    "kosongPemasok": "该供应商还没有采购订单。",
+    "saringProyek": "按项目筛选",
+    "opsional": "可选",
+    "semuaProyek": "全部项目",
+    "kosongPemasokProyek": "该供应商在该项目下没有采购订单。"
   },
   "poRingkas": {
     "judul": "采购订单内容",

@@ -16,6 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { debounceTime } from 'rxjs';
+import { vendorDisplayName } from '../../helpers/purchase-order-shared.helper';
 import { ApiService } from 'src/app/services/api.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DialogGeserDirective } from '../../directives/dialog-geser.directive';
@@ -100,6 +101,21 @@ export class SupplierSelectorComponent {
       .add(() => {
         this.isLoading = false;
       });
+  }
+
+  /**
+   * Nama yang DITAMPILKAN — bukan yang dikembalikan.
+   *
+   * Yang dikembalikan `selectSupplier` tetap baris pemasok apa adanya;
+   * pemanggilnya menyimpan `name` dan `prefix` terpisah, dan mengubah itu
+   * akan mengubah apa yang tersimpan di dokumen.
+   */
+  namaTampil(supplier: any): string {
+    const hasil = vendorDisplayName(
+      supplier?.name || undefined,
+      supplier?.prefix || undefined,
+    );
+    return hasil === '-' ? String(supplier?.name ?? '—') : hasil;
   }
 
   selectSupplier(supplier: any) {

@@ -51,22 +51,69 @@
       />
     } @else {
       <!--
-        Pemasok dipilih lewat dialog pencarian yang SUDAH ADA
-        (`app-supplier-selector`) — daftar pemasok bisa ratusan, dan
-        `mat-select` yang memuat seluruhnya tidak dapat dicari.
+        Bentuknya SAMA dengan pemilih proyek di sebelahnya: `mat-form-field`
+        beroutline, label mengambang, tinggi yang sama.
+
+        Sebelumnya baris bergaya sendiri — ikon truk, label kapital kecil,
+        panah di kanan. Berdiri tepat di atas pemilih proyek yang berbentuk
+        kotak isian, keduanya terbaca sebagai dua jenis kendali yang berbeda
+        padahal menjawab hal yang sama: "yang mana".
+
+        Isinya `readonly` dan seluruh kotaknya dapat ditekan — pemasoknya
+        dipilih lewat dialog pencarian yang sudah ada, sebab daftarnya bisa
+        ratusan dan `mat-select` yang memuat seluruhnya tidak dapat dicari.
       -->
-      <button type="button" class="por-pemasok" (click)="bukaPemasok()">
-        <mat-icon>local_shipping</mat-icon>
-        <span class="por-pemasok__teks">
-          <span class="por-pemasok__label">
-            {{ "poRekap.pemasok" | translate }}
-          </span>
-          <span class="por-pemasok__nilai" [class.kosong]="!pemasok">
-            {{ pemasok ? namaPemasok : ("poRekap.pilihPemasok" | translate) }}
+      <mat-form-field
+        appearance="outline"
+        class="por-pemasok"
+        (click)="bukaPemasok()"
+      >
+        <mat-label>{{ "poRekap.pemasok" | translate }}</mat-label>
+        <input
+          matInput
+          readonly
+          [value]="pemasok ? namaPemasok : ''"
+          [placeholder]="'poRekap.pilihPemasok' | translate"
+        />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <!--
+        Proyek sebagai PENYEMPIT — pilihan, bukan syarat.
+
+        "Sudah berapa banyak kita pesan ke vendor ini" dan "apa saja yang
+        kita pesan ke vendor ini DI PROYEK ini" adalah dua pertanyaan yang
+        berbeda, dan yang kedua ditanyakan saat menagih ke pemilik proyek
+        atau menyusun klaim.
+
+        Dilabeli "opsional" di layar, bukan cuma dibiarkan boleh kosong:
+        pemilih proyek yang berdiri tepat di bawah pemilih pemasok mudah
+        terbaca sebagai isian yang wajib diisi, dan yang ragu akan mengisinya
+        — lalu mengunduh rekap yang lebih sempit daripada yang dimaksudnya.
+      -->
+      <div class="por-sempit">
+        <span class="por-sempit__label">
+          {{ "poRekap.saringProyek" | translate }}
+          <span class="por-sempit__opsional">
+            {{ "poRekap.opsional" | translate }}
           </span>
         </span>
-        <mat-icon class="por-pemasok__panah">chevron_right</mat-icon>
-      </button>
+        <app-project-selector
+          [formControl]="proyek"
+          [hanyaAktif]="false"
+          [tanpaPusat]="true"
+        />
+        @if (proyekPenyempit) {
+          <button
+            type="button"
+            class="por-sempit__lepas"
+            (click)="lepasProyekPenyempit()"
+          >
+            <mat-icon>close</mat-icon>
+            {{ "poRekap.semuaProyek" | translate }}
+          </button>
+        }
+      </div>
     }
 
     <!--
