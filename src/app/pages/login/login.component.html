@@ -52,9 +52,18 @@
                 subscriptSizing="dynamic"
               >
                 <mat-label>{{ "login.password" | translate }}</mat-label>
+                <!--
+                  `autocomplete` DISEBUTKAN, bukan dibiarkan ditebak peramban.
+                  Kotak surelnya sudah menyebutkannya; yang sandi tertinggal.
+
+                  Tanpa ini Chrome menegur di konsol, dan pengelola sandi
+                  kerap menawarkan MENYIMPAN sandi baru alih-alih mengisikan
+                  yang sudah tersimpan.
+                -->
                 <input
                   type="password"
                   matInput
+                  autocomplete="current-password"
                   formControlName="password"
                   [placeholder]="'login.passwordPlaceholder' | translate"
                   [readonly]="isSubmitting"
