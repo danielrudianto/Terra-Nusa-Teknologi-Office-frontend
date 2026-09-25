@@ -16,7 +16,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { tanggalLokal } from '../../utils/tanggal';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { firstValueFrom } from 'rxjs';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
 /*
@@ -133,6 +135,7 @@ interface PageData {
 })
 export class PdfMainComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
+  private readonly dialog = inject(MatDialog);
   private readonly translate = inject(TranslateService);
 
   /**
@@ -464,16 +467,13 @@ export class PdfMainComponent implements OnInit {
 
     try {
       const mergedPdf = await PDFDocument.create();
+      // Font disematkan SEKALI untuk seluruh halaman; berulang kali hanya
+      // membuat berkas hasilnya membesar tanpa guna.
+      const font = await mergedPdf.embedFont(StandardFonts.Helvetica);
 
       for (const pageData of this.processedDocuments) {
         try {
-          // Convert base64 to Uint8Array
-          const pdfBytes = Uint8Array.from(atob(pageData.pdf), (c) =>
-            c.charCodeAt(0),
-          );
-          const pagePdf = await PDFDocument.load(pdfBytes);
-          const [copiedPage] = await mergedPdf.copyPages(pagePdf, [0]);
-          mergedPdf.addPage(copiedPage);
+          await this.salinHalaman(mergedPdf, pageData, font);
         } catch (pageError) {
           console.error(
             `Error processing page ${pageData.fileName}:`,
@@ -553,53 +553,99 @@ export class PdfMainComponent implements OnInit {
   }
 
   /**
-   * Alat yang sedang dipakai saat menekan halaman.
+   * Buka halaman ini pada dialog sunting.
    *
-   * `null` berarti menekan halaman memilihnya seperti biasa — perilaku
-   * lama tidak berubah selama alat coretan tidak dinyalakan.
+   * MENYUNTING TIDAK LAGI DILAKUKAN DI ATAS THUMBNAIL.
+   *
+   * Dulu alat "Tutup teks"/"Catatan" menaruh coretan langsung di pratinjau
+   * setinggi ~150px, dan tulisannya diketik pada kotak isian sekecil itu
+   * juga. Akibatnya dua hal yang dua-duanya tidak menghasilkan galat: yang
+   * diketik tidak terbaca, dan letak coretannya meleset karena satu piksel
+   * di pratinjau sama dengan enam piksel di halaman sebenarnya.
+   *
+   * Dialognya menggambar ulang halaman pada ukuran penuh lewat pdf.js,
+   * sehingga yang ditaruh terlihat persis di tempatnya.
+   *
+   * Dimuat LAMBAT (`import()` di dalam fungsi): dialog ini membawa serta
+   * pdf.js, dan yang hanya menggabung berkas tidak perlu ikut mengunduhnya.
    */
-  alatAktif: 'tutup' | 'catatan' | null = null;
+  async bukaSunting(page: PageData, ev?: Event): Promise<void> {
+    ev?.stopPropagation();
 
-  pilihAlat(alat: 'tutup' | 'catatan'): void {
-    this.alatAktif = this.alatAktif === alat ? null : alat;
+    const { SuntingHalamanComponent } = await import(
+      './sunting-halaman/sunting-halaman.component'
+    );
+
+    const hasil = await firstValueFrom(
+      this.dialog
+        .open(SuntingHalamanComponent, {
+          data: {
+            pdf: page.pdf,
+            nomor: this.processedDocuments.indexOf(page) + 1,
+            fileName: page.fileName,
+            rotation: page.rotation || 0,
+            anotasi: page.anotasi || [],
+          },
+          maxWidth: '96vw',
+          autoFocus: false,
+        })
+        .afterClosed(),
+    );
+
+    // `undefined` berarti DIBATALKAN — bukan "tidak ada coretan". Menyamakan
+    // keduanya membuat tombol Batal menghapus seluruh coretan yang sudah ada.
+    if (!hasil) return;
+    page.anotasi = hasil;
   }
 
   /**
-   * Tambahkan coretan pada titik yang ditekan.
+   * Salin satu halaman ke dokumen tujuan — BERIKUT rotasi dan coretannya.
    *
-   * Koordinatnya dihitung sebagai pecahan dari kotak pratinjau, sehingga
-   * tetap benar berapa pun ukuran layarnya.
+   * SATU JALUR UNTUK SELURUH TOMBOL YANG MENGHASILKAN BERKAS.
+   *
+   * Sebelumnya tiap tombol menyalin halamannya sendiri-sendiri, dan hanya
+   * "Simpan halaman terpilih" yang ikut menggambar coretan serta menerapkan
+   * rotasi. Tombol "Gabungkan" tidak. Akibatnya: catatan yang baru saja
+   * diketik HILANG tanpa jejak pada berkas yang terunduh — tanpa galat,
+   * tanpa peringatan, dan hanya pada sebagian tombol. Yang mengalaminya
+   * menyimpulkan catatannya tidak pernah tersimpan.
+   *
+   * Karena itu penyalinannya dikumpulkan di sini. Menambah tombol keempat
+   * kelak berarti memanggil fungsi ini, bukan menyalin sepuluh baris yang
+   * harus diingat untuk ikut diperbaiki.
    */
-  tambahAnotasi(page: PageData, ev: MouseEvent): void {
-    if (!this.alatAktif) return;
-    ev.stopPropagation();
+  private async salinHalaman(
+    tujuan: PDFDocument,
+    pageData: PageData,
+    font: any,
+  ): Promise<void> {
+    const pdfBytes = Uint8Array.from(atob(pageData.pdf), (c) =>
+      c.charCodeAt(0),
+    );
+    const pagePdf = await PDFDocument.load(pdfBytes);
+    const [copiedPage] = await tujuan.copyPages(pagePdf, [0]);
 
-    const kotak = (ev.currentTarget as HTMLElement).getBoundingClientRect();
-    const x = (ev.clientX - kotak.left) / kotak.width;
-    const y = (ev.clientY - kotak.top) / kotak.height;
-
-    page.anotasi = page.anotasi || [];
-
-    if (this.alatAktif === 'tutup') {
-      /*
-       * Ukuran bawaan kotak penutup.
-       *
-       * Sekitar sebaris teks: cukup untuk menutup satu nilai yang keliru
-       * tanpa menghapus baris di sekitarnya. Dapat diubah setelah dibuat.
-       */
-      page.anotasi.push({
-        jenis: 'tutup',
-        x: Math.max(0, x - 0.12),
-        y: Math.max(0, y - 0.012),
-        lebar: 0.24,
-        tinggi: 0.024,
-        teks: '',
-      });
-    } else {
-      page.anotasi.push({ jenis: 'catatan', x, y, teks: '' });
+    // Rotasi DITAMBAHKAN pada sudut yang sudah ada di berkas asalnya, bukan
+    // menggantikannya: halaman scan sering sudah membawa sudut putar
+    // sendiri, dan menimpanya membuat yang tadinya benar jadi ikut miring.
+    const putar = pageData.rotation ?? 0;
+    if (putar) {
+      const asal = copiedPage.getRotation().angle ?? 0;
+      copiedPage.setRotation(degrees((asal + putar) % 360));
     }
 
-    this.alatAktif = null;
+    /*
+     * Coretan digambar dengan sudut putarnya ikut diperhitungkan.
+     *
+     * Koordinat pdf-lib mengacu pada halaman dalam keadaan ASLI, sedangkan
+     * yang dilihat pengguna sudah berputar. `gambarAnotasi` memetakannya
+     * balik — tanpa itu, catatan di pojok kanan atas muncul di pojok lain.
+     */
+    for (const a of pageData.anotasi || []) {
+      this.gambarAnotasi(copiedPage, a, putar, font);
+    }
+
+    tujuan.addPage(copiedPage);
   }
 
   /**
@@ -740,36 +786,7 @@ export class PdfMainComponent implements OnInit {
       const font = await newPdf.embedFont(StandardFonts.Helvetica);
 
       for (const pageData of selectedPages) {
-        const pdfBytes = Uint8Array.from(atob(pageData.pdf), (c) =>
-          c.charCodeAt(0),
-        );
-        const pagePdf = await PDFDocument.load(pdfBytes);
-        const [copiedPage] = await newPdf.copyPages(pagePdf, [0]);
-
-        // Rotasi ditambahkan pada sudut yang sudah ada di berkas asalnya,
-        // bukan menggantikannya: halaman scan sering sudah membawa sudut
-        // putar sendiri, dan menimpanya membuat yang tadinya benar jadi
-        // ikut miring.
-        const putar = pageData.rotation ?? 0;
-        if (putar) {
-          const asal = copiedPage.getRotation().angle ?? 0;
-          copiedPage.setRotation(degrees((asal + putar) % 360));
-        }
-
-        /*
-         * Coretan digambar SEBELUM halaman diputar tampil.
-         *
-         * Koordinat pada pdf-lib mengacu pada halaman dalam keadaan
-         * aslinya, sedangkan yang dilihat pengguna sudah berputar. Karena
-         * coretan ditempatkan di atas pratinjau yang berputar, letaknya
-         * dipetakan balik ke sumbu asli — tanpa itu, catatan yang
-         * diletakkan di pojok kanan atas muncul di pojok lain.
-         */
-        for (const a of pageData.anotasi || []) {
-          this.gambarAnotasi(copiedPage, a, putar, font);
-        }
-
-        newPdf.addPage(copiedPage);
+        await this.salinHalaman(newPdf, pageData, font);
       }
 
       const mergedPdfBytes = await newPdf.save();
@@ -805,14 +822,10 @@ export class PdfMainComponent implements OnInit {
 
     try {
       const mergedPdf = await PDFDocument.create();
+      const font = await mergedPdf.embedFont(StandardFonts.Helvetica);
 
       for (const pageData of selectedPages) {
-        const pdfBytes = Uint8Array.from(atob(pageData.pdf), (c) =>
-          c.charCodeAt(0),
-        );
-        const pagePdf = await PDFDocument.load(pdfBytes);
-        const [copiedPage] = await mergedPdf.copyPages(pagePdf, [0]);
-        mergedPdf.addPage(copiedPage);
+        await this.salinHalaman(mergedPdf, pageData, font);
       }
 
       const mergedPdfBytes = await mergedPdf.save();

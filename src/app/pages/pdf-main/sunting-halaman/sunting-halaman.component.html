@@ -1,0 +1,151 @@
+<div class="sh">
+  <div class="sh-head" mat-dialog-title appDialogGeser>
+    <span class="sh-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+      </svg>
+    </span>
+    <div class="sh-head__text">
+      <h2 class="sh-title">{{ "pdf.suntingJudul" | translate }}</h2>
+      <span class="sh-sub"
+        >{{ "pdf.page" | translate }} {{ data.nomor }} &middot;
+        {{ data.fileName }}</span
+      >
+    </div>
+  </div>
+
+  <mat-dialog-content class="sh-content">
+    <!-- Alat. Setelah satu coretan ditaruh, alatnya mati sendiri: menaruh
+         sepuluh kotak berturut-turut jarang yang dimaui, sementara menaruh
+         satu lalu mengetiknya hampir selalu. -->
+    <div class="sh-alat">
+      <button
+        type="button"
+        class="sh-alat__btn"
+        [class.is-aktif]="alatAktif === 'tutup'"
+        (click)="pilihAlat('tutup')"
+      >
+        <mat-icon>format_color_fill</mat-icon>
+        <span>{{ "pdf.overwrite" | translate }}</span>
+      </button>
+      <button
+        type="button"
+        class="sh-alat__btn"
+        [class.is-aktif]="alatAktif === 'catatan'"
+        (click)="pilihAlat('catatan')"
+      >
+        <mat-icon>sticky_note_2</mat-icon>
+        <span>{{ "pdf.note" | translate }}</span>
+      </button>
+
+      <span class="sh-alat__petunjuk" *ngIf="alatAktif">
+        {{ "pdf.clickToPlace" | translate }}
+      </span>
+      <span class="sh-alat__petunjuk" *ngIf="!alatAktif && anotasi.length">
+        {{ "pdf.suntingPetunjuk" | translate }}
+      </span>
+    </div>
+
+    <div class="sh-panggung">
+      <div class="sh-muat" *ngIf="memuat">
+        <mat-spinner diameter="34"></mat-spinner>
+        <span>{{ "pdf.suntingMemuat" | translate }}</span>
+      </div>
+
+      <div class="sh-gagal" *ngIf="gagal">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ "pdf.suntingGagal" | translate }}</span>
+      </div>
+
+      <!-- Lapisan coretan berada TEPAT di atas gambarnya dan berukuran sama,
+           sehingga pecahan koordinatnya berarti hal yang sama di layar dan
+           di berkasnya. -->
+      <div
+        class="sh-kertas"
+        #kertas
+        *ngIf="!memuat && !gagal"
+        [class.is-menaruh]="alatAktif"
+        (click)="taruh($event)"
+      >
+        <img class="sh-kertas__img" [src]="gambar" alt="" draggable="false" />
+
+        <div
+          class="sh-anotasi"
+          *ngFor="let a of anotasi; let i = index"
+          [class.sh-anotasi--tutup]="a.jenis === 'tutup'"
+          [class.sh-anotasi--catatan]="a.jenis === 'catatan'"
+          [style.left.%]="a.x * 100"
+          [style.top.%]="a.y * 100"
+          [style.width.%]="a.jenis === 'tutup' ? (a.lebar || 0.24) * 100 : null"
+          [style.height.%]="
+            a.jenis === 'tutup' ? (a.tinggi || 0.024) * 100 : null
+          "
+          (click)="$event.stopPropagation()"
+        >
+          <span
+            class="sh-anotasi__pegang"
+            (mousedown)="mulaiSeret($event, i, 'geser', kertas)"
+            [matTooltip]="'pdf.suntingGeser' | translate"
+          >
+            <mat-icon>drag_indicator</mat-icon>
+          </span>
+
+          <input
+            class="sh-anotasi__teks"
+            [(ngModel)]="a.teks"
+            [placeholder]="
+              (a.jenis === 'tutup' ? 'pdf.overwriteHint' : 'pdf.noteHint')
+                | translate
+            "
+            (click)="$event.stopPropagation()"
+          />
+
+          <button
+            type="button"
+            class="sh-anotasi__x"
+            (click)="hapus(i); $event.stopPropagation()"
+            [matTooltip]="'common.delete' | translate"
+            [attr.aria-label]="'common.delete' | translate"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+
+          <!-- Hanya penutup yang punya ukuran; catatan hanya tulisan. -->
+          <span
+            class="sh-anotasi__ukur"
+            *ngIf="a.jenis === 'tutup'"
+            (mousedown)="mulaiSeret($event, i, 'ukur', kertas)"
+            [matTooltip]="'pdf.suntingUkur' | translate"
+          ></span>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="sh-actions">
+    <span class="sh-jumlah" *ngIf="anotasi.length">
+      {{ "pdf.suntingJumlah" | translate: { n: anotasi.length } }}
+    </span>
+    <span class="sh-spacer"></span>
+    <button type="button" class="sh-btn sh-btn--ghost" (click)="batal()">
+      {{ "common.cancel" | translate }}
+    </button>
+    <button
+      type="button"
+      class="sh-btn sh-btn--utama"
+      [disabled]="memuat || gagal"
+      (click)="simpan()"
+    >
+      {{ "common.save" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

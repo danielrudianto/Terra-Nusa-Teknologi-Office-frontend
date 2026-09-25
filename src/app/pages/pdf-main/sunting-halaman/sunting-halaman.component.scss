@@ -1,0 +1,302 @@
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$line: var(--line, #eef0f3);
+
+.sh {
+  font-family: "Montserrat", sans-serif;
+  width: min(1180px, 96vw);
+  box-sizing: border-box;
+  color: $ink;
+}
+.sh *,
+.sh *::before,
+.sh *::after {
+  box-sizing: border-box;
+}
+
+/* kepala — mengikuti pola dialog lain (lihat bank-create) */
+.sh-head {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  text-align: left;
+  background: linear-gradient(
+    135deg,
+    var(--brand-soft, #eef2fe) 0%,
+    var(--hover, #f6f8ff) 100%
+  );
+  border-bottom: 1px solid var(--line, #e4e9fb);
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+}
+.sh-badge {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--surface, #ffffff);
+  color: $brand;
+  box-shadow: 0 2px 6px rgba(21, 77, 236, 0.14);
+}
+h2.sh-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+}
+.sh-sub {
+  font-size: 0.78rem;
+  color: $muted;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* isi */
+.sh-content {
+  padding: 1rem 1.25rem !important;
+  max-height: 76vh;
+}
+
+/* alat */
+.sh-alat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 0.9rem;
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.45rem 0.85rem;
+    border-radius: 10px;
+    border: 1px solid var(--border, #dfe3ea);
+    background: var(--surface, #fff);
+    color: var(--ink, #3f4653);
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease;
+
+    mat-icon {
+      width: 18px;
+      height: 18px;
+      font-size: 18px;
+      line-height: 18px;
+    }
+    &:hover {
+      background: var(--hover, #f1f3f7);
+    }
+    &.is-aktif {
+      background: $brand;
+      border-color: $brand;
+      color: var(--on-brand, #fff);
+    }
+  }
+
+  &__petunjuk {
+    font-size: 0.76rem;
+    color: $muted;
+  }
+}
+
+/* panggung */
+.sh-panggung {
+  display: grid;
+  place-items: center;
+  min-height: 320px;
+  padding: 0.75rem;
+  border-radius: 14px;
+  background: var(--surface-2, #f1f3f7);
+}
+.sh-muat,
+.sh-gagal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: $muted;
+}
+.sh-gagal {
+  color: var(--bad-fg, #b3322f);
+}
+
+/* Kertasnya: gambar halaman + lapisan coretan yang PERSIS seukuran. */
+.sh-kertas {
+  position: relative;
+  display: block;
+  max-width: 100%;
+  line-height: 0;
+  background: var(--kertas, #ffffff);
+  border-radius: 6px;
+  box-shadow: 0 6px 24px rgba(16, 24, 40, 0.16);
+
+  &.is-menaruh {
+    cursor: crosshair;
+  }
+  &__img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    user-select: none;
+    border-radius: 6px;
+  }
+}
+
+/* coretan */
+.sh-anotasi {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  line-height: normal;
+
+  &--tutup {
+    background: var(--kertas, #ffffff);
+    outline: 1px dashed var(--brand, #154dec);
+  }
+
+  &--catatan {
+    /* Catatan tidak menutupi apa pun; kotaknya hanya pegangan di layar. */
+    background: transparent;
+    outline: 1px dashed var(--bad-fg, #b3322f);
+    padding: 1px 2px;
+  }
+}
+
+.sh-anotasi__teks {
+  flex: 1 1 auto;
+  min-width: 40px;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.8rem;
+  color: $ink;
+  padding: 0 3px;
+
+  .sh-anotasi--catatan & {
+    color: var(--bad-fg, #b3322f);
+    font-weight: 600;
+  }
+}
+
+/* Pegangan dan tombol ditaruh DI LUAR kotaknya.
+   Penutup setebal satu baris teks tidak menyisakan ruang di dalam, dan
+   tombol yang dijejalkan ke dalamnya menutupi justru teks yang sedang
+   diketik. */
+.sh-anotasi__pegang,
+.sh-anotasi__x {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: var(--surface, #fff);
+  box-shadow: 0 1px 4px rgba(16, 24, 40, 0.24);
+
+  mat-icon {
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+    line-height: 15px;
+  }
+}
+.sh-anotasi__pegang {
+  left: -26px;
+  cursor: grab;
+  color: $muted;
+  &:active {
+    cursor: grabbing;
+  }
+}
+.sh-anotasi__x {
+  right: -26px;
+  color: var(--bad-fg, #b3322f);
+  &:hover {
+    background: var(--bad-bg, #fdecec);
+  }
+}
+
+.sh-anotasi__ukur {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  background: $brand;
+  border: 2px solid var(--surface, #fff);
+  cursor: nwse-resize;
+}
+
+/* tindakan */
+.sh-actions {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 0.9rem 1.25rem 1.1rem !important;
+  border-top: 1px solid $line;
+}
+.sh-spacer {
+  flex: 1;
+}
+.sh-jumlah {
+  font-size: 0.78rem;
+  color: $muted;
+}
+.sh-btn {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border-radius: 11px;
+  padding: 0.6rem 1.25rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &--ghost {
+    background: var(--surface-2, #f1f3f7);
+    color: var(--ink, #3f4653);
+    &:hover {
+      background: var(--hover, #e7eaef);
+    }
+  }
+  &--utama {
+    background: $brand;
+    color: var(--on-brand, #ffffff);
+    &:hover:not(:disabled) {
+      background: var(--brand-strong, #0f3fd0);
+    }
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
