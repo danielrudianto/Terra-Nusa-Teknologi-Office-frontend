@@ -1595,7 +1595,71 @@ export class ProjectReportComponent implements OnInit {
     };
   });
 
-  readonly opsiArusKas: ChartConfiguration<'line'>['options'] = {
+  /**
+   * Batas sumbu Y arus kas — DIHITUNG DARI SELURUH PROYEK, bukan dari
+   * jendela yang sedang tampil.
+   *
+   * Sebelumnya sumbu Y dibiarkan menyesuaikan sendiri. Pada grafik yang
+   * jendelanya digeser (30/60/90 hari), itu berarti skalanya berubah SETIAP
+   * kali jendelanya bergerak: bulan bersaldo kecil melar memenuhi tinggi
+   * kotak, bulan berikutnya menyusut, dan bentuk garis yang sama terbaca
+   * naik-turun berbeda-beda. Yang digeser mengira arus kasnya berubah,
+   * padahal yang berubah penggarisnya.
+   *
+   * Dengan batas tetap, MENGGESER JENDELA TIDAK PERNAH MENGUBAH SKALA —
+   * dua bulan yang berdampingan dapat dibandingkan dengan mata, dan puncak
+   * yang benar-benar tinggi terlihat tinggi.
+   *
+   * MENGHITUNGNYA HANYA DARI SERI YANG MENYALA. Menyediakan ruang untuk
+   * seri yang sedang dimatikan membuang separuh tinggi kotak demi garis
+   * yang tidak ada di layar. Mematikan seri adalah tindakan sengaja dengan
+   * sebab yang terlihat; menggeser jendela bukan.
+   *
+   * NOL SELALU TERMASUK, dan minimumnya TIDAK dipaksa nol: saldo kas
+   * proyek memang bisa minus, dan justru itu yang dicari. Lihat catatan
+   * pada `scales.y` di bawah.
+   *
+   * Zoom roda dan cubit tetap bekerja di atas batas ini — plugin zoom
+   * memperlakukannya sebagai rentang awal, bukan sebagai kurungan.
+   */
+  readonly batasArusKas = computed<{ min: number; max: number }>(() => {
+    const aktif = this.seriKas();
+    const nilai: number[] = [];
+    for (const t of this.titikArusKas()) {
+      if (aktif.masuk) nilai.push(t.masuk);
+      if (aktif.keluar) nilai.push(t.keluar);
+      if (aktif.saldo) nilai.push(t.saldo);
+    }
+    const sah = nilai.filter((n) => Number.isFinite(n));
+    // Nol ikut, supaya garis nol selalu ada di dalam kotak — ia yang
+    // menjadi acuan baca seluruh grafik ini.
+    const tertinggi = Math.max(0, ...sah);
+    const terendah = Math.min(0, ...sah);
+
+    /*
+     * Dibulatkan KE ATAS ke kelipatan yang enak dibaca, dengan ruang napas
+     * 8% supaya puncaknya tidak menempel tepi atas kotak.
+     *
+     * Tanpa pembulatan, batasnya menjadi angka seperti 37.412.889 dan
+     * seluruh label sumbunya ikut berupa angka ganjil — pada grafik yang
+     * dibaca sekilas, label yang tidak bulat memaksa membaca digit demi
+     * digit.
+     */
+    const bulatkan = (n: number, keAtas: boolean) => {
+      if (n === 0) return 0;
+      const besar = Math.abs(n);
+      const langkah = Math.pow(10, Math.floor(Math.log10(besar)));
+      const k = besar / langkah;
+      return (keAtas ? Math.ceil(k) : Math.floor(k)) * langkah * Math.sign(n);
+    };
+
+    return {
+      max: bulatkan(tertinggi * 1.08, true),
+      min: terendah < 0 ? bulatkan(terendah * 1.08, true) : 0,
+    };
+  });
+
+  readonly opsiArusKas = computed<ChartConfiguration<'line'>['options']>(() => ({
     responsive: true,
     maintainAspectRatio: false,
     // Tanpa animasi: tiap langkah seretan mengganti datanya, dan animasi
@@ -1633,7 +1697,13 @@ export class ProjectReportComponent implements OnInit {
          * Saldo kas proyek memang bisa minus, dan justru itu yang dicari.
          * Memaksa `min: 0` akan memotong seluruh bagian yang menjawab
          * pertanyaannya.
+         *
+         * Batasnya DISEBUTKAN, bukan dibiarkan menyesuaikan sendiri — lihat
+         * `batasArusKas`. Tanpa itu, menggeser jendela mengubah penggarisnya
+         * dan bentuk yang sama terbaca berbeda-beda.
          */
+        min: this.batasArusKas().min,
+        max: this.batasArusKas().max,
         ticks: {
           callback: (v) => {
             const n = Number(v);
@@ -1650,7 +1720,7 @@ export class ProjectReportComponent implements OnInit {
         },
       },
     },
-  };
+  }));
 
   // ------------------------------------------------------------------
   // Perhitungan terhadap kemajuan, bukan terhadap tagihan

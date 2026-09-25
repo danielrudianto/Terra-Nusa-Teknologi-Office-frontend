@@ -31,10 +31,23 @@
       <div class="cal-dow--we">{{ "common.sun" | translate }}</div>
     </div>
 
+    <!--
+      BILAH TIPIS untuk pemuatan KEDUA dan seterusnya.
+
+      Kerangka berkilau hanya dipakai sebelum ada data sama sekali; sesudah
+      angkanya pernah tampil, menghapusnya lagi menghasilkan kisi setengah
+      jadi — ikon dan ringkasan menunjukkan angka sungguhan sementara
+      sel-selnya kosong. Lihat catatan pada `pernahAdaData`.
+    -->
+    @if (menyegarkan) {
+      <div class="cal-bilah"><span></span></div>
+    }
+
     <div
       class="cal-grid"
-      [class.cal-grid--memuat]="memuat"
+      [class.cal-grid--memuat]="kerangka"
       [class.cal-grid--muncul]="muncul"
+      [class.cal-grid--menyegarkan]="menyegarkan"
       [attr.aria-busy]="memuat"
     >
       <ng-container *ngFor="let week of weeks; let wi = index">

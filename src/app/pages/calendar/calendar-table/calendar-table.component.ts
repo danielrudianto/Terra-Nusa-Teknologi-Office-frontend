@@ -172,8 +172,26 @@ export class CalendarTableComponent {
    */
   @Input('rekeningSiap') rekeningSiap = true;
 
+  /**
+   * Input yang hanya mengubah TAMPILAN, bukan datanya.
+   *
+   * `viewMode` memilih angka mana yang dibaca dari jawaban yang SAMA —
+   * pengeluaran, saldo rencana, atau saldo aktual. Permintaan `calendar`
+   * tidak pernah menyebutnya (lihat `fetchData`), jadi menarik ulang saat
+   * ia berganti mengambil jawaban yang identik.
+   *
+   * Yang terlihat dari itu bukan lambatnya, melainkan KERANGKANYA: satu
+   * ketukan pada "Saldo (rencana)" membuat seluruh kisi berkilau lagi
+   * seolah bulannya berganti — padahal angkanya sudah ada di layar.
+   */
+  private static readonly TAMPILAN_SAJA = new Set(['selectedDay', 'viewMode']);
+
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.hasOwnProperty('selectedDay')) {
+    const kunci = Object.keys(changes);
+    if (
+      kunci.length > 0 &&
+      kunci.every((k) => CalendarTableComponent.TAMPILAN_SAJA.has(k))
+    ) {
       return;
     }
 
@@ -251,6 +269,39 @@ export class CalendarTableComponent {
   memuat = false;
   muncul = false;
 
+  /**
+   * Sudah pernah ada data di layar ini?
+   *
+   * KERANGKA HANYA UNTUK MUAT PERTAMA. Sesudah angkanya pernah tampil,
+   * memuat ulang tidak boleh menghapusnya lagi.
+   *
+   * Sebabnya bukan selera. Kerangkanya menutup `cal-cell__value` lewat CSS
+   * — hanya itu. Ikon pindah-rekening, tanggal, penanda hari ini, dan
+   * ringkasan "Rencana kas bulan ini" di bawahnya TIDAK ikut tertutup,
+   * karena ketiganya bukan elemen itu dan datanya memang tidak dihapus.
+   *
+   * Hasilnya kisi setengah jadi: ikon dan ringkasan menunjukkan angka
+   * sungguhan, sementara sel-selnya berkilau kosong. Yang membacanya tidak
+   * dapat tahu bagian mana yang sedang dimuat dan bagian mana yang sudah
+   * final — dan pada pemuatan kedua ia terbaca seperti layar yang rusak,
+   * bukan layar yang sedang bekerja.
+   *
+   * Sesudah muat pertama, yang dipakai bilah tipis di atas kisi: angkanya
+   * tetap terbaca, dan yang berubah hanya keterangan bahwa ada yang sedang
+   * diperbarui. Bentuk yang sama dipakai seluruh daftar di aplikasi ini.
+   */
+  private pernahAdaData = false;
+
+  /** Kerangka berkilau — hanya sebelum ada data sama sekali. */
+  get kerangka(): boolean {
+    return this.memuat && !this.pernahAdaData;
+  }
+
+  /** Bilah tipis — memuat ulang di atas data yang sudah tampil. */
+  get menyegarkan(): boolean {
+    return this.memuat && this.pernahAdaData;
+  }
+
   fetchData() {
     this.memuat = true;
     this.muncul = false;
@@ -270,6 +321,7 @@ export class CalendarTableComponent {
           this.balance = data.balances;
           this.memuat = false;
           this.muncul = true;
+          this.pernahAdaData = true;
         },
         error: (error) => {
           this.memuat = false;
