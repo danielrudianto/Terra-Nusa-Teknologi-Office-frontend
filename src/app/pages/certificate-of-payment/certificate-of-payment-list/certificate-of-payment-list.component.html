@@ -151,7 +151,7 @@
     tidak mengubah apa pun. Keduanya benar — yang hilang hanya keterangannya.
   -->
   @if (saringTanpaKeping()) {
-    <div class="cl-pita">
+    <div class="tn-pita">
       <mat-icon>filter_alt</mat-icon>
       <div>
         <strong>{{ "cop.saringTautanJudul" | translate }}</strong>
@@ -159,7 +159,7 @@
           {{ "cop.saringTautanIsi" | translate: { nilai: saring() } }}
         </p>
       </div>
-      <button type="button" class="cl-pita__aksi" (click)="pilihSaring('')">
+      <button type="button" class="tn-pita__aksi" (click)="pilihSaring('')">
         {{ "cop.semua" | translate }}
       </button>
     </div>

@@ -11,8 +11,16 @@ export class PdfThumbnailService {
     thumbnailWidth: number = 200
   ): Promise<string[]> {
     try {
-      // Load the PDF document
-      const loadingTask = this.pdfjs.getDocument(pdfUrl);
+      /*
+       * `{ url }`, bukan teks telanjang.
+       *
+       * Sejak pdfjs 6, `getDocument()` hanya menerima objek parameter —
+       * bentuk lamanya (satu string URL) ditolak. Sebagai galat TypeScript
+       * ini ketahuan saat membangun; yang lebih berbahaya adalah kalau
+       * lolos: pdfjs membaca teks itu sebagai objek tanpa `url` dan gagal
+       * dengan "Invalid parameter object", jauh dari tempat asalnya.
+       */
+      const loadingTask = this.pdfjs.getDocument({ url: pdfUrl });
       const pdf: pdfjsLib.PDFDocumentProxy = await loadingTask.promise;
       const thumbnails: string[] = [];
       // Halaman pdfjs dinomori dari SATU, bukan nol.

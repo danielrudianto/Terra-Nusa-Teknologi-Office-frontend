@@ -2004,3 +2004,53 @@ html[data-gerak="mati"] .akn-mg {
   transform: none !important;
   transition: none !important;
 }
+
+/* =====================================================================
+   PITA KETERANGAN — ikon + blok teks, BUKAN `mat-hint`.
+   =====================================================================
+
+   Bentuk yang sama dengan `.kpi-banner` di `report/kpi/kpi.shared.scss`,
+   tetapi GLOBAL: pita seperti ini dipakai lebih dari satu daftar, dan
+   menyalin aturannya ke tiap komponen berarti salinan yang harus
+   diperbaiki bersamaan — yang terlupa tidak menimbulkan galat, hanya satu
+   layar yang pitanya diam-diam berbeda.
+
+   Ditaruh di sini juga karena anggaran SCSS per komponen (12 kB) sudah
+   mepet pada beberapa daftar.
+
+   `flex: 0 0 auto` pada ikon: tanpa itu ia MENGERUT menjadi lonjong pipih
+   saat teks di sebelahnya panjang. Dijaga `scripts/pemeriksa/ikonflexcek.py`.
+   ===================================================================== */
+.tn-pita {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.7rem 0.9rem;
+  margin: 0.75rem 0;
+  border-radius: 10px;
+  background: var(--info-bg, #eef3ff);
+  color: var(--info-fg, #274690);
+  font-size: 0.8rem;
+}
+
+.tn-pita > mat-icon,
+.tn-pita__aksi {
+  flex: 0 0 auto;
+}
+
+.tn-pita p {
+  margin: 0.2rem 0 0;
+}
+
+/* Tombolnya menempel KANAN: ia jalan keluar dari keadaan yang diterangkan
+   pita, dan yang membaca pitanya sedang mencarinya. */
+.tn-pita__aksi {
+  margin-left: auto;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  font: 600 0.75rem 'Montserrat', sans-serif;
+  cursor: pointer;
+}

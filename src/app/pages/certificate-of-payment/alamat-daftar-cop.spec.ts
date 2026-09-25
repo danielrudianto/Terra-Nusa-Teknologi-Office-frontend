@@ -180,7 +180,7 @@ describe('Daftar CoP — keadaan di alamat', () => {
     expect(terkirim[0].keadaan).toBe('disetujui');
     // Tidak ada keping yang mewakilinya -> harus ADA keterangannya.
     expect(f.componentInstance.saringTanpaKeping()).toBeTrue();
-    const pita = f.nativeElement.querySelector('.cl-pita');
+    const pita = f.nativeElement.querySelector('.tn-pita');
     expect(pita).withContext('pita penyaring harus tergambar').toBeTruthy();
 
     // NAMA PENYARINGNYA HARUS IKUT TERBACA. Pita yang berbunyi "daftar ini
@@ -194,7 +194,7 @@ describe('Daftar CoP — keadaan di alamat', () => {
     );
     terjemahan.use('uji');
     f.detectChanges();
-    expect(f.nativeElement.querySelector('.cl-pita').textContent).toContain(
+    expect(f.nativeElement.querySelector('.tn-pita').textContent).toContain(
       'disaring oleh disetujui',
     );
   });
@@ -202,12 +202,12 @@ describe('Daftar CoP — keadaan di alamat', () => {
   it('keping biasa TIDAK memunculkan pita', () => {
     const f = buat({ keadaan: 'draft' });
     expect(f.componentInstance.saringTanpaKeping()).toBeFalse();
-    expect(f.nativeElement.querySelector('.cl-pita')).toBeNull();
+    expect(f.nativeElement.querySelector('.tn-pita')).toBeNull();
   });
 
   it('tombol pada pita mengembalikan daftar ke seluruh dokumen', () => {
     const f = buat({ keadaan: 'disetujui' });
-    f.nativeElement.querySelector('.cl-pita__aksi').click();
+    f.nativeElement.querySelector('.tn-pita__aksi').click();
     expect(f.componentInstance.saring()).toBe('');
     expect(terkirim[terkirim.length - 1].keadaan).toBeUndefined();
   });
