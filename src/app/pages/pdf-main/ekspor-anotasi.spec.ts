@@ -70,6 +70,19 @@ async function unduh(c: any, jalankan: () => Promise<void>): Promise<Uint8Array>
   return new Uint8Array(await (blob as unknown as Blob).arrayBuffer());
 }
 
+/**
+ * Halaman berisi PERSEGI HITAM besar — pengganti teks yang hendak ditutup.
+ * Dipakai menguji "Tutup teks" dengan cara yang tidak dapat berbohong:
+ * halamannya digambar ulang, lalu pikselnya dibaca.
+ */
+async function halamanHitamBase64(): Promise<string> {
+  const doc = await PDFDocument.create();
+  const halaman = doc.addPage([600, 800]);
+  // Blok hitam dari y=560..720 (dari bawah), x=60..540.
+  halaman.drawRectangle({ x: 60, y: 560, width: 480, height: 160, color: rgb(0, 0, 0) });
+  return doc.saveAsBase64({ dataUri: false });
+}
+
 describe('Halaman PDF — ekspor membawa coretan & rotasi', () => {
   let pdf: string;
 
@@ -160,5 +173,76 @@ describe('Halaman PDF — ekspor membawa coretan & rotasi', () => {
 
     const hasil = await PDFDocument.load(await unduh(c, () => c.mergePdfs()));
     expect(hasil.getPage(0).getRotation().angle).toBe(180);
+  });
+
+});
+
+/*
+ * LETAK CORETAN — dihitung tanpa membuat PDF sama sekali.
+ *
+ * Inilah bagian yang benar-benar rumit, dan yang membuat "Tutup teks"
+ * kelihatan tidak bekerja pada dokumen hasil SCAN: banyak pemindai menulis
+ * `/Rotate 90` ke dalam berkasnya. pdf.js menghormati sudut itu saat
+ * menggambar pratinjau, sehingga yang dilihat pengguna sudah berputar —
+ * sementara koordinat pdf-lib mengacu pada halaman dalam keadaan asli.
+ * Dulu sudut bawaan berkas itu tidak diperhitungkan sama sekali.
+ */
+describe('Letak coretan pada halaman berputar', () => {
+  // Halaman A4 tegak: 595 x 842.
+  const W = 595;
+  const H = 842;
+  const peta = (PdfMainComponent as any).petaAnotasi;
+
+  /** Kotak di seperempat kiri-atas TAMPILAN. */
+  const kotak = { x: 0.1, y: 0.1, lebar: 0.2, tinggi: 0.1 };
+
+  it('tanpa putaran: apa adanya, dengan sumbu Y dibalik', () => {
+    const k = peta(kotak, W, H, 0);
+    expect(k.x).toBeCloseTo(0.1 * W, 3);
+    expect(k.width).toBeCloseTo(0.2 * W, 3);
+    expect(k.height).toBeCloseTo(0.1 * H, 3);
+    // Tepi ATAS kotak ada di 0.1 dari atas; tepi bawahnya 0.1 lebih jauh.
+    expect(k.y).toBeCloseTo(H - 0.1 * H - 0.1 * H, 3);
+  });
+
+  it('90°: SISI IKUT BERTUKAR — lebar tampilan menjadi tinggi halaman', () => {
+    const k = peta(kotak, W, H, 90);
+    // Lebar kotak pada halaman asli berasal dari TINGGI tampilan.
+    expect(k.width).toBeCloseTo(0.1 * W, 3);
+    expect(k.height).toBeCloseTo(0.2 * H, 3);
+    // Inilah yang dulu salah: `lebar * W` memberi 119, bukan 59,5 —
+    // kotaknya melar dua kali lipat pada satu sisi dan menciut di sisi lain.
+    expect(k.width).not.toBeCloseTo(0.2 * W, 3);
+  });
+
+  it('180°: kedua sumbu dicerminkan', () => {
+    const k = peta(kotak, W, H, 180);
+    expect(k.x).toBeCloseTo((1 - 0.1 - 0.2) * W, 3);
+    expect(k.width).toBeCloseTo(0.2 * W, 3);
+    expect(k.height).toBeCloseTo(0.1 * H, 3);
+  });
+
+  it('270° adalah kebalikan 90°, bukan salinannya', () => {
+    const a = peta(kotak, W, H, 90);
+    const b = peta(kotak, W, H, 270);
+    expect(a.width).toBeCloseTo(b.width, 3);
+    expect(a.x).not.toBeCloseTo(b.x, 1);
+  });
+
+  it('kotak TETAP DI DALAM halaman pada keempat sudut putar', () => {
+    // Coretan yang jatuh di luar halaman tidak menghasilkan galat — ia
+    // sekadar tidak terlihat, dan itulah bentuk "alatnya tidak bekerja".
+    for (const r of [0, 90, 180, 270]) {
+      const k = peta(kotak, W, H, r);
+      expect(k.x).withContext(`x pada ${r}°`).toBeGreaterThanOrEqual(-0.01);
+      expect(k.y).withContext(`y pada ${r}°`).toBeGreaterThanOrEqual(-0.01);
+      expect(k.x + k.width).withContext(`kanan pada ${r}°`).toBeLessThanOrEqual(W + 0.01);
+      expect(k.y + k.height).withContext(`atas pada ${r}°`).toBeLessThanOrEqual(H + 0.01);
+    }
+  });
+
+  it('sudut negatif dan di atas 360 dinormalkan', () => {
+    expect(peta(kotak, W, H, -270)).toEqual(peta(kotak, W, H, 90));
+    expect(peta(kotak, W, H, 450)).toEqual(peta(kotak, W, H, 90));
   });
 });

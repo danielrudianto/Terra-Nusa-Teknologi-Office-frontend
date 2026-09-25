@@ -625,35 +625,117 @@ export class PdfMainComponent implements OnInit {
     const pagePdf = await PDFDocument.load(pdfBytes);
     const [copiedPage] = await tujuan.copyPages(pagePdf, [0]);
 
-    // Rotasi DITAMBAHKAN pada sudut yang sudah ada di berkas asalnya, bukan
-    // menggantikannya: halaman scan sering sudah membawa sudut putar
-    // sendiri, dan menimpanya membuat yang tadinya benar jadi ikut miring.
+    /*
+     * SUDUT YANG DIPAKAI MEMETAKAN CORETAN = SUDUT BAWAAN BERKAS + SUDUT
+     * YANG DIPILIH PENGGUNA. Bukan yang dipilih pengguna saja.
+     *
+     * Inilah sebab "Tutup teks kelihatan tidak bekerja" pada dokumen hasil
+     * SCAN. Banyak pemindai menulis `/Rotate 90` ke dalam berkasnya, dan
+     * pdf.js — yang menggambar pratinjaunya — menghormati sudut itu. Jadi
+     * yang dilihat pengguna sudah berputar, sementara koordinat pdf-lib
+     * mengacu pada halaman dalam keadaan ASLI.
+     *
+     * Dulu hanya `pageData.rotation` yang diperhitungkan, sehingga pada
+     * scan ber-`/Rotate` — tanpa pengguna memutar apa pun — pemetaannya
+     * dianggap nol. Kotak penutupnya tetap tergambar, hanya di sisi yang
+     * sama sekali lain: kerap di luar bagian halaman yang terlihat, dan
+     * yang menaruhnya menyimpulkan alatnya tidak bekerja.
+     */
+    const asal = copiedPage.getRotation().angle ?? 0;
     const putar = pageData.rotation ?? 0;
+    const efektif = (((asal + putar) % 360) + 360) % 360;
+
+    // Rotasi DITAMBAHKAN pada sudut bawaan berkasnya, bukan menggantikannya:
+    // menimpanya membuat halaman yang tadinya benar jadi ikut miring.
     if (putar) {
-      const asal = copiedPage.getRotation().angle ?? 0;
-      copiedPage.setRotation(degrees((asal + putar) % 360));
+      copiedPage.setRotation(degrees(efektif));
     }
 
-    /*
-     * Coretan digambar dengan sudut putarnya ikut diperhitungkan.
-     *
-     * Koordinat pdf-lib mengacu pada halaman dalam keadaan ASLI, sedangkan
-     * yang dilihat pengguna sudah berputar. `gambarAnotasi` memetakannya
-     * balik — tanpa itu, catatan di pojok kanan atas muncul di pojok lain.
-     */
     for (const a of pageData.anotasi || []) {
-      this.gambarAnotasi(copiedPage, a, putar, font);
+      this.gambarAnotasi(copiedPage, a, efektif, font);
     }
 
     tujuan.addPage(copiedPage);
   }
 
   /**
+   * Letak & ukuran coretan pada koordinat PDF.
+   *
+   * DIPISAH DARI PENGGAMBARANNYA supaya dapat diuji tanpa membuat PDF
+   * sama sekali — hitungannya yang rumit, bukan pemanggilan pdf-lib-nya.
+   *
+   * Tiga hal bertemu di sini, dan tiap satunya pernah salah sendiri:
+   *
+   *   1. SUMBU Y TERBALIK. Layar menghitung dari kiri-ATAS, PDF dari
+   *      kiri-BAWAH.
+   *
+   *   2. HALAMAN YANG BERPUTAR. Pengguna menaruh coretan di atas pratinjau
+   *      yang sudah berputar; koordinat pdf-lib mengacu pada halaman dalam
+   *      keadaan ASLI.
+   *
+   *   3. SISI YANG IKUT BERTUKAR. Pada 90° dan 270°, lebar tampilan adalah
+   *      TINGGI halaman aslinya. Memakai `lebar * W` di situ menghasilkan
+   *      kotak yang ukurannya melar atau menciut — dan pada halaman A4
+   *      bedanya hampir satu setengah kali.
+   *
+   * `putar` adalah sudut EFEKTIF: bawaan berkas ditambah pilihan pengguna.
+   */
+  static petaAnotasi(
+    a: { x: number; y: number; lebar?: number; tinggi?: number },
+    W: number,
+    H: number,
+    putar: number,
+  ): { x: number; y: number; width: number; height: number } {
+    const r = (((putar % 360) + 360) % 360);
+    const x = a.x;
+    const y = a.y;
+    const lw = a.lebar ?? 0;
+    const lh = a.tinggi ?? 0;
+
+    // Pecahan pada ruang HALAMAN ASLI: sudut kiri-atas, lalu lebar & tinggi.
+    let fx: number, fy: number, fw: number, fh: number;
+    switch (r) {
+      case 90:
+        fx = y;
+        fy = 1 - x - lw;
+        fw = lh;
+        fh = lw;
+        break;
+      case 180:
+        fx = 1 - x - lw;
+        fy = 1 - y - lh;
+        fw = lw;
+        fh = lh;
+        break;
+      case 270:
+        fx = 1 - y - lh;
+        fy = x;
+        fw = lh;
+        fh = lw;
+        break;
+      default:
+        fx = x;
+        fy = y;
+        fw = lw;
+        fh = lh;
+    }
+
+    const width = fw * W;
+    const height = fh * H;
+    return {
+      x: fx * W,
+      // Sumbu Y dibalik, lalu dikurangi tingginya: pada PDF titik acuan
+      // persegi adalah sudut kiri-BAWAH.
+      y: H - fy * H - height,
+      width,
+      height,
+    };
+  }
+
+  /**
    * Gambar satu coretan pada halaman PDF.
    *
-   * Dua sistem koordinat bertemu di sini: layar menghitung dari kiri-ATAS,
-   * PDF dari kiri-BAWAH. Pembalikan sumbu Y dilakukan di satu tempat ini
-   * saja, agar tidak tersebar dan tidak mungkin terlewat separuh.
+   * Hitungan letaknya ada di `petaAnotasi`; di sini tinggal menggambar.
    */
   private gambarAnotasi(
     page: any,
@@ -663,57 +745,26 @@ export class PdfMainComponent implements OnInit {
   ): void {
     const { width: W, height: H } = page.getSize();
 
-    /*
-     * Letak dipetakan balik menurut sudut putar tampilannya.
-     *
-     * Pengguna meletakkan coretan di atas pratinjau yang sudah berputar;
-     * halaman aslinya tidak. Tanpa pemetaan ini, coretan pada halaman yang
-     * diputar 90° akan muncul pada sisi yang keliru.
-     */
-    const petakan = (x: number, y: number): [number, number] => {
-      /*
-       * Diturunkan dari arah putarnya, bukan ditebak.
-       *
-       * Pada putaran 90° searah jarum jam, titik (x, y) halaman asli tampil
-       * di (1 - y, x). Yang dibutuhkan di sini kebalikannya: dari letak
-       * pada tampilan, kembali ke letak pada halaman asli.
-       *
-       *   tampilan (X, Y)  ->  asli (Y, 1 - X)      pada 90°
-       *   tampilan (X, Y)  ->  asli (1 - X, 1 - Y)  pada 180°
-       *   tampilan (X, Y)  ->  asli (1 - Y, X)      pada 270°
-       */
-      switch (((putar % 360) + 360) % 360) {
-        case 90:
-          return [y, 1 - x];
-        case 180:
-          return [1 - x, 1 - y];
-        case 270:
-          return [1 - y, x];
-        default:
-          return [x, y];
-      }
-    };
-
-    const [fx, fy] = petakan(a.x, a.y);
-
     if (a.jenis === 'tutup') {
-      const w = (a.lebar ?? 0.24) * W;
-      const h = (a.tinggi ?? 0.024) * H;
+      const k = PdfMainComponent.petaAnotasi(
+        { ...a, lebar: a.lebar ?? 0.24, tinggi: a.tinggi ?? 0.024 },
+        W,
+        H,
+        putar,
+      );
       page.drawRectangle({
-        x: fx * W,
-        // Sumbu Y dibalik, lalu dikurangi tinggi kotaknya: pada PDF titik
-        // acuan persegi adalah sudut kiri-BAWAH.
-        y: H - fy * H - h,
-        width: w,
-        height: h,
+        x: k.x,
+        y: k.y,
+        width: k.width,
+        height: k.height,
         color: rgb(1, 1, 1),
       });
 
       if (a.teks) {
         page.drawText(a.teks, {
-          x: fx * W + 2,
-          y: H - fy * H - h + 3,
-          size: Math.min(11, h * 0.75),
+          x: k.x + 2,
+          y: k.y + 3,
+          size: Math.min(11, k.height * 0.75),
           font,
           color: rgb(0, 0, 0),
         });
@@ -723,9 +774,12 @@ export class PdfMainComponent implements OnInit {
 
     // Catatan: tulisan saja, tanpa menutupi apa pun di bawahnya.
     if (!a.teks) return;
+    const t = PdfMainComponent.petaAnotasi(a, W, H, putar);
     page.drawText(a.teks, {
-      x: fx * W,
-      y: H - fy * H,
+      x: t.x,
+      // `t.y` adalah tepi BAWAH kotak setinggi nol, jadi ia sekaligus garis
+      // dasar tulisannya.
+      y: t.y,
       size: 10,
       font,
       color: rgb(0.72, 0.11, 0.11),
