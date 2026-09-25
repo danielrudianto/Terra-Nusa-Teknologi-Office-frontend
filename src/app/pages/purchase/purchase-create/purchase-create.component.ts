@@ -26,6 +26,11 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { PphSelectorComponent } from 'src/app/components/pph-selector/pph-selector.component';
 import { SupplierSelectorComponent } from 'src/app/components/supplier-selector/supplier-selector.component';
 import { ApiService } from 'src/app/services/api.service';
+import {
+  keTanggal,
+  nomorInvoiceCop,
+  spkTenagaKerja,
+} from 'src/app/helpers/invoice-tenaga.helper';
 import { banks, IBank } from 'src/app/utils/bank';
 import { IPPh } from 'src/app/utils/pph';
 import { ProxyPaymentHelper } from 'src/app/helpers/proxy-payment.helper';
@@ -499,6 +504,78 @@ export class PurchaseCreateComponent {
    *   ppn  = tarif SPK;
    *   pph  = tarif SPK — dipotong DI SINI, bukan di CoP.
    */
+  /** Nomor invoice yang datang dari tombol "Cetak invoice" (`?invoice=`). */
+  private nomorDariCetak: string | null = null;
+
+  /**
+   * Isikan nomor invoice & kuitansi dari CoP-nya.
+   *
+   * HANYA SPK TENAGA KERJA. Bentuk nomor ini
+   * (`tgl-idPemasok-INV-proyek-bulanRomawi-tahun`) lahir dari Generator
+   * Invoice lama, yang memang hanya mengurus upah; memasangnya pada SPK
+   * barang akan menerbitkan nomor yang tidak ada padanannya di pembukuan.
+   *
+   * KUITANSI MEMAKAI NOMOR YANG SAMA dengan invoice-nya — satu transaksi,
+   * satu nomor, dan itulah yang dicocokkan saat rekonsiliasi.
+   *
+   * Dua permintaan, dan keduanya perlu:
+   *   - rincian CoP  -> baris & penyesuaiannya;
+   *   - SPK-nya      -> label baris (`remarks_3`), yang menentukan ada
+   *                     tidaknya insentif bor, yang menentukan akhiran
+   *                     " (B)" pada nomornya.
+   *
+   * Gagal memuat TIDAK menjatuhkan formulir dan tidak menerbitkan nomor
+   * setengah jadi: kotaknya dibiarkan kosong untuk diketik tangan. Nomor
+   * yang salah lebih mahal daripada kotak yang kosong.
+   */
+  private async isiNomorDariCop(c: CoPSiapTagih): Promise<void> {
+    if (!spkTenagaKerja(c.purchaseOrderName)) return;
+
+    if (this.nomorDariCetak) {
+      // Sudah dicetak -> nomor di kertas yang menang, apa pun hasil susunan
+      // ulang. Kuitansinya tetap ikut.
+      this.metaFormGroup.patchValue({
+        invoiceName: this.nomorDariCetak,
+        receiptName: this.nomorDariCetak,
+      });
+      return;
+    }
+
+    try {
+      const [rinci, po]: any[] = await Promise.all([
+        firstValueFrom(this.layananCop.detail(c.id)),
+        firstValueFrom(
+          this.apiService.get(`purchase-orders/${c.purchaseOrderID}`, {}),
+        ),
+      ]);
+
+      const nomor = nomorInvoiceCop({
+        cop: {
+          date: c.date,
+          periodEnd: c.periodEnd,
+          projectName: c.projectName,
+          items: rinci?.items ?? [],
+          adjustments: rinci?.adjustments ?? [],
+        },
+        poItems: po?.items ?? [],
+        supplierID: c.supplierID,
+        // Bulan Romawi & tahunnya mengikuti TANGGAL PEMBELIAN, yang kini
+        // sama dengan tanggal CoP — sehingga nomor yang tersusun di sini
+        // dan yang tercetak dari CoP yang sama tidak dapat berbeda bulan.
+        tanggal: c.date,
+        labelKategori: (k) => this.translate.instant('cop.kat_' + k),
+      });
+
+      if (!nomor) return;
+      this.metaFormGroup.patchValue({
+        invoiceName: nomor.slice(0, 100),
+        receiptName: nomor.slice(0, 100),
+      });
+    } catch {
+      // Diketik tangan — lihat catatan di atas.
+    }
+  }
+
   private terapkanCop(c: CoPSiapTagih): void {
     this.copTerpilih = c;
     this.muatTagihanPo(c.purchaseOrderName);
@@ -513,6 +590,23 @@ export class PurchaseCreateComponent {
       projectName: c.projectName,
       purchaseType: c.purchaseType,
     });
+
+    /*
+     * TANGGAL PEMBELIAN = TANGGAL CoP.
+     *
+     * Keduanya mencatat peristiwa yang sama, dan selisihnya bukan sekadar
+     * rapi-rapian: bulan pada nomor invoice diambil dari tanggal ini, dan
+     * masa pajaknya dihitung darinya juga. Tanggal hari ini yang terbawa
+     * karena tidak diisi membuat pembelian bulan lalu bernomor bulan ini.
+     *
+     * `keTanggal` membacanya sebagai tanggal SETEMPAT — lewat `new Date()`
+     * biasa, `YYYY-MM-DD` dibaca sebagai UTC dan bagi WIB (+7) mundur satu
+     * hari.
+     */
+    const tanggalCop = keTanggal(c.date);
+    if (tanggalCop) this.metaFormGroup.patchValue({ date: tanggalCop });
+
+    void this.isiNomorDariCop(c);
 
     if (c.supplierID) this.fetchFrequentPaymentBySupplierID(c.supplierID);
 
@@ -586,8 +680,15 @@ export class PurchaseCreateComponent {
      * keduanya sekaligus. Diisikan hanya bila kotaknya masih kosong.
      */
     const nomorInvoice = (this.route.snapshot.queryParamMap.get('invoice') || '').trim();
-    if (nomorInvoice && !this.metaFormGroup.controls['invoiceName'].value) {
-      this.metaFormGroup.controls['invoiceName'].setValue(nomorInvoice.slice(0, 100));
+    if (nomorInvoice) {
+      // DISIMPAN, bukan cuma dipasang: `muatDariCop()` berjalan asinkron dan
+      // selesai SESUDAH baris ini. Tanpa disimpan, nomor yang baru dicetak
+      // akan ditimpa nomor yang disusun ulang — biasanya sama, tetapi tidak
+      // pada CoP yang nomornya sudah pernah terbit dengan bentuk lain.
+      this.nomorDariCetak = nomorInvoice.slice(0, 100);
+      if (!this.metaFormGroup.controls['invoiceName'].value) {
+        this.metaFormGroup.controls['invoiceName'].setValue(this.nomorDariCetak);
+      }
     }
 
     this.filteredOptions = this.options.slice();

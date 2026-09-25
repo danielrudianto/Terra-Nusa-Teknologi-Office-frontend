@@ -67,6 +67,62 @@ export function nomorInvoiceTenaga(a: {
   return a.bor ? `${nomor} (B)` : nomor;
 }
 
+/**
+ * Nomor invoice UNTUK SEBUAH CoP — satu jalan, dipakai layar cetak maupun
+ * formulir pembelian.
+ *
+ * Sebelumnya hanya layar cetak yang menyusunnya, dan formulir pembelian
+ * menerima hasilnya lewat `?invoice=`. Akibatnya nomornya terisi hanya bila
+ * pembeliannya dibuat LEWAT tombol "Cetak invoice" — memilih CoP dari dalam
+ * formulir meninggalkan kotaknya kosong, dan itu terbaca sebagai "kadang ada
+ * kadang tidak".
+ *
+ * Disatukan di sini, bukan disalin ke formulirnya: nomor di pembukuan dan
+ * nomor di kertas yang dipegang pemasok HARUS sama, dan dua penyusun yang
+ * terpisah akan berselisih pada perubahan berikutnya tanpa menimbulkan galat
+ * apa pun.
+ *
+ * `poItems` diperlukan BUKAN sebagai hiasan: akhiran " (B)" ditentukan oleh
+ * ada-tidaknya baris insentif pengeboran, dan label barisnya hanya ada di
+ * baris SPK (`remarks_3`). Tanpa baris SPK, nomor yang tersusun dapat
+ * kehilangan akhirannya — yaitu persis jenis selisih yang paling mahal.
+ */
+export function nomorInvoiceCop(a: {
+  cop: {
+    date?: string | null;
+    periodEnd?: string | null;
+    projectName?: string | null;
+    items?: Array<{
+      purchaseOrderItemID: number;
+      task?: string | null;
+      unit?: string | null;
+      quantity: number;
+      price?: number;
+    }>;
+    adjustments?: Array<{
+      kind: 'deduction' | 'addition';
+      category: string;
+      label?: string | null;
+      amount: number;
+    }>;
+  };
+  poItems?: Array<{ id: number; remarks_3?: string | null; task?: string | null; unit?: string | null }>;
+  supplierID: number | null | undefined;
+  /** Tanggal invoice — menentukan bulan Romawi dan tahunnya. */
+  tanggal: Date | string | null | undefined;
+  labelKategori?: (kategori: string) => string;
+}): string {
+  const baris = barisInvoiceDariCop(a.cop, a.poItems ?? [], a.labelKategori);
+  return nomorInvoiceTenaga({
+    // Cut-off = akhir periode CoP; CoP tanpa periode memakai tanggalnya.
+    potong: a.cop.periodEnd || a.cop.date || null,
+    tanggal: a.tanggal,
+    supplierID: a.supplierID,
+    kodeProyek: a.cop.projectName,
+    bor: adaInsentifBor(baris),
+  });
+}
+
 /** Periode pada kuitansi: "s.d. 20 September 2026". */
 export function periodeInvoice(potong: Date | string | null | undefined): string {
   const cut = keTanggal(potong);

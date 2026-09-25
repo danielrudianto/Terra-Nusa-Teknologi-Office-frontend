@@ -509,3 +509,50 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* PITA PENYARING DARI ALAMAT — ikon + blok teks, BUKAN `mat-hint`.
+   Bentuknya menyalin `.kpi-banner` di `report/kpi/kpi.shared.scss`, yang
+   lebih dulu memakai pola ini. */
+.cl-pita {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  padding: 0.7rem 0.9rem;
+  margin: 0.75rem 0;
+  border-radius: 10px;
+  background: var(--info-bg, #eef3ff);
+  color: var(--info-fg, #274690);
+  font-size: 0.8rem;
+}
+
+/* `flex: 0 0 auto` — tanpa ini ikonnya MENGERUT menjadi lonjong pipih saat
+   teks di sebelahnya panjang. Dijaga `scripts/pemeriksa/ikonflexcek.py`. */
+.cl-pita > mat-icon {
+  flex: 0 0 auto;
+}
+
+.cl-pita p {
+  margin: 0.2rem 0 0;
+}
+
+/* Tombolnya menempel KANAN dan tidak ikut mengerut: ia jalan keluar dari
+   keadaan ini, dan yang membacanya sedang mencarinya. */
+.cl-pita__aksi {
+  flex: 0 0 auto;
+  margin-left: auto;
+  align-self: center;
+  height: 32px;
+  padding: 0 0.75rem;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cl-pita__aksi:hover {
+  background: rgba(39, 70, 144, 0.08);
+}

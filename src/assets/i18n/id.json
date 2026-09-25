@@ -6022,6 +6022,8 @@
     "keadaan_dibuat": "CoP dibuat",
     "keadaan_diperiksa": "CoP dibuat",
     "keadaan_dihapus": "Dihapus",
+    "saringTautanJudul": "Daftar ini sedang disaring",
+    "saringTautanIsi": "Tautan yang membuka halaman ini meminta penyaring \"{{nilai}}\", dan penyaring itu tidak punya kepingnya sendiri di atas. Itu sebabnya jumlah dokumen di sini dapat berbeda dari tab lain yang dibuka tanpa tautan tersebut — dan muat ulang tidak mengubahnya, karena yang dimuat ulang adalah data dengan penyaring ini.",
     "dihapusOleh": "Dihapus oleh",
     "sudahDihapus": "Dokumen ini sudah dihapus",
     "nomorSpk": "No. SPK",

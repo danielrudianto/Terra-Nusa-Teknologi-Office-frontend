@@ -33,11 +33,10 @@ import { buildPurchaseOrderDContent } from '../../../helpers/purchase-order-d.he
 import { proxyPaymentContent } from '../../../helpers/proxy-payment.helper';
 import { vendorDisplayName } from '../../../helpers/purchase-order-shared.helper';
 import {
-  adaInsentifBor,
   barisInvoiceDariCop,
   dataCetakSpkD,
   keteranganKuitansi,
-  nomorInvoiceTenaga,
+  nomorInvoiceCop,
   periodeInvoice,
   totalBarisInvoice,
 } from '../../../helpers/invoice-tenaga.helper';
@@ -176,12 +175,15 @@ export class CertificateOfPaymentInvoiceComponent implements OnInit {
    */
   get nomorInvoice(): string {
     if (this.data.nomorTerbit) return this.data.nomorTerbit;
-    return nomorInvoiceTenaga({
-      potong: this.potong,
-      tanggal: this.formGroup.value.date,
+    // Penyusunnya SATU, dipakai bersama formulir pembelian — lihat
+    // `nomorInvoiceCop`. Nomor di kertas dan nomor di pembukuan tidak boleh
+    // disusun oleh dua potong kode yang dapat berselisih.
+    return nomorInvoiceCop({
+      cop: this.data.cop as any,
+      poItems: this.po?.items ?? [],
       supplierID: this.supplierID,
-      kodeProyek: this.data.cop.projectName,
-      bor: adaInsentifBor(this.baris),
+      tanggal: this.formGroup.value.date,
+      labelKategori: (k) => this.translate.instant('cop.kat_' + k),
     });
   }
 

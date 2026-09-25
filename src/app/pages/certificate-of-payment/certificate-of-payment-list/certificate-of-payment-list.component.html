@@ -136,6 +136,35 @@
     <app-refresh-button [memuat]="memuat()" (muatUlang)="muat()" />
   </div>
 
+  <!--
+    PITA, bukan `mat-hint` dan bukan tidak ada sama sekali.
+
+    Daftar ini dapat dibuka dengan penyaring yang menempel di alamatnya —
+    kartu beranda ponsel dan tautan lama melakukannya. Bila nilainya punya
+    kepingnya sendiri, kepingnya menyala dan itu sudah cukup. Bila TIDAK
+    (`disetujui`, yang di sini terbelah menjadi "Siap tagih" dan "Sudah
+    ditagih"), tidak ada apa pun di layar yang menyebutkan bahwa daftarnya
+    sedang tersaring.
+
+    Akibatnya persis inilah yang dilaporkan: dua tab yang dibuka pada waktu
+    berbeda menampilkan jumlah dokumen yang berbeda, dan menekan muat ulang
+    tidak mengubah apa pun. Keduanya benar — yang hilang hanya keterangannya.
+  -->
+  @if (saringTanpaKeping()) {
+    <div class="cl-pita">
+      <mat-icon>filter_alt</mat-icon>
+      <div>
+        <strong>{{ "cop.saringTautanJudul" | translate }}</strong>
+        <p>
+          {{ "cop.saringTautanIsi" | translate: { nilai: saring() } }}
+        </p>
+      </div>
+      <button type="button" class="cl-pita__aksi" (click)="pilihSaring('')">
+        {{ "cop.semua" | translate }}
+      </button>
+    </div>
+  }
+
   @if (memuat()) {
     <!--
       Bilah muatnya berisi `<span>`, bukan `<div>`.

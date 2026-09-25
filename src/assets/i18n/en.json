@@ -6022,6 +6022,8 @@
     "keadaan_dibuat": "CoP created",
     "keadaan_diperiksa": "CoP created",
     "keadaan_dihapus": "Deleted",
+    "saringTautanJudul": "This list is filtered",
+    "saringTautanIsi": "The link that opened this page asked for the \"{{nilai}}\" filter, which has no chip of its own above. That is why the document count here can differ from another tab opened without that link — and refreshing does not change it, because what reloads is the data under this same filter.",
     "dihapusOleh": "Deleted by",
     "sudahDihapus": "This document has been deleted",
     "nomorSpk": "SPK No.",

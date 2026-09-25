@@ -182,6 +182,19 @@ export class CertificateOfPaymentListComponent implements OnInit {
     return m.isValid() ? m.format('YYYY-MM-DD') : undefined;
   }
 
+  /**
+   * `YYYY-MM-DD` dari alamat -> nilai datepicker.
+   *
+   * Bentuknya DISEBUTKAN ke moment. Tanpa itu moment menebak, dan tebakannya
+   * berbeda antar peramban untuk teks yang bukan tanggal — yang masuk ke
+   * kotaknya lalu "Invalid date", bukan kotak kosong.
+   */
+  private tanggalBaca(teks: string | null | undefined): moment.Moment | null {
+    if (!teks) return null;
+    const m = moment(teks, 'YYYY-MM-DD', true);
+    return m.isValid() ? m : null;
+  }
+
   /** Lepas rentang tanggal — kembali ke seluruh daftar. */
   bersihkanRentang(): void {
     this.rentang.reset({ dari: null, sampai: null });
@@ -246,8 +259,61 @@ export class CertificateOfPaymentListComponent implements OnInit {
     return this.urutArah() === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down';
   }
 
-  /** Penyaring keadaan: '', 'draft', 'bap', 'dibuat', 'disetujui', 'dihapus'. */
+  /**
+   * Nilai penyaring yang PUNYA kepingnya sendiri di bilah perkakas.
+   *
+   * Didaftar di sini, bukan hanya di templat, karena dipakai memutuskan
+   * apakah penyaring yang datang dari alamat dapat DILIHAT orang. Sebuah
+   * spec menjaga daftar ini tetap sama dengan keping yang benar-benar
+   * tergambar — bila salah satunya berubah sendiri, spec itu gagal.
+   */
+  readonly KEPING: readonly string[] = [
+    '',
+    'draft',
+    'bap',
+    'dibuat',
+    'siap',
+    'ditagih',
+    'dihapus',
+  ];
+
+  /**
+   * Nama lama -> keping yang sekarang mewakilinya.
+   *
+   * `diperiksa` adalah nama lama untuk `dibuat`, dan server masih menerima
+   * keduanya dengan syarat SQL yang sama persis. Tetapi tidak ada keping
+   * bernilai `diperiksa` — sehingga tautan dari kartu beranda ponsel
+   * membuka daftar yang TERSARING TANPA SATU KEPING PUN MENYALA.
+   *
+   * Itulah penjelasan keluhan "dua tab, jumlah dokumennya beda": tab yang
+   * datang dari kartu beranda menyaring diam-diam, tab yang dibuka dari
+   * menu tidak, dan tidak ada apa pun di layar yang menyebutkan bedanya.
+   * Menekan muat ulang juga tidak mengubah apa pun — memang, karena yang
+   * dimuat ulang adalah data dengan penyaring tab itu sendiri.
+   *
+   * Dipetakan ke nilai kanonik SEBELUM dipakai, sehingga kepingnya menyala
+   * dan alamatnya ikut ditulis ulang menjadi nama yang sekarang.
+   */
+  private static readonly ALIAS_KEADAAN: Record<string, string> = {
+    diperiksa: 'dibuat',
+  };
+
+  /** Penyaring keadaan: '', 'draft', 'bap', 'dibuat', 'siap', 'ditagih', 'dihapus'. */
   readonly saring = signal<string>('');
+
+  /**
+   * Penyaring yang sedang berlaku TAPI tidak punya keping — mis. `disetujui`
+   * dari tautan lama, yang di sini terbelah menjadi "Siap tagih" dan "Sudah
+   * ditagih" sehingga tak satu keping pun dapat mewakilinya.
+   *
+   * Tautannya TIDAK dilumpuhkan: yang membukanya memang meminta itu. Yang
+   * ditambahkan hanyalah pita keterangan — daftar yang tersaring tanpa ada
+   * yang menyebutkannya adalah cara tercepat membuat orang tidak percaya
+   * pada angkanya sendiri.
+   */
+  readonly saringTanpaKeping = computed(
+    () => !!this.saring() && !this.KEPING.includes(this.saring()),
+  );
   readonly total = signal(0);
   readonly memuat = signal(false);
 
@@ -349,6 +415,65 @@ export class CertificateOfPaymentListComponent implements OnInit {
     void this.muat();
   }
 
+  /**
+   * Tulis keadaan daftar ke ALAMAT — penyaring, pencarian, urutan, halaman,
+   * rentang tanggal.
+   *
+   * Sebelumnya hanya DIBACA sekali saat layar dibuka dan tidak pernah
+   * ditulis. Akibatnya alamat dan layar dapat menyebut dua hal yang berbeda,
+   * dan itu menjelaskan keluhan yang paling sukar dipercaya di daftar ini:
+   *
+   *   * Dua tab dibuka pada waktu yang berbeda menampilkan JUMLAH DOKUMEN
+   *     YANG BERBEDA. Yang satu datang dari kartu beranda dengan
+   *     `?keadaan=draft` menempel di alamatnya, yang lain dibuka dari menu
+   *     tanpa penyaring apa pun — keduanya benar, keduanya tidak
+   *     menyebutkan bedanya, dan yang membandingkan menyimpulkan datanya
+   *     yang kacau.
+   *
+   *   * Menekan muat ulang "tidak mengubah apa pun". Memang: tombol itu
+   *     memuat ulang DATA dengan penyaring tab itu sendiri — dan penyaring
+   *     itulah yang tidak terlihat.
+   *
+   *   * Menyegarkan halaman (F5) di tab yang datang dari kartu beranda
+   *     MELOMPAT KEMBALI ke penyaring lama, karena alamatnya masih menyebut
+   *     yang lama walau kepingnya sudah dipindah tangan.
+   *
+   * Dengan alamat yang selalu mengikuti, ketiganya hilang sekaligus: alamat
+   * menjadi keterangan lengkap tentang apa yang sedang tampil, dapat
+   * ditempelkan ke orang lain, dan disegarkan tanpa berpindah isi.
+   *
+   * Polanya menyalin `simpanKeAlamat()` di daftar Rekening — HANYA yang
+   * berbeda dari bawaan yang ditulis, dan `replaceUrl` supaya tombol kembali
+   * tidak terisi satu langkah untuk setiap ketukan keping.
+   */
+  private simpanKeAlamat(): void {
+    const qp: Record<string, string> = {};
+    if (this.saring()) qp['keadaan'] = this.saring();
+    const kata = String(this.cari.value ?? '').trim();
+    if (kata) qp['cari'] = kata;
+    if (this.urutKolom() !== 'tanggal') qp['urut'] = this.urutKolom();
+    if (this.urutArah() !== 'desc') qp['arah'] = this.urutArah();
+    if (this.halaman > 0) qp['hal'] = String(this.halaman + 1);
+    const dari = this.tanggalKirim(this.rentang.value.dari);
+    const sampai = this.tanggalKirim(this.rentang.value.sampai);
+    if (dari) qp['dari'] = dari;
+    if (sampai) qp['sampai'] = sampai;
+
+    // Menulis alamat yang SAMA tetap menjalankan transisi halaman, dan pada
+    // daftar ini transisinya terlihat: barisnya berkedip sekali setiap kali
+    // data dimuat ulang.
+    const kini = this.route?.snapshot?.queryParams ?? {};
+    const sama =
+      Object.keys(qp).length === Object.keys(kini).length &&
+      Object.keys(qp).every((k) => String(kini[k]) === qp[k]);
+    if (sama) return;
+    this.router?.navigate?.([], {
+      relativeTo: this.route,
+      queryParams: qp,
+      replaceUrl: true,
+    });
+  }
+
   /** Unduh CoP + lampiran BAP sebagai satu berkas PDF. */
   async unduh(c: CertificateOfPayment): Promise<void> {
     try {
@@ -381,8 +506,32 @@ export class CertificateOfPaymentListComponent implements OnInit {
     // penyaringnya sudah terpilih saat layar terbuka, sehingga yang menekan
     // kartu "CoP perlu diperiksa" langsung melihat yang perlu diperiksa —
     // bukan seluruh daftar yang harus disaring ulang tangan.
-    const awal = this.route.snapshot.queryParamMap.get('keadaan');
-    if (awal) this.saring.set(awal);
+    const q = this.route?.snapshot?.queryParamMap;
+    const awal = (q?.get('keadaan') || '').trim();
+    if (awal) {
+      this.saring.set(
+        CertificateOfPaymentListComponent.ALIAS_KEADAAN[awal] ?? awal,
+      );
+    }
+
+    // Sisa keadaannya juga dipulihkan — lihat `simpanKeAlamat()`. Tanpa ini
+    // alamat menyebut halaman ketiga sementara layar membuka halaman pertama.
+    const kata = q?.get('cari');
+    if (kata) this.cari.setValue(kata, { emitEvent: false });
+    const urut = q?.get('urut');
+    if (urut) this.urutKolom.set(urut);
+    const arah = q?.get('arah');
+    if (arah === 'asc' || arah === 'desc') this.urutArah.set(arah);
+    const hal = Number(q?.get('hal'));
+    if (Number.isFinite(hal) && hal > 1) this.halaman = Math.floor(hal) - 1;
+    // `emitEvent: false`: langganan rentang di bawah memanggil `muat()`
+    // sendiri, dan pemulihan alamat tidak boleh menambah permintaan kedua.
+    const dari = this.tanggalBaca(q?.get('dari'));
+    const sampai = this.tanggalBaca(q?.get('sampai'));
+    if (dari || sampai) {
+      this.rentang.setValue({ dari, sampai }, { emitEvent: false });
+      this.adaRentang.set(true);
+    }
 
     /*
      * Jeda 300ms sebelum server ditanya.
@@ -438,6 +587,8 @@ export class CertificateOfPaymentListComponent implements OnInit {
   }
 
   async muat(): Promise<void> {
+    // Satu titik: seluruh jalan yang mengubah penyaring berakhir di sini.
+    this.simpanKeAlamat();
     this.memuat.set(true);
     try {
       const hasil: any = await firstValueFrom(

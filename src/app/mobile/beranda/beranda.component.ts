@@ -243,8 +243,16 @@ export class BerandaComponent implements OnInit {
     this.router.navigate([jalur]);
   }
 
-  /** Ke daftar CoP, disaring pada keadaan yang ditunjuk kartunya. */
-  keCop(keadaan: 'draft' | 'diperiksa'): void {
+  /**
+   * Ke daftar CoP, disaring pada keadaan yang ditunjuk kartunya.
+   *
+   * `dibuat`, BUKAN nama lamanya `diperiksa`. Keduanya menghasilkan syarat
+   * SQL yang sama persis di server, tetapi hanya `dibuat` yang punya keping
+   * di bilah penyaring daftarnya — dengan nama lama, daftarnya terbuka
+   * tersaring tanpa satu keping pun menyala, dan yang membandingkannya
+   * dengan tab lain menyimpulkan datanya yang kacau.
+   */
+  keCop(keadaan: 'draft' | 'dibuat'): void {
     this.router.navigate(['/Certificate-of-payment'], {
       queryParams: { keadaan },
     });
