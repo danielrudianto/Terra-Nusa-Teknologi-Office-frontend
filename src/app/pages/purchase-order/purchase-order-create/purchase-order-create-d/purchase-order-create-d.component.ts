@@ -49,13 +49,16 @@ import { firstValueFrom } from 'rxjs';
 import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/purchase-order-view/purchase-order-view.component';
 import { AdendumService } from '../../../../services/adendum.service';
 import { SupplierTerkunciComponent } from '../../../../components/supplier-terkunci/supplier-terkunci.component';
-
-/**
- * Penanda baris lembur pada `remarks_2`.
+/*
+ * Penanda baris lembur pada `remarks_2` — TIDAK diterjemahkan dan tidak
+ * pernah tampil di layar maupun dokumen.
  *
- * TIDAK diterjemahkan dan tidak pernah tampil di layar maupun dokumen.
+ * Didefinisikan SEKALI di penolong yang juga dipakai pencetak SPK D, supaya
+ * formulir dan pencetak tidak dapat berselisih tentang baris mana yang
+ * lembur.
  */
-const PENANDA_LEMBUR = 'LEMBUR';
+import { PENANDA_LEMBUR } from 'src/app/helpers/invoice-tenaga.helper';
+
 
 @Component({
   selector: 'app-purchase-order-create-d',
@@ -630,9 +633,9 @@ export class PurchaseOrderCreateDComponent {
   /**
    * Baris item untuk LEMBUR — kosong bila tarifnya tidak diisi.
    *
-   * Ditaruh PALING DEPAN, bukan di belakang: pada lembar berita acara ia
-   * dibaca berpasangan dengan upah pokoknya, dan baris yang terselip di
-   * ujung daftar mudah terlewat saat volumenya dicatat.
+   * Ditaruh PALING BELAKANG, mengikuti letaknya di formulir: tarif lembur
+   * diisi di Ketentuan Kerja, sesudah seluruh komponen upah. Lihat catatan
+   * pada `items` di `simpan()`.
    *
    * `remarks_3` diisi "Lembur" karena itulah yang membedakannya dari baris
    * upah lain — seluruhnya memakai `task` yang sama, yaitu nama pekerjaannya.
@@ -801,14 +804,33 @@ export class PurchaseOrderCreateDComponent {
       // Satu baris item per komponen upah, supaya bentuk payload lama
       // (task/quantity/price/unit) tetap terpakai apa adanya.
       /*
-       * Baris upah, DITAMBAH satu baris lembur bila tarifnya diisi.
+       * Baris upah, DIIKUTI satu baris lembur bila tarifnya diisi.
        *
        * Lembur dijadikan `purchase_order_item` supaya ia punya pagu dan dapat
        * dicatat volumenya di berita acara — sebelumnya ia hanya klausul di
        * `customData`, yang tidak pernah menjadi baris apa pun, sehingga
        * satu-satunya jalan menagihnya lewat pembuat faktur di luar CoP.
+       *
+       * URUTANNYA MENGIKUTI FORMULIR. Lembur diisi di Ketentuan Kerja, di
+       * BAWAH seluruh komponen upah — jadi di dokumen tercetak dan di daftar
+       * volume berita acara ia pun harus berada di bawahnya.
+       *
+       * Sebelumnya ia sengaja ditaruh paling depan, dengan alasan supaya
+       * terbaca berpasangan dengan upah pokoknya. Di layar SPK yang sudah
+       * jadi alasan itu tidak terbukti: yang terbaca justru "uang lembur di
+       * atas upah harian", susunan yang tidak cocok dengan apa pun — tidak
+       * dengan formulirnya, tidak dengan cara orang membacanya.
+       *
+       * Urutan baris di basis data ditentukan `id`-nya (lihat `URUT_BARIS`
+       * di server), dan `id` mengikuti urutan pengiriman di sini. Jadi satu
+       * tempat ini menentukan susunan SPK tercetak MAUPUN daftar volume di
+       * berita acara — keduanya membaca baris yang sama.
+       *
+       * Hanya berlaku bagi SPK yang terbit sesudah ini. Yang sudah terbit
+       * tetap pada susunannya, dan memang harus: cetak ulang dokumen yang
+       * sudah ditandatangani tidak boleh berubah urutannya.
        */
-      items: this.barisLembur().concat(this.t.controls.flatMap((c) => {
+      items: this.t.controls.flatMap((c) => {
         const x = c.getRawValue();
         const wages = (x.wages as any[]) || [];
         return wages.map((w) => ({
@@ -847,7 +869,7 @@ export class PurchaseOrderCreateDComponent {
                 : null,
           },
         }));
-      })),
+      }).concat(this.barisLembur()),
       customData: {
         /*
          * PENANDA: volume pada baris SPK ini DISEPAKATI, bukan penambal.

@@ -212,6 +212,48 @@ export function totalBarisInvoice(baris: IInvoiceItem[]): number {
  *     mentah — objek jadwal upah yang sampai ke pembangun klausul melempar
  *     "replace is not a function" dan seluruh pencetakan berhenti.
  */
+/**
+ * Penanda mesin baris lembur pada SPK D (`remarks_2`).
+ *
+ * Satu definisi, dipakai formulirnya maupun pencetaknya. Penanda yang
+ * disalin ke dua tempat berhenti cocok pada perubahan berikutnya, dan
+ * akibatnya bukan galat — hanya baris lembur yang diam-diam ikut tercetak
+ * lagi di tabel upah.
+ */
+export const PENANDA_LEMBUR = 'LEMBUR';
+
+/** Baris lembur? */
+export function barisLemburSpk(it: any): boolean {
+  return String(it?.remarks_2 ?? '').trim().toUpperCase() === PENANDA_LEMBUR;
+}
+
+/**
+ * Baris untuk TABEL KOMPONEN UPAH pada SPK D tercetak.
+ *
+ * LEMBUR DIKELUARKAN dari tabel ini. Tarif lembur sudah disebutkan pada
+ * Ketentuan Kerja, dengan satuan dan syaratnya; mencetaknya sekali lagi
+ * sebagai baris "Upah" menjadikan satu kesepakatan terbaca seperti dua, dan
+ * pembaca dokumen harus menebak apakah keduanya berlaku bersamaan.
+ *
+ * Ia TETAP menjadi baris di basis data — itu yang memberinya tempat pada
+ * daftar volume berita acara, dan itulah alasan ia dibuat. Yang berubah di
+ * sini hanya apa yang dicetak.
+ *
+ * Tabelnya tidak punya kolom jumlah (hanya nominal per satuan), sehingga
+ * mengeluarkan satu baris tidak membuat angka mana pun tidak cocok.
+ */
+export function barisCetakSpkD(
+  items: any[] | null | undefined,
+): Array<{ label: string; amount: number; unit: string }> {
+  return (items ?? [])
+    .filter((it) => !barisLemburSpk(it))
+    .map((it) => ({
+      label: it?.remarks_3 || it?.task || '',
+      amount: Number(it?.price) || 0,
+      unit: it?.unit ?? '',
+    }));
+}
+
 export function dataCetakSpkD(po: any) {
   const custom = po?.customData ?? {};
   return {
@@ -226,11 +268,7 @@ export function dataCetakSpkD(po: any) {
     workerAddress: po?.supplierAddress ?? '',
     workerCity: po?.supplierCity ?? '',
     workerNpwp: po?.supplierNpwp ?? '',
-    items: (po?.items ?? []).map((it: any) => ({
-      label: it.remarks_3 || it.task || '',
-      amount: Number(it.price) || 0,
-      unit: it.unit ?? '',
-    })),
+    items: barisCetakSpkD(po?.items),
     clauseContext: konteksKlausulTenagaKerja(custom, po ?? {}),
     templateVersion: po?.templateVersion ?? '1.0',
     additionalClauses: custom.additionalClauses ?? [],

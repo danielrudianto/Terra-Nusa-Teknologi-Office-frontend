@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { CanDirective } from '../../../directives/can.directive';
 import { konteksKlausulTenagaKerja } from '../../../helpers/klausul-tenaga-kerja.helper';
+import { barisCetakSpkD } from '../../../helpers/invoice-tenaga.helper';
 import { namaPemasokBaris } from '../../../helpers/purchase-order-shared.helper';
 import { namaBarangCetak } from '../../../helpers/purchase-order-shared.helper';
 import { Component } from '@angular/core';
@@ -1581,11 +1582,8 @@ export class PurchaseOrderListComponent {
             workerCity: data.supplierCity ?? '',
             workerNpwp: data.supplierNpwp ?? '',
             task: (data.items || [])[0]?.task,
-            items: (data.items || []).map((it: any) => ({
-              label: it.remarks_3 || it.task || '',
-              amount: Number(it.price) || 0,
-              unit: it.unit,
-            })),
+            // Lembur dikeluarkan dari tabel upah — lihat `barisCetakSpkD`.
+            items: barisCetakSpkD(data.items),
             templateVersion: data.templateVersion,
             clauseContext: konteksKlausulTenagaKerja(custom, data),
             additionalClauses: printData.additionalClauses,
