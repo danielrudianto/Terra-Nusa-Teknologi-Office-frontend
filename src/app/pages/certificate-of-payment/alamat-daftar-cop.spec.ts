@@ -74,7 +74,15 @@ describe('Daftar CoP — keadaan di alamat', () => {
         { provide: ServerMessageService, useValue: { terjemahkan: () => 'x' } },
         {
           provide: PermissionService,
-          useValue: { can: () => true, level: () => 5 },
+          useValue: {
+            can: () => true,
+            level: () => 5,
+            // `*appCan` pada tombol rekap membacanya sebagai SINYAL, bukan
+            // lewat `can()`. Stub tanpa ini melempar "permissions is not a
+            // function" dari dalam direktifnya — dan yang gagal bukan hal
+            // yang sedang diuji.
+            permissions: () => ['certificate_of_payment:read'],
+          },
         },
       ],
     });

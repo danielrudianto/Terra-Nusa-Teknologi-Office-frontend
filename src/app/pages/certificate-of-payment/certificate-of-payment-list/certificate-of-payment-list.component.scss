@@ -509,3 +509,34 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* Tombol rekap — bentuknya menyalin `.pol-rekap` pada daftar purchase
+   order, tombol yang berdiri di tempat yang sama dan mengerjakan hal yang
+   sama. */
+.cl-rekap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 34px;
+  padding: 0 0.85rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 10px;
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--brand, #154dec);
+    color: var(--brand, #154dec);
+  }
+
+  .mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+  }
+}

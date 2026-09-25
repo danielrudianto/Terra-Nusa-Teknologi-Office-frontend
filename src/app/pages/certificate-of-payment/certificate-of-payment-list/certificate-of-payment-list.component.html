@@ -133,6 +133,31 @@
       />
     </mat-form-field>
 
+    <!--
+      Rekap Excel — proyek dan/atau pemasok, seperti rekap purchase order.
+
+      DIJAGA DUA HAL, bukan satu. `certificate_of_payment:read` sama dengan
+      daftar ini sendiri; `bolehLihatNilai()` ditambahkan karena berkasnya
+      padat rupiah — nilai kotor, potongan, tambahan, bersih, dan nilai
+      kontrak tiap SPK. Server menolak level 1 dengan 403; menyembunyikan
+      tombolnya di sini supaya yang tidak berhak tidak menekan tombol yang
+      memang tidak akan pernah bekerja untuknya.
+
+      Menyembunyikan tombol BUKAN pengamanan — cek di server itulah yang
+      menentukan. Ini soal tidak menawarkan yang tidak tersedia.
+    -->
+    @if (bolehLihatNilai()) {
+      <button
+        type="button"
+        class="cl-rekap"
+        *appCan="'certificate_of_payment:read'"
+        (click)="bukaRekap()"
+      >
+        <mat-icon>table_view</mat-icon>
+        {{ "copRekap.menu" | translate }}
+      </button>
+    }
+
     <app-refresh-button [memuat]="memuat()" (muatUlang)="muat()" />
   </div>
 

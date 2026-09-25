@@ -48,6 +48,7 @@ import {
 import { PermissionService } from 'src/app/services/permission.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { CanDirective } from 'src/app/directives/can.directive';
+import { CertificateOfPaymentRekapComponent } from '../certificate-of-payment-rekap/certificate-of-payment-rekap.component';
 import { SettingsService } from 'src/app/services/setting.service';
 import { KerangkaTabelDirective } from '../../../directives/kerangka-tabel.directive';
 import { RupiahComponent } from '../../../components/rupiah/rupiah.component';
@@ -406,6 +407,21 @@ export class CertificateOfPaymentListComponent implements OnInit {
    * atas keterangan "1–20 dari 340".
    */
   readonly terlihat = computed(() => this.data());
+
+  /**
+   * Buka dialog rekap.
+   *
+   * Sasarannya dipilih DI DALAM dialog, bukan diambil dari penyaring yang
+   * sedang aktif di daftar ini — persis seperti rekap purchase order. Rekap
+   * dikirim ke luar, dan menerbitkannya dari keadaan layar yang kebetulan
+   * tersaring menghasilkan berkas yang isinya tidak sesuai judulnya.
+   */
+  bukaRekap(): void {
+    this.dialog.open(CertificateOfPaymentRekapComponent, {
+      autoFocus: false,
+      maxWidth: '96vw',
+    });
+  }
 
   pilihSaring(nilai: string): void {
     this.saring.set(nilai || '');

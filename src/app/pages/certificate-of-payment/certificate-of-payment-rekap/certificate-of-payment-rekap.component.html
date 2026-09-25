@@ -1,0 +1,182 @@
+<div class="por">
+  <div class="por-head" mat-dialog-title appDialogGeser>
+    <span class="por-head__icon"><mat-icon>table_view</mat-icon></span>
+    <div>
+      <h2 class="por-title">{{ "copRekap.judul" | translate }}</h2>
+      <span class="por-sub">{{ "copRekap.sub" | translate }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="por-content">
+    <!--
+      Sudut pandang rekapnya — dua tombol, bukan dua dialog. Sama persis
+      dengan rekap purchase order, dan memang disengaja: yang membuka
+      keduanya orang yang sama.
+    -->
+    <div class="por-bentuk">
+      <span class="por-bentuk__label">{{ "copRekap.sudut" | translate }}</span>
+      <div class="por-bentuk__pilihan">
+        <button
+          type="button"
+          class="por-opsi"
+          [class.on]="sudut === 'proyek'"
+          [attr.aria-pressed]="sudut === 'proyek'"
+          (click)="pilihSudut('proyek')"
+        >
+          <mat-icon>domain</mat-icon>
+          {{ "copRekap.perProyek" | translate }}
+        </button>
+        <button
+          type="button"
+          class="por-opsi"
+          [class.on]="sudut === 'pemasok'"
+          [attr.aria-pressed]="sudut === 'pemasok'"
+          (click)="pilihSudut('pemasok')"
+        >
+          <mat-icon>local_shipping</mat-icon>
+          {{ "copRekap.perPemasok" | translate }}
+        </button>
+      </div>
+    </div>
+
+    @if (sudut === 'proyek') {
+      <app-project-selector
+        [formControl]="proyek"
+        [hanyaAktif]="false"
+        [tanpaPusat]="true"
+      />
+    } @else {
+      <mat-form-field
+        appearance="outline"
+        class="por-pemasok"
+        (click)="bukaPemasok()"
+      >
+        <mat-label>{{ "copRekap.pemasok" | translate }}</mat-label>
+        <input
+          matInput
+          readonly
+          [value]="pemasok ? namaPemasok : ''"
+          [placeholder]="'copRekap.pilihPemasok' | translate"
+        />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <!--
+        Proyek sebagai PENYEMPIT — pilihan, bukan syarat. Dilabeli
+        "opsional" di layar: pemilih yang berdiri tepat di bawah pemilih
+        pemasok mudah terbaca sebagai isian wajib, dan yang ragu akan
+        mengisinya lalu mengunduh rekap yang lebih sempit dari maksudnya.
+      -->
+      <div class="por-sempit">
+        <span class="por-sempit__label">
+          {{ "copRekap.saringProyek" | translate }}
+          <span class="por-sempit__opsional">
+            {{ "copRekap.opsional" | translate }}
+          </span>
+        </span>
+        <app-project-selector
+          [formControl]="proyek"
+          [hanyaAktif]="false"
+          [tanpaPusat]="true"
+        />
+        @if (proyekPenyempit) {
+          <button
+            type="button"
+            class="por-sempit__lepas"
+            (click)="lepasProyekPenyempit()"
+          >
+            <mat-icon>close</mat-icon>
+            {{ "copRekap.semuaProyek" | translate }}
+          </button>
+        }
+      </div>
+    }
+
+    <div class="por-bentuk">
+      <span class="por-bentuk__label">
+        {{ "copRekap.periode" | translate }}
+      </span>
+      <div class="por-bentuk__pilihan por-periode">
+        @for (p of pilihanPeriode; track p.nilai) {
+          <button
+            type="button"
+            class="por-opsi"
+            [class.on]="periode === p.nilai"
+            (click)="pilihPeriode(p.nilai)"
+          >
+            <mat-icon>{{ p.ikon }}</mat-icon>
+            {{ p.label | translate }}
+          </button>
+        }
+      </div>
+
+      @if (periode === "manual") {
+        <mat-form-field
+          subscriptSizing="dynamic"
+          appearance="outline"
+          class="por-range"
+        >
+          <mat-label>{{ "copRekap.rentang" | translate }}</mat-label>
+          <mat-date-range-input
+            [formGroup]="rentangManual"
+            [rangePicker]="pemilihRentang"
+          >
+            <input
+              matStartDate
+              formControlName="mulai"
+              [placeholder]="'copRekap.mulai' | translate"
+            />
+            <input
+              matEndDate
+              formControlName="selesai"
+              [placeholder]="'copRekap.selesai' | translate"
+            />
+          </mat-date-range-input>
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="pemilihRentang"
+          ></mat-datepicker-toggle>
+          <mat-date-range-picker #pemilihRentang></mat-date-range-picker>
+        </mat-form-field>
+      }
+
+      @if (rentangBelumSah) {
+        <span class="por-rentang por-rentang--salah">
+          {{ "copRekap.rentangSalah" | translate }}
+        </span>
+      } @else {
+        <span class="por-rentang">{{ keteranganRentang }}</span>
+      }
+    </div>
+
+    <!--
+      Apa yang akan diterbitkan, disebut DI MUKA — bukan sesudah berkasnya
+      sampai ke penerima. Dua hal yang paling sering ditanyakan balik:
+      dokumen yang belum disetujui ikut, dan sisa pagu hanya ada per SPK.
+    -->
+    <div class="por-note">
+      <mat-icon>info</mat-icon>
+      <span>{{ "copRekap.keterangan" | translate }}</span>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="por-foot">
+    <span class="por-spacer"></span>
+    <button type="button" class="por-close" (click)="tutup()">
+      {{ "common.cancel" | translate }}
+    </button>
+    <button
+      type="button"
+      class="por-save"
+      [disabled]="!adaSasaran || sedangMenyusun || rentangBelumSah"
+      (click)="unduh()"
+    >
+      @if (sedangMenyusun) {
+        <mat-spinner diameter="16"></mat-spinner>
+      }
+      {{
+        (sedangMenyusun ? "copRekap.menyusun" : "copRekap.unduh") | translate
+      }}
+    </button>
+  </mat-dialog-actions>
+</div>
