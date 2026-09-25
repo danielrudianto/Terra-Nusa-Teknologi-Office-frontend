@@ -33,6 +33,7 @@ import {
   unduhRekapPurchaseOrder,
 } from '../../../helpers/purchase-order-rekap-excel';
 import { unduhRekapPurchaseOrderPdf } from '../../../helpers/purchase-order-rekap-pdf';
+import { vendorDisplayName } from '../../../helpers/purchase-order-shared.helper';
 import { ApiService } from '../../../services/api.service';
 import { ServerMessageService } from '../../../services/server-message.service';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
@@ -169,14 +170,22 @@ export class PurchaseOrderRekapComponent {
   /**
    * Nama yang dicetak di kepala berkas.
    *
-   * Prefiksnya ikut — "PT. Sumber Rezeki", bukan "Sumber Rezeki". Rekap ini
-   * dikirim ke luar, dan nama badan usaha yang terpotong pada dokumen yang
-   * menyebut nilai transaksi terbaca sebagai berkas yang disusun asal-asalan.
+   * `vendorDisplayName`, bukan disusun sendiri di sini. Menempelkan prefiks
+   * di depan nama begitu saja menghasilkan "CV. Baja Selatan Mandiri, CV.":
+   * sebagian baris pemasok menyimpan badan usahanya DI DALAM namanya
+   * (", CV." di ujung) sekaligus pada kolom `prefix`. Fungsi bersama itu
+   * sudah membuang ekor yang terbawa dan menahan penulisan ganda, dan
+   * dipakai seluruh dokumen tercetak — termasuk lembar Per Dokumen pada
+   * rekap yang sama, yang kalau berbeda menyebut vendor yang sama dengan
+   * dua nama dalam satu berkas.
    */
   get namaPemasok(): string {
     if (!this.pemasok) return '';
-    const p = (this.pemasok.prefix || '').trim();
-    return p ? `${p} ${this.pemasok.name}` : this.pemasok.name;
+    const nama = vendorDisplayName(
+      this.pemasok.name || undefined,
+      this.pemasok.prefix || undefined,
+    );
+    return nama === '-' ? this.pemasok.name : nama;
   }
 
   /** Sasaran sudah dipilih — proyeknya, atau pemasoknya. */

@@ -357,10 +357,35 @@
   line-height: 17px;
 }
 
+/*
+ * IKON DAN TULISANNYA SEJAJAR.
+ *
+ * Tombol ini memuat `<mat-icon>` di sebelah teks, tetapi bukan wadah flex —
+ * jadi ikonnya disejajarkan peramban lewat `vertical-align`, terhadap kotak
+ * bawaan Material yang tingginya 24px sementara hurufnya 0,85rem. Hasilnya
+ * ikon yang duduk beberapa piksel lebih tinggi daripada tulisannya, terus
+ * menerus, pada tombol yang ditekan orang setiap hari.
+ *
+ * Tidak ada galat apa pun: CSS-nya sah, build bersih, seluruh uji hijau.
+ * `ikonflexcek` pun melewatkannya — pemeriksa itu menjaga ikon yang MENCIUT
+ * di dalam wadah flex, dan tombol ini justru tidak flex sama sekali.
+ *
+ * Diperbaiki dengan menyamakan kotak barisnya di KEDUA sisi — `line-height: 1`
+ * pada tombolnya, dan kotak ikon yang tingginya sama dengan glifnya — bukan
+ * dengan menggeser ikonnya beberapa piksel. Geseran harus disetel ulang
+ * setiap kali ukuran font atau ikonnya berubah, dan yang lupa menyetelnya
+ * tidak akan tahu sebabnya. Bentuknya disamakan dengan `.pop-simpan` di
+ * `purchase-order-periksa`, yang sudah melewati persoalan yang sama.
+ */
 .pov-terbit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   font-family: "Montserrat", sans-serif;
   font-weight: 600;
   font-size: 0.85rem;
+  line-height: 1;
   border: none;
   border-radius: 10px;
   padding: 0.6rem 1.4rem;
@@ -369,6 +394,20 @@
   color: #fff;
   cursor: pointer;
   transition: background 0.15s ease;
+}
+.pov-terbit .mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  /* Kotak barisnya disamakan dengan tingginya: tanpa ini glif ikon
+     ditengahkan pada kotak 24px bawaan Material di dalam elemen 18px, dan
+     hasilnya bergeser ke atas. */
+  line-height: 18px;
+  /* Ikon tidak boleh ikut menciut saat tulisannya panjang. */
+  flex: 0 0 auto;
+  /* Material memberi margin kiri/kanan pada ikon di dalam tombolnya sendiri
+     (`--mat-button-text-icon-spacing`); jaraknya di sini sudah diurus `gap`. */
+  margin: 0;
 }
 .pov-terbit:hover:not(:disabled) {
   background: var(--brand-strong, #0f3fd0);

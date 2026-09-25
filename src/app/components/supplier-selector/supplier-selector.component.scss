@@ -11,22 +11,62 @@
 }
 
 /* header */
+/*
+ * Pita kepala — bentuk yang sama dengan `bank-create` dan dialog lain.
+ *
+ * `!important` pada padding dan margin karena Material menyetel keduanya
+ * pada `mat-dialog-title` dengan kekhususan lebih tinggi; tanpa itu pitanya
+ * tidak menyentuh tepi dialog dan tampak melayang.
+ */
 .ss-head {
   display: flex !important;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.5rem 0.25rem 0.75rem !important;
-  margin: 0 !important;
+  align-items: center;
+  gap: 12px;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 0 0.75rem !important;
+  text-align: left;
+  background: linear-gradient(
+    135deg,
+    var(--brand-soft, #eef2fe) 0%,
+    var(--hover, #f6f8ff) 100%
+  );
+  border-bottom: 1px solid var(--line, #e4e9fb);
+
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+    /* Mendorong tombol tutup ke tepi kanan tanpa `justify-content`, yang
+       akan ikut merenggangkan lencana dari judulnya. */
+    margin-right: auto;
+  }
+}
+.ss-lencana {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--surface, #ffffff);
+  color: var(--brand, #154dec);
+  box-shadow: 0 2px 6px
+    color-mix(in srgb, var(--brand, #154dec) 14%, transparent);
 }
 .ss-title {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   margin: 0;
+  line-height: 1.2;
 }
 .ss-sub {
   font-size: 0.78rem;
-  color: var(--faint, #9aa0ab);
+  color: var(--muted, #6b7280);
 }
 .ss-x {
   border: none;

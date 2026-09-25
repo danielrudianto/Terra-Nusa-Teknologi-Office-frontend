@@ -551,6 +551,16 @@ function lembarIkhtisar(
   judulSubjek: string,
   periode: string,
   daftar: IRekapPO[],
+  /*
+   * Baris barangnya ikut DIBUTUHKAN di sini.
+   *
+   * "Jumlah baris barang/jasa" dijumlahkan dari kolom G lembar Per Dokumen,
+   * dan nilai tersimpannya harus dihitung dari sumber yang sama —
+   * `barisRekapDokumen`, persis seperti di sana. Menghitungnya dari sesuatu
+   * yang lain berarti angka tersimpan dan angka hasil hitung ulang Excel
+   * dapat berbeda.
+   */
+  items: IRekapItem[],
   awal: number,
   akhir: number,
 ): void {
@@ -566,7 +576,52 @@ function lembarIkhtisar(
       'angka di lembar ini.',
   );
 
-  const F = (rumus: string) => ({ formula: rumus } as any);
+  /*
+   * RUMUS BESERTA HASILNYA, bukan rumus saja.
+   *
+   * ExcelJS menulis `{ formula }` tanpa nilai tersimpan. Excel membuka
+   * berkas yang diunduh dari peramban dalam PROTECTED VIEW, dan di sana ia
+   * TIDAK menghitung apa pun — sel berumus tanpa nilai tersimpan tampil
+   * KOSONG. Yang menerima rekapnya melihat lembar Ikhtisar yang seluruhnya
+   * kosong dan menyimpulkan datanya tidak ada.
+   *
+   * Tidak ada galat: berkasnya sah, rumusnya benar, dan begitu Protected
+   * View dilepas angkanya muncul. Yang membacanya tidak pernah sampai ke
+   * sana.
+   *
+   * Rumusnya TETAP ditulis, tidak diganti angka mati: lembar ini memang
+   * dimaksudkan ikut berubah ketika lembar Per Dokumen disunting, dan itu
+   * disebutkan pada keterangan di bawah kop-nya.
+   */
+  const F = (rumus: string, hasil: number) =>
+    ({ formula: rumus, result: hasil } as any);
+
+  /*
+   * Angka satu dokumen, dihitung SAMA PERSIS dengan rumus di lembar Per
+   * Dokumen — termasuk pembulatannya.
+   *
+   * `ROUND(H*I,2)` di sana harus berpadanan dengan `bulat2` di sini; kalau
+   * tidak, nilai tersimpan dan nilai hasil hitung ulang Excel berbeda, dan
+   * angkanya BERUBAH di depan mata orang yang menekan "Enable Editing".
+   */
+  const bulat2 = (n: number) => Math.round(n * 100) / 100;
+  const nilaiPo = (po: IRekapPO) => {
+    const dpp = angka(po.dpp);
+    const ppn = bulat2(dpp * (angka(po.ppn) / 100));
+    const pph = bulat2(dpp * (angka(po.pphPercentage) / 100));
+    const lain = angka(po.otherValue);
+    return {
+      dpp,
+      ppn,
+      pph,
+      lain,
+      total: dpp + ppn - pph + lain,
+      baris: barisRekapDokumen(po, items).length,
+    };
+  };
+  const semua = daftar.map(nilaiPo);
+  const jumlah = (ambil: (v: ReturnType<typeof nilaiPo>) => number) =>
+    semua.reduce((a, v) => a + ambil(v), 0);
   sheet.getCell(4, 1).value = 'Nilai keseluruhan';
   sheet.getCell(4, 1).font = {
     name: 'Arial',
@@ -575,24 +630,49 @@ function lembarIkhtisar(
     color: { argb: BIRU },
   };
 
-  const ringkas: [string, string, string][] = [
-    ['Jumlah dokumen', `COUNTA('Per Dokumen'!C${awal}:C${akhir})`, HITUNGAN],
-    ['Jumlah baris barang/jasa', `SUM('Per Dokumen'!G${awal}:G${akhir})`, HITUNGAN],
-    ['DPP', `SUM('Per Dokumen'!H${awal}:H${akhir})`, RP],
-    ['PPN', `SUM('Per Dokumen'!J${awal}:J${akhir})`, RP],
-    ['PPh dipotong', `SUM('Per Dokumen'!L${awal}:L${akhir})`, RP],
+  const ringkas: [string, string, number, string][] = [
+    [
+      'Jumlah dokumen',
+      `COUNTA('Per Dokumen'!C${awal}:C${akhir})`,
+      daftar.length,
+      HITUNGAN,
+    ],
+    [
+      'Jumlah baris barang/jasa',
+      `SUM('Per Dokumen'!G${awal}:G${akhir})`,
+      jumlah((v) => v.baris),
+      HITUNGAN,
+    ],
+    ['DPP', `SUM('Per Dokumen'!H${awal}:H${akhir})`, jumlah((v) => v.dpp), RP],
+    ['PPN', `SUM('Per Dokumen'!J${awal}:J${akhir})`, jumlah((v) => v.ppn), RP],
+    [
+      'PPh dipotong',
+      `SUM('Per Dokumen'!L${awal}:L${akhir})`,
+      jumlah((v) => v.pph),
+      RP,
+    ],
     // Kolom Total bergeser ke N sejak Nilai Lain punya kolomnya sendiri di M.
     // Rujukan yang tertinggal di M tidak menimbulkan galat: ia hanya
     // menjumlah kolom yang lain, dan angkanya tetap tampak masuk akal.
-    ['Nilai lain (premi dititipkan)', `SUM('Per Dokumen'!M${awal}:M${akhir})`, RP],
-    ['Nilai dibayarkan', `SUM('Per Dokumen'!N${awal}:N${akhir})`, RP],
+    [
+      'Nilai lain (premi dititipkan)',
+      `SUM('Per Dokumen'!M${awal}:M${akhir})`,
+      jumlah((v) => v.lain),
+      RP,
+    ],
+    [
+      'Nilai dibayarkan',
+      `SUM('Per Dokumen'!N${awal}:N${akhir})`,
+      jumlah((v) => v.total),
+      RP,
+    ],
   ];
   let r = 5;
-  for (const [label, rumus, fmt] of ringkas) {
+  for (const [label, rumus, hasil, fmt] of ringkas) {
     sheet.getCell(r, 1).value = label;
     sheet.getCell(r, 1).font = { name: 'Arial', size: 10 };
     const c = sheet.getCell(r, 2);
-    c.value = F(rumus);
+    c.value = F(rumus, hasil);
     c.numFmt = fmt;
     c.font = {
       name: 'Arial',
@@ -617,6 +697,8 @@ function lembarIkhtisar(
     judul: string,
     nilai: string[],
     kolomSumber: string,
+    /** Nama kelompok untuk tiap dokumen, seurutan dengan `daftar`. */
+    kelompokDokumen: string[],
   ): void => {
     r += 1;
     sheet.getCell(r, 1).value = judul;
@@ -643,15 +725,32 @@ function lembarIkhtisar(
     );
     r += 1;
     for (const v of nilai) {
+      const anggota = semua.filter((_, i) => kelompokDokumen[i] === v);
       sheet.getCell(r, 1).value = v;
       sheet.getCell(r, 2).value = F(
         `COUNTIF('Per Dokumen'!${kolomSumber}${awal}:${kolomSumber}${akhir},A${r})`,
+        anggota.length,
       );
       sheet.getCell(r, 3).value = F(
         `SUMIF('Per Dokumen'!${kolomSumber}${awal}:${kolomSumber}${akhir},A${r},'Per Dokumen'!H${awal}:H${akhir})`,
+        anggota.reduce((a, x) => a + x.dpp, 0),
       );
+      /*
+       * Kolom N, bukan M.
+       *
+       * Judul kolomnya "Nilai dibayarkan", dan itu Total — kolom N di lembar
+       * Per Dokumen. M adalah "Nilai Lain (premi dititipkan)", yang pada
+       * hampir semua dokumen bernilai NOL. Jadi kolom ini menampilkan nol
+       * di seluruh barisnya, dan yang membacanya menyimpulkan tidak ada
+       * yang dibayarkan sama sekali.
+       *
+       * Tidak pernah ketahuan karena sel berumus tanpa nilai tersimpan
+       * tampil kosong di Protected View — kekeliruannya tertutup oleh
+       * kekeliruan yang lain.
+       */
       sheet.getCell(r, 4).value = F(
-        `SUMIF('Per Dokumen'!${kolomSumber}${awal}:${kolomSumber}${akhir},A${r},'Per Dokumen'!M${awal}:M${akhir})`,
+        `SUMIF('Per Dokumen'!${kolomSumber}${awal}:${kolomSumber}${akhir},A${r},'Per Dokumen'!N${awal}:N${akhir})`,
+        anggota.reduce((a, x) => a + x.total, 0),
       );
       for (let i = 1; i <= 4; i++) {
         const c = sheet.getCell(r, i);
@@ -674,8 +773,30 @@ function lembarIkhtisar(
   const jenisDipakai = Array.from(
     new Set(daftar.map((p) => labelJenis(t, p.purchaseType))),
   ).sort();
-  kelompok('Menurut jenis dokumen', jenisDipakai, 'E');
-  kelompok('Menurut keadaan persetujuan', ['Disetujui', 'Draf'], 'N');
+  kelompok(
+    'Menurut jenis dokumen',
+    jenisDipakai,
+    // E = Jenis.
+    'E',
+    daftar.map((p) => labelJenis(t, p.purchaseType)),
+  );
+  kelompok(
+    'Menurut keadaan persetujuan',
+    ['Disetujui', 'Draf'],
+    /*
+     * O, bukan N.
+     *
+     * N adalah kolom Total — sebuah ANGKA. `COUNTIF(N…, "Disetujui")`
+     * mencocokkan teks dengan kolom angka dan selalu menjawab nol, untuk
+     * kedua barisnya. Kolom Status ada di O.
+     *
+     * Rumus yang selalu nol tidak pernah melempar galat, dan di Protected
+     * View selnya kosong sama sekali — jadi tidak ada satu pun tanda bahwa
+     * pembagian "Disetujui / Draf" tidak pernah menghitung apa pun.
+     */
+    'O',
+    daftar.map((p) => (sudahDisetujuiRekap(p) ? 'Disetujui' : 'Draf')),
+  );
 
   r += 1;
   sheet.getCell(r, 1).value =
@@ -758,7 +879,16 @@ export async function unduhRekapPurchaseOrder(
   const AWAL_DATA = 5;
   const akhirDokumen = AWAL_DATA + daftar.length - 1;
 
-  lembarIkhtisar(wb, t, judulSubjek, periode, daftar, AWAL_DATA, akhirDokumen);
+  lembarIkhtisar(
+    wb,
+    t,
+    judulSubjek,
+    periode,
+    daftar,
+    items,
+    AWAL_DATA,
+    akhirDokumen,
+  );
   lembarRincian(wb, t, judulSubjek, periode, daftar, items);
   const { awal, akhir } = lembarPerDokumen(wb, t, judulSubjek, periode, daftar, items);
 

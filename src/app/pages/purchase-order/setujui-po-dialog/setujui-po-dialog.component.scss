@@ -223,10 +223,14 @@
   max-width: 100%;
 }
 
-.spo-title {
-  padding: 1.25rem 1.5rem 0 !important;
-  margin: 0 0 0.25rem !important;
-}
+/*
+ * Judulnya TIDAK lagi membawa padding sendiri.
+ *
+ * Dulu ia elemen `mat-dialog-title` teratas dan harus menyediakan jarak
+ * tepinya sendiri. Sekarang ia duduk di dalam pita (`.spo-kepala`), yang
+ * sudah mengurus padding — padding kedua di sini menggeser judulnya ke
+ * kanan-bawah di dalam pitanya sendiri.
+ */
 
 mat-dialog-content {
   padding: 0.5rem 1.5rem 1rem !important;
@@ -243,14 +247,60 @@ mat-dialog-content {
   margin: 0 !important;
 }
 
-/* Kepala: judul <h2> + anak judul, dapat digeser. */
+/*
+ * Kepala: pita + lencana + judul, mengikuti `bank-create`.
+ *
+ * `!important` pada padding dan margin karena Material menyetel keduanya
+ * pada `mat-dialog-title` dengan kekhususan yang lebih tinggi; tanpa itu
+ * pitanya tidak menyentuh tepi dialog dan tampak melayang. `::before`
+ * dimatikan dengan alasan yang sama — Material menyisipkannya sebagai
+ * pengatur jarak baseline judul, dan di dalam pita ia menjadi celah kosong
+ * di atas tulisannya.
+ */
 .spo-kepala {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  text-align: left;
+  background: linear-gradient(
+    135deg,
+    var(--brand-soft, #eef2fe) 0%,
+    var(--hover, #f6f8ff) 100%
+  );
+  border-bottom: 1px solid var(--line, #e4e9fb);
+
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+
+  &__teks {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
 }
+
+.spo-lencana {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--surface, #ffffff);
+  color: var(--brand, #154dec);
+  box-shadow: 0 2px 6px
+    color-mix(in srgb, var(--brand, #154dec) 14%, transparent);
+}
+
 .spo-kepala .spo-title {
   margin: 0;
+  line-height: 1.2;
 }
 .spo-sub {
   font-size: 0.8rem;

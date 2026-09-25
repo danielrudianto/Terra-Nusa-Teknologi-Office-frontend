@@ -1,6 +1,39 @@
+<!--
+  Kepala dialog mengikuti bentuk yang sudah mapan di aplikasi ini —
+  acuannya `bank-create`: pita berwarna lembut, lencana 42px berisi SVG
+  sebaris, judul dengan anak judul di sebelahnya.
+
+  Sebelumnya hanya judul dan anak judul di atas latar polos. Sah, bersih,
+  dan terlihat seperti layar dari aplikasi yang berbeda — yang memakainya
+  menyadarinya seketika, yang menulisnya tidak pernah. `dialogkepalacek`
+  melewatkannya dengan sengaja: pemeriksa itu menjaga `appDialogGeser`,
+  `<h2>`, dan anak judulnya, dan menyatakan sendiri bahwa pita serta
+  lencananya TIDAK diperiksa.
+
+  SVG sebaris, bukan `<mat-icon>`: lencana di seluruh dialog lain memakai
+  SVG, dan font ikon Material menggambar glifnya pada kotak 24px yang tidak
+  dapat ditengahkan tepat di dalam lencana 42px tanpa penyetelan tersendiri.
+-->
 <div mat-dialog-title class="spo-kepala" appDialogGeser>
-  <h2 class="spo-title">{{ "purchaseOrder.setujuiJudul" | translate }}</h2>
-  <span class="spo-sub">{{ "purchaseOrder.setujuiSub" | translate }}</span>
+  <span class="spo-lencana">
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M9 11l3 3L22 4" />
+      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+    </svg>
+  </span>
+  <div class="spo-kepala__teks">
+    <h2 class="spo-title">{{ "purchaseOrder.setujuiJudul" | translate }}</h2>
+    <span class="spo-sub">{{ "purchaseOrder.setujuiSub" | translate }}</span>
+  </div>
 </div>
 
 <mat-dialog-content>
