@@ -118,7 +118,7 @@
               type="text"
               formControlName="purchaseOrderName"
               [placeholder]="'purchaseCreate.poName' | translate"
-              oninput="this.value = this.value.toUpperCase()"
+              (input)="metaFormGroup.get('purchaseOrderName')?.setValue($any($event.target).value.toUpperCase())"
             />
             <!--
               Cari purchase order alih-alih mengetik nomornya.
