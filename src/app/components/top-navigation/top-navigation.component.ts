@@ -7,6 +7,7 @@ import {
   inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ApiService } from 'src/app/services/api.service';
 import { TopNavigationBookmarkComponent } from './top-navigation-bookmark/top-navigation-bookmark.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -46,6 +47,7 @@ import { PermissionService } from '../../services/permission.service';
   styleUrl: './top-navigation.component.scss',
 })
 export class TopNavigationComponent {
+  private readonly apiService = inject(ApiService);
   @Input('label') label!: string;
   @Output('onBookmarkClicked') onBookmarkClicked: EventEmitter<void> =
     new EventEmitter<void>();
@@ -156,7 +158,26 @@ export class TopNavigationComponent {
     this.router.navigate(['/Activity']);
   }
 
+  /**
+   * Keluar.
+   *
+   * MEMANGGIL SERVER LEBIH DULU, dan itu wajib sejak refresh token menjadi
+   * cookie `HttpOnly`: layar tidak dapat menghapusnya sendiri — itu memang
+   * inti `HttpOnly`. Tanpa panggilan ini, "keluar" hanya membuang token
+   * akses di layar sementara kunci yang paling mahal tetap tinggal di
+   * peramban dan masih dapat menerbitkan token baru selama tujuh hari.
+   *
+   * Perpindahan ke layar masuk TIDAK menunggu jawabannya, dan tidak
+   * dibatalkan bila panggilannya gagal: yang menekan keluar harus benar-benar
+   * keluar dari layarnya, jaringan bagaimanapun keadaannya. Yang gagal
+   * hanyalah pembersihan di sisi server, dan cookie-nya tetap kedaluwarsa
+   * sendiri.
+   */
   onLogout(): void {
+    this.apiService.post('auth/logout', {}).subscribe({
+      next: () => {},
+      error: () => {},
+    });
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');

@@ -15,19 +15,34 @@ export class ApiService {
   constructor(private http: HttpClient) {}
 
   /**
-   * Alamat yang BOLEH menerima refresh token.
+   * Rute yang memerlukan COOKIE ikut terkirim.
    *
-   * Hanya rute penyegaran, dan itu satu-satunya tempat backend membacanya.
+   * Refresh token tidak lagi disimpan di `localStorage` dan tidak lagi
+   * dikirim sebagai header. Ia sekarang cookie `HttpOnly` yang diterbitkan
+   * server — tidak dapat dibaca JavaScript sama sekali, yang memang
+   * intinya: satu XSS di layar mana pun dulu cukup untuk membawanya pergi,
+   * dan yang memegangnya dapat menerbitkan token akses baru selama tujuh
+   * hari tanpa perlu kata sandi.
    *
-   * Refresh token menerbitkan token akses baru dan masa berlakunya jauh
-   * lebih panjang. Mengirimnya pada setiap permintaan memperbanyak peluang
-   * bocor ratusan kali sehari tanpa manfaat apa pun.
+   * Cookie lintas-asal hanya ikut bila `withCredentials` dinyalakan. Dan
+   * dinyalakan HANYA di sini, bukan pada setiap permintaan: cookie-nya
+   * berjalur `/auth`, jadi pada rute lain ia tidak akan terkirim sekali pun
+   * diminta — menyalakannya di sana hanya menambah kerumitan preflight
+   * tanpa satu pun manfaat.
    *
-   * Dicocokkan ke AWALAN alamat, bukan dicari di dalamnya: `includes()`
-   * membuat alamat mana pun yang kebetulan memuat potongan ini ikut menerima
-   * tokennya.
+   *   * `auth/refresh` — membaca cookie-nya, lalu menerbitkan yang baru.
+   *   * `auth/logout`  — menghapusnya. Layar tidak bisa menghapusnya sendiri.
+   *   * `auth`         — login; di sinilah cookie-nya PERTAMA dipasang, dan
+   *                      tanpa `withCredentials` peramban membuang
+   *                      `Set-Cookie`-nya diam-diam.
    */
-  private static readonly JALUR_REFRESH = 'auth/refresh';
+  private static readonly JALUR_KREDENSIAL = ['auth/refresh', 'auth/logout', 'auth'];
+
+  /** Perlukah cookie ikut pada alamat ini? */
+  private kredensial(url: string): boolean {
+    const bersih = (url || '').split('?')[0].replace(/\/+$/, '');
+    return ApiService.JALUR_KREDENSIAL.includes(bersih);
+  }
 
   /**
    * Header untuk satu permintaan.
@@ -37,20 +52,13 @@ export class ApiService {
    */
   private headers(url: string): Record<string, string> {
     const akses = localStorage.getItem('access_token') ?? '';
-    const h: Record<string, string> = {
-      Authorization: `Bearer ${akses}`,
-    };
-
-    if (url.startsWith(ApiService.JALUR_REFRESH)) {
-      const segar = localStorage.getItem('refresh_token') ?? '';
-      h['X-Refresh-Token'] = `Bearer ${segar}`;
-    }
-    return h;
+    return { Authorization: `Bearer ${akses}` };
   }
 
   post(url: string, body: any) {
     return this.http.post(environment.url + url, body, {
       headers: this.headers(url),
+      withCredentials: this.kredensial(url),
     });
   }
 

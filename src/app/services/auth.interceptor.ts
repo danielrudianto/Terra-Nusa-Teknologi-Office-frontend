@@ -109,9 +109,12 @@ export class AuthInterceptor implements HttpInterceptor {
         this.isRefreshing = false;
 
         localStorage.setItem('access_token', tokens.access_token);
-        if (tokens.refresh_token) {
-          localStorage.setItem('refresh_token', tokens.refresh_token);
-        }
+        // Refresh token yang baru datang sebagai cookie `HttpOnly` pada
+        // jawaban ini; tidak ada yang perlu — dan tidak ada yang bisa —
+        // disimpan dari layar. Sisa simpanan lama dibuang sekalian.
+        try {
+          localStorage.removeItem('refresh_token');
+        } catch {}
 
         // release all queued requests with the fresh token
         this.refreshedToken$.next(tokens.access_token);

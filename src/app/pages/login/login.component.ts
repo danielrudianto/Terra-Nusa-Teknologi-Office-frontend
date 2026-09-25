@@ -92,11 +92,31 @@ export class LoginComponent implements OnInit {
     this.apiService.post('auth', this.loginFormGroup.value).subscribe({
       next: (data: any) => {
         const acessToken = data.access_token;
-        const refreshToken = data.refresh_token;
         const user = data.user;
 
         localStorage.setItem('access_token', acessToken);
-        localStorage.setItem('refresh_token', refreshToken);
+        /*
+         * REFRESH TOKEN TIDAK DISIMPAN DI SINI LAGI.
+         *
+         * Ia sekarang cookie `HttpOnly` yang dipasang server pada jawaban
+         * login ini — tidak dapat dibaca JavaScript sama sekali. Itulah
+         * intinya: `localStorage` terbuka bagi skrip mana pun yang berhasil
+         * berjalan di halaman, dan refresh token adalah kunci yang paling
+         * mahal di sistem ini — ia menerbitkan token akses baru berulang
+         * kali selama tujuh hari, tanpa kata sandi, tanpa terlihat sebagai
+         * login baru.
+         *
+         * Badan jawaban masih memuat `refresh_token` untuk sementara, demi
+         * build layar lama yang mungkin masih terbuka di tab seseorang saat
+         * deploy. Di sini ia SENGAJA diabaikan.
+         *
+         * Sisa simpanan lama dibuang — kalau tidak, token milik login
+         * sebelumnya tetap tergeletak di peramban sampai orangnya menekan
+         * keluar, dan itu justru keadaan yang sedang dibereskan.
+         */
+        try {
+          localStorage.removeItem('refresh_token');
+        } catch {}
         localStorage.setItem('user', JSON.stringify(user));
 
         // return to the page the user was on before the session expired
