@@ -11,6 +11,7 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
+import { jagaPenutupanDialog } from 'src/app/utils/jaga-penutupan-dialog';
 import { CalendarDayViewComponent } from '../calendar-day-view/calendar-day-view.component';
 import { MatList, MatListModule } from '@angular/material/list';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -210,6 +211,8 @@ export class CalendarDaySelectorComponent {
     this.dialogRef.close(this.adaPerubahan);
   }
   ngOnInit(): void {
+    // Latar dan `Esc` ikut mengabarkan perubahannya — lihat penolongnya.
+    jagaPenutupanDialog(this.dialogRef, () => this.adaPerubahan);
     this.fetchDailyData();
   }
 

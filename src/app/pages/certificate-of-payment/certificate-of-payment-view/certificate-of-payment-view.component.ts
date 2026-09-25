@@ -7,6 +7,7 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { DialogGeserDirective } from 'src/app/directives/dialog-geser.directive';
+import { jagaPenutupanDialog } from 'src/app/utils/jaga-penutupan-dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -153,6 +154,7 @@ export class CertificateOfPaymentViewComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    jagaPenutupanDialog(this.dialogRef, () => this.adaPerubahan);
     void this.muat();
   }
 

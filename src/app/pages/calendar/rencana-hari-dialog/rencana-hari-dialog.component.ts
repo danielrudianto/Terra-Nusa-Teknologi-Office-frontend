@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ServerMessageService } from 'src/app/services/server-message.service';
-import { Component, Inject, inject } from '@angular/core';
+import { Component, Inject, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
@@ -8,6 +8,7 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
+import { jagaPenutupanDialog } from 'src/app/utils/jaga-penutupan-dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -38,7 +39,7 @@ import { CanDirective } from 'src/app/directives/can.directive';
   templateUrl: './rencana-hari-dialog.component.html',
   styleUrl: './rencana-hari-dialog.component.scss',
 })
-export class RencanaHariDialogComponent {
+export class RencanaHariDialogComponent implements OnInit {
   private readonly serverMessage = inject(ServerMessageService);
 
   private readonly service = inject(PaymentPlanService);
@@ -221,5 +222,10 @@ export class RencanaHariDialogComponent {
 
   tutup(): void {
     this.dialogRef.close(this.berubah);
+  }
+
+  ngOnInit(): void {
+    // Latar dan `Esc` ikut mengabarkan perubahannya — lihat penolongnya.
+    jagaPenutupanDialog(this.dialogRef, () => this.berubah);
   }
 }

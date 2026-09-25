@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Component, Inject, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { jagaPenutupanDialog } from 'src/app/utils/jaga-penutupan-dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
@@ -98,6 +99,8 @@ export class PurchaseDraftViewComponent {
   private asli: any = null;
 
   ngOnInit(): void {
+    // Latar dan `Esc` ikut mengabarkan perubahannya — lihat penolongnya.
+    jagaPenutupanDialog(this.dialog, () => (this.adaPerubahan ? 'ubah' : undefined));
     this.muat();
   }
 
