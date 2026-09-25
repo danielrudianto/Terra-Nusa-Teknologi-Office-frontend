@@ -282,15 +282,28 @@ function tabelDokumen(t: Penerjemah, daftar: IRekapPO[], items: IRekapItem[]): a
   };
 }
 
-/** Susun dan unduh rekap sebuah proyek sebagai PDF. */
+/** Susun dan unduh rekap satu proyek atau satu pemasok sebagai PDF. */
 export function unduhRekapPurchaseOrderPdf(
-  proyek: string,
+  /** Kode proyek, atau nama pemasok — yang dicetak di kepala berkas. */
+  subjek: string,
   daftar: IRekapPO[],
   items: IRekapItem[],
   // WAJIB; lihat alasannya pada berkas Excel-nya.
   t: Penerjemah,
   rentang: RentangRekap = { dari: null, sampai: null },
+  /*
+   * Sudut pandang rekapnya; bawaannya `'proyek'` supaya pemanggil lama
+   * menghasilkan berkas yang persis sama. Lihat keterangan panjangnya pada
+   * berkas Excel-nya.
+   */
+  sudut: 'proyek' | 'pemasok' = 'proyek',
 ): void {
+  const kepala =
+    sudut === 'pemasok' ? `PEMASOK ${subjek}` : `PROYEK ${subjek}`;
+  // Spasi dan tanda baca dibuang; nama pemasok hampir selalu mengandung
+  // keduanya, dan sebagian klien surel memotong nama berkas di situ.
+  const potonganSubjek =
+    subjek.replace(/[^\p{L}\p{N}]+/gu, '_').replace(/^_+|_+$/g, '') || 'rekap';
   const hariIni = new Date().toLocaleDateString('id-ID', {
     day: 'numeric',
     month: 'long',
@@ -319,7 +332,7 @@ export function unduhRekapPurchaseOrderPdf(
         {
           stack: [
             {
-              text: `REKAP PURCHASE ORDER — PROYEK ${proyek}`,
+              text: `REKAP PURCHASE ORDER — ${kepala}`,
               fontSize: 12,
               bold: true,
               color: BIRU,
@@ -391,6 +404,6 @@ export function unduhRekapPurchaseOrderPdf(
   const { fonts, vfs } = documentFonts(baseVfs);
   const pdf = pdfMake.createPdf(dd, undefined, fonts as any, vfs as any);
   pdf.download(
-    `Rekap_Purchase_Order_${proyek}_${potonganBerkas(rentang)}.pdf`,
+    `Rekap_Purchase_Order_${potonganSubjek}_${potonganBerkas(rentang)}.pdf`,
   );
 }

@@ -152,6 +152,89 @@
   font-size: 18px;
 }
 
+/*
+ * Pemilih pemasok — bentuknya BARIS, bukan kotak isian.
+ *
+ * Ia membuka dialog pencarian, tidak menerima ketikan; kotak isian yang
+ * tidak dapat diketik adalah janji yang tidak ditepati, dan yang mencobanya
+ * menyimpulkan layarnya rusak.
+ */
+.por-pemasok {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 56px;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 10px;
+  background: var(--surface, #fff);
+  cursor: pointer;
+  text-align: left;
+  font-family: "Montserrat", sans-serif;
+  transition:
+    border-color 0.13s ease,
+    background 0.13s ease;
+
+  &:hover {
+    border-color: var(--brand, #154dec);
+    background: var(--hover, #f6f8ff);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--brand, #154dec);
+    outline-offset: 2px;
+  }
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    color: var(--muted, #6b7280);
+  }
+
+  &__teks {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+    margin-right: auto;
+  }
+
+  &__label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--faint, #9aa0ab);
+  }
+
+  &__nilai {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ink, #16181d);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &.kosong {
+      font-weight: 500;
+      color: var(--muted, #6b7280);
+    }
+  }
+
+  &__panah {
+    color: var(--faint, #9aa0ab);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .por-pemasok {
+    transition: none;
+  }
+}
+
 /* ---- rentang tanggal ---- */
 
 /*

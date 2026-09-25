@@ -10,6 +10,7 @@ import { debounceTime } from 'rxjs/operators';
 
 import { ApiService } from '../../services/api.service';
 import { AccountService } from '../../services/account.service';
+import { PermissionService } from '../../services/permission.service';
 import { ServerMessageService } from '../../services/server-message.service';
 import { TarikSegarkanDirective } from '../tarik-segarkan.directive';
 import { ScrollBawahDirective } from '../scroll-bawah.directive';
@@ -56,6 +57,7 @@ export class PersetujuanReimbursementComponent implements OnInit {
 
   private readonly api = inject(ApiService);
   private readonly akun = inject(AccountService);
+  private readonly izin = inject(PermissionService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly pesanServer = inject(ServerMessageService);
@@ -190,6 +192,55 @@ export class PersetujuanReimbursementComponent implements OnInit {
   }
 
   /**
+   * Berwenang memutuskan reimbursement — menyetujui MAUPUN menolak.
+   *
+   * Sebelumnya tidak diperiksa sama sekali: `PermissionService` bahkan tidak
+   * disuntik di layar ini. Tabnya digerbangi `reimbursement:approve` di
+   * `kerangka`, tetapi rutenya tidak dijaga, jadi siapa pun yang sampai ke
+   * `/Reimbursement` — alamat diketik, penanda buku, notifikasi lama —
+   * mendapat tombol Setujui dan Tolak yang hidup di setiap pengajuan.
+   *
+   * Desktop memakai `*appCan="'reimbursement:approve'"` pada tombolnya
+   * (`reimbursement-list.component.html`); ini padanannya.
+   */
+  get bolehMemutuskan(): boolean {
+    return this.izin.can('reimbursement', 'approve');
+  }
+
+  /**
+   * Sudah diputuskan — tidak boleh diputuskan lagi.
+   *
+   * MENOLAK yang sudah disetujui adalah yang paling perlu ditahan di sini:
+   * `reject_reimbursement` di server hanya memeriksa `isDelete`, tidak
+   * memeriksa keadaan persetujuannya dan tidak memeriksa pengajunya. Satu
+   * ketukan pada pengajuan yang sudah disetujui — dan sudah dibayarkan —
+   * mencabut persetujuannya tanpa satu pun galat.
+   */
+  sudahDiputuskan(r: any): boolean {
+    return !!(r?.isApprove ?? r?.isApproved);
+  }
+
+  /** Tombol Setujui boleh ditampilkan. */
+  bolehSetujui(r: any): boolean {
+    return (
+      this.bolehMemutuskan &&
+      !this.ajuanSendiri(r) &&
+      !this.sudahDiputuskan(r)
+    );
+  }
+
+  /**
+   * Tombol Tolak boleh ditampilkan.
+   *
+   * Termasuk untuk pengajuan SENDIRI — menarik pengajuan sendiri masuk akal
+   * dan tidak menambah uang bagi siapa pun. Yang ditahan hanya yang sudah
+   * diputuskan.
+   */
+  bolehTolak(r: any): boolean {
+    return this.bolehMemutuskan && !this.sudahDiputuskan(r);
+  }
+
+  /**
    * Jenis pengeluaran — hanya tiga. Kuncinya sama dengan daftar desktop
    * supaya labelnya tidak pernah berbeda antar layar.
    */
@@ -265,11 +316,12 @@ export class PersetujuanReimbursementComponent implements OnInit {
   }
 
   setujui(r: any): void {
-    if (this.ajuanSendiri(r)) return;
+    if (!this.bolehSetujui(r)) return;
     this.kirim('approve', r, 'mobile.reimbursement.disetujui');
   }
 
   tolak(r: any): void {
+    if (!this.bolehTolak(r)) return;
     this.kirim('reject', r, 'mobile.reimbursement.ditolak');
   }
 

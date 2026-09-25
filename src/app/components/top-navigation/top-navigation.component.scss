@@ -364,6 +364,74 @@ mat-toolbar {
   min-width: 320px !important;
   max-width: 380px !important;
 }
+
+/*
+ * Gerak saat lonceng DIBUKA.
+ *
+ * Kelasnya tidak disetel dari TypeScript: `MatMenuTrigger` sudah memasang
+ * `aria-expanded` pada tombolnya sendiri, dan atribut itu berganti tepat
+ * pada saat menunya terbuka dan tertutup. Memakai keadaan yang memang sudah
+ * ada berarti tidak ada keadaan kedua yang bisa keluar dari sepakat dengan
+ * menunya — bentuk kegagalan yang biasa pada penanda "sedang terbuka" yang
+ * dipegang sendiri: menu ditutup lewat Escape atau klik di luar, dan
+ * loncengnya tertinggal dalam keadaan terbuka.
+ *
+ * Dua hal saja, dan keduanya pendek: loncengnya bergoyang sekali, dan
+ * barisnya datang berurutan dari atas. Menu ini dibuka berkali-kali sehari
+ * — gerak yang panjang di sini berubah menjadi penundaan, bukan kesan.
+ */
+@keyframes tn-lonceng-goyang {
+  0% {
+    transform: rotate(0deg);
+  }
+  22% {
+    transform: rotate(-13deg);
+  }
+  45% {
+    transform: rotate(10deg);
+  }
+  67% {
+    transform: rotate(-6deg);
+  }
+  85% {
+    transform: rotate(3deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+.tn-lonceng[aria-expanded="true"] .mat-icon {
+  /* Digantung di puncaknya, seperti lonceng betulan — diputar di tengah,
+     yang bergerak kelihatan seperti ikon yang bergeser, bukan berayun. */
+  transform-origin: 50% 18%;
+  animation: tn-lonceng-goyang 0.6s cubic-bezier(0.32, 0.12, 0.28, 1);
+}
+
+/*
+ * Barisnya sendiri diberi gerak di `src/styles.scss`, bukan di sini.
+ *
+ * Panel menu dirender di dalam overlay CDK — di luar komponen ini — jadi
+ * satu-satunya cara menyentuhnya dari sini `::ng-deep`, yang artinya aturan
+ * global yang ditulis di tempat yang salah. Lembar gaya global sudah menjadi
+ * rumah bagi panel overlay lain (`.cdk-overlay-pane .mat-mdc-dialog-surface`)
+ * dan bagi keyframe `akn-muncul-baris` yang dipakainya.
+ */
+
+/*
+ * Saklar Pengaturan → Transisi = "Tanpa transisi", dan pilihan sistem.
+ *
+ * Dua-duanya disebut: `data-gerak` dipasang pada `<html>` oleh setelan
+ * aplikasi, dan `prefers-reduced-motion` datang dari sistem operasi bagi
+ * yang tidak pernah membuka Pengaturan sama sekali.
+ */
+:host-context(html[data-gerak="mati"]) .tn-lonceng[aria-expanded="true"] .mat-icon {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tn-lonceng[aria-expanded="true"] .mat-icon {
+    animation: none;
+  }
+}
 ::ng-deep .tn-lonceng-menu__kepala {
   padding: 10px 16px 6px;
   font-size: 0.7rem;

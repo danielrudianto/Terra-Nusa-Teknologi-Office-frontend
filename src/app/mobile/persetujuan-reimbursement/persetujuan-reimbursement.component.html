@@ -174,8 +174,19 @@
         </label>
       }
 
+      <!--
+        Keterangan bagi yang tidak berwenang — sebelumnya tidak ada sama
+        sekali, dan kedua tombolnya tetap hidup.
+      -->
+      @if (!bolehMemutuskan) {
+        <div class="mrb-takberhak">
+          <mat-icon>lock_outline</mat-icon>
+          <span>{{ "mobile.reimbursement.tidakBerwenang" | translate }}</span>
+        </div>
+      }
+
       <div class="mrb-aksi">
-        @if (!ajuanSendiri(dipilih)) {
+        @if (bolehSetujui(dipilih)) {
           <button
             mat-flat-button
             color="primary"
@@ -186,15 +197,23 @@
             {{ "mobile.reimbursement.setujui" | translate }}
           </button>
         }
-        <button
-          mat-stroked-button
-          color="warn"
-          type="button"
-          [disabled]="sedangKirim"
-          (click)="tolak(dipilih)"
-        >
-          {{ "mobile.reimbursement.tolak" | translate }}
-        </button>
+        <!--
+          Tolak ikut disaring. Sebelumnya digambar tanpa syarat apa pun —
+          termasuk pada pengajuan yang SUDAH disetujui, yang di server tidak
+          ditahan sama sekali (`reject_reimbursement` hanya memeriksa
+          `isDelete`).
+        -->
+        @if (bolehTolak(dipilih)) {
+          <button
+            mat-stroked-button
+            color="warn"
+            type="button"
+            [disabled]="sedangKirim"
+            (click)="tolak(dipilih)"
+          >
+            {{ "mobile.reimbursement.tolak" | translate }}
+          </button>
+        }
         <button mat-button type="button" (click)="tutup()">
           {{ "mobile.batal" | translate }}
         </button>

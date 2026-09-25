@@ -1151,6 +1151,32 @@ export class ProjectReportComponent implements OnInit {
 
   readonly PILIHAN_SATUAN_KAS: SatuanKas[] = ['hari', 'bulan'];
 
+  /**
+   * Lebar jendela BAWAAN per satuan — bukan `'auto'`.
+   *
+   * `'auto'` menghitung jendelanya dari lebar wadah: pada harian
+   * `round(lebar / 22)`, dijepit 30..120. Di layar lebar angkanya menjadi
+   * seratus titik lebih, dan kendali jendelanya HANYA digambar ketika
+   * titiknya lebih banyak daripada yang muat (`jendelaDipakai`). Proyek
+   * empat bulan — 115 hari — karena itu tidak pernah memunculkan chip
+   * 30/60/90 sama sekali di layar lebar: grafiknya menggambar seluruh
+   * proyek sekaligus, dan kendalinya lenyap tanpa ada yang menyebutkan
+   * sebabnya. Itulah yang dilaporkan sebagai "pillnya kok diilangin".
+   *
+   * Harian dikunci ke 30. Sebulan terakhir adalah yang ditanyakan orang
+   * ketika membuka arus kas, chipnya selalu tergambar selama proyeknya
+   * lebih panjang dari itu, dan `'auto'` tetap ada sebagai pilihan bagi
+   * yang memang ingin seluruhnya.
+   *
+   * Bulanan dibiarkan `'auto'`: satu titik per bulan, dan 30 bulan jauh
+   * lebih panjang daripada hampir semua proyek — mengunci angka di sana
+   * justru mematikan kendalinya, persis kebalikan dari yang diperbaiki.
+   */
+  private static readonly JENDELA_BAWAAN: Record<SatuanKas, number | 'auto'> = {
+    hari: 30,
+    bulan: 'auto',
+  };
+
   gantiSatuanKas(s: SatuanKas): void {
     this.satuanKas.set(s);
     // Lebar jendela dikembalikan ke otomatis.
@@ -1159,7 +1185,7 @@ export class ProjectReportComponent implements OnInit {
     // berbeda pada tiap satuan: "6" yang terbawa dari bulanan menjadi
     // jendela enam HARI. Angkanya masih masuk akal, grafiknya masih
     // tergambar, dan tidak ada apa pun yang menyebutkan sebabnya.
-    this.pilihanJendela.set('auto');
+    this.pilihanJendela.set(ProjectReportComponent.JENDELA_BAWAAN[s]);
     // Jendela dikembalikan ke ujung kanan: lebar jendela dihitung dalam
     // SATUAN titik, jadi geseran 6 pada bulanan berarti 6 hari pada harian —
     // tampilannya melompat ke rentang yang tidak diminta siapa pun.
@@ -1202,8 +1228,14 @@ export class ProjectReportComponent implements OnInit {
   /** Lebar wadah grafik dalam px; 0 berarti belum terukur. */
   private readonly lebarWadah = signal(0);
 
-  /** `'auto'` = menyesuaikan lebar layar. */
-  readonly pilihanJendela = signal<number | 'auto'>('auto');
+  /**
+   * Lebar jendela yang sedang dipilih; `'auto'` = menyesuaikan lebar layar.
+   *
+   * Bawaannya per satuan (lihat `JENDELA_BAWAAN`), bukan `'auto'`.
+   */
+  readonly pilihanJendela = signal<number | 'auto'>(
+    ProjectReportComponent.JENDELA_BAWAAN['hari'],
+  );
 
   /**
    * Pilihan lebar jendela — IKUT SATUANNYA.

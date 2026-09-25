@@ -1,95 +1,104 @@
 @use '../mobile' as m;
 
-@include m.kartu-daftar('mrb');
-@include m.panel-rincian('mrb');
+@include m.kartu-daftar('mpb');
+@include m.panel-rincian('mpb');
 
-@include m.hormati_gerak('mrb');
+@include m.hormati_gerak('mpb');
+
+/*
+ * Jangkauan tanggal — bentuknya sama dengan sakelar mode di daftar PO.
+ *
+ * Tiga keadaan yang saling lepas, jadi tombol ber-`aria-pressed`, bukan
+ * pilihan majemuk: "hari ini" dan "jatuh tempo" bersamaan tidak berarti apa
+ * pun. Sasaran sentuhnya 40px — ditekan sambil berjalan.
+ */
+.mpb-jangkauan {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 0.65rem;
+
+  button {
+    flex: 1;
+    min-height: 40px;
+    padding: 0 0.5rem;
+    border-radius: 11px;
+    border: 0.5px solid var(--border, #e3e6eb);
+    background: var(--surface, #fff);
+    color: var(--muted, #6b7280);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background 0.13s ease,
+      border-color 0.13s ease,
+      color 0.13s ease;
+
+    &.on {
+      background: var(--brand, #154dec);
+      border-color: var(--brand, #154dec);
+      color: var(--on-brand, #fff);
+    }
+  }
+}
+
+/*
+ * Tanggal yang SUDAH LEWAT dan masih menunggu.
+ *
+ * Ditandai warnanya, bukan hanya diurutkan di atas: daftar yang digulir
+ * membuat urutan berhenti berarti begitu layarnya bergeser, sedangkan
+ * warnanya tetap terbaca di posisi mana pun.
+ */
+.mpb-tanggal.telat {
+  color: var(--warn-fg, #b26a00);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.mpb-pil--telat {
+  background: var(--warn-bg, #fff6e5);
+  color: var(--warn-fg, #b26a00);
+}
+
+.mpb-dok {
+  color: var(--muted, #6b7280);
+  font-size: 0.78rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mpb-jangkauan button {
+    transition: none;
+  }
+}
 
 /* ---- rincian pengajuan (uang ini untuk apa) ---- */
-.mrb-rinci__total {
+.mpb-rinci__total {
   font-weight: 800;
 }
-.mrb-rekening {
+.mpb-rekening {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
 }
 
-.mrb-item {
-  margin-top: 1rem;
-
-  &__judul {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-weight: 700;
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-
-    mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
-      color: var(--brand);
-    }
-  }
-
-  &__kosong {
-    color: var(--muted);
-    font-size: 0.85rem;
-    margin: 0;
-  }
-
-  &__daftar {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-
-  &__baris {
-    padding: 0.6rem 0.75rem;
-    border-radius: 10px;
-    background: var(--surface-2, var(--hover));
-    border: 1px solid var(--border);
-  }
-
-  &__atas {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.6rem;
-  }
-
-  &__nama {
-    min-width: 0;
-    font-size: 0.9rem;
-    font-weight: 600;
-  }
-
-  &__nilai {
-    flex: none;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-  }
-
-  &__tanggal {
-    display: block;
-    margin-top: 0.15rem;
-    color: var(--faint);
-    font-size: 0.75rem;
-  }
-}
-
-.mrb-muat {
+.mpb-muat {
   display: grid;
   place-items: center;
   padding: 0.8rem 0;
 }
 
 /* ---- checklist "sudah diperiksa" (gate tombol setujui) ---- */
-.mrb-baca {
+.mpb-baca {
   display: flex;
   align-items: flex-start;
   gap: 0.6rem;
@@ -120,7 +129,7 @@
 /* Jarak tegas sebelum tombol aksi — supaya Setujui tidak mepet daftar. */
 /* Sepadan dengan `.mcp-takberhak` di layar CoP — bentuk peringatan, bukan
    galat: dokumennya boleh dibaca, keputusannya saja bukan miliknya. */
-.mrb-takberhak {
+.mpb-takberhak {
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -142,26 +151,26 @@
   }
 }
 
-.mrb-aksi {
+.mpb-aksi {
   margin-top: 0.6rem;
   padding-top: 0.9rem;
   border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
 }
 
 /* ---- kepala panel: judul + pil jenis ---- */
-.mrb-panel__kepala {
+.mpb-panel__kepala {
   margin-bottom: 0.9rem;
 
-  .mrb-judul {
+  .mpb-judul {
     margin: 0 0 0.5rem;
   }
 }
 
 /* ---- pil jenis pengeluaran ---- */
-.mrb-tanda {
+.mpb-tanda {
   margin-top: 0.6rem;
 }
-.mrb-pil {
+.mpb-pil {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
@@ -195,7 +204,7 @@
 }
 
 /* ---- nilai yang dapat disalin (rekening, total) ---- */
-.mrb-salin {
+.mpb-salin {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -219,7 +228,7 @@
   &:active {
     background: var(--hover);
   }
-  &--total .mrb-rinci__total {
+  &--total .mpb-rinci__total {
     font-weight: 800;
   }
 }

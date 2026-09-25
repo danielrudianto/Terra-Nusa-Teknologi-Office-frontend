@@ -3740,6 +3740,7 @@
     "hr_candidates": "Candidates",
     "hr_questions": "Question bank",
     "user_permissions": "User permissions",
+    "reminders": "Agenda (reminder)",
     "purchase_orders": "Purchase Order",
     "purchases": "Purchase",
     "expenses": "Expense",
@@ -5083,10 +5084,10 @@
   },
   "poRekap": {
     "judul": "Download recap",
-    "sub": "Pick a project, a period, and a file format",
+    "sub": "Choose a project or supplier, the period, and the file format",
     "unduh": "Download",
     "menyusun": "Building…",
-    "keterangan": "The recap covers the purchase orders of the selected project within the chosen period, drafts included. Each row is marked with its status.",
+    "keterangan": "The recap covers the selected purchase orders in the chosen period, including drafts. The status is marked on every row.",
     "kosong": "This project has no purchase orders yet.",
     "gagal": "Could not build the recap. Please try again.",
     "menu": "Download recap",
@@ -5102,7 +5103,13 @@
     "mulai": "From",
     "selesai": "To",
     "rentangSalah": "Pick at least one date, and make sure the end is not before the start.",
-    "kosongRentang": "No purchase orders in this project for {{rentang}}."
+    "kosongRentang": "No purchase orders in this project for {{rentang}}.",
+    "sudut": "Group by",
+    "perProyek": "Project",
+    "perPemasok": "Supplier",
+    "pemasok": "Supplier",
+    "pilihPemasok": "Choose a supplier…",
+    "kosongPemasok": "This supplier has no purchase orders yet."
   },
   "poRingkas": {
     "judul": "Purchase order contents",
@@ -5710,7 +5717,8 @@
       "proyek": "Project",
       "drafPembelian": "Purchase Draft",
       "setelan": "Settings",
-      "cop": "CoP"
+      "cop": "CoP",
+      "pembayaran": "Pay"
     },
     "beranda": {
       "judul": "Waiting for your decision",
@@ -5719,6 +5727,7 @@
       "perluPeriksa": "awaiting check",
       "laporan": "Margin report per project",
       "drafPembelianKet": "Record a supplier invoice as a draft",
+      "pembayaranKet": "Due today or earlier",
       "hapus": "Search then delete a purchase",
       "halo": "Hi",
       "tuntas": "All caught up",
@@ -5768,6 +5777,34 @@
       "tandai": "Mark as Checked",
       "selesai": "{{nomor}} marked as checked"
     },
+    "pembayaran": {
+      "judul": "Payment Approval",
+      "sub": "Outgoing payments waiting on your decision",
+      "cariPlaceholder": "Search payee or document",
+      "jangkauan": {
+        "hari-ini": "Today",
+        "jatuh-tempo": "Overdue",
+        "semua": "All"
+      },
+      "kosong": {
+        "hari-ini": "No payments waiting today.",
+        "jatuh-tempo": "No overdue payments.",
+        "semua": "No payments waiting for approval."
+      },
+      "telat": "Past due",
+      "tanggal": "Payment date",
+      "dokumen": "Document",
+      "keterangan": "Description",
+      "bank": "Account name",
+      "rekening": "Destination account",
+      "nominal": "Amount",
+      "sudahBaca": "I have checked the amount and destination account.",
+      "setujui": "Approve",
+      "tolak": "Reject",
+      "tidakBerwenang": "You are not authorised to approve or reject payments.",
+      "sudahDiputuskan": "This payment has already been approved or cancelled. Pull to refresh the list.",
+      "buatanSendiri": "You prepared this payment yourself, so someone else must approve it. You can still reject it."
+    },
     "reimbursement": {
       "judul": "Reimbursement Approval",
       "sub": "Claims awaiting a decision.",
@@ -5786,6 +5823,7 @@
       "rekening": "Destination account",
       "rincian": "Expense details",
       "tanpaRincian": "No details.",
+      "tidakBerwenang": "You are not authorised to approve or reject reimbursements.",
       "sudahBaca": "I have reviewed the details and destination account."
     },
     "pembelian": {
@@ -5830,6 +5868,8 @@
     "bap": {
       "tahapJudul": "Stage 1 — record volume",
       "tahapKet": "Only the work volume for this period is recorded here. Prices and deductions are filled in at the next stage, on desktop.",
+      "takBerhakJudul": "You cannot create a work report yet",
+      "takBerhakKet": "Recording volume is limited to the engineering division (or level 4 and above). Contact an admin if your account has no division set.",
       "cariSpk": "Search SPK number or name",
       "kurangHuruf": "Type at least 3 characters to search for an SPK.",
       "tidakAda": "No matching SPK.",
@@ -5858,6 +5898,7 @@
       "sudahDiperiksa": "Checked",
       "menungguBap": "Awaiting BAP approval",
       "menungguCop": "Awaiting CoP approval",
+      "tidakBerwenang": "Approving a CoP requires level {{level}} or above. You can still read the details.",
       "sudahBaca": "I have read the details above"
     }
   },

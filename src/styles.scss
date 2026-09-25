@@ -479,6 +479,14 @@ html {
   --line: #eef0f3;
   --border: #e3e6eb;
   --brand: #154dec;
+  /* KERTAS — putih di KEDUA tema, dan itu disengaja.
+     Dipakai oleh apa pun yang meniru lembar kertas: pratinjau halaman PDF
+     dan kotak penutup di atasnya. Kotak penutup menggambarkan tinta PUTIH
+     yang benar-benar akan ditulis ke berkasnya; membuatnya ikut menggelap
+     di tema gelap berarti layar menjanjikan hasil yang berbeda dari yang
+     tercetak. Yang menyesuaikan diri dengan tema adalah latar DI SEKITAR
+     kertasnya, bukan kertasnya. */
+  --kertas: #ffffff;
   /* Warna teks/ikon di ATAS warna aksen.
 
      Wajib punya nilai di sini, bukan hanya disetel SettingsService: berkas
@@ -587,6 +595,8 @@ html[data-theme="dark"] {
   --line: #2a2f3a;
   --border: #2f3540;
   --brand: #7ba0ff;
+  /* Tetap putih — lihat keterangannya pada tema terang. */
+  --kertas: #ffffff;
   /* Aksen tema gelap sengaja terang agar terbaca di latar gelap, sehingga
      teks di atasnya harus GELAP — putih hanya berkontras 2,5:1. */
   --on-brand: #16181d;
@@ -1544,6 +1554,32 @@ body.mobile-app *::-webkit-scrollbar {
 }
 
 /*
+ * Menu lonceng: barisnya datang berurutan saat menunya dibuka.
+ *
+ * Di sini, bukan di `top-navigation.component.scss`: panel menu dirender di
+ * dalam overlay CDK, di luar komponen itu, jadi menaruhnya di sana berarti
+ * `::ng-deep` — aturan global yang ditulis di tempat yang salah. Keyframe
+ * yang dipakainya pun sudah tinggal di berkas ini.
+ *
+ * Dari ATAS (−6px, lihat `akn-muncul-baris`). Panel menu punya
+ * `overflow: auto`; baris yang masuk dari BAWAH menjorok melewati tepi
+ * bawahnya dan memunculkan batang gulir yang berkedip selama animasi.
+ *
+ * 40ms per baris dan berhenti di baris ketujuh: lima jenis notifikasi adalah
+ * yang terbanyak yang mungkin muncul, dan daftar yang jedanya terus bertambah
+ * membuat baris terakhir datang setelah orang selesai membacanya.
+ */
+.tn-lonceng-menu .mat-mdc-menu-content > * {
+  animation: akn-muncul-baris 0.28s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
+  animation-delay: calc(var(--tn-urut, 7) * 40ms);
+}
+@for $i from 1 through 7 {
+  .tn-lonceng-menu .mat-mdc-menu-content > :nth-child(#{$i}) {
+    --tn-urut: #{$i - 1};
+  }
+}
+
+/*
  * Kerangka tabel (direktif `appKerangka`).
  *
  * Warnanya diturunkan dari `--ink`, bukan warna tetap: abu-abu yang pas di
@@ -1611,7 +1647,8 @@ html[data-gerak="mati"] {
   .mat-mdc-table tr.mat-mdc-row,
   .akn-berurutan > *,
   .akn-masuk-atas,
-  .akn-kerangka__balok {
+  .akn-kerangka__balok,
+  .tn-lonceng-menu .mat-mdc-menu-content > * {
     animation: none !important;
   }
   .mat-mdc-button-base:active,
@@ -1622,6 +1659,17 @@ html[data-gerak="mati"] {
 @media print {
   .mat-mdc-table tr.mat-mdc-row,
   .akn-berurutan > * {
+    animation: none !important;
+  }
+}
+/*
+ * Pilihan SISTEM, bukan hanya setelan aplikasi.
+ *
+ * `data-gerak` di atas datang dari Pengaturan → Transisi. Yang tidak pernah
+ * membuka Pengaturan tetap berhak atas pilihannya di sistem operasi.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .tn-lonceng-menu .mat-mdc-menu-content > * {
     animation: none !important;
   }
 }

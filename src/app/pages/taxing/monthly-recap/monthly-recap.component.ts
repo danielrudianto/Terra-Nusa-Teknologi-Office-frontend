@@ -17,7 +17,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from '../../../services/api.service';
 import { saveAs } from 'file-saver';
@@ -37,7 +36,6 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
     ReactiveFormsModule,
     MatSelectModule,
     MatDialogModule,
-    MatSlideToggleModule,
     MatInputModule,
     MatButtonModule,
     CommonModule,
@@ -82,23 +80,40 @@ export class MonthlyRecapComponent {
     private snackBar: MatSnackBar,
   ) {}
 
+  /**
+   * Bagian laporan — SATU daftar, dipakai template dan validator.
+   *
+   * Sebelumnya namanya ditulis tujuh kali di template (satu
+   * `mat-slide-toggle` per bagian) dan sekali lagi sebagai array di dalam
+   * validator. Menambah satu bagian berarti menyentuh dua tempat, dan yang
+   * terlupa adalah validatornya — bagian baru yang dicentang sendirian
+   * tetap membuat tombol unduhnya mati, tanpa ada yang menyebutkan sebabnya.
+   */
+  readonly BAGIAN: { kunci: string; label: string }[] = [
+    { kunci: 'mutation', label: 'taxing.bankMutation' },
+    { kunci: 'purchase', label: 'taxing.purchase' },
+    { kunci: 'sales', label: 'taxing.sales' },
+    { kunci: 'asset', label: 'taxing.asset' },
+    { kunci: 'ar', label: 'taxing.accountReceivable' },
+    { kunci: 'ap', label: 'taxing.accountPayable' },
+    { kunci: 'loans', label: 'taxing.loans' },
+  ];
+
+  /** Kartu pilih menggantikan sakelar; nilainya tetap boolean yang sama. */
+  toggleBagian(kunci: string): void {
+    const c = this.formGroup.get(kunci);
+    if (!c) return;
+    c.setValue(c.value !== true);
+    c.markAsDirty();
+  }
+
   atLeastOneCheckedValidator: ValidatorFn = (
     control: AbstractControl,
   ): ValidationErrors | null => {
     const group = control as FormGroup;
 
-    const fields = [
-      'mutation',
-      'purchase',
-      'sales',
-      'asset',
-      'ar',
-      'ap',
-      'loans',
-    ];
-
-    const atLeastOneChecked = fields.some(
-      (field) => group.get(field)?.value === true,
+    const atLeastOneChecked = this.BAGIAN.some(
+      (b) => group.get(b.kunci)?.value === true,
     );
 
     return atLeastOneChecked ? null : { atLeastOneRequired: true };

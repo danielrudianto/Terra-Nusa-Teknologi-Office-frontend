@@ -78,6 +78,27 @@
         <p class="rc-hint">{{ "reminder.tampilDiAgendaSemuaOrang" | translate }}</p>
       }
     </form>
+
+    <!--
+      Riwayat perubahan — hanya saat MENGUBAH, bukan saat membuat.
+
+      Agenda dibagikan (`isShared`) dan dapat menandai orang lain, jadi
+      barisnya bukan milik pembuatnya saja: yang lain melihatnya, dan yang
+      lain juga dapat mengubah atau menghapusnya. Tanpa jejak, "kok
+      tanggalnya pindah" dan "kok agendanya hilang" tidak punya jawaban
+      sama sekali.
+
+      Komponen yang sama dipakai seluruh layar view di aplikasi ini; cukup
+      menyebut entitas dan id-nya.
+    -->
+    @if (isEdit) {
+      <div class="rc-riwayat">
+        <app-audit-trail
+          entity="reminders"
+          [entityId]="data!.reminder!.id"
+        ></app-audit-trail>
+      </div>
+    }
   </mat-dialog-content>
 
   <mat-dialog-actions align="end" class="rc-foot">

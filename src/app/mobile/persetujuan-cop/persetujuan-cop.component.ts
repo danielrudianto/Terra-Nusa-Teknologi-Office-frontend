@@ -16,6 +16,7 @@ import { TarikSegarkanDirective } from '../tarik-segarkan.directive';
 import { lembarBawah } from '../gerak-lembar';
 import { gerakMati } from '../../animations/gerak';
 import { KartuKerangkaComponent } from '../kartu-kerangka/kartu-kerangka.component';
+import { LEVEL_COP_SETUJU, bolehMenyetujuiCop } from '../penjaga-level';
 
 /**
  * Menyetujui Certificate of Payment dari ponsel.
@@ -93,6 +94,30 @@ export class PersetujuanCopComponent implements OnInit {
   get bolehLihatNilai(): boolean {
     return this.izin.level() >= 2;
   }
+
+  /**
+   * Berwenang menyetujui — BAP maupun tahap terakhirnya.
+   *
+   * Sebelumnya TIDAK DIPERIKSA SAMA SEKALI di layar ini: satu-satunya syarat
+   * tombol Setujui adalah `sudahBaca`. `PermissionService` sudah disuntik,
+   * tetapi hanya dipakai untuk `bolehLihatNilai`.
+   *
+   * Tabnya sendiri digerbangi `can('certificate_of_payment','approve')`, dan
+   * matriks memberi aksi itu mulai level 3 — sementara server meminta level
+   * 4 (`boleh_menyetujui_bap_cop`). Selisih satu tingkat itu tepat mengenai
+   * manajer level 3: tabnya muncul, dokumennya terbuka, konfirmasinya
+   * tercentang, tombolnya hidup, lalu 403 tanpa keterangan — untuk SETIAP
+   * baris. Yang dilaporkan bukan "tidak berhak", melainkan "CoP di HP rusak".
+   *
+   * Aturannya diambil dari `penjaga-level`, satu tempat, bukan ditulis ulang
+   * di sini.
+   */
+  get bolehSetujui(): boolean {
+    return bolehMenyetujuiCop(this.izin);
+  }
+
+  /** Dipakai keterangan di layar; menyebut angkanya, bukan menebak. */
+  readonly LEVEL_SETUJU = LEVEL_COP_SETUJU;
 
   ngOnInit(): void {
     this.muat(true);

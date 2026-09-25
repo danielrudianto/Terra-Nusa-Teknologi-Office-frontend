@@ -161,21 +161,86 @@
   gap: 6px;
   margin-top: 0.8rem;
 }
-.txr-toggle {
+/*
+ * Kartu pilih — bentuknya sengaja SAMA dengan pill bulan (`.txr-month`):
+ * radius, tebal garis, warna aktif, dan bayangannya diambil dari sana.
+ * Dua kelompok pilihan dalam satu dialog yang tampilannya berbeda membuat
+ * yang kedua terbaca sebagai kendali jenis lain.
+ */
+.txr-pilih {
   display: flex;
   align-items: center;
-  padding: 0.6rem 0.85rem;
+  gap: 0.6rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 0.8rem;
   border-radius: 12px;
+  cursor: pointer;
+  font-family: "Montserrat", sans-serif;
   border: 0.5px solid var(--border, #e3e6eb);
-  background: var(--surface-2, #fafbfc);
-  ::ng-deep .mdc-form-field {
-    width: 100%;
+  background: var(--surface, #ffffff);
+  transition:
+    background 0.13s ease,
+    border-color 0.13s ease,
+    box-shadow 0.13s ease;
+
+  &__tanda {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    border: 1.5px solid var(--border, #d7dce6);
+    background: var(--surface, #ffffff);
+    color: transparent;
+    transition:
+      background 0.13s ease,
+      border-color 0.13s ease,
+      color 0.13s ease;
   }
-  ::ng-deep .mdc-label {
-    font-family: "Montserrat", sans-serif;
+
+  &__nama {
     font-size: 0.85rem;
     font-weight: 500;
     color: var(--ink, #16181d);
+    line-height: 1.25;
+  }
+
+  &:hover {
+    border-color: var(--border, #c2ccde);
+    background: var(--hover, #f6f8ff);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--brand, #154dec);
+    outline-offset: 2px;
+  }
+
+  &.is-active {
+    background: var(--brand, #154dec);
+    border-color: var(--brand, #154dec);
+    box-shadow: 0 3px 10px
+      color-mix(in srgb, var(--brand, #154dec) 28%, transparent);
+
+    /* `--on-brand`, bukan `#fff`: di tema gelap aksennya terang, dan tanda
+       centang putih di atasnya tidak lagi terbaca. */
+    .txr-pilih__tanda {
+      background: var(--on-brand, #fff);
+      border-color: var(--on-brand, #fff);
+      color: var(--brand, #154dec);
+    }
+    .txr-pilih__nama {
+      color: var(--on-brand, #fff);
+      font-weight: 600;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .txr-pilih,
+  .txr-pilih__tanda {
+    transition: none;
   }
 }
 

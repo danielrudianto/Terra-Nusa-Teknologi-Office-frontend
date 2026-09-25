@@ -26,6 +26,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 
 import { CertificateOfPaymentService } from '../../services/certificate-of-payment.service';
+import { PermissionService } from '../../services/permission.service';
 import { ServerMessageService } from '../../services/server-message.service';
 import { BapBuatComponent } from './bap-buat.component';
 
@@ -57,6 +58,26 @@ function komponen(): any {
       { provide: MatSnackBar, useValue: { open: () => {} } },
       { provide: TranslateService, useValue: { instant: (k: string) => k } },
       { provide: ServerMessageService, useValue: { terjemahkan: () => 'x' } },
+      /*
+       * Izin ditiru, bukan dipanggil sungguhan.
+       *
+       * Layar ini sekarang memeriksa wewenang MEMBUAT berita acara di depan
+       * (`bolehMembuat`) — izinnya dan divisi engineering untuk di bawah
+       * level 4, sepadan dengan `boleh_membuat_cop` di server. Sebelumnya
+       * tidak diperiksa sama sekali, sehingga penolakannya datang sesudah
+       * seluruh volume diketik di lapangan.
+       *
+       * `PermissionService` yang sungguhan menarik `HttpClient`; yang diuji
+       * berkas ini angka dan muatannya, bukan pemuatan izinnya.
+       */
+      {
+        provide: PermissionService,
+        useValue: {
+          level: () => 5,
+          can: () => true,
+          inDepartment: (d: string) => d === 'engineering',
+        },
+      },
     ],
   });
   return TestBed.runInInjectionContext(() => new (BapBuatComponent as any)());

@@ -53,8 +53,26 @@ export class SupplierSelectorComponent {
   supplierCount: number = 0;
 
   ngOnInit(): void {
-    this.searchBar.valueChanges.pipe(debounceTime(500)).subscribe((value) => {
-      const keyword = value.trim();
+    /*
+     * Halaman pertama dimuat LANGSUNG, tanpa menunggu diketik.
+     *
+     * Sebelumnya `ngOnInit` hanya berlangganan perubahan kotak cari, jadi
+     * dialog ini terbuka dengan daftar KOSONG — dan tidak ada apa pun di
+     * layar yang menyebutkan bahwa isinya baru datang setelah mengetik.
+     * Yang membukanya membaca layar itu sebagai "pemasoknya belum ada",
+     * bukan sebagai "silakan cari".
+     *
+     * Tidak terasa selama ini karena pemakainya selalu formulir purchase
+     * order, tempat orang memang langsung mengetik nama vendornya. Pada
+     * pemilih yang dibuka untuk MEMILIH SALAH SATU — rekap per pemasok —
+     * daftar kosong adalah jalan buntu.
+     *
+     * Permintaannya sama persis dengan yang sudah terjadi pada ketikan
+     * pertama; yang berubah hanya waktunya.
+     */
+    this.search(0);
+
+    this.searchBar.valueChanges.pipe(debounceTime(500)).subscribe(() => {
       this.search(0);
     });
   }

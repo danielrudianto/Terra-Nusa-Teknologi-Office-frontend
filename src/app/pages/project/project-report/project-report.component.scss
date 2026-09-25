@@ -908,35 +908,59 @@
 
 /* ---- berapa nilai kontrak yang sudah terpakai ---- */
 
+/*
+ * Batang ini SELALU duduk di dalam kartu berwarna (`.prp-sel--utama`, yang
+ * jadi merah lewat `.prp-sel--rugi`). Warnanya karena itu diambil dari
+ * kartunya, bukan dari palet permukaan terang.
+ *
+ * Yang sebelumnya terjadi: jalurnya `--line` — nyaris putih, jadi terbaca
+ * sebagai batang putih penuh di atas biru — dan isinya `--brand`, warna
+ * yang SAMA PERSIS dengan latar kartunya. Porsi yang terpakai karena itu
+ * tidak tergambar sama sekali; yang terlihat hanya jalur putih kosong,
+ * berapa pun angkanya. Pada kartu rugi lebih parah lagi: isinya `--bad-fg`
+ * di atas kartu `--bad-fg`.
+ *
+ * Keterangannya kena hal yang sama — `--faint` di atas biru tua nyaris
+ * tidak terbaca, padahal angkanyalah yang dicari.
+ */
 .prp-pakai {
   margin-top: 0.6rem;
 }
 .prp-pakai__jalur {
   height: 6px;
   border-radius: 999px;
-  background: var(--line, #e3e6eb);
+  background: rgba(255, 255, 255, 0.26);
   overflow: hidden;
 }
 .prp-pakai__isi {
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: var(--brand);
+  background: #fff;
   transition: width 0.25s ease;
 }
-/* Melampaui kontrak: warnanya berubah, bukan batangnya yang meluber. */
+/*
+ * Melampaui kontrak: kartunya sudah berubah merah, jadi isinya tidak boleh
+ * ikut merah — ia akan hilang. Yang membedakan di sini arsirnya, dan
+ * batangnya sendiri mentok 100% (lebarnya dijepit di template).
+ */
 .prp-pakai.lewat .prp-pakai__isi {
-  background: var(--bad-fg, #e5484d);
+  background-color: rgba(255, 255, 255, 0.95);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.95) 0 5px,
+    rgba(255, 255, 255, 0.5) 5px 10px
+  );
 }
 .prp-pakai__ket {
   margin-top: 0.25rem;
   font-size: 0.7rem;
-  color: var(--faint, #8a8f98);
+  color: rgba(255, 255, 255, 0.82);
   font-variant-numeric: tabular-nums;
 }
 .prp-pakai.lewat .prp-pakai__ket {
-  color: var(--bad-fg, #e5484d);
-  font-weight: 600;
+  color: #fff;
+  font-weight: 700;
 }
 
 @media (prefers-reduced-motion: reduce) {

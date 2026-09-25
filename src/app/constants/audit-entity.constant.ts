@@ -72,4 +72,18 @@ export const AuditTrailEntities: string[] = [
   'hr_candidates',
   'hr_questions',
   'user_permissions',
+
+  /*
+   * Agenda (pengingat).
+   *
+   * Server TIDAK mencatatnya sama sekali sampai sekarang — beda dengan yang
+   * di atas, yang hanya tidak terdaftar di sini. Pencatatnya ditambahkan di
+   * `ReminderRepository`; entitasnya didaftarkan di sini supaya jejaknya
+   * dapat dicari, bukan hanya terbaca dari dalam dialog pengingatnya.
+   *
+   * Nama tabelnya `reminders`, bukan `agenda`: agenda adalah layarnya —
+   * gabungan pengingat, ulang tahun, dan tanggal dari modul lain — dan yang
+   * dicatat cuma pengingat, satu-satunya yang memang punya barisnya sendiri.
+   */
+  'reminders',
 ];

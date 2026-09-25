@@ -13,6 +13,16 @@
  * lambat salah satunya diubah sendirian, dan bedanya tidak akan ketahuan
  * sampai ada dokumen yang disetujui dari ponsel padahal di desktop ditolak.
  *
+ * IZIN: `levelGuard` SAJA TIDAK CUKUP
+ *
+ * `levelGuard` hanya membandingkan angka level; ia tidak pernah membaca peta
+ * izin sama sekali. Selama itu satu-satunya penjaga, menyembunyikan tab di
+ * `kerangka` tidak menutup apa pun: alamatnya dapat diketik, tersimpan
+ * sebagai penanda buku, atau datang dari notifikasi dorong yang sudah lama —
+ * dan yang membukanya mendapat layar penuh tombol yang semuanya ditolak
+ * server. Rute yang tabnya disembunyikan karena itu memakai `izinGuard`
+ * dengan `data.permission`, sama seperti desktop.
+ *
  * YANG ADA DI SINI HANYA EMPAT
  *
  * Menyetujui purchase order, menyetujui reimbursement, menghapus pembelian,
@@ -24,7 +34,7 @@
 import { Routes } from '@angular/router';
 
 import { authGuard } from '../guards/auth.guard';
-import { drafPembelianGuard, levelGuard } from './penjaga-level';
+import { drafPembelianGuard, izinGuard, levelGuard } from './penjaga-level';
 
 export const MOBILE_ROUTES: Routes = [
   {
@@ -79,6 +89,8 @@ export const MOBILE_ROUTES: Routes = [
          * `?open=<id>` (deep link dari notifikasi) dibaca komponennya.
          */
         path: 'Purchase-order',
+        canActivate: [izinGuard],
+        data: { permission: 'purchase_order:read' },
         loadComponent: () =>
           import('./purchase-order/purchase-order.component').then(
             (m) => m.PurchaseOrderComponent,
@@ -99,6 +111,8 @@ export const MOBILE_ROUTES: Routes = [
          * gerbangnya tidak perlu dilonggarkan.
          */
         path: 'Certificate-of-payment',
+        canActivate: [izinGuard],
+        data: { permission: 'certificate_of_payment:approve' },
         loadComponent: () =>
           import('./persetujuan-cop/persetujuan-cop.component').then(
             (m) => m.PersetujuanCopComponent,
@@ -123,7 +137,8 @@ export const MOBILE_ROUTES: Routes = [
          * membuang seluruh kolom nilai untuk level yang belum berhak.
          */
         path: 'Berita-acara',
-        data: { levelMinimum: 1 },
+        canActivate: [izinGuard],
+        data: { levelMinimum: 1, permission: 'certificate_of_payment:create' },
         loadComponent: () =>
           import('./bap-buat/bap-buat.component').then(
             (m) => m.BapBuatComponent,
@@ -142,7 +157,29 @@ export const MOBILE_ROUTES: Routes = [
           ).then((m) => m.PurchaseDraftCreateComponent),
       },
       {
+        /*
+         * PEMBAYARAN KELUAR — satu-satunya tahap yang memindahkan uang.
+         *
+         * Semua yang sebelumnya menghasilkan dokumen; yang ini menghasilkan
+         * transfer, dan justru itu yang paling terikat waktu: pembayaran
+         * hari ini harus diputuskan hari ini, kerap saat yang berwenang
+         * sedang tidak di depan komputer.
+         *
+         * Yang dibawa ke sini HANYA keputusannya. Membuat dan mengubah
+         * pembayaran tetap di desktop.
+         */
+        path: 'Pembayaran',
+        canActivate: [izinGuard],
+        data: { permission: 'payment_outgoing:approve' },
+        loadComponent: () =>
+          import(
+            './persetujuan-pembayaran/persetujuan-pembayaran.component'
+          ).then((m) => m.PersetujuanPembayaranComponent),
+      },
+      {
         path: 'Reimbursement',
+        canActivate: [izinGuard],
+        data: { permission: 'reimbursement:approve' },
         loadComponent: () =>
           import('./persetujuan-reimbursement/persetujuan-reimbursement.component').then(
             (m) => m.PersetujuanReimbursementComponent,
@@ -159,6 +196,8 @@ export const MOBILE_ROUTES: Routes = [
         // Disembunyikan dari navigasi (tidak mendesak), tetapi rutenya tetap
         // ada agar tautan lama tidak menjadi 404.
         path: 'Pembelian',
+        canActivate: [izinGuard],
+        data: { permission: 'purchase:delete' },
         loadComponent: () =>
           import('./hapus-pembelian/hapus-pembelian.component').then(
             (m) => m.HapusPembelianComponent,

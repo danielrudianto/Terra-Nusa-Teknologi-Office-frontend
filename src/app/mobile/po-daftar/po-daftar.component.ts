@@ -128,10 +128,28 @@ export class PoDaftarComponent implements OnInit {
    * Muat daftar. `reset` mengulang dari halaman satu (pemuatan pertama, ganti
    * pencarian, atau tarik-segarkan); selain itu menambah halaman berikutnya.
    *
-   * Penyaringan tahap (periksa/setujui) dilakukan SERVER lewat `checked`, bukan
+   * Penyaringan tahap (periksa/setujui) dilakukan SERVER lewat `status`, bukan
    * di sini. Sebelumnya disaring per-halaman di layar — dan dokumen yang cocok
    * tetapi berada di halaman berikutnya tidak pernah tampil, sehingga daftarnya
    * terlihat KOSONG saat dibuka padahal berandanya menghitung ada.
+   *
+   * SATU parameter, bukan dua. Sebelumnya dikirim `status: 'draft'` DAN
+   * `checked: true/false` sekaligus — dan keduanya menambah syarat ke daftar
+   * WHERE yang sama di server:
+   *
+   *   status='draft'  ->  isApproved = 0 AND isChecked = 0
+   *   checked=true    ->  isChecked = 1
+   *
+   * Digabung dengan AND, antrean "Setujui" menanyakan `isChecked = 0 AND
+   * isChecked = 1`. Tidak ada galat, tidak ada 4xx — hanya nol baris,
+   * selamanya. Antrean persetujuan PO di ponsel dan angka di beranda karena
+   * itu SELALU kosong, dan itu terbaca sebagai "tidak ada yang menunggu",
+   * bukan sebagai kekeliruan penyaring.
+   *
+   * Server sudah punya nama untuk kedua tahap itu dan ketiganya saling lepas
+   * (lihat `purchase_order_repository.get_all`): `draft` = belum diperiksa,
+   * `checked` = sudah diperiksa dan menunggu persetujuan. Yang dipakai
+   * sekarang itu, dan `checked` tidak dikirim sama sekali.
    */
   muat(reset: boolean): void {
     if (reset) {
@@ -146,9 +164,8 @@ export class PoDaftarComponent implements OnInit {
     const kata = (this.cariCtrl.value || '').trim();
     this.api
       .get('purchase-orders', {
-        // Hanya draf (belum disetujui), disaring per tahap di server.
-        status: 'draft',
-        checked: this.mode === 'periksa' ? false : true,
+        // Tahapnya disebut lewat `status` saja — lihat keterangan di atas.
+        status: this.mode === 'periksa' ? 'draft' : 'checked',
         keyword: kata || undefined,
         page: this.page,
         page_size: this.pageSize,
@@ -388,8 +405,22 @@ export class PoDaftarComponent implements OnInit {
   }
 
   tolak(po: any): void {
-    // Hanya pada mode setujui.
-    this.kirimStatus(po, 'rejected', 'mobile.po.ditolak');
+    /*
+     * `'cancelled'`, bukan `'rejected'`.
+     *
+     * Rutenya mengetikkan parameternya sebagai `PurchaseOrderStatus`, dan
+     * enum itu hanya memuat `draft`, `approved`, `completed`, `cancelled`
+     * (`schemas/purchase_order_schema.py`). `'rejected'` karena itu tidak
+     * pernah sampai ke penanganannya sama sekali: FastAPI menolaknya di
+     * pintu dengan 422, sebelum satu baris pun logika jalan.
+     *
+     * Yang terlihat dari ponsel: tombol "Tolak" yang selalu gagal, dengan
+     * pesan galat umum yang tidak menyebut sebabnya. Tidak ada di log
+     * aplikasi, tidak ada di uji — 422 tidak pernah menyentuh kode yang
+     * diuji. Desktop memakai `'cancelled'` sejak awal
+     * (`purchase-order-list.component.ts`), jadi bedanya hanya di sini.
+     */
+    this.kirimStatus(po, 'cancelled', 'mobile.po.ditolak');
   }
 
   private kirimStatus(po: any, status: string, kunciSukses: string): void {

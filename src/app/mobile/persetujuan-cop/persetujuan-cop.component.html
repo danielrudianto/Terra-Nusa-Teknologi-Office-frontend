@@ -165,19 +165,42 @@
           <p class="mcp-catatan">{{ dipilih.note }}</p>
         }
 
-        <label class="mcp-baca">
-          <input
-            type="checkbox"
-            [checked]="sudahBaca"
-            (change)="tandaiBaca($any($event.target).checked)"
-          />
-          <span>{{ "mobile.cop.sudahBaca" | translate }}</span>
-        </label>
+        <!--
+          Yang TIDAK berwenang membaca saja.
+
+          Centang "sudah baca" ikut disembunyikan: ia satu-satunya gunanya
+          menghidupkan tombol Setujui, dan menyodorkannya kepada yang tidak
+          punya tombolnya hanya menjanjikan sesuatu yang tidak ada.
+
+          Keterangannya menyebut ANGKANYA (level 4, dari `penjaga-level`),
+          bukan "tidak berwenang" saja — yang membacanya perlu tahu apa yang
+          kurang, bukan sekadar bahwa ada yang kurang.
+        -->
+        @if (bolehSetujui) {
+          <label class="mcp-baca">
+            <input
+              type="checkbox"
+              [checked]="sudahBaca"
+              (change)="tandaiBaca($any($event.target).checked)"
+            />
+            <span>{{ "mobile.cop.sudahBaca" | translate }}</span>
+          </label>
+        } @else {
+          <div class="mcp-takberhak">
+            <mat-icon>lock_outline</mat-icon>
+            <span>
+              {{
+                "mobile.cop.tidakBerwenang" | translate: { level: LEVEL_SETUJU }
+              }}
+            </span>
+          </div>
+        }
 
         <div class="mcp-aksi">
           <button type="button" class="mcp-batal" (click)="tutup()">
             {{ "common.cancel" | translate }}
           </button>
+          @if (bolehSetujui) {
           <button
             type="button"
             class="mcp-setujui"
@@ -192,6 +215,7 @@
                 | translate
             }}
           </button>
+          }
         </div>
       }
     </section>

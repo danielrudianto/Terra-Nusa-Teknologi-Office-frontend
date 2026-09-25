@@ -112,3 +112,102 @@ export const drafPembelianGuard: CanActivateFn = async () => {
   router.navigate(['/TidakBerhak']);
   return false;
 };
+
+/**
+ * MENYETUJUI CoP — BAP maupun tahap terakhirnya — mulai level 4.
+ *
+ * Angkanya sepasang dengan `LEVEL_COP_SETUJU_BAP` dan `LEVEL_COP_SETUJU` di
+ * `utils/permission.py`; keduanya disamakan di sana dengan sengaja.
+ *
+ * Yang dipakai sebelumnya hanya `can('certificate_of_payment','approve')`,
+ * dan matriks izinnya memberi aksi `approve` mulai level 3. Bedanya satu
+ * tingkat, dan satu tingkat itulah yang dialami: manajer level 3 melihat tab
+ * CoP, membuka dokumennya, mencentang konfirmasi, menekan "Setujui BAP" —
+ * lalu 403 tanpa keterangan. Untuk SETIAP baris di tab itu. Layarnya terbaca
+ * rusak, bukan terlarang.
+ *
+ * Izinnya TETAP diperiksa juga, tidak diganti oleh levelnya: akun
+ * hanya-baca ditolak lewat `can()` (`_hanya_baca` di server), dan level saja
+ * tidak menangkapnya.
+ */
+/**
+ * MENYETUJUI DOKUMEN BUATAN SENDIRI — hanya pemilik usaha.
+ *
+ * Sepasang dengan `LEVEL_BOLEH_SETUJU_SENDIRI` di `utils/permission.py`.
+ * Level 4 memang berwenang atas seluruh dokumen, tetapi menyetujui yang
+ * dibuatnya sendiri menghapus satu-satunya pemeriksaan yang tersisa: tidak
+ * ada mata kedua sama sekali pada dokumen itu, dari dibuat sampai terbit.
+ *
+ * Dipakai layar persetujuan pembayaran; angkanya sebelumnya ditulis ulang
+ * di tiap layar yang memerlukannya.
+ */
+export const LEVEL_SETUJU_SENDIRI = 5;
+
+export const LEVEL_COP_SETUJU = 4;
+
+export function bolehMenyetujuiCop(izin: PermissionService): boolean {
+  return (
+    izin.can('certificate_of_payment', 'approve') &&
+    izin.level() >= LEVEL_COP_SETUJU
+  );
+}
+
+/**
+ * MEMBUAT BAP/CoP: izinnya, DAN divisi engineering untuk di bawah level 4.
+ *
+ * Sepasang dengan `boleh_membuat_cop` di `utils/permission.py`. Aturan
+ * divisinya sebelumnya hanya ada di server, dan itu bukan soal keamanan
+ * melainkan soal urutan: layar ini satu-satunya di aplikasi ponsel yang
+ * MEMBUAT dokumen, jadi penolakannya datang SESUDAH seluruh volume diketik
+ * di lapangan. Diperiksa di depan, pintunya tertutup sebelum ada yang
+ * mengetik.
+ *
+ * `can()` sendiri tidak cukup: pemeriksaan divisi di server dilewati ketika
+ * daftar divisi penggunanya KOSONG (`is_allowed`), jadi akun tanpa divisi
+ * lolos `can()` dan tetap ditolak `boleh_membuat_cop`.
+ */
+export const LEVEL_BAP_BEBAS_DIVISI = 4;
+export const DIVISI_BAP = 'engineering';
+
+export function bolehMembuatBapMobile(izin: PermissionService): boolean {
+  if (!izin.can('certificate_of_payment', 'create')) return false;
+  return (
+    izin.level() >= LEVEL_BAP_BEBAS_DIVISI || izin.inDepartment(DIVISI_BAP)
+  );
+}
+
+/**
+ * Penjaga izin untuk rute ponsel — membaca `data.permission`, seperti
+ * desktop, dan mengarahkan ke `/TidakBerhak` alih-alih ke beranda.
+ *
+ * Menyembunyikan tab saja tidak menutup apa pun: alamatnya dapat diketik,
+ * tersimpan sebagai penanda buku, atau datang dari notifikasi dorong yang
+ * sudah lama. Sebelum ini TIDAK ADA satu pun rute ponsel yang memakai
+ * penjaga izin — hanya `levelGuard`, yang cuma membandingkan angka level dan
+ * tidak pernah membaca peta izinnya sama sekali.
+ */
+export const izinGuard: CanActivateFn = async (rute) => {
+  const izin = inject(PermissionService);
+  const router = inject(Router);
+
+  const aturan = rute.data?.['permission'] as string | string[] | undefined;
+  if (!aturan) return true;
+
+  try {
+    await izin.load();
+  } catch {
+    // Gagal memuat izin bukan berarti tidak berhak — server tetap menolak
+    // bila memang tidak berhak, dengan pesan yang lebih jelas.
+    return true;
+  }
+
+  const daftar = Array.isArray(aturan) ? aturan : [aturan];
+  const boleh = daftar.some((r) => {
+    const [modul, aksi] = r.split(':');
+    return izin.can(modul, (aksi || 'read').trim());
+  });
+  if (boleh) return true;
+
+  router.navigate(['/TidakBerhak']);
+  return false;
+};

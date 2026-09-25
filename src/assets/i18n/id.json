@@ -3740,6 +3740,7 @@
     "hr_candidates": "Pelamar",
     "hr_questions": "Bank soal",
     "user_permissions": "Izin pengguna",
+    "reminders": "Agenda (pengingat)",
     "purchase_orders": "Purchase Order",
     "purchases": "Pembelian",
     "expenses": "Biaya",
@@ -5083,10 +5084,10 @@
   },
   "poRekap": {
     "judul": "Unduh hasil rekap",
-    "sub": "Pilih proyek, periode, dan bentuk berkasnya",
+    "sub": "Pilih proyek atau pemasok, periode, dan bentuk berkasnya",
     "unduh": "Unduh",
     "menyusun": "Menyusun…",
-    "keterangan": "Rekap memuat purchase order proyek terpilih pada periode yang dipilih, termasuk yang berstatus Draf. Statusnya ditandai pada setiap baris.",
+    "keterangan": "Rekap memuat purchase order yang terpilih pada periode yang dipilih, termasuk yang berstatus Draf. Statusnya ditandai pada setiap baris.",
     "kosong": "Proyek ini belum punya purchase order.",
     "gagal": "Rekap gagal disusun. Coba lagi.",
     "menu": "Unduh hasil rekap",
@@ -5102,7 +5103,13 @@
     "mulai": "Dari",
     "selesai": "Sampai",
     "rentangSalah": "Isi setidaknya satu tanggal, dan pastikan tanggal akhir tidak mendahului tanggal awal.",
-    "kosongRentang": "Tidak ada purchase order pada proyek ini untuk {{rentang}}."
+    "kosongRentang": "Tidak ada purchase order pada proyek ini untuk {{rentang}}.",
+    "sudut": "Kelompokkan per",
+    "perProyek": "Proyek",
+    "perPemasok": "Pemasok",
+    "pemasok": "Pemasok",
+    "pilihPemasok": "Pilih pemasok…",
+    "kosongPemasok": "Pemasok ini belum punya purchase order."
   },
   "poRingkas": {
     "judul": "Isi purchase order",
@@ -5710,7 +5717,8 @@
       "proyek": "Proyek",
       "drafPembelian": "Draf Pembelian",
       "setelan": "Pengaturan",
-      "cop": "CoP"
+      "cop": "CoP",
+      "pembayaran": "Bayar"
     },
     "beranda": {
       "judul": "Yang menunggu keputusan",
@@ -5719,6 +5727,7 @@
       "perluPeriksa": "menunggu diperiksa",
       "laporan": "Laporan margin per proyek",
       "drafPembelianKet": "Catat faktur pemasok sebagai draf",
+      "pembayaranKet": "Jatuh tempo hari ini atau sebelumnya",
       "hapus": "Cari lalu hapus pembelian",
       "halo": "Halo",
       "tuntas": "Semua sudah tuntas",
@@ -5768,6 +5777,34 @@
       "tandai": "Tandai Diperiksa",
       "selesai": "{{nomor}} ditandai diperiksa"
     },
+    "pembayaran": {
+      "judul": "Persetujuan Pembayaran",
+      "sub": "Pembayaran keluar yang menunggu keputusan Anda",
+      "cariPlaceholder": "Cari nama penerima atau dokumen",
+      "jangkauan": {
+        "hari-ini": "Hari ini",
+        "jatuh-tempo": "Jatuh tempo",
+        "semua": "Semua"
+      },
+      "kosong": {
+        "hari-ini": "Tidak ada pembayaran yang menunggu hari ini.",
+        "jatuh-tempo": "Tidak ada pembayaran yang jatuh tempo.",
+        "semua": "Tidak ada pembayaran yang menunggu persetujuan."
+      },
+      "telat": "Lewat tanggal",
+      "tanggal": "Tanggal bayar",
+      "dokumen": "Dokumen",
+      "keterangan": "Keterangan",
+      "bank": "Atas nama",
+      "rekening": "Rekening tujuan",
+      "nominal": "Nominal",
+      "sudahBaca": "Saya sudah memeriksa nominal dan rekening tujuannya.",
+      "setujui": "Setujui",
+      "tolak": "Tolak",
+      "tidakBerwenang": "Anda tidak berwenang menyetujui atau menolak pembayaran.",
+      "sudahDiputuskan": "Pembayaran ini sudah disetujui atau sudah dibatalkan. Tarik daftarnya untuk menyegarkan.",
+      "buatanSendiri": "Pembayaran ini Anda sendiri yang menyiapkan, jadi persetujuannya harus dari orang lain. Menolaknya tetap bisa."
+    },
     "reimbursement": {
       "judul": "Persetujuan Reimbursement",
       "sub": "Pengajuan penggantian yang menunggu keputusan.",
@@ -5786,6 +5823,7 @@
       "rekening": "Rekening tujuan",
       "rincian": "Rincian pengeluaran",
       "tanpaRincian": "Tidak ada rincian.",
+      "tidakBerwenang": "Anda tidak berwenang menyetujui atau menolak reimbursement.",
       "sudahBaca": "Saya sudah memeriksa rincian dan rekening tujuannya."
     },
     "pembelian": {
@@ -5830,6 +5868,8 @@
     "bap": {
       "tahapJudul": "Tahap 1 — catat volume",
       "tahapKet": "Yang dicatat di sini hanya volume pekerjaan periode ini. Harga dan potongan diisi di tahap berikutnya, di desktop.",
+      "takBerhakJudul": "Belum dapat membuat berita acara",
+      "takBerhakKet": "Pencatatan volume hanya untuk divisi engineering (atau level 4 ke atas). Hubungi admin bila divisi akun Anda belum disetel.",
       "cariSpk": "Cari nomor atau nama SPK",
       "kurangHuruf": "Ketik minimal 3 huruf untuk mencari SPK.",
       "tidakAda": "Tidak ada SPK yang cocok.",
@@ -5858,6 +5898,7 @@
       "sudahDiperiksa": "Sudah diperiksa",
       "menungguBap": "Menunggu setuju BAP",
       "menungguCop": "Menunggu setuju CoP",
+      "tidakBerwenang": "Persetujuan CoP hanya untuk level {{level}} ke atas. Anda tetap dapat membaca rinciannya.",
       "sudahBaca": "Saya sudah membaca rincian di atas"
     }
   },

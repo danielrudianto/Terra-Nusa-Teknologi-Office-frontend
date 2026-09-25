@@ -15,7 +15,22 @@
     </div>
   </div>
 
-  @if (!spk()) {
+  <!--
+    Pintu ditutup DI DEPAN, bukan saat menyimpan.
+
+    Server meminta divisi engineering bagi yang di bawah level 4
+    (`boleh_membuat_cop`), dan aturan itu sebelumnya hanya ada di sana —
+    jadi penolakannya datang sesudah seluruh volume diketik di lapangan.
+  -->
+  @if (!bolehMembuat) {
+    <div class="mbap-takberhak">
+      <mat-icon>lock_outline</mat-icon>
+      <div>
+        <strong>{{ "mobile.bap.takBerhakJudul" | translate }}</strong>
+        <span>{{ "mobile.bap.takBerhakKet" | translate }}</span>
+      </div>
+    </div>
+  } @else if (!spk()) {
     <!-- ===== pilih SPK ===== -->
     <label class="mbap-cari">
       <mat-icon>search</mat-icon>

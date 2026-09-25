@@ -4,12 +4,11 @@ import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
-  Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -18,6 +17,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
+import { SupplierSelectorComponent } from '../../../components/supplier-selector/supplier-selector.component';
 import {
   PILIHAN_PERIODE,
   PeriodeRekap,
@@ -78,6 +78,24 @@ export class PurchaseOrderRekapComponent {
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly pesanServer = inject(ServerMessageService);
+  private readonly dialog = inject(MatDialog);
+
+  /**
+   * SUDUT PANDANG rekapnya — per proyek atau per pemasok.
+   *
+   * Dua pertanyaan yang berbeda dan sama seringnya: "berapa yang sudah kita
+   * keluarkan di proyek ini", dan "sudah berapa banyak kita pesan ke vendor
+   * ini tahun ini" — yang kedua ditanyakan saat menawar ulang harga dan saat
+   * menagih diskon volume.
+   *
+   * Satu dialog, bukan dua: seluruh sisanya — bentuk berkas, rentang
+   * tanggal, pesan kosong — sama persis, dan dialog kedua berarti keduanya
+   * harus dijaga tetap sepakat.
+   */
+  sudut: 'proyek' | 'pemasok' = 'proyek';
+
+  /** Pemasok terpilih; dipilih lewat dialog pencarian yang sudah ada. */
+  pemasok: { id: number; name: string; prefix?: string } | null = null;
 
   /**
    * PUSAT sengaja tidak ditawarkan.
@@ -85,7 +103,7 @@ export class PurchaseOrderRekapComponent {
    * Ia bukan proyek melainkan pusat biaya, sehingga rekap purchase order
    * proyek untuknya tidak bermakna.
    */
-  readonly proyek = new FormControl<string | null>(null, Validators.required);
+  readonly proyek = new FormControl<string | null>(null);
 
   /**
    * Bentuk berkas yang diunduh.
@@ -116,6 +134,54 @@ export class PurchaseOrderRekapComponent {
 
   pilihBentuk(v: 'excel' | 'pdf'): void {
     this.bentuk = v;
+  }
+
+  /**
+   * Ganti sudut pandang.
+   *
+   * Pilihan yang lama DIBUANG. Membiarkannya membuat dialog memegang dua
+   * sasaran sekaligus — dan yang kembali ke sudut sebelumnya mendapati
+   * proyek yang dipilih setengah jam lalu masih terpasang, lalu mengunduh
+   * rekap yang bukan yang dimaksudnya.
+   */
+  pilihSudut(v: 'proyek' | 'pemasok'): void {
+    if (this.sudut === v) return;
+    this.sudut = v;
+    this.proyek.setValue(null);
+    this.pemasok = null;
+  }
+
+  bukaPemasok(): void {
+    this.dialog
+      .open(SupplierSelectorComponent, {})
+      .afterClosed()
+      .subscribe((data: any) => {
+        if (data?.id) {
+          this.pemasok = {
+            id: Number(data.id),
+            name: String(data.name ?? ''),
+            prefix: data.prefix || '',
+          };
+        }
+      });
+  }
+
+  /**
+   * Nama yang dicetak di kepala berkas.
+   *
+   * Prefiksnya ikut — "PT. Sumber Rezeki", bukan "Sumber Rezeki". Rekap ini
+   * dikirim ke luar, dan nama badan usaha yang terpotong pada dokumen yang
+   * menyebut nilai transaksi terbaca sebagai berkas yang disusun asal-asalan.
+   */
+  get namaPemasok(): string {
+    if (!this.pemasok) return '';
+    const p = (this.pemasok.prefix || '').trim();
+    return p ? `${p} ${this.pemasok.name}` : this.pemasok.name;
+  }
+
+  /** Sasaran sudah dipilih — proyeknya, atau pemasoknya. */
+  get adaSasaran(): boolean {
+    return this.sudut === 'proyek' ? !!this.proyek.value : !!this.pemasok;
   }
 
   pilihPeriode(v: PeriodeRekap): void {
@@ -164,11 +230,23 @@ export class PurchaseOrderRekapComponent {
   }
 
   unduh(): void {
-    const kode = this.proyek.value;
-    if (!kode || this.sedangMenyusun || this.rentangBelumSah) return;
+    if (!this.adaSasaran || this.sedangMenyusun || this.rentangBelumSah) return;
+
+    /*
+     * Judul berkas — kode proyek, atau nama pemasok.
+     *
+     * Dipegang satu variabel, bukan dicabang di tiga tempat penyusunan
+     * berkas: judul yang berbeda antara Excel dan PDF untuk permintaan yang
+     * sama adalah kekeliruan yang hanya ketahuan setelah berkasnya dikirim.
+     */
+    const kode =
+      this.sudut === 'proyek' ? String(this.proyek.value) : this.namaPemasok;
 
     const rentang = this.rentang;
-    const parameter: Record<string, string> = { proyek: kode };
+    const parameter: Record<string, string> =
+      this.sudut === 'proyek'
+        ? { proyek: String(this.proyek.value) }
+        : { pemasok: String(this.pemasok!.id) };
     // Hanya yang terisi yang dikirim: `dari=null` pada querystring sampai ke
     // server sebagai teks "null", bukan sebagai ketiadaan nilai.
     if (rentang.dari) parameter['dari'] = rentang.dari;
@@ -188,7 +266,9 @@ export class PurchaseOrderRekapComponent {
           const kunci =
             rentang.dari || rentang.sampai
               ? 'poRekap.kosongRentang'
-              : 'poRekap.kosong';
+              : this.sudut === 'pemasok'
+                ? 'poRekap.kosongPemasok'
+                : 'poRekap.kosong';
           this.snackBar.open(
             this.translate.instant(kunci, { rentang: this.keteranganRentang }),
             'Close',
@@ -199,9 +279,23 @@ export class PurchaseOrderRekapComponent {
 
         try {
           if (this.bentuk === 'pdf') {
-            unduhRekapPurchaseOrderPdf(kode, daftar, items, this.translate, rentang);
+            unduhRekapPurchaseOrderPdf(
+              kode,
+              daftar,
+              items,
+              this.translate,
+              rentang,
+              this.sudut,
+            );
           } else {
-            await unduhRekapPurchaseOrder(kode, daftar, items, this.translate, rentang);
+            await unduhRekapPurchaseOrder(
+              kode,
+              daftar,
+              items,
+              this.translate,
+              rentang,
+              this.sudut,
+            );
           }
           this.dialogRef.close(true);
         } catch (e) {

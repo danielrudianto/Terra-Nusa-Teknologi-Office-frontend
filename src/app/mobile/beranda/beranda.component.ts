@@ -12,7 +12,8 @@ import { catchError } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { AccountService } from '../../services/account.service';
 import { PermissionService } from '../../services/permission.service';
-import { bolehDrafPembelianMobile } from '../penjaga-level';
+import { bolehDrafPembelianMobile, bolehMenyetujuiCop } from '../penjaga-level';
+import { tanggalLokalTeks } from '../../utils/tanggal';
 import { HitungNaikDirective } from '../../directives/hitung-naik.directive';
 
 /**
@@ -51,6 +52,8 @@ export class BerandaComponent implements OnInit {
   /** CoP yang belum diperiksa, dan yang sudah diperiksa tetapi belum disetujui. */
   jumlahCopPeriksa = 0;
   jumlahCopSetujui = 0;
+  /** Pembayaran keluar yang menunggu keputusan HARI INI dan sebelumnya. */
+  jumlahPembayaran = 0;
   sedangMemuat = false;
 
   /** Boleh menyetujui reimbursement (mis. accounting / level berwenang). */
@@ -80,8 +83,25 @@ export class BerandaComponent implements OnInit {
     return this.izin.can('certificate_of_payment', 'read') && this.izin.level() >= 2;
   }
 
+  /**
+   * Level 4, bukan 3.
+   *
+   * `boleh_menyetujui_cop` di server meminta level 4. Kartu yang muncul pada
+   * level 3 menjanjikan pekerjaan yang setiap barisnya akan ditolak 403 —
+   * dan angkanya ikut masuk ke "yang menunggu Anda" di puncak layar.
+   */
   bisaSetujuiCop(): boolean {
-    return this.izin.can('certificate_of_payment', 'read') && this.izin.level() >= 3;
+    return bolehMenyetujuiCop(this.izin);
+  }
+
+  /**
+   * Berwenang memutuskan pembayaran keluar.
+   *
+   * `payment_outgoing:approve` sudah memperhitungkan divisi dan akun
+   * hanya-baca; tidak ada aturan tambahan di sini.
+   */
+  bisaPembayaran(): boolean {
+    return this.izin.can('payment_outgoing', 'approve');
   }
 
   bolehMemeriksa(): boolean {
@@ -110,7 +130,11 @@ export class BerandaComponent implements OnInit {
     const reim = this.bisaReimbursement() ? this.jumlahReimbursement : 0;
     const copP = this.bisaPeriksaCop() ? this.jumlahCopPeriksa : 0;
     const copS = this.bisaSetujuiCop() ? this.jumlahCopSetujui : 0;
-    return this.jumlahPo + reim + periksa + copP + copS;
+    // PO ikut disaring juga: yang tidak berwenang menyetujui tetap melihat
+    // angkanya masuk ke "yang menunggu Anda", padahal tombolnya tidak ada.
+    const po = this.izin.can('purchase_order', 'approve') ? this.jumlahPo : 0;
+    const bayar = this.bisaPembayaran() ? this.jumlahPembayaran : 0;
+    return po + reim + periksa + copP + copS + bayar;
   }
 
   ngOnInit(): void {
@@ -128,16 +152,16 @@ export class BerandaComponent implements OnInit {
     forkJoin({
       periksa: this.api
         .get('purchase-orders', {
+          // `status` saja: `status` + `checked` berlawanan saling
+          // meniadakan di server (lihat `po-daftar.muat`).
           status: 'draft',
-          checked: false,
           page: 1,
           page_size: 1,
         })
         .pipe(catchError(() => of(null))),
       po: this.api
         .get('purchase-orders', {
-          status: 'draft',
-          checked: true,
+          status: 'checked',
           page: 1,
           page_size: 1,
         })
@@ -167,6 +191,21 @@ export class BerandaComponent implements OnInit {
           pageSize: 1,
         })
         .pipe(catchError(() => of(null))),
+      /*
+       * Pembayaran yang menunggu, SAMPAI hari ini.
+       *
+       * `dateTo` saja, tanpa `dateFrom`: yang tanggalnya sudah lewat dan
+       * belum diputuskan justru yang paling perlu terlihat, dan pada
+       * "hari ini" saja ia tidak pernah muncul sama sekali.
+       */
+      pembayaran: this.api
+        .get('outgoing-payments', {
+          isPending: true,
+          dateTo: tanggalLokalTeks(new Date()),
+          page: 1,
+          pageSize: 1,
+        })
+        .pipe(catchError(() => of(null))),
     })
       .subscribe({
         next: (res: any) => {
@@ -175,6 +214,8 @@ export class BerandaComponent implements OnInit {
 
           this.jumlahCopPeriksa = Number(res?.copPeriksa?.total) || 0;
           this.jumlahCopSetujui = Number(res?.copSetujui?.total) || 0;
+
+          this.jumlahPembayaran = Number(res?.pembayaran?.count) || 0;
 
           const rb = res?.reimbursement?.data ?? res?.reimbursement?.items ?? [];
           this.jumlahReimbursement =

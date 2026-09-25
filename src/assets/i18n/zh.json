@@ -3715,6 +3715,7 @@
     "hr_candidates": "应聘者",
     "hr_questions": "题库",
     "user_permissions": "用户权限",
+    "reminders": "日程（提醒）",
     "purchase_orders": "采购单",
     "purchases": "采购",
     "expenses": "费用",
@@ -5051,10 +5052,10 @@
   },
   "poRekap": {
     "judul": "下载汇总",
-    "sub": "选择项目、期间与文件格式",
+    "sub": "选择项目或供应商、期间和文件格式",
     "unduh": "下载",
     "menyusun": "生成中…",
-    "keterangan": "汇总包含所选项目在所选期间内的采购订单，含草稿。每行均标注状态。",
+    "keterangan": "汇总包含所选期间内的采购订单，含草稿状态。每行均标注状态。",
     "kosong": "该项目尚无采购订单。",
     "gagal": "汇总生成失败，请重试。",
     "menu": "下载汇总",
@@ -5070,7 +5071,13 @@
     "mulai": "起",
     "selesai": "至",
     "rentangSalah": "请至少填写一个日期，并确保结束日期不早于开始日期。",
-    "kosongRentang": "该项目在 {{rentang}} 内没有采购订单。"
+    "kosongRentang": "该项目在 {{rentang}} 内没有采购订单。",
+    "sudut": "分组方式",
+    "perProyek": "项目",
+    "perPemasok": "供应商",
+    "pemasok": "供应商",
+    "pilihPemasok": "选择供应商…",
+    "kosongPemasok": "该供应商还没有采购订单。"
   },
   "poRingkas": {
     "judul": "采购订单内容",
@@ -5670,7 +5677,8 @@
       "proyek": "项目",
       "drafPembelian": "采购草稿",
       "setelan": "设置",
-      "cop": "证书"
+      "cop": "证书",
+      "pembayaran": "付款"
     },
     "beranda": {
       "judul": "等待您决定",
@@ -5679,6 +5687,7 @@
       "perluPeriksa": "等待审核",
       "laporan": "各项目毛利报告",
       "drafPembelianKet": "将供应商发票记录为草稿",
+      "pembayaranKet": "今天或更早到期",
       "hapus": "搜索后删除采购",
       "halo": "你好",
       "tuntas": "全部已处理",
@@ -5728,6 +5737,34 @@
       "tandai": "标记为已审核",
       "selesai": "{{nomor}} 已标记为已审核"
     },
+    "pembayaran": {
+      "judul": "付款审批",
+      "sub": "等待您决定的付款。",
+      "cariPlaceholder": "搜索收款人或单据",
+      "jangkauan": {
+        "hari-ini": "今天",
+        "jatuh-tempo": "已逾期",
+        "semua": "全部"
+      },
+      "kosong": {
+        "hari-ini": "今天没有等待处理的付款。",
+        "jatuh-tempo": "没有逾期的付款。",
+        "semua": "没有等待审批的付款。"
+      },
+      "telat": "已过日期",
+      "tanggal": "付款日期",
+      "dokumen": "单据",
+      "keterangan": "说明",
+      "bank": "账户名",
+      "rekening": "收款账号",
+      "nominal": "金额",
+      "sudahBaca": "我已核对金额和收款账号。",
+      "setujui": "批准",
+      "tolak": "拒绝",
+      "tidakBerwenang": "您无权批准或拒绝付款。",
+      "sudahDiputuskan": "此付款已批准或已取消。请下拉刷新列表。",
+      "buatanSendiri": "此付款由您本人准备，需由他人批准。您仍可拒绝。"
+    },
     "reimbursement": {
       "judul": "报销审批",
       "sub": "等待决定的报销申请。",
@@ -5746,6 +5783,7 @@
       "rekening": "收款账户",
       "rincian": "支出明细",
       "tanpaRincian": "无明细。",
+      "tidakBerwenang": "您无权批准或拒绝报销。",
       "sudahBaca": "我已核对明细和收款账户。"
     },
     "pembelian": {
@@ -5790,6 +5828,8 @@
     "bap": {
       "tahapJudul": "第 1 阶段 — 记录工程量",
       "tahapKet": "此处仅记录本期工程量。价格与扣款在下一阶段于桌面端填写。",
+      "takBerhakJudul": "您暂时无法创建进度单",
+      "takBerhakKet": "记录工程量仅限工程部（或 4 级以上）。若账号未设置部门，请联系管理员。",
       "cariSpk": "搜索 SPK 编号或名称",
       "kurangHuruf": "请至少输入 3 个字符以搜索 SPK。",
       "tidakAda": "没有匹配的 SPK。",
@@ -5818,6 +5858,7 @@
       "sudahDiperiksa": "已检查",
       "menungguBap": "等待 BAP 审批",
       "menungguCop": "等待 CoP 审批",
+      "tidakBerwenang": "审批 CoP 需要 {{level}} 级或以上。您仍可阅读明细。",
       "sudahBaca": "我已阅读上述明细"
     }
   },

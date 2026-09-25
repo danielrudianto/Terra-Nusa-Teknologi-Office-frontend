@@ -54,6 +54,49 @@
   color: var(--warn-fg, #9a6a00);
 }
 
+/*
+ * Tidak berwenang membuat BAP — bentuknya sama dengan banner, warnanya
+ * peringatan. Ini satu-satunya isi layar bagi yang tidak berhak, jadi ia
+ * berdiri sendiri, bukan menempel di atas formulir yang tetap tergambar.
+ */
+.mbap-takberhak {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+  padding: 0.9rem;
+  border-radius: 12px;
+  background: var(--warn-bg, #fdf0e3);
+  border: 0.5px solid
+    color-mix(in srgb, var(--warn-fg, #9a6a00) 26%, transparent);
+  color: var(--warn-fg, #9a6a00);
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+    margin-top: 1px;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  strong {
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  span {
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+}
+
 /* ---- pencarian ---- */
 .mbap-cari {
   display: flex;

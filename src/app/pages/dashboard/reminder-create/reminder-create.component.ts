@@ -28,6 +28,7 @@ import { AgendaService, Reminder } from '../../../services/agenda.service';
 import { ApiService } from '../../../services/api.service';
 import { PermissionService } from '../../../services/permission.service';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
 /**
  * Buat atau ubah pengingat.
@@ -60,6 +61,7 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
     MatButtonModule,
     MatSnackBarModule,
     DialogGeserDirective,
+    AuditTrailComponent,
   ],
   templateUrl: './reminder-create.component.html',
   styleUrl: './reminder-create.component.scss',

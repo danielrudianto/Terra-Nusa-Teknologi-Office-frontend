@@ -15,6 +15,8 @@ import {
   CertificateOfPaymentService,
   SpkKandidat,
 } from '../../services/certificate-of-payment.service';
+import { PermissionService } from '../../services/permission.service';
+import { bolehMembuatBapMobile } from '../penjaga-level';
 import { ServerMessageService } from '../../services/server-message.service';
 import { tanggalLokal } from '../../utils/tanggal';
 
@@ -68,6 +70,8 @@ import { tanggalLokal } from '../../utils/tanggal';
   styleUrls: ['./bap-buat.component.scss'],
 })
 export class BapBuatComponent implements OnInit {
+  private readonly izin = inject(PermissionService);
+
   private readonly layanan = inject(CertificateOfPaymentService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly terjemah = inject(TranslateService);
@@ -306,8 +310,24 @@ export class BapBuatComponent implements OnInit {
     return !!a && !!b && a <= b;
   }
 
+  /**
+   * Berwenang MEMBUAT BAP — izinnya, dan divisi engineering di bawah level 4.
+   *
+   * Diperiksa DI DEPAN, bukan pada saat menyimpan. Layar ini satu-satunya di
+   * aplikasi ponsel yang membuat dokumen, dan sebelumnya tidak memeriksa
+   * izin sama sekali (`PermissionService` tidak disuntik). Aturan divisinya
+   * hanya ada di server (`boleh_membuat_cop`), jadi penolakannya datang
+   * SESUDAH seluruh volume diketik di lapangan — pekerjaan yang hilang, dan
+   * pesan 403 yang menyebut divisi kepada orang yang tidak dapat mengubah
+   * divisinya sendiri.
+   */
+  get bolehMembuat(): boolean {
+    return bolehMembuatBapMobile(this.izin);
+  }
+
   get bolehSimpan(): boolean {
     return (
+      this.bolehMembuat &&
       !!this.spk() &&
       this.periodeSah &&
       this.adaIsian() &&

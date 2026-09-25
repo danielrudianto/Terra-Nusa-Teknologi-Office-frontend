@@ -83,6 +83,28 @@
     </button>
   }
 
+  <!--
+    PEMBAYARAN KELUAR — ditaruh sebelum reimbursement, dan itu disengaja.
+
+    Ini satu-satunya kartu yang uangnya benar-benar pindah hari ini. Yang
+    lain menghasilkan dokumen; yang tertunda di sini menghasilkan vendor
+    yang tidak dibayar pada hari yang dijanjikan.
+
+    Angkanya memuat yang SAMPAI hari ini — termasuk yang tanggalnya sudah
+    lewat dan belum diputuskan, yang pada "hari ini" saja tidak pernah
+    muncul sama sekali.
+  -->
+  @if (bisaPembayaran()) {
+    <button type="button" class="mbr-petak akn-m-kartu" (click)="ke('/Pembayaran')">
+      <mat-icon>payments</mat-icon>
+      <span class="mbr-petak__teks">
+        <span class="mbr-petak__judul">{{ "mobile.nav.pembayaran" | translate }}</span>
+        <span class="mbr-petak__ket">{{ "mobile.beranda.pembayaranKet" | translate }}</span>
+      </span>
+      <span class="mbr-petak__angka" [class.nol]="jumlahPembayaran === 0" [appHitungNaik]="jumlahPembayaran" hnDigit="1.0-0"></span>
+    </button>
+  }
+
   @if (bisaReimbursement()) {
     <button type="button" class="mbr-petak akn-m-kartu" (click)="ke('/Reimbursement')">
       <mat-icon>receipt_long</mat-icon>

@@ -1,0 +1,235 @@
+<h1 class="mpb-judul">{{ "mobile.pembayaran.judul" | translate }}</h1>
+<p class="mpb-sub">{{ "mobile.pembayaran.sub" | translate }}</p>
+
+<div
+  class="pod"
+  appTarikSegarkan
+  [sedangSegar]="sedangSegar"
+  (segarkan)="segarkan()"
+  appScrollBawah
+  [mati]="habis || sedangMuatLagi || sedangMemuat"
+  (dekatBawah)="muatLagi()"
+>
+  <!--
+    Jangkauan tanggal — bawaannya HARI INI.
+
+    Daftar penuh membuat yang mendesak tenggelam. "Jatuh tempo" memuat yang
+    tanggalnya sudah lewat dan belum diputuskan: justru itu yang paling
+    sering terlupa, dan tidak pernah muncul pada "hari ini".
+  -->
+  <div class="mpb-jangkauan" role="group">
+    @for (j of JANGKAUAN; track j) {
+      <button
+        type="button"
+        [class.on]="jangkauan === j"
+        [attr.aria-pressed]="jangkauan === j"
+        (click)="gantiJangkauan(j)"
+      >
+        {{ "mobile.pembayaran.jangkauan." + j | translate }}
+      </button>
+    }
+  </div>
+
+  <!-- Pencarian MENEMPEL di bawah kepala. -->
+  <div class="pod-cari">
+    <mat-icon>search</mat-icon>
+    <input
+      [formControl]="cariCtrl"
+      type="search"
+      inputmode="search"
+      autocapitalize="none"
+      autocorrect="off"
+      spellcheck="false"
+      [placeholder]="'mobile.pembayaran.cariPlaceholder' | translate"
+    />
+    @if (cariCtrl.value) {
+      <button
+        type="button"
+        class="pod-cari__hapus"
+        (click)="cariCtrl.setValue('')"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </div>
+
+  @if (sedangMemuat) {
+    <app-kartu-kerangka />
+  } @else if (!daftar.length) {
+    <div class="mpb-kosong">
+      <mat-icon>task_alt</mat-icon>
+      <div>
+        {{
+          (cariCtrl.value
+            ? "mobile.po.takAdaCari"
+            : "mobile.pembayaran.kosong." + jangkauan
+          ) | translate
+        }}
+      </div>
+    </div>
+  } @else {
+    @for (p of daftar; track p.id) {
+      <button type="button" class="mpb-kartu" (click)="buka(p)">
+        <div class="mpb-baris1">
+          <span class="mpb-nama">{{ namaLawan(p) }}</span>
+          <span class="mpb-nilai">{{ nilai(p) | number: "1.2-2" }}</span>
+        </div>
+        <div class="mpb-baris2">
+          <span class="mpb-dok">{{ p.documentName || "—" }}</span>
+          <span class="mpb-tanggal" [class.telat]="terlambat(p)">
+            @if (terlambat(p)) {
+              <mat-icon>schedule</mat-icon>
+            }
+            {{ p.date | date: "d MMM y" }}
+          </span>
+        </div>
+      </button>
+    }
+
+    @if (sedangMuatLagi) {
+      <div class="pod-lagi"><mat-spinner diameter="24" /></div>
+    } @else if (habis && daftar.length > 6) {
+      <div class="pod-habis">{{ "mobile.po.habis" | translate }}</div>
+    }
+  }
+</div>
+
+@if (dipilih) {
+  <div
+    class="mpb-tirai"
+    (click)="tutup()"
+    @lembarBawah
+    [@.disabled]="gerakMati()"
+  >
+    <div
+      class="mpb-panel akn-m-lembar"
+      appGeserTutup
+      (tutup)="tutup()"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="mpb-tarik"></div>
+
+      <div class="mpb-panel__kepala">
+        <h2 class="mpb-judul">{{ namaLawan(dipilih) }}</h2>
+        @if (terlambat(dipilih)) {
+          <span class="mpb-pil mpb-pil--telat">
+            <mat-icon>schedule</mat-icon
+            >{{ "mobile.pembayaran.telat" | translate }}
+          </span>
+        }
+      </div>
+
+      <dl class="mpb-rinci">
+        <dt>{{ "mobile.pembayaran.tanggal" | translate }}</dt>
+        <dd>{{ dipilih.date | date: "d MMMM y" }}</dd>
+
+        <dt>{{ "mobile.pembayaran.dokumen" | translate }}</dt>
+        <dd>{{ dipilih.documentName || "—" }}</dd>
+
+        <dt>{{ "mobile.pembayaran.keterangan" | translate }}</dt>
+        <dd>{{ dipilih.description || "—" }}</dd>
+
+        <dt>{{ "mobile.pembayaran.bank" | translate }}</dt>
+        <dd>{{ dipilih.bankAccountName || "—" }}</dd>
+
+        <!--
+          Nomor rekening dan nominal dapat DISALIN.
+
+          Yang menyetujui dari ponsel kerap sekaligus yang mengetik
+          transfernya di aplikasi bank; mengetik ulang enam belas digit dari
+          layar ke layar adalah tempat paling mudah salah di alur ini.
+        -->
+        <dt>{{ "mobile.pembayaran.rekening" | translate }}</dt>
+        <dd>
+          <button
+            type="button"
+            class="mpb-salin"
+            (click)="salin(dipilih.bankAccountNumber)"
+            [attr.aria-label]="'mobile.salin' | translate"
+          >
+            <span class="mpb-rekening">{{
+              dipilih.bankAccountNumber || "—"
+            }}</span>
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </dd>
+
+        <dt>{{ "mobile.pembayaran.nominal" | translate }}</dt>
+        <dd>
+          <button
+            type="button"
+            class="mpb-salin mpb-salin--total"
+            (click)="salin(nilai(dipilih))"
+            [attr.aria-label]="'mobile.salin' | translate"
+          >
+            <span class="mpb-rinci__total">{{
+              nilai(dipilih) | number: "1.2-2"
+            }}</span>
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </dd>
+      </dl>
+
+      <!--
+        Sebabnya disebut, bukan cuma tombolnya hilang.
+
+        Tiga keadaan yang berbeda, dan yang membacanya perlu tahu yang mana:
+        tidak berwenang sama sekali, buatannya sendiri, atau sudah diputuskan
+        orang lain sementara daftarnya belum dimuat ulang.
+      -->
+      @if (!bolehMemutuskan) {
+        <div class="mpb-takberhak">
+          <mat-icon>lock_outline</mat-icon>
+          <span>{{ "mobile.pembayaran.tidakBerwenang" | translate }}</span>
+        </div>
+      } @else if (sudahDiputuskan(dipilih)) {
+        <div class="mpb-takberhak">
+          <mat-icon>info</mat-icon>
+          <span>{{ "mobile.pembayaran.sudahDiputuskan" | translate }}</span>
+        </div>
+      } @else if (buatanSendiri(dipilih) && !pemilikUsaha) {
+        <div class="mpb-takberhak">
+          <mat-icon>info</mat-icon>
+          <span>{{ "mobile.pembayaran.buatanSendiri" | translate }}</span>
+        </div>
+      } @else {
+        <label class="mpb-baca" [class.mpb-baca--tercentang]="sudahBaca">
+          <input
+            type="checkbox"
+            [checked]="sudahBaca"
+            (change)="tandaiBaca($any($event.target).checked)"
+          />
+          <span>{{ "mobile.pembayaran.sudahBaca" | translate }}</span>
+        </label>
+      }
+
+      <div class="mpb-aksi">
+        @if (bolehSetujui(dipilih)) {
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            [disabled]="sedangKirim || !sudahBaca"
+            (click)="setujui(dipilih)"
+          >
+            {{ "mobile.pembayaran.setujui" | translate }}
+          </button>
+        }
+        @if (bolehTolak(dipilih)) {
+          <button
+            mat-stroked-button
+            color="warn"
+            type="button"
+            [disabled]="sedangKirim"
+            (click)="tolak(dipilih)"
+          >
+            {{ "mobile.pembayaran.tolak" | translate }}
+          </button>
+        }
+        <button mat-button type="button" (click)="tutup()">
+          {{ "mobile.batal" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -79,42 +79,49 @@
 
       <div class="txr-sections">
         <span class="txr-label">{{ "taxing.reportSection" | translate }}</span>
+        <!--
+          Kartu pilih, bukan sakelar.
+
+          Tujuh `mat-slide-toggle` berjajar dua kolom membuat yang dibaca
+          duluan SAKELARNYA, bukan namanya: tujuh bulatan abu-abu identik,
+          dan namanya menempel di sebelah kanan masing-masing. Pertanyaan
+          yang sebenarnya diajukan layar ini — "bagian mana yang ikut
+          diunduh" — adalah pemilihan, dan pemilihan di dialog ini sudah
+          punya bentuknya sendiri satu baris di atas: pill bulan.
+
+          Bentuknya karena itu disamakan. Yang terpilih menjadi biru penuh,
+          sama seperti bulan yang aktif, jadi "apa saja yang ikut" terbaca
+          dalam satu pandangan tanpa menelusuri tujuh sakelar satu per satu.
+
+          Tetap tombol `aria-pressed`, bukan checkbox yang disamarkan:
+          pembaca layar menyebutnya "ditekan/tidak ditekan", dan keyboard
+          memperlakukannya seperti tombol biasa.
+        -->
         <div class="txr-toggles">
-          <div class="txr-toggle">
-            <mat-slide-toggle formControlName="mutation" color="primary">{{
-              "taxing.bankMutation" | translate
-            }}</mat-slide-toggle>
-          </div>
-          <div class="txr-toggle">
-            <mat-slide-toggle formControlName="purchase" color="primary">{{
-              "taxing.purchase" | translate
-            }}</mat-slide-toggle>
-          </div>
-          <div class="txr-toggle">
-            <mat-slide-toggle formControlName="sales" color="primary">{{
-              "taxing.sales" | translate
-            }}</mat-slide-toggle>
-          </div>
-          <div class="txr-toggle">
-            <mat-slide-toggle formControlName="asset" color="primary">{{
-              "taxing.asset" | translate
-            }}</mat-slide-toggle>
-          </div>
-          <div class="txr-toggle">
-            <mat-slide-toggle formControlName="ar" color="primary">{{
-              "taxing.accountReceivable" | translate
-            }}</mat-slide-toggle>
-          </div>
-          <div class="txr-toggle">
-            <mat-slide-toggle formControlName="ap" color="primary">{{
-              "taxing.accountPayable" | translate
-            }}</mat-slide-toggle>
-          </div>
-          <div class="txr-toggle">
-            <mat-slide-toggle formControlName="loans" color="primary">{{
-              "taxing.loans" | translate
-            }}</mat-slide-toggle>
-          </div>
+          <button
+            type="button"
+            class="txr-pilih"
+            *ngFor="let b of BAGIAN"
+            [class.is-active]="formGroup.get(b.kunci)?.value === true"
+            [attr.aria-pressed]="formGroup.get(b.kunci)?.value === true"
+            (click)="toggleBagian(b.kunci)"
+          >
+            <span class="txr-pilih__tanda" aria-hidden="true">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            </span>
+            <span class="txr-pilih__nama">{{ b.label | translate }}</span>
+          </button>
         </div>
       </div>
     </mat-dialog-content>

@@ -8,11 +8,66 @@
   </div>
 
   <mat-dialog-content class="por-content">
-    <app-project-selector
-      [formControl]="proyek"
-      [hanyaAktif]="false"
-      [tanpaPusat]="true"
-    />
+    <!--
+      Sudut pandang rekapnya — dua tombol, bukan dua dialog.
+
+      "Berapa yang sudah kita keluarkan di proyek ini" dan "sudah berapa
+      banyak kita pesan ke vendor ini" adalah dua pertanyaan yang berbeda dan
+      sama seringnya. Seluruh sisanya sama persis: bentuk berkas, rentang
+      tanggal, pesan kosong — jadi dialog kedua hanya berarti dua tempat yang
+      harus dijaga tetap sepakat.
+    -->
+    <div class="por-bentuk">
+      <span class="por-bentuk__label">{{ "poRekap.sudut" | translate }}</span>
+      <div class="por-bentuk__pilihan">
+        <button
+          type="button"
+          class="por-opsi"
+          [class.on]="sudut === 'proyek'"
+          [attr.aria-pressed]="sudut === 'proyek'"
+          (click)="pilihSudut('proyek')"
+        >
+          <mat-icon>domain</mat-icon>
+          {{ "poRekap.perProyek" | translate }}
+        </button>
+        <button
+          type="button"
+          class="por-opsi"
+          [class.on]="sudut === 'pemasok'"
+          [attr.aria-pressed]="sudut === 'pemasok'"
+          (click)="pilihSudut('pemasok')"
+        >
+          <mat-icon>local_shipping</mat-icon>
+          {{ "poRekap.perPemasok" | translate }}
+        </button>
+      </div>
+    </div>
+
+    @if (sudut === 'proyek') {
+      <app-project-selector
+        [formControl]="proyek"
+        [hanyaAktif]="false"
+        [tanpaPusat]="true"
+      />
+    } @else {
+      <!--
+        Pemasok dipilih lewat dialog pencarian yang SUDAH ADA
+        (`app-supplier-selector`) — daftar pemasok bisa ratusan, dan
+        `mat-select` yang memuat seluruhnya tidak dapat dicari.
+      -->
+      <button type="button" class="por-pemasok" (click)="bukaPemasok()">
+        <mat-icon>local_shipping</mat-icon>
+        <span class="por-pemasok__teks">
+          <span class="por-pemasok__label">
+            {{ "poRekap.pemasok" | translate }}
+          </span>
+          <span class="por-pemasok__nilai" [class.kosong]="!pemasok">
+            {{ pemasok ? namaPemasok : ("poRekap.pilihPemasok" | translate) }}
+          </span>
+        </span>
+        <mat-icon class="por-pemasok__panah">chevron_right</mat-icon>
+      </button>
+    }
 
     <!--
       Bentuk berkas dipilih di sini, bukan lewat dua tombol unduh terpisah.
@@ -139,7 +194,7 @@
     <button
       type="button"
       class="por-save"
-      [disabled]="proyek.invalid || sedangMenyusun || rentangBelumSah"
+      [disabled]="!adaSasaran || sedangMenyusun || rentangBelumSah"
       (click)="unduh()"
     >
       @if (sedangMenyusun) {

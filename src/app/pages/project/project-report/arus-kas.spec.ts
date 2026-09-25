@@ -690,19 +690,27 @@ describe('ProjectReport — arus kas', () => {
     expect(c.PILIHAN_JENDELA()).toEqual(['auto', 6, 10, 18]);
   });
 
-  it('berganti satuan mengembalikan lebar jendela ke otomatis', () => {
+  it('berganti satuan mengembalikan lebar jendela ke BAWAAN satuan itu', () => {
     /*
      * "6" yang terbawa dari bulanan menjadi jendela enam HARI. Angkanya
      * masih masuk akal, grafiknya masih tergambar, dan tidak ada apa pun
      * yang menyebutkan sebabnya.
+     *
+     * Yang dikembalikan BUKAN selalu `'auto'` — melainkan bawaan satuan yang
+     * dituju: 30 pada harian, `'auto'` pada bulanan. `'auto'` pada harian di
+     * layar lebar menghasilkan jendela seratus titik lebih, dan kendali
+     * jendelanya lenyap sama sekali karena hanya digambar ketika titiknya
+     * lebih banyak daripada yang muat. Lihat `jendela-bawaan.spec.ts`.
      */
     const c = buat(ARUS).componentInstance;
     c.gantiSatuanKas('bulan');
+    expect(c.pilihanJendela()).toBe('auto');
+
     c.pilihJendela(6);
     expect(c.pilihanJendela()).toBe(6);
 
     c.gantiSatuanKas('hari');
-    expect(c.pilihanJendela()).toBe('auto');
+    expect(c.pilihanJendela()).toBe(30);
   });
 
   it('tanpa pembayaran bukan galat', fakeAsync(() => {

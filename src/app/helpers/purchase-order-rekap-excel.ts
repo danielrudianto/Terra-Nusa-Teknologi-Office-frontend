@@ -295,7 +295,7 @@ function totalkan(
 function lembarRincian(
   wb: ExcelJS.Workbook,
   t: Penerjemah,
-  proyek: string,
+  judulSubjek: string,
   periode: string,
   daftar: IRekapPO[],
   items: IRekapItem[],
@@ -328,7 +328,7 @@ function lembarRincian(
   kop(
     sheet,
     kolom.length,
-    `REKAP PURCHASE ORDER — PROYEK ${proyek}`,
+    `REKAP PURCHASE ORDER — ${judulSubjek}`,
     `Periode: ${periode} · PT Alpha Konstruksi Nusantara · disusun ` +
       new Date().toLocaleDateString('id-ID', {
         day: 'numeric',
@@ -426,7 +426,7 @@ function lembarRincian(
 function lembarPerDokumen(
   wb: ExcelJS.Workbook,
   t: Penerjemah,
-  proyek: string,
+  judulSubjek: string,
   periode: string,
   daftar: IRekapPO[],
   items: IRekapItem[],
@@ -458,7 +458,7 @@ function lembarPerDokumen(
   kop(
     sheet,
     kolom.length,
-    `REKAP PER DOKUMEN — PROYEK ${proyek}`,
+    `REKAP PER DOKUMEN — ${judulSubjek}`,
     `Periode: ${periode} · Satu baris per purchase order. ` +
       'Kolom Pemeriksaan kosong bila jumlah ' +
       'barisnya sudah sama dengan nilai dokumen.',
@@ -548,7 +548,7 @@ function lembarPerDokumen(
 function lembarIkhtisar(
   wb: ExcelJS.Workbook,
   t: Penerjemah,
-  proyek: string,
+  judulSubjek: string,
   periode: string,
   daftar: IRekapPO[],
   awal: number,
@@ -560,7 +560,7 @@ function lembarIkhtisar(
   kop(
     sheet,
     4,
-    `IKHTISAR — PROYEK ${proyek}`,
+    `IKHTISAR — ${judulSubjek}`,
     `Periode: ${periode} · ` +
       'Dihitung dari lembar Per Dokumen. Mengubah data di sana memperbarui ' +
       'angka di lembar ini.',
@@ -702,7 +702,8 @@ function lembarIkhtisar(
  * selesai — sehingga tidak ada lembar yang perlu dipindah urutannya.
  */
 export async function unduhRekapPurchaseOrder(
-  proyek: string,
+  /** Kode proyek, atau nama pemasok — yang dicetak di kepala berkas. */
+  subjek: string,
   daftar: IRekapPO[],
   items: IRekapItem[],
   /*
@@ -714,7 +715,22 @@ export async function unduhRekapPurchaseOrder(
    */
   t: Penerjemah,
   rentang: RentangRekap = { dari: null, sampai: null },
+  /*
+   * Sudut pandang rekapnya.
+   *
+   * Bawaannya `'proyek'` — seluruh pemanggil lama tidak menyebutnya, dan
+   * berkas yang mereka hasilkan harus persis sama seperti sebelumnya.
+   *
+   * Yang dibedakan hanya SEBUTANNYA. Rekap pemasok yang kepalanya berbunyi
+   * "PROYEK PT Sumber Rezeki" bukan berkas yang salah hitung, melainkan
+   * berkas yang salah baca — dan ia dikirim ke luar.
+   */
+  sudut: 'proyek' | 'pemasok' = 'proyek',
 ): Promise<void> {
+  // `kepala` sudah dipakai sebagai nama fungsi penyusun baris judul
+  // kolom di berkas ini; menamai ini sama akan menaunginya.
+  const judulSubjek =
+    sudut === 'pemasok' ? `PEMASOK ${subjek}` : `PROYEK ${subjek}`;
   /*
    * Periodenya dicetak pada KETIGA lembar.
    *
@@ -742,9 +758,9 @@ export async function unduhRekapPurchaseOrder(
   const AWAL_DATA = 5;
   const akhirDokumen = AWAL_DATA + daftar.length - 1;
 
-  lembarIkhtisar(wb, t, proyek, periode, daftar, AWAL_DATA, akhirDokumen);
-  lembarRincian(wb, t, proyek, periode, daftar, items);
-  const { awal, akhir } = lembarPerDokumen(wb, t, proyek, periode, daftar, items);
+  lembarIkhtisar(wb, t, judulSubjek, periode, daftar, AWAL_DATA, akhirDokumen);
+  lembarRincian(wb, t, judulSubjek, periode, daftar, items);
+  const { awal, akhir } = lembarPerDokumen(wb, t, judulSubjek, periode, daftar, items);
 
   // Bila keduanya berbeda, rumus Ikhtisar menunjuk rentang yang salah dan
   // angkanya diam-diam keliru — lebih baik gagal terang-terangan.
@@ -762,7 +778,18 @@ export async function unduhRekapPurchaseOrder(
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `Rekap_Purchase_Order_${proyek}_${potonganBerkas(rentang)}.xlsx`;
+  /*
+   * Nama berkas: spasi dan tanda baca dibuang.
+   *
+   * Kode proyek tidak pernah mengandung spasi, nama pemasok hampir selalu —
+   * "PT. Sumber Rezeki" menjadi nama berkas dengan titik dan spasi di
+   * tengahnya, yang dipotong sebagian klien surel dan berubah bentuk saat
+   * diunggah ke berbagi berkas.
+   */
+  const potonganSubjek =
+    subjek.replace(/[^\p{L}\p{N}]+/gu, '_').replace(/^_+|_+$/g, '') || 'rekap';
+  a.download =
+    `Rekap_Purchase_Order_${potonganSubjek}_${potonganBerkas(rentang)}.xlsx`;
   a.click();
   URL.revokeObjectURL(url);
 }

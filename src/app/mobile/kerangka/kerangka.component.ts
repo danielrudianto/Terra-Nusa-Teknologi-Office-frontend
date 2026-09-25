@@ -15,6 +15,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 
 import { AccountService } from '../../services/account.service';
 import { PermissionService } from '../../services/permission.service';
+import { bolehMembuatBapMobile, bolehMenyetujuiCop } from '../penjaga-level';
 import { SettingsService } from '../../services/setting.service';
 import { TransisiHalamanDirective } from '../../animations/transisi-halaman.directive';
 
@@ -110,13 +111,16 @@ export class KerangkaComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
-   * Tab CoP hanya untuk yang BERWENANG menyetujuinya
-   * (`certificate_of_payment:approve`). Sama seperti reimbursement, tabnya
-   * tidak ditawarkan sama sekali kepada yang tidak berwenang — bukan sekadar
-   * dinonaktifkan — supaya tidak tertekan tak sengaja.
+   * Tab CoP hanya untuk yang BERWENANG menyetujuinya — izinnya DAN levelnya.
+   *
+   * `can('certificate_of_payment','approve')` saja tidak cukup: matriks izin
+   * memberi aksi `approve` mulai level 3, sementara server meminta level 4
+   * (`boleh_menyetujui_bap_cop` / `boleh_menyetujui_cop`). Selama tabnya
+   * hanya membaca izinnya, manajer level 3 mendapat tab berisi dokumen yang
+   * satu pun tidak dapat ia setujui.
    */
   get bisaCop(): boolean {
-    return this.izin.can('certificate_of_payment', 'approve');
+    return bolehMenyetujuiCop(this.izin);
   }
 
   /**
@@ -126,9 +130,15 @@ export class KerangkaComponent implements AfterViewInit, OnDestroy {
    * Keduanya berbeda orang: yang mencatat volume di lapangan engineering
    * level 1, yang menyetujui level 4 ke atas. Memakai izin yang sama untuk
    * keduanya menutup tabnya bagi yang justru dibuatkan layarnya.
+   *
+   * Divisinya ikut diperiksa (`bolehMembuatBapMobile`). Server meminta
+   * divisi engineering bagi yang di bawah level 4 (`boleh_membuat_cop`),
+   * dan pemeriksaan divisi di dalam `can()` DILEWATI ketika daftar divisi
+   * penggunanya kosong — jadi akun tanpa divisi lolos `can()`, mendapat
+   * tabnya, mengetik seluruh volume di lapangan, lalu ditolak saat menyimpan.
    */
   get bisaBeritaAcara(): boolean {
-    return this.izin.can('certificate_of_payment', 'create');
+    return bolehMembuatBapMobile(this.izin);
   }
 
   /**
