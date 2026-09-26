@@ -1,0 +1,66 @@
+<!--
+  Kepala dialog mengikuti bentuk `bank-create`: lencana ikon, judul, dan satu
+  baris keterangan — bukan bentuk sendiri. Dijaga `dialogkepalacek`.
+-->
+<div class="ts-head" mat-dialog-title appDialogGeser>
+  <span class="ts-badge">
+    <mat-icon>draw</mat-icon>
+  </span>
+  <div class="ts-head__text">
+    <h2 class="ts-title">{{ "ttd.judul" | translate }}</h2>
+    <span class="ts-sub">{{ "ttd.subjudul" | translate }}</span>
+  </div>
+</div>
+
+<mat-progress-bar *ngIf="menyimpan" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-content class="ts-isi">
+  <!--
+    BANNER, bukan mat-hint: keterangannya panjang dan harus terbaca. Yang
+    disebut di sini sengaja bukan janji keamanan — tanda tangan gambar adalah
+    stempel, dan yang membuktikan persetujuan tetap jejak akunnya.
+  -->
+  <div class="ts-banner">
+    <mat-icon>info</mat-icon>
+    <div>
+      <strong>{{ "ttd.bannerJudul" | translate }}</strong>
+      <span>{{ "ttd.bannerIsi" | translate }}</span>
+      <span>{{ "ttd.bannerJejak" | translate }}</span>
+    </div>
+  </div>
+
+  <app-papan-ttd
+    [awal]="data.awal"
+    (berubah)="adaCoretan = $event"
+  ></app-papan-ttd>
+
+  <p class="ts-petunjuk">{{ "ttd.petunjuk" | translate }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions class="ts-aksi">
+  <button mat-button type="button" (click)="bersihkan()" [disabled]="menyimpan">
+    <mat-icon>restart_alt</mat-icon>&nbsp;{{ "ttd.bersihkan" | translate }}
+  </button>
+
+  <span class="ts-sela"></span>
+
+  <button
+    *ngIf="bolehLewat"
+    mat-button
+    type="button"
+    (click)="lewati()"
+    [disabled]="menyimpan"
+  >
+    {{ "ttd.nanti" | translate }}
+  </button>
+
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    (click)="simpan()"
+    [disabled]="!adaCoretan || menyimpan"
+  >
+    {{ "ttd.simpan" | translate }}
+  </button>
+</mat-dialog-actions>

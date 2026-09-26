@@ -4179,6 +4179,19 @@
     "destinationAccount": "Rekening tujuan",
     "receivedDate": "Tanggal terima"
   },
+  "ttd": {
+    "judul": "Tanda tangan saya",
+    "subjudul": "Dibuat sekali, dipakai pada dokumen yang Anda setujui",
+    "bannerJudul": "Dipakai pada dokumen resmi",
+    "bannerIsi": "Tanda tangan ini dicap pada dokumen yang Anda periksa dan setujui. Buat sebagaimana Anda menandatangani di atas kertas.",
+    "bannerJejak": "Yang membuktikan persetujuan tetap catatan akun — siapa, kapan, dari akun mana. Gambar ini pelengkapnya, bukan penggantinya.",
+    "petunjuk": "Tulis dengan pena atau jari. Pena mendukung tekanan, jadi tebal tipisnya ikut.",
+    "bersihkan": "Ulangi",
+    "nanti": "Nanti saja",
+    "simpan": "Simpan tanda tangan",
+    "tersimpan": "Tanda tangan tersimpan",
+    "gagalSimpan": "Tanda tangan gagal disimpan"
+  },
   "pdf": {
     "noPdf": "Belum ada PDF",
     "dragToSort": "Geser untuk urutkan",

@@ -7,6 +7,7 @@ import { PintasanDialogComponent } from '../../components/pintasan-dialog/pintas
 import { CariGlobalComponent } from '../../components/cari-global/cari-global.component';
 import { MASTER_NAV } from '../master/master-nav';
 import { PermissionService } from '../../services/permission.service';
+import { TandaTanganService } from '../../services/tanda-tangan.service';
 import { SideNavComponent } from '../../components/side-nav/side-nav.component';
 import { PanduanPanelComponent } from '../../components/panduan/panduan-panel/panduan-panel.component';
 import { PanduanFabComponent } from '../../components/panduan/panduan-fab/panduan-fab.component';
@@ -183,6 +184,8 @@ export class MainComponent implements OnDestroy {
    * ber-`path: ''`, jadi berpindah di antara keduanya menghasilkan kunci yang
    * sama dan animasinya diam-diam tidak pernah jalan.
    */
+  private readonly tandaTangan = inject(TandaTanganService);
+
   readonly kunciRute = signal('');
 
   /*
@@ -296,6 +299,18 @@ export class MainComponent implements OnDestroy {
      * penyebabnya mudah tertukar dengan masalah token.
      */
     this.permissionService.load();
+
+    /*
+     * Tanda tangan: ditawarkan sekali per sesi bila penggunanya belum punya.
+     *
+     * Di sini, bukan di layar login: login berpindah halaman segera sesudah
+     * berhasil, dan dialog yang dibuka di sana ikut terbawa hilang bersama
+     * komponennya. Kerangka ini hidup selama sesinya, jadi dialognya tidak
+     * bersaing dengan perpindahan halaman.
+     *
+     * TIDAK ditunggu: satu permintaan tambahan tidak boleh menahan layar.
+     */
+    void this.tandaTangan.tawarkanBilaBelumAda();
 
     /*
      * KUNCI RUTE dan LANGGANANNYA dipasang SEBELUM apa pun yang dapat

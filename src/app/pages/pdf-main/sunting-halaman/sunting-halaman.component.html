@@ -487,18 +487,14 @@
         <h3 class="sh-papan__judul">{{ "pdf.ttdJudul" | translate }}</h3>
         <p class="sh-papan__petunjuk">{{ "pdf.ttdPetunjuk" | translate }}</p>
 
-        <canvas
-          class="sh-papan__kanvas"
-          #papan
-          width="720"
-          height="240"
-          (pointerdown)="mulaiGores($event)"
-          (pointermove)="gores($event)"
-          (pointerup)="selesaiGores($event)"
-          (pointercancel)="selesaiGores($event)"
-          (pointerleave)="selesaiGores($event)"
-          (contextmenu)="$event.preventDefault()"
-        ></canvas>
+        <!--
+          Papan yang SAMA dengan dialog "Tanda tangan saya" — tekanan pena,
+          penolakan telapak tangan, dan penggambarannya hidup di satu tempat.
+        -->
+        <app-papan-ttd
+          [awal]="ttdSiap"
+          (berubah)="adaCoretanTtd = $event"
+        ></app-papan-ttd>
 
         <p class="sh-papan__catatan" *ngIf="ttdSiap">
           {{ "pdf.ttdTersimpan" | translate }}
@@ -508,7 +504,7 @@
           <button
             type="button"
             class="sh-btn sh-btn--ghost"
-            (click)="bersihkanPapan(papan)"
+            (click)="bersihkanPapan()"
           >
             {{ "pdf.ttdBersihkan" | translate }}
           </button>
@@ -524,7 +520,7 @@
             type="button"
             class="sh-btn sh-btn--utama"
             [disabled]="papanKosong"
-            (click)="pakaiTtd(papan)"
+            (click)="pakaiTtd()"
           >
             {{ "pdf.ttdPakai" | translate }}
           </button>

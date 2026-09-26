@@ -4179,6 +4179,19 @@
     "destinationAccount": "Destination account",
     "receivedDate": "Received date"
   },
+  "ttd": {
+    "judul": "My signature",
+    "subjudul": "Draw it once; it is used on the documents you approve",
+    "bannerJudul": "Used on official documents",
+    "bannerIsi": "This signature is stamped on the documents you check and approve. Draw it the way you sign on paper.",
+    "bannerJejak": "What proves approval is still the account record — who, when, from which account. This image complements it; it does not replace it.",
+    "petunjuk": "Write with a pen or your finger. Pens support pressure, so stroke thickness follows.",
+    "bersihkan": "Redo",
+    "nanti": "Later",
+    "simpan": "Save signature",
+    "tersimpan": "Signature saved",
+    "gagalSimpan": "Could not save the signature"
+  },
   "pdf": {
     "noPdf": "No PDF yet",
     "dragToSort": "Drag to reorder",
