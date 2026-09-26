@@ -40,7 +40,47 @@ export interface AnotasiSunting {
   teks?: string;
   /** Gambar tanda tangan sebagai data-URI PNG (berlatar tembus pandang). */
   gambar?: string;
+  /** Bentuk penutup; kosong = kotak. */
+  bentuk?: BentukTutup;
+  /** Warna penutup `#rrggbb`; kosong = putih. */
+  warna?: string;
+  /** Isi penutup; kosong = warna polos. */
+  isi?: IsiTutup;
+  /** Kepekatan 0–1; kosong = 1 (pekat penuh). */
+  opasitas?: number;
+  /** Rupa huruf catatan; kosong = `sans`. */
+  fonta?: FontaCatatan;
+  /** Besar huruf catatan dalam titik; kosong = 10. */
+  ukuran?: number;
+  /** Huruf tebal. */
+  tebal?: boolean;
 }
+
+/** Rupa huruf yang tersedia untuk catatan. */
+export type FontaCatatan = 'sans' | 'serif' | 'mono';
+
+/** Bentuk penutup yang tersedia. */
+export type BentukTutup = 'kotak' | 'lingkaran' | 'segitiga';
+
+/**
+ * Isi penutup.
+ *
+ * `buram` BUKAN penyamaran yang aman — lihat keterangan `buatIsi`.
+ */
+export type IsiTutup = 'warna' | 'garis' | 'silang' | 'titik' | 'buram';
+
+/**
+ * Ukuran bawaan per bentuk, sebagai pecahan halaman.
+ *
+ * Kotak dibuat setipis satu baris teks — itu memang gunanya, menutupi satu
+ * baris. Lingkaran dan segitiga dengan ukuran yang sama akan jadi elips
+ * gepeng dan segitiga rebah, jadi keduanya dibuat lebih pendek dan tinggi.
+ */
+const UKURAN_BAWAAN: Record<BentukTutup, { lebar: number; tinggi: number }> = {
+  kotak: { lebar: 0.24, tinggi: 0.024 },
+  lingkaran: { lebar: 0.12, tinggi: 0.08 },
+  segitiga: { lebar: 0.12, tinggi: 0.08 },
+};
 
 export interface DataSuntingHalaman {
   /** PDF satu halaman, base64 tanpa awalan data-uri. */
@@ -99,7 +139,56 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
   memuat = true;
   gagal = false;
 
-  alatAktif: 'tutup' | 'catatan' | 'ttd' | null = null;
+  /** Lebar halaman sebagaimana ditampilkan, dalam titik. */
+  lebarPt = 595;
+
+  alatAktif: 'tutup' | 'catatan' | 'ttd' | 'pipet' | null = null;
+
+  /** Bentuk, isi, warna & kepekatan penutup BERIKUTNYA yang ditaruh. */
+  bentukTutup: BentukTutup = 'kotak';
+  warnaTutup = '#ffffff';
+  isiTutup: IsiTutup = 'warna';
+  /** Dalam PERSEN — itu yang tampil pada penggesernya. */
+  opasitasTutup = 100;
+
+  /** Rupa, besar, tebal & warna catatan BERIKUTNYA yang ditaruh. */
+  fontaCatatan: FontaCatatan = 'sans';
+  ukuranCatatan = 10;
+  tebalCatatan = false;
+  warnaCatatan = '#b3322f';
+
+  readonly fonta: readonly { nilai: FontaCatatan; ikon: string }[] = [
+    { nilai: 'sans', ikon: 'text_fields' },
+    { nilai: 'serif', ikon: 'format_italic' },
+    { nilai: 'mono', ikon: 'code' },
+  ];
+
+  /** Besar huruf yang lazim; bebas diketik di luar daftar ini. */
+  readonly ukuranPilihan: readonly number[] = [8, 9, 10, 12, 14, 18, 24, 32];
+
+  readonly isian: readonly { nilai: IsiTutup; ikon: string }[] = [
+    { nilai: 'warna', ikon: 'format_color_fill' },
+    { nilai: 'buram', ikon: 'blur_on' },
+    { nilai: 'garis', ikon: 'density_medium' },
+    { nilai: 'silang', ikon: 'grid_4x4' },
+    { nilai: 'titik', ikon: 'more_horiz' },
+  ];
+
+  /** Warna yang sering dipakai — menutup di atas kertas, kop, dan stempel. */
+  readonly warnaCepat: readonly string[] = [
+    '#ffffff',
+    '#000000',
+    '#f3f4f6',
+    '#fde68a',
+    '#154dec',
+    '#b3322f',
+  ];
+
+  readonly bentuk: readonly { nilai: BentukTutup; ikon: string }[] = [
+    { nilai: 'kotak', ikon: 'crop_square' },
+    { nilai: 'lingkaran', ikon: 'circle' },
+    { nilai: 'segitiga', ikon: 'change_history' },
+  ];
 
   /** Indeks coretan yang sedang digeser/diubah ukurannya. */
   private seret: {
@@ -119,6 +208,8 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     try {
       this.gambar = await this.gambarHalaman();
+      // Tidak ditunggu: pipet boleh siap belakangan, halamannya jangan.
+      void this.siapkanContoh();
     } catch (e) {
       console.error('Gagal menggambar halaman untuk disunting:', e);
       this.gagal = true;
@@ -153,6 +244,9 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
       // yang ditunjuk bukan letak yang tersimpan.
       const putar = ((this.data.rotation || 0) % 360 + 360) % 360;
       const satuan = hal.getViewport({ scale: 1, rotation: putar });
+      // Lebar tampilan dalam TITIK — dipakai menyetarakan besar huruf
+      // catatan di layar dengan yang nanti tercetak.
+      this.lebarPt = satuan.width || 595;
       const lebarTarget = Math.min(1100, Math.max(700, satuan.width));
       const skala = Math.min(3, lebarTarget / satuan.width);
       const viewport = hal.getViewport({ scale: skala, rotation: putar });
@@ -173,7 +267,7 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
     }
   }
 
-  pilihAlat(alat: 'tutup' | 'catatan' | 'ttd'): void {
+  pilihAlat(alat: 'tutup' | 'catatan' | 'ttd' | 'pipet'): void {
     // Tanda tangan perlu ada gambarnya dulu; alatnya baru menyala sesudah
     // itu. Tanpa urutan ini, menekan halaman menaruh kotak kosong.
     //
@@ -352,15 +446,32 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
     const x = (ev.clientX - kotak.left) / kotak.width;
     const y = (ev.clientY - kotak.top) / kotak.height;
 
+    if (this.alatAktif === 'pipet') {
+      // Pipet TIDAK menaruh apa pun; ia hanya mengambil warna, lalu
+      // menyerahkan giliran kembali ke alat penutup — yang hampir selalu
+      // menjadi maksud mengambil warnanya.
+      const w = this.warnaDiTitik(x, y);
+      if (w) this.warnaTutup = w;
+      this.alatAktif = 'tutup';
+      return;
+    }
+
     if (this.alatAktif === 'tutup') {
-      this.anotasi.push({
+      const u = UKURAN_BAWAAN[this.bentukTutup];
+      const a: AnotasiSunting = {
         jenis: 'tutup',
-        x: this.jepit(x - 0.12),
-        y: this.jepit(y - 0.012),
-        lebar: 0.24,
-        tinggi: 0.024,
+        x: this.jepit(x - u.lebar / 2),
+        y: this.jepit(y - u.tinggi / 2),
+        lebar: u.lebar,
+        tinggi: u.tinggi,
         teks: '',
-      });
+        bentuk: this.bentukTutup,
+        warna: this.warnaTutup,
+        isi: this.isiTutup,
+        opasitas: this.opasitasTutup / 100,
+      };
+      this.perbaruiIsi(a);
+      this.anotasi.push(a);
     } else if (this.alatAktif === 'ttd') {
       // Ukuran bawaan kira-kira selebar kolom tanda tangan pada surat
       // berkop: cukup terbaca, dan tetap dapat diubah sesudah ditaruh.
@@ -378,9 +489,315 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
         x: this.jepit(x),
         y: this.jepit(y),
         teks: '',
+        warna: this.warnaCatatan,
+        fonta: this.fontaCatatan,
+        ukuran: this.ukuranCatatan,
+        tebal: this.tebalCatatan,
       });
     }
     this.alatAktif = null;
+  }
+
+  /**
+   * Terapkan bentuk & warna dari bilah alat pada penutup yang sudah ada.
+   *
+   * Tanpa ini, satu-satunya cara mengubah warna adalah menghapus lalu
+   * menaruh ulang — dan letaknya yang sudah pas hilang bersamanya.
+   */
+  catUlang(i: number, ev: Event): void {
+    ev.stopPropagation();
+    const a = this.anotasi[i];
+    if (!a) return;
+    if (a.jenis === 'tutup') {
+      a.bentuk = this.bentukTutup;
+      a.warna = this.warnaTutup;
+      a.isi = this.isiTutup;
+      a.opasitas = this.opasitasTutup / 100;
+      this.perbaruiIsi(a);
+      return;
+    }
+    if (a.jenis === 'catatan') {
+      a.warna = this.warnaCatatan;
+      a.fonta = this.fontaCatatan;
+      a.ukuran = this.ukuranCatatan;
+      a.tebal = this.tebalCatatan;
+    }
+  }
+
+  // ---- isi penutup: buram & pola -----------------------------------------
+
+  /**
+   * Segarkan gambar isi penutup.
+   *
+   * `buram` dan pola dibuat sebagai GAMBAR, bukan digambar ulang oleh
+   * pdf-lib: keduanya bergantung pada apa yang ada DI BAWAH penutupnya
+   * (buram) atau perlu dipotong mengikuti bentuknya (pola pada lingkaran
+   * dan segitiga) — dua hal yang tidak dapat dilakukan pdf-lib tanpa
+   * pemotongan, sementara kanvas melakukannya dalam satu baris.
+   *
+   * Karena isinya bergantung pada LETAK dan UKURAN, ia dibuat ulang setiap
+   * kali coretannya selesai digeser atau diubah ukurannya.
+   */
+  private perbaruiIsi(a: AnotasiSunting): void {
+    if (a.jenis !== 'tutup') return;
+    if (!a.isi || a.isi === 'warna') {
+      a.gambar = undefined;
+      return;
+    }
+    const g = this.buatIsi(a);
+    if (g) {
+      a.gambar = g;
+    } else {
+      // Tanpa salinan halaman, buram tidak dapat dibuat. Jatuh ke warna
+      // polos — yang tetap MENUTUPI; membiarkannya kosong justru membuat
+      // yang ditutup tetap terbaca.
+      a.isi = 'warna';
+      a.gambar = undefined;
+    }
+  }
+
+  /**
+   * PNG ber-alfa seukuran kotaknya, sudah terpotong mengikuti bentuknya.
+   *
+   * PERLU DIINGAT, dan ini bukan cacat melainkan sifat PDF: baik buram
+   * maupun warna polos hanya MENUTUPI — teks aslinya tetap ada di dalam
+   * berkasnya dan masih dapat disalin. Untuk menghilangkannya sungguhan,
+   * halamannya harus diubah menjadi gambar.
+   */
+  private buatIsi(a: AnotasiSunting): string | null {
+    const lebar = a.lebar ?? 0.24;
+    const tinggi = a.tinggi ?? 0.024;
+    if (lebar <= 0 || tinggi <= 0) return null;
+
+    let W: number;
+    let H: number;
+    const src = this.contoh;
+    if (a.isi === 'buram') {
+      if (!src) return null;
+      W = Math.round(lebar * src.canvas.width);
+      H = Math.round(tinggi * src.canvas.height);
+    } else {
+      // Pola tidak menyalin apa pun, jadi kerapatannya dipatok sendiri —
+      // cukup tinggi supaya tetap tajam waktu dicetak.
+      W = Math.round(lebar * 2400);
+      H = Math.round(tinggi * 3200);
+    }
+    W = Math.min(1600, Math.max(8, W));
+    H = Math.min(1600, Math.max(8, H));
+
+    const kanvas = document.createElement('canvas');
+    kanvas.width = W;
+    kanvas.height = H;
+    const ctx = kanvas.getContext('2d');
+    if (!ctx) return null;
+
+    this.potongBentuk(ctx, a.bentuk, W, H);
+    if (a.isi === 'buram') this.gambarBuram(ctx, src!, a, W, H);
+    else this.gambarPola(ctx, a.isi!, W, H, a.warna);
+
+    return kanvas.toDataURL('image/png');
+  }
+
+  /** Batasi penggambaran pada bentuk yang dipilih. */
+  private potongBentuk(
+    ctx: CanvasRenderingContext2D,
+    bentuk: BentukTutup | undefined,
+    W: number,
+    H: number,
+  ): void {
+    ctx.beginPath();
+    if (bentuk === 'lingkaran') {
+      ctx.ellipse(W / 2, H / 2, W / 2, H / 2, 0, 0, Math.PI * 2);
+    } else if (bentuk === 'segitiga') {
+      ctx.moveTo(W / 2, 0);
+      ctx.lineTo(W, H);
+      ctx.lineTo(0, H);
+      ctx.closePath();
+    } else {
+      ctx.rect(0, 0, W, H);
+    }
+    ctx.clip();
+  }
+
+  /**
+   * Mosaik, bukan pengaburan Gauss.
+   *
+   * Pengaburan yang lembut MASIH DAPAT DIBALIK pada teks: ragam hurufnya
+   * terbatas, dan angka apalagi. Mosaik kasar membuang informasinya —
+   * itulah gunanya menurunkan gambarnya ke sepersepuluh lalu membesarkannya
+   * kembali TANPA penghalusan.
+   */
+  private gambarBuram(
+    ctx: CanvasRenderingContext2D,
+    src: CanvasRenderingContext2D,
+    a: AnotasiSunting,
+    W: number,
+    H: number,
+  ): void {
+    const sk = src.canvas;
+    const sx = (a.x ?? 0) * sk.width;
+    const sy = (a.y ?? 0) * sk.height;
+    const sw = Math.max(1, (a.lebar ?? 0.24) * sk.width);
+    const sh = Math.max(1, (a.tinggi ?? 0.024) * sk.height);
+
+    const kw = Math.max(2, Math.round(W / 10));
+    const kh = Math.max(2, Math.round(H / 10));
+    const kecil = document.createElement('canvas');
+    kecil.width = kw;
+    kecil.height = kh;
+    const kctx = kecil.getContext('2d');
+    if (!kctx) return;
+    kctx.drawImage(sk, sx, sy, sw, sh, 0, 0, kw, kh);
+
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(kecil, 0, 0, kw, kh, 0, 0, W, H);
+  }
+
+  /**
+   * Pola di atas dasar PEKAT.
+   *
+   * Pola dengan latar tembus pandang tidak menutupi apa pun — yang di
+   * bawahnya tetap terbaca di sela-sela garisnya, dan itu bukan yang
+   * dimaui orang yang memilih alat penutup.
+   */
+  private gambarPola(
+    ctx: CanvasRenderingContext2D,
+    pola: IsiTutup,
+    W: number,
+    H: number,
+    warna?: string,
+  ): void {
+    const dasar = warna || '#ffffff';
+    ctx.fillStyle = dasar;
+    ctx.fillRect(0, 0, W, H);
+
+    const tinta = this.warnaTeks(dasar);
+    ctx.strokeStyle = tinta;
+    ctx.fillStyle = tinta;
+
+    const jarak = Math.max(6, Math.round(Math.min(W, H) / 8));
+    ctx.lineWidth = Math.max(1, jarak / 7);
+
+    if (pola === 'titik') {
+      const r = Math.max(1, jarak / 6);
+      for (let y = jarak / 2; y < H; y += jarak) {
+        for (let x = jarak / 2; x < W; x += jarak) {
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      return;
+    }
+
+    // Garis miring; `silang` menambahkan arah sebaliknya.
+    ctx.beginPath();
+    for (let i = -H; i < W + H; i += jarak) {
+      ctx.moveTo(i, 0);
+      ctx.lineTo(i + H, H);
+    }
+    if (pola === 'silang') {
+      for (let i = -H; i < W + H; i += jarak) {
+        ctx.moveTo(i, H);
+        ctx.lineTo(i + H, 0);
+      }
+    }
+    ctx.stroke();
+  }
+
+  /**
+   * Besar huruf catatan di layar, dalam satuan `cqw` (persen lebar kertas).
+   *
+   * Besar huruf disimpan dalam TITIK karena itulah satuan PDF. Di layar,
+   * kertasnya ditampilkan sekecil apa pun yang muat, jadi ukuran piksel
+   * tetap akan salah pada salah satu dari keduanya. Dinyatakan sebagai
+   * persentase lebar kertas, keduanya selalu sepadan.
+   */
+  ukuranLayar(a: AnotasiSunting): string {
+    const pt = a.ukuran && a.ukuran > 0 ? a.ukuran : 10;
+    return `${(pt / this.lebarPt) * 100}cqw`;
+  }
+
+  /** Rupa huruf di layar yang paling mendekati font baku PDF-nya. */
+  fontaLayar(a: AnotasiSunting): string {
+    if (a.fonta === 'serif') return '"Times New Roman", Times, serif';
+    if (a.fonta === 'mono') return '"Courier New", Courier, monospace';
+    return 'Helvetica, Arial, sans-serif';
+  }
+
+  /** Warna teks yang terbaca di atas `warna` — sama hitungannya dengan PDF-nya. */
+  warnaTeks(warna?: string): string {
+    const m = /^#?([0-9a-f]{6})$/i.exec((warna || '').trim());
+    if (!m) return '#16181d';
+    const n = parseInt(m[1], 16);
+    const terang =
+      (0.299 * ((n >> 16) & 255) +
+        0.587 * ((n >> 8) & 255) +
+        0.114 * (n & 255)) /
+      255;
+    return terang > 0.55 ? '#16181d' : '#ffffff';
+  }
+
+  // ---- pipet --------------------------------------------------------------
+
+  /**
+   * Salinan halaman pada kanvas, khusus untuk mengambil warna.
+   *
+   * Diambil dari GAMBAR HALAMANNYA, bukan dari layar: `EyeDropper` bawaan
+   * peramban mengambil warna piksel LAYAR — sudah lewat penskalaan,
+   * pelembutan, dan mode gelap kalau ada — sehingga warna yang terambil
+   * bukan warna yang ada di berkasnya. Ia juga hanya ada di sebagian
+   * peramban.
+   */
+  private contoh: CanvasRenderingContext2D | null = null;
+  private contohGagal = false;
+
+  private async siapkanContoh(): Promise<void> {
+    if (this.contoh || this.contohGagal || !this.gambar) return;
+    try {
+      const img = new Image();
+      await new Promise<void>((selesai, gagal) => {
+        img.onload = () => selesai();
+        img.onerror = () => gagal(new Error('gambar halaman tidak terbaca'));
+        img.src = this.gambar;
+      });
+      const kanvas = document.createElement('canvas');
+      kanvas.width = img.naturalWidth;
+      kanvas.height = img.naturalHeight;
+      const ctx = kanvas.getContext('2d', { willReadFrequently: true });
+      if (!ctx) throw new Error('kanvas tidak tersedia');
+      ctx.drawImage(img, 0, 0);
+      this.contoh = ctx;
+    } catch (e) {
+      // Pipetnya mati, sisanya tetap jalan.
+      console.error('Pipet tidak dapat disiapkan:', e);
+      this.contohGagal = true;
+    }
+  }
+
+  /** Pipet baru dapat dipakai setelah salinan halamannya siap. */
+  get pipetSiap(): boolean {
+    return !!this.contoh;
+  }
+
+  /** `#rrggbb` pada titik pecahan (x, y), atau null bila tidak terbaca. */
+  warnaDiTitik(x: number, y: number): string | null {
+    const ctx = this.contoh;
+    if (!ctx) return null;
+    const k = ctx.canvas;
+    const px = Math.min(k.width - 1, Math.max(0, Math.round(x * k.width)));
+    const py = Math.min(k.height - 1, Math.max(0, Math.round(y * k.height)));
+    try {
+      const d = ctx.getImageData(px, py, 1, 1).data;
+      return (
+        '#' +
+        [d[0], d[1], d[2]]
+          .map((n) => n.toString(16).padStart(2, '0'))
+          .join('')
+      );
+    } catch {
+      return null;
+    }
   }
 
   hapus(i: number): void {
@@ -434,8 +851,13 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
   };
 
   private readonly saatLepas = (): void => {
+    const s = this.seret;
     this.seret = null;
     this.lepasPendengar();
+    // Isi buram & pola bergantung pada LETAK dan UKURAN kotaknya, jadi
+    // keduanya dibuat ulang begitu geserannya selesai — bukan pada setiap
+    // gerakan tetikus, yang akan membuat penyuntingan tersendat.
+    if (s && this.anotasi[s.i]) this.perbaruiIsi(this.anotasi[s.i]);
   };
 
   private lepasPendengar(): void {

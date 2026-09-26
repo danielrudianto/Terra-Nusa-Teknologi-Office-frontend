@@ -223,9 +223,42 @@
                   [class.anotasi--catatan]="a.jenis === 'catatan'"
                   [style.left.%]="a.x * 100"
                   [style.top.%]="a.y * 100"
-                  [style.width.%]="a.jenis === 'tutup' ? (a.lebar || 0.24) * 100 : null"
-                  [style.height.%]="a.jenis === 'tutup' ? (a.tinggi || 0.024) * 100 : null"
-                ></div>
+                  [style.width.%]="
+                    a.jenis === 'catatan' ? null : (a.lebar || 0.24) * 100
+                  "
+                  [style.height.%]="
+                    a.jenis === 'catatan' ? null : (a.tinggi || 0.024) * 100
+                  "
+                  [style.background]="
+                    a.jenis === 'tutup' && !a.gambar
+                      ? a.warna || '#ffffff'
+                      : null
+                  "
+                  [style.opacity]="a.jenis === 'tutup' ? a.opasitas ?? 1 : null"
+                  [style.border-radius]="
+                    !a.gambar && a.bentuk === 'lingkaran' ? '50%' : null
+                  "
+                  [style.clip-path]="
+                    !a.gambar && a.bentuk === 'segitiga'
+                      ? 'polygon(50% 0%, 100% 100%, 0% 100%)'
+                      : null
+                  "
+                >
+                  <!-- Tanda tangan, buram, dan pola tampil sebagai gambar:
+                       pada thumbnail, petak tanpa isi tidak dapat dibedakan
+                       dari kotak penutup polos. -->
+                  @if (a.gambar) {
+                    <img
+                      [src]="a.gambar"
+                      alt=""
+                      [style.width]="'100%'"
+                      [style.height]="'100%'"
+                      [style.object-fit]="
+                        a.jenis === 'ttd' ? 'contain' : 'fill'
+                      "
+                    />
+                  }
+                </div>
               }
             </div>
           }

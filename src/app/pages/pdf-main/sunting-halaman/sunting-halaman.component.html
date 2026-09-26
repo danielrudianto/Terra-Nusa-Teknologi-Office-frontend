@@ -46,7 +46,6 @@
         <mat-icon>sticky_note_2</mat-icon>
         <span>{{ "pdf.note" | translate }}</span>
       </button>
-
       <button
         type="button"
         class="sh-alat__btn"
@@ -67,12 +66,158 @@
         <mat-icon>edit</mat-icon>
       </button>
 
-      <span class="sh-alat__petunjuk" *ngIf="alatAktif">
+      <span class="sh-alat__petunjuk" *ngIf="alatAktif === 'pipet'">
+        {{ "pdf.pipetPetunjuk" | translate }}
+      </span>
+      <span
+        class="sh-alat__petunjuk"
+        *ngIf="alatAktif && alatAktif !== 'pipet'"
+      >
         {{ "pdf.clickToPlace" | translate }}
       </span>
       <span class="sh-alat__petunjuk" *ngIf="!alatAktif && anotasi.length">
         {{ "pdf.suntingPetunjuk" | translate }}
       </span>
+    </div>
+
+    <!--
+      Setelan berlaku untuk coretan BERIKUTNYA yang ditaruh. Yang sudah ada
+      diubah lewat tombol kuas pada coretannya — supaya letak yang sudah pas
+      tidak perlu dibuat ulang hanya karena warnanya salah.
+    -->
+    <div class="sh-setel">
+      <span class="sh-setel__nama">{{ "pdf.overwrite" | translate }}</span>
+
+      <span
+        class="sh-pil"
+        role="group"
+        [attr.aria-label]="'pdf.bentuk' | translate"
+      >
+        <button
+          *ngFor="let b of bentuk"
+          type="button"
+          class="sh-pil__btn"
+          [class.is-aktif]="bentukTutup === b.nilai"
+          (click)="bentukTutup = b.nilai"
+          [matTooltip]="'pdf.bentuk_' + b.nilai | translate"
+          [attr.aria-label]="'pdf.bentuk_' + b.nilai | translate"
+        >
+          <mat-icon>{{ b.ikon }}</mat-icon>
+        </button>
+      </span>
+
+      <span
+        class="sh-pil"
+        role="group"
+        [attr.aria-label]="'pdf.isi' | translate"
+      >
+        <button
+          *ngFor="let i of isian"
+          type="button"
+          class="sh-pil__btn"
+          [class.is-aktif]="isiTutup === i.nilai"
+          [disabled]="i.nilai === 'buram' && !pipetSiap"
+          (click)="isiTutup = i.nilai"
+          [matTooltip]="'pdf.isi_' + i.nilai | translate"
+          [attr.aria-label]="'pdf.isi_' + i.nilai | translate"
+        >
+          <mat-icon>{{ i.ikon }}</mat-icon>
+        </button>
+      </span>
+
+      <span class="sh-warna">
+        <label class="sh-warna__pilih" [matTooltip]="'pdf.warna' | translate">
+          <input type="color" [(ngModel)]="warnaTutup" name="warnaTutup" />
+          <span class="sh-warna__contoh" [style.background]="warnaTutup"></span>
+        </label>
+        <button
+          *ngFor="let w of warnaCepat"
+          type="button"
+          class="sh-warna__cepat"
+          [class.is-aktif]="warnaTutup.toLowerCase() === w"
+          [style.background]="w"
+          (click)="warnaTutup = w"
+          [attr.aria-label]="w"
+        ></button>
+        <button
+          type="button"
+          class="sh-warna__pipet"
+          [class.is-aktif]="alatAktif === 'pipet'"
+          [disabled]="!pipetSiap"
+          (click)="pilihAlat('pipet')"
+          [matTooltip]="'pdf.pipet' | translate"
+          [attr.aria-label]="'pdf.pipet' | translate"
+        >
+          <mat-icon>colorize</mat-icon>
+        </button>
+      </span>
+
+      <label class="sh-geser" [matTooltip]="'pdf.opasitas' | translate">
+        <mat-icon>opacity</mat-icon>
+        <input
+          type="range"
+          min="10"
+          max="100"
+          step="5"
+          [(ngModel)]="opasitasTutup"
+          name="opasitasTutup"
+          [attr.aria-label]="'pdf.opasitas' | translate"
+        />
+        <span class="sh-geser__nilai">{{ opasitasTutup }}%</span>
+      </label>
+    </div>
+
+    <div class="sh-setel">
+      <span class="sh-setel__nama">{{ "pdf.note" | translate }}</span>
+
+      <span
+        class="sh-pil"
+        role="group"
+        [attr.aria-label]="'pdf.fonta' | translate"
+      >
+        <button
+          *ngFor="let f of fonta"
+          type="button"
+          class="sh-pil__btn"
+          [class.is-aktif]="fontaCatatan === f.nilai"
+          (click)="fontaCatatan = f.nilai"
+          [matTooltip]="'pdf.fonta_' + f.nilai | translate"
+          [attr.aria-label]="'pdf.fonta_' + f.nilai | translate"
+        >
+          <mat-icon>{{ f.ikon }}</mat-icon>
+        </button>
+      </span>
+
+      <select
+        class="sh-ukuran"
+        [(ngModel)]="ukuranCatatan"
+        name="ukuranCatatan"
+        [attr.aria-label]="'pdf.ukuran' | translate"
+        [matTooltip]="'pdf.ukuran' | translate"
+      >
+        <option *ngFor="let u of ukuranPilihan" [ngValue]="u">
+          {{ u }} pt
+        </option>
+      </select>
+
+      <button
+        type="button"
+        class="sh-pil__btn sh-pil__btn--lepas"
+        [class.is-aktif]="tebalCatatan"
+        (click)="tebalCatatan = !tebalCatatan"
+        [matTooltip]="'pdf.tebal' | translate"
+        [attr.aria-label]="'pdf.tebal' | translate"
+      >
+        <mat-icon>format_bold</mat-icon>
+      </button>
+
+      <label
+        class="sh-warna__pilih"
+        [matTooltip]="'pdf.warnaCatatan' | translate"
+      >
+        <input type="color" [(ngModel)]="warnaCatatan" name="warnaCatatan" />
+        <span class="sh-warna__contoh" [style.background]="warnaCatatan"></span>
+      </label>
     </div>
 
     <div class="sh-panggung">
@@ -93,7 +238,8 @@
         class="sh-kertas"
         #kertas
         *ngIf="!memuat && !gagal"
-        [class.is-menaruh]="alatAktif"
+        [class.is-menaruh]="alatAktif && alatAktif !== 'pipet'"
+        [class.is-memipet]="alatAktif === 'pipet'"
         (click)="taruh($event)"
       >
         <img class="sh-kertas__img" [src]="gambar" alt="" draggable="false" />
@@ -122,9 +268,33 @@
             <mat-icon>drag_indicator</mat-icon>
           </span>
 
+          <!-- Lapisan bentuk terpisah dari kotaknya: `clip-path` pada kotak
+               akan ikut memotong pegangan dan tombol yang sengaja ditaruh
+               DI LUAR tepinya. -->
+          <span
+            class="sh-anotasi__bentuk"
+            *ngIf="a.jenis === 'tutup'"
+            [class.is-lingkaran]="!a.gambar && a.bentuk === 'lingkaran'"
+            [class.is-segitiga]="!a.gambar && a.bentuk === 'segitiga'"
+            [style.background]="a.gambar ? null : a.warna || '#ffffff'"
+            [style.opacity]="a.opasitas ?? 1"
+          >
+            <!-- Buram & pola sudah terpotong mengikuti bentuknya di dalam
+                 gambarnya sendiri, jadi di sini tidak dipotong lagi. -->
+            <img *ngIf="a.gambar" [src]="a.gambar" alt="" draggable="false" />
+          </span>
+
           <input
             class="sh-anotasi__teks"
             *ngIf="a.jenis !== 'ttd'"
+            [style.color]="
+              a.jenis === 'tutup' ? warnaTeks(a.warna) : a.warna || '#b3322f'
+            "
+            [style.font-size]="a.jenis === 'catatan' ? ukuranLayar(a) : null"
+            [style.font-family]="a.jenis === 'catatan' ? fontaLayar(a) : null"
+            [style.font-weight]="
+              a.jenis === 'catatan' ? (a.tebal ? 700 : 400) : null
+            "
             [(ngModel)]="a.teks"
             [placeholder]="
               (a.jenis === 'tutup' ? 'pdf.overwriteHint' : 'pdf.noteHint')
@@ -142,6 +312,17 @@
             alt=""
             draggable="false"
           />
+
+          <button
+            type="button"
+            class="sh-anotasi__cat"
+            *ngIf="a.jenis === 'tutup'"
+            (click)="catUlang(i, $event)"
+            [matTooltip]="'pdf.catUlang' | translate"
+            [attr.aria-label]="'pdf.catUlang' | translate"
+          >
+            <mat-icon>format_paint</mat-icon>
+          </button>
 
           <button
             type="button"

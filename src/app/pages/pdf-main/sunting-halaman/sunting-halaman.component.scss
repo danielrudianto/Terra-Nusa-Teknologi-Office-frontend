@@ -166,6 +166,9 @@ h2.sh-title {
 /* Kertasnya: gambar halaman + lapisan coretan yang PERSIS seukuran. */
 .sh-kertas {
   position: relative;
+  /* Acuan satuan `cqw`: besar huruf catatan dinyatakan sebagai persentase
+     lebar kertas, supaya yang terlihat sepadan dengan yang tercetak. */
+  container-type: inline-size;
   display: block;
   max-width: 100%;
   line-height: 0;
@@ -175,6 +178,9 @@ h2.sh-title {
 
   &.is-menaruh {
     cursor: crosshair;
+  }
+  &.is-memipet {
+    cursor: copy;
   }
   &__img {
     display: block;
@@ -194,7 +200,9 @@ h2.sh-title {
   line-height: normal;
 
   &--tutup {
-    background: var(--kertas, #ffffff);
+    /* Warnanya dibawa lapisan `__bentuk`, bukan kotaknya: kotaknya harus
+       tetap persegi supaya pegangan dan tombolnya tidak ikut terpotong. */
+    background: transparent;
     outline: 1px dashed var(--brand, #154dec);
   }
 
@@ -224,7 +232,35 @@ h2.sh-title {
   pointer-events: none;
 }
 
+.sh-anotasi__bentuk {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* `fill`, bukan `contain`: gambarnya memang dibuat seukuran kotaknya,
+       dan `contain` akan menyisakan celah saat nisbahnya bergeser sedikit
+       setelah diubah ukurannya. */
+    object-fit: fill;
+    pointer-events: none;
+  }
+
+  &.is-lingkaran {
+    border-radius: 50%;
+  }
+  &.is-segitiga {
+    /* Puncak di tengah-atas — sama dengan yang digambar ke PDF-nya. */
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+  }
+}
+
 .sh-anotasi__teks {
+  position: relative;
+  z-index: 1;
   flex: 1 1 auto;
   min-width: 40px;
   width: 100%;
@@ -248,6 +284,7 @@ h2.sh-title {
    tombol yang dijejalkan ke dalamnya menutupi justru teks yang sedang
    diketik. */
 .sh-anotasi__pegang,
+.sh-anotasi__cat,
 .sh-anotasi__x {
   position: absolute;
   top: 50%;
@@ -275,6 +312,16 @@ h2.sh-title {
   color: $muted;
   &:active {
     cursor: grabbing;
+  }
+}
+.sh-anotasi__cat {
+  /* Di bawah tombol hapus, bukan di sampingnya: penutup setebal satu baris
+     tidak punya ruang mendatar di kanan-kirinya. */
+  right: -26px;
+  top: calc(50% + 24px);
+  color: var(--brand, #154dec);
+  &:hover {
+    background: var(--brand-soft, #eef2fe);
   }
 }
 .sh-anotasi__x {
@@ -339,6 +386,185 @@ h2.sh-title {
   &:disabled {
     opacity: 0.6;
     cursor: default;
+  }
+}
+
+/* baris setelan */
+.sh-setel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+
+  &__nama {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: $muted;
+    min-width: 66px;
+  }
+}
+
+.sh-ukuran {
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  height: 28px;
+  padding: 0 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border, #dfe3ea);
+  background: var(--surface, #fff);
+  color: var(--ink, #3f4653);
+  cursor: pointer;
+}
+
+.sh-geser {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: $muted;
+
+  mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+    line-height: 17px;
+  }
+  input[type="range"] {
+    width: 96px;
+    accent-color: $brand;
+    cursor: pointer;
+  }
+  &__nilai {
+    font-size: 0.74rem;
+    font-weight: 600;
+    min-width: 34px;
+    text-align: right;
+  }
+}
+
+/* kelompok tombol pilihan (bentuk, isi, rupa huruf) */
+.sh-pil {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 10px;
+  background: var(--surface-2, #f1f3f7);
+
+  &__btn {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: $muted;
+    cursor: pointer;
+    mat-icon {
+      width: 17px;
+      height: 17px;
+      font-size: 17px;
+      line-height: 17px;
+    }
+    &:hover {
+      background: var(--hover, #e7eaef);
+    }
+    &.is-aktif {
+      background: var(--surface, #fff);
+      color: $brand;
+      box-shadow: 0 1px 3px rgba(16, 24, 40, 0.18);
+    }
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    /* Tombol tunggal yang berdiri di luar kelompoknya (mis. huruf tebal). */
+    &--lepas {
+      border: 1px solid var(--border, #dfe3ea);
+      background: var(--surface, #fff);
+    }
+  }
+}
+
+.sh-warna {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  &__pilih {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+
+    /* Kotak warna bawaan peramban tidak dapat ditata; ia disembunyikan dan
+       yang terlihat adalah petak di bawahnya — tetapi tetap DI TEMPATNYA,
+       supaya pemilih warnanya muncul di sebelah petak itu. */
+    input[type="color"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+  }
+  &__contoh {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border, #dfe3ea);
+    box-shadow: inset 0 0 0 2px var(--surface, #fff);
+    pointer-events: none;
+  }
+  &__cepat {
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    border: 1px solid var(--border, #dfe3ea);
+    cursor: pointer;
+    padding: 0;
+    &.is-aktif {
+      outline: 2px solid $brand;
+      outline-offset: 1px;
+    }
+  }
+  &__pipet {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    margin-left: 2px;
+    border-radius: 8px;
+    border: 1px solid var(--border, #dfe3ea);
+    background: var(--surface, #fff);
+    color: $muted;
+    cursor: pointer;
+    mat-icon {
+      width: 17px;
+      height: 17px;
+      font-size: 17px;
+      line-height: 17px;
+    }
+    &:hover:not(:disabled) {
+      background: var(--hover, #f1f3f7);
+    }
+    &.is-aktif {
+      background: $brand;
+      border-color: $brand;
+      color: var(--on-brand, #fff);
+    }
+    &:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
   }
 }
 

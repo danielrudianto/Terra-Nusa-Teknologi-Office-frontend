@@ -117,7 +117,43 @@ interface Anotasi {
    * coretan — menutupi garis tanda tangan tercetak di bawahnya.
    */
   gambar?: string;
+  /**
+   * Isi penutup: warna polos, mosaik (`buram`), atau pola. Kosong berarti
+   * `warna`. Untuk selain `warna`, isinya dibuat di dialog sunting sebagai
+   * PNG dan disimpan pada `gambar`.
+   */
+  isi?: IsiTutup;
+  /** Kepekatan 0–1; kosong = 1. */
+  opasitas?: number;
+  /** Rupa huruf catatan; kosong = `sans`. */
+  fonta?: FontaCatatan;
+  /** Besar huruf catatan (titik); kosong = 10. */
+  ukuran?: number;
+  /** Catatan dicetak tebal. */
+  tebal?: boolean;
+  /**
+   * Bentuk penutup. Kosong berarti `kotak` — supaya coretan yang sudah
+   * terlanjur dibuat sebelum bentuk lain ada tetap tergambar seperti dulu.
+   */
+  bentuk?: BentukTutup;
+  /**
+   * Warna penutup, `#rrggbb`. Kosong berarti putih.
+   *
+   * Putih benar untuk menutupi teks di atas kertas putih, tetapi TIDAK
+   * untuk menutupi sesuatu di atas kop berwarna atau di atas gambar —
+   * di situ kotak putihnya justru lebih mencolok daripada yang ditutupi.
+   */
+  warna?: string;
 }
+
+/** Bentuk penutup yang tersedia. */
+export type BentukTutup = 'kotak' | 'lingkaran' | 'segitiga';
+
+/** Isi penutup yang tersedia. */
+export type IsiTutup = 'warna' | 'garis' | 'silang' | 'titik' | 'buram';
+
+/** Rupa huruf catatan. */
+export type FontaCatatan = 'sans' | 'serif' | 'mono';
 
 interface PageData {
   pdf: string;
@@ -502,7 +538,10 @@ export class PdfMainComponent implements OnInit {
       const mergedPdf = await PDFDocument.create();
       // Font disematkan SEKALI untuk seluruh halaman; berulang kali hanya
       // membuat berkas hasilnya membesar tanpa guna.
-      const font = await mergedPdf.embedFont(StandardFonts.Helvetica);
+      const font = await this.sediakanFonta(
+        mergedPdf,
+        this.processedDocuments,
+      );
       const gambar = await this.sematkanGambar(
         mergedPdf,
         this.processedDocuments,
@@ -673,7 +712,9 @@ export class PdfMainComponent implements OnInit {
     const alamat = new Set<string>();
     for (const h of halaman) {
       for (const a of h.anotasi || []) {
-        if (a.jenis === 'ttd' && a.gambar) alamat.add(a.gambar);
+        // Bukan hanya tanda tangan: penutup buram dan berpola juga
+        // dibawa sebagai gambar.
+        if (a.gambar) alamat.add(a.gambar);
       }
     }
     for (const src of alamat) {
@@ -686,10 +727,52 @@ export class PdfMainComponent implements OnInit {
     return peta;
   }
 
+  /** Rupa huruf catatan → salah satu dari empat belas font baku PDF. */
+  private static readonly FONTA_PDF: Record<string, StandardFonts> = {
+    sans: StandardFonts.Helvetica,
+    'sans-tebal': StandardFonts.HelveticaBold,
+    serif: StandardFonts.TimesRoman,
+    'serif-tebal': StandardFonts.TimesRomanBold,
+    mono: StandardFonts.Courier,
+    'mono-tebal': StandardFonts.CourierBold,
+  };
+
+  static kunciFonta(fonta?: FontaCatatan, tebal?: boolean): string {
+    const f = fonta === 'serif' || fonta === 'mono' ? fonta : 'sans';
+    return tebal ? `${f}-tebal` : f;
+  }
+
+  /**
+   * Sematkan HANYA rupa huruf yang benar-benar terpakai.
+   *
+   * Keenamnya termasuk empat belas font baku PDF, jadi tidak ada bita
+   * huruf yang ikut disalin — tetapi tiap satunya tetap menambah objek ke
+   * berkasnya, dan menyematkan yang tidak dipakai tidak ada gunanya.
+   */
+  private async sediakanFonta(
+    tujuan: PDFDocument,
+    halaman: PageData[],
+  ): Promise<Map<string, any>> {
+    // `sans` selalu ada: ia juga dipakai teks pengganti pada penutup.
+    const perlu = new Set<string>(['sans']);
+    for (const h of halaman) {
+      for (const a of h.anotasi || []) {
+        if (a.jenis === 'catatan') {
+          perlu.add(PdfMainComponent.kunciFonta(a.fonta, a.tebal));
+        }
+      }
+    }
+    const peta = new Map<string, any>();
+    for (const k of perlu) {
+      peta.set(k, await tujuan.embedFont(PdfMainComponent.FONTA_PDF[k]));
+    }
+    return peta;
+  }
+
   private async salinHalaman(
     tujuan: PDFDocument,
     pageData: PageData,
-    font: any,
+    font: Map<string, any>,
     /*
      * Gambar tanda tangan yang SUDAH disematkan, berkunci data-URI-nya.
      *
@@ -820,6 +903,111 @@ export class PdfMainComponent implements OnInit {
   }
 
   /**
+   * Warna `#rrggbb` menjadi warna pdf-lib. Kosong atau tidak terbaca =
+   * PUTIH — bentuk lama yang tidak menyimpan warna tetap tergambar putih
+   * persis seperti sebelum warnanya dapat dipilih.
+   */
+  static keRgb(hex?: string): { r: number; g: number; b: number } {
+    const m = /^#?([0-9a-f]{6})$/i.exec((hex || '').trim());
+    if (!m) return { r: 1, g: 1, b: 1 };
+    const n = parseInt(m[1], 16);
+    return {
+      r: ((n >> 16) & 255) / 255,
+      g: ((n >> 8) & 255) / 255,
+      b: (n & 255) / 255,
+    };
+  }
+
+  /**
+   * Kepekatan 0–1. Di luar jangkauan itu dijepit, bukan dibiarkan: pdf-lib
+   * menolak nilai di luar 0–1 dengan galat, dan satu coretan bernilai aneh
+   * akan menjatuhkan seluruh unduhan.
+   */
+  static keOpasitas(n?: number): number {
+    if (typeof n !== 'number' || !isFinite(n)) return 1;
+    return Math.min(1, Math.max(0, n));
+  }
+
+  /** Besar huruf catatan, dijepit ke jangkauan yang masuk akal. */
+  static ukuranCatatan(n?: number): number {
+    if (typeof n !== 'number' || !isFinite(n) || n <= 0) return 10;
+    return Math.min(96, Math.max(4, n));
+  }
+
+  /**
+   * Warna catatan. Kosong = merah, seperti sebelum warnanya dapat dipilih —
+   * catatan lama tidak boleh berubah warna diam-diam.
+   */
+  static warnaCatatan(hex?: string): { r: number; g: number; b: number } {
+    if (!/^#?[0-9a-f]{6}$/i.test((hex || '').trim())) {
+      return { r: 0.72, g: 0.11, b: 0.11 };
+    }
+    return PdfMainComponent.keRgb(hex);
+  }
+
+  /**
+   * Hitam atau putih — mana pun yang TERBACA di atas `hex`.
+   *
+   * Teks pengganti selalu digambar hitam sebelumnya. Itu benar selama
+   * penutupnya putih; di atas penutup biru tua, tulisannya lenyap.
+   *
+   * Ambangnya memakai luminansi berbobot (mata jauh lebih peka pada hijau
+   * daripada biru), bukan rata-rata ketiga kanal.
+   */
+  static teksKontras(hex?: string): { r: number; g: number; b: number } {
+    const c = PdfMainComponent.keRgb(hex);
+    const terang = 0.299 * c.r + 0.587 * c.g + 0.114 * c.b;
+    return terang > 0.55 ? { r: 0, g: 0, b: 0 } : { r: 1, g: 1, b: 1 };
+  }
+
+  /**
+   * Tiga titik segitiga penutup, pada koordinat PDF halaman ASLI.
+   *
+   * Puncaknya menghadap ATAS SEBAGAIMANA TERLIHAT — bukan atas pada
+   * halaman aslinya. Pada scan ber-`/Rotate 90`, "atas layar" adalah sisi
+   * kiri halaman aslinya; segitiga yang tidak memperhitungkan itu tampil
+   * rebah menyamping.
+   *
+   * Titiknya dihitung langsung, bukan lewat pemutaran pdf-lib: segitiga
+   * tidak punya "kotak sebelum diputar" yang masuk akal, dan menghitung
+   * jangkarnya jauh lebih mudah salah daripada menyebut ketiga sudutnya.
+   */
+  static titikSegitiga(
+    k: { x: number; y: number; width: number; height: number },
+    putar: number,
+  ): [number, number][] {
+    const r = (((putar % 360) + 360) % 360);
+    const { x, y, width: w, height: h } = k;
+    switch (r) {
+      case 90:
+        // "Atas layar" = sisi kiri halaman asli.
+        return [
+          [x, y + h / 2],
+          [x + w, y + h],
+          [x + w, y],
+        ];
+      case 180:
+        return [
+          [x + w / 2, y],
+          [x, y + h],
+          [x + w, y + h],
+        ];
+      case 270:
+        return [
+          [x + w, y + h / 2],
+          [x, y],
+          [x, y + h],
+        ];
+      default:
+        return [
+          [x + w / 2, y + h],
+          [x, y],
+          [x + w, y],
+        ];
+    }
+  }
+
+  /**
    * Jangkar & sudut gambar untuk kotak `k` pada halaman ber-`/Rotate`.
    *
    * `petaAnotasi` sudah menaruh KOTAKNYA di tempat yang benar, tetapi ISI
@@ -904,7 +1092,7 @@ export class PdfMainComponent implements OnInit {
     page: any,
     a: Anotasi,
     putar: number,
-    font: any,
+    font: Map<string, any>,
     gambar?: any,
   ): void {
     const { width: W, height: H } = page.getSize();
@@ -937,25 +1125,68 @@ export class PdfMainComponent implements OnInit {
         H,
         putar,
       );
-      page.drawRectangle({
-        x: k.x,
-        y: k.y,
-        width: k.width,
-        height: k.height,
-        color: rgb(1, 1, 1),
-      });
+      const c = PdfMainComponent.keRgb(a.warna);
+      const isi = rgb(c.r, c.g, c.b);
+      const tembus = PdfMainComponent.keOpasitas(a.opasitas);
+
+      // Buram & pola datang sebagai GAMBAR yang sudah terpotong mengikuti
+      // bentuknya; kalau gambarnya gagal disematkan, jatuh ke warna polos —
+      // yang tetap menutupi. Membiarkannya kosong justru membuat yang
+      // hendak ditutup tetap terbaca.
+      if (a.gambar && gambar) {
+        const jg = PdfMainComponent.jangkarPutar(k, putar);
+        page.drawImage(gambar, {
+          x: jg.x,
+          y: jg.y,
+          width: jg.width,
+          height: jg.height,
+          rotate: degrees(jg.sudut),
+          opacity: tembus,
+        });
+      } else if (a.bentuk === 'lingkaran') {
+        // Elips tidak perlu diputar: memutar elips terhadap PUSATNYA hanya
+        // menukar kedua sumbunya, dan `petaAnotasi` sudah menukarnya.
+        page.drawEllipse({
+          x: k.x + k.width / 2,
+          y: k.y + k.height / 2,
+          xScale: k.width / 2,
+          yScale: k.height / 2,
+          color: isi,
+          opacity: tembus,
+        });
+      } else if (a.bentuk === 'segitiga') {
+        const t = PdfMainComponent.titikSegitiga(k, putar);
+        // `drawSvgPath` memakai sumbu Y KE BAWAH dari titik asalnya, jadi
+        // asalnya ditaruh di kiri-ATAS halaman dan ordinatnya dibalik.
+        const jalur =
+          `M ${t[0][0]} ${H - t[0][1]} ` +
+          `L ${t[1][0]} ${H - t[1][1]} ` +
+          `L ${t[2][0]} ${H - t[2][1]} Z`;
+        page.drawSvgPath(jalur, { x: 0, y: H, color: isi, opacity: tembus });
+      } else {
+        page.drawRectangle({
+          x: k.x,
+          y: k.y,
+          width: k.width,
+          height: k.height,
+          color: isi,
+          opacity: tembus,
+        });
+      }
 
       if (a.teks) {
         const j = PdfMainComponent.jangkarPutar(k, putar);
         const g = PdfMainComponent.geserPutar(2, 3, putar);
+        // Hitam di atas penutup gelap = tidak terbaca sama sekali.
+        const tk = PdfMainComponent.teksKontras(a.warna);
         page.drawText(a.teks, {
           x: j.x + g.dx,
           y: j.y + g.dy,
           // `j.height` adalah tinggi kotak SEBAGAIMANA TERLIHAT — pada 90°
           // dan 270° itu `k.width`, bukan `k.height`.
           size: Math.min(11, j.height * 0.75),
-          font,
-          color: rgb(0, 0, 0),
+          font: font.get('sans'),
+          color: rgb(tk.r, tk.g, tk.b),
           rotate: degrees(j.sudut),
         });
       }
@@ -966,14 +1197,20 @@ export class PdfMainComponent implements OnInit {
     if (!a.teks) return;
     const t = PdfMainComponent.petaAnotasi(a, W, H, putar);
     const jt = PdfMainComponent.jangkarPutar(t, putar);
+    const wc = PdfMainComponent.warnaCatatan(a.warna);
     page.drawText(a.teks, {
       x: jt.x,
       // `t.y` adalah tepi BAWAH kotak setinggi nol, jadi ia sekaligus garis
       // dasar tulisannya.
       y: jt.y,
-      size: 10,
-      font,
-      color: rgb(0.72, 0.11, 0.11),
+      size: PdfMainComponent.ukuranCatatan(a.ukuran),
+      // Rupa huruf yang tidak tersemat (mestinya tidak terjadi — `sediakanFonta`
+      // memindai coretannya lebih dulu) jatuh ke `sans`, bukan menjatuhkan
+      // seluruh unduhan.
+      font:
+        font.get(PdfMainComponent.kunciFonta(a.fonta, a.tebal)) ??
+        font.get('sans'),
+      color: rgb(wc.r, wc.g, wc.b),
       rotate: degrees(jt.sudut),
     });
   }
@@ -1029,7 +1266,7 @@ export class PdfMainComponent implements OnInit {
 
       // Font disiapkan sekali untuk seluruh halaman: menyematkannya
       // berulang membuat berkas hasilnya membesar tanpa guna.
-      const font = await newPdf.embedFont(StandardFonts.Helvetica);
+      const font = await this.sediakanFonta(newPdf, selectedPages);
       const gambar = await this.sematkanGambar(newPdf, selectedPages);
 
       for (const pageData of selectedPages) {
@@ -1069,7 +1306,7 @@ export class PdfMainComponent implements OnInit {
 
     try {
       const mergedPdf = await PDFDocument.create();
-      const font = await mergedPdf.embedFont(StandardFonts.Helvetica);
+      const font = await this.sediakanFonta(mergedPdf, selectedPages);
       const gambar = await this.sematkanGambar(mergedPdf, selectedPages);
 
       for (const pageData of selectedPages) {
