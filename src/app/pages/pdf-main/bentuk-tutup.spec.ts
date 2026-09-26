@@ -449,3 +449,127 @@ describe('Dialog sunting — bentuk, warna, pipet', () => {
     });
   });
 });
+
+/*
+ * BILAH SETELAN HANYA MUNCUL KALAU ADA YANG DISETEL.
+ *
+ * Sebelumnya kedua barisnya selalu terpampang — lima belas kontrol, yang
+ * sebagian besarnya tidak mengenai apa pun yang sedang dikerjakan. Yang
+ * membuka dialog melihat dinding tombol dan tidak tahu mana yang mengubah
+ * apa.
+ *
+ * Aturannya: paling banyak SATU baris sekaligus.
+ */
+describe('Dialog sunting — bilah setelan muncul menurut keadaannya', () => {
+  function buat(): any {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [TranslateModule.forRoot()],
+      providers: [
+        provideNoopAnimations(),
+        { provide: MatDialogRef, useValue: { close: () => {} } },
+        { provide: MAT_DIALOG_DATA, useValue: {} },
+      ],
+    });
+    return TestBed.runInInjectionContext(
+      () =>
+        new SuntingHalamanComponent({
+          pdf: '',
+          nomor: 1,
+          fileName: 'a.pdf',
+          rotation: 0,
+          anotasi: [],
+        }),
+    ) as any;
+  }
+
+  function klikKertas(fx = 0.5, fy = 0.5): any {
+    return {
+      clientX: fx * 1000,
+      clientY: fy * 1000,
+      currentTarget: {
+        getBoundingClientRect: () => ({ left: 0, top: 0, width: 1000, height: 1000 }),
+      },
+    };
+  }
+
+  it('saat menganggur: tidak ada baris setelan sama sekali', () => {
+    const c = buat();
+    expect(c.tampilSetelanTutup).toBeFalse();
+    expect(c.tampilSetelanCatatan).toBeFalse();
+  });
+
+  it('alat penutup menyala: baris penutup saja', () => {
+    const c = buat();
+    c.pilihAlat('tutup');
+    expect(c.tampilSetelanTutup).toBeTrue();
+    expect(c.tampilSetelanCatatan).toBeFalse();
+  });
+
+  it('alat catatan menyala: baris catatan saja', () => {
+    const c = buat();
+    c.pilihAlat('catatan');
+    expect(c.tampilSetelanCatatan).toBeTrue();
+    expect(c.tampilSetelanTutup).toBeFalse();
+  });
+
+  it('memilih penutup memunculkan barisnya, dan menandainya sebagai suntingan', () => {
+    const c = buat();
+    c.anotasi = [{ jenis: 'tutup', x: 0.1, y: 0.1 }];
+    c.pilihAnotasi(0, new Event('click'));
+    expect(c.tampilSetelanTutup).toBeTrue();
+    expect(c.tampilSetelanCatatan).toBeFalse();
+    expect(c.menyuntingTerpilih).toBeTrue();
+  });
+
+  it('memilih catatan menukar barisnya, bukan menampilkan keduanya', () => {
+    const c = buat();
+    c.anotasi = [
+      { jenis: 'tutup', x: 0.1, y: 0.1 },
+      { jenis: 'catatan', x: 0.2, y: 0.2, teks: 'x' },
+    ];
+    c.pilihAnotasi(0, new Event('click'));
+    c.pilihAnotasi(1, new Event('click'));
+    expect(c.tampilSetelanCatatan).toBeTrue();
+    expect(c.tampilSetelanTutup).toBeFalse();
+  });
+
+  it('tanda tangan terpilih: tidak ada baris — tak satu pun berlaku untuknya', () => {
+    const c = buat();
+    c.anotasi = [{ jenis: 'ttd', x: 0.1, y: 0.1, gambar: 'data:image/png;base64,x' }];
+    c.pilihAnotasi(0, new Event('click'));
+    expect(c.tampilSetelanTutup).toBeFalse();
+    expect(c.tampilSetelanCatatan).toBeFalse();
+  });
+
+  it('PIPET mempertahankan pilihan — justru gunanya mewarnai yang terpilih', () => {
+    const c = buat();
+    c.anotasi = [{ jenis: 'tutup', x: 0.1, y: 0.1 }];
+    c.pilihAnotasi(0, new Event('click'));
+    c.pilihAlat('pipet');
+    expect(c.terpilih).toBe(0);
+    expect(c.tampilSetelanTutup).toBeTrue();
+  });
+
+  it('menyalakan alat penaruh MELEPAS pilihan', () => {
+    // Kalau tidak, setelan yang disentuh sesudahnya mengubah coretan lama —
+    // padahal yang dimaui menyetel coretan yang akan ditaruh.
+    const c = buat();
+    c.anotasi = [{ jenis: 'tutup', x: 0.1, y: 0.1 }];
+    c.pilihAnotasi(0, new Event('click'));
+    c.pilihAlat('catatan');
+    expect(c.terpilih).toBeNull();
+    expect(c.menyuntingTerpilih).toBeFalse();
+  });
+
+  it('sesudah menaruh, barisnya tetap tampil untuk coretan yang baru itu', () => {
+    const c = buat();
+    c.pilihAlat('tutup');
+    c.taruh(klikKertas());
+    // Alatnya mati sendiri, tetapi coretannya terpilih — jadi barisnya
+    // tidak boleh ikut hilang tepat ketika orangnya hendak mewarnainya.
+    expect(c.alatAktif).toBeNull();
+    expect(c.tampilSetelanTutup).toBeTrue();
+    expect(c.menyuntingTerpilih).toBeTrue();
+  });
+});

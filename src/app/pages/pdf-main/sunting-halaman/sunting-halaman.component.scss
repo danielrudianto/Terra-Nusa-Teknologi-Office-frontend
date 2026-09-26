@@ -405,12 +405,23 @@ h2.sh-title {
   margin-bottom: 0.6rem;
 
   &__nama {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.02em;
     text-transform: uppercase;
     color: $muted;
-    min-width: 66px;
+    min-width: 92px;
+
+    small {
+      font-size: 0.66rem;
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--brand, #154dec);
+    }
   }
 }
 

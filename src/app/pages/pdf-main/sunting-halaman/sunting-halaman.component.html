@@ -86,8 +86,14 @@
       membawa bilah alat ini ikut ke setelannya — kalau tidak, yang tampil
       di sini bukan yang sedang disunting.
     -->
-    <div class="sh-setel">
-      <span class="sh-setel__nama">{{ "pdf.overwrite" | translate }}</span>
+    <div class="sh-setel" *ngIf="tampilSetelanTutup">
+      <span class="sh-setel__nama">
+        {{ "pdf.overwrite" | translate }}
+        <small>{{
+          (menyuntingTerpilih ? "pdf.setelanTerpilih" : "pdf.setelanBerikutnya")
+            | translate
+        }}</small>
+      </span>
 
       <span
         class="sh-pil"
@@ -174,8 +180,14 @@
       </label>
     </div>
 
-    <div class="sh-setel">
-      <span class="sh-setel__nama">{{ "pdf.note" | translate }}</span>
+    <div class="sh-setel" *ngIf="tampilSetelanCatatan">
+      <span class="sh-setel__nama">
+        {{ "pdf.note" | translate }}
+        <small>{{
+          (menyuntingTerpilih ? "pdf.setelanTerpilih" : "pdf.setelanBerikutnya")
+            | translate
+        }}</small>
+      </span>
 
       <span
         class="sh-pil"

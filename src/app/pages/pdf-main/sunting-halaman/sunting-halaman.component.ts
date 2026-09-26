@@ -299,10 +299,50 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
       this.bukaPapanTtd();
       return;
     }
+
+    // Menyalakan alat penaruh MELEPAS pilihan: sesudahnya yang disetel
+    // adalah coretan yang akan ditaruh, bukan yang sudah ada. Pipet
+    // dikecualikan — justru gunanya mewarnai yang sedang terpilih.
+    if (alat !== 'pipet') this.terpilih = null;
+
     this.alatAktif = this.alatAktif === alat ? null : alat;
   }
 
   // ---- yang terpilih ------------------------------------------------------
+
+  /** Jenis coretan yang sedang terpilih, atau null bila tidak ada. */
+  get jenisTerpilih(): AnotasiSunting['jenis'] | null {
+    const a = this.terpilih === null ? null : this.anotasi[this.terpilih];
+    return a ? a.jenis : null;
+  }
+
+  /**
+   * Baris setelan hanya muncul kalau ADA YANG DISETEL.
+   *
+   * Sebelumnya kedua barisnya — penutup dan catatan — selalu terpampang,
+   * berisi lima belas kontrol yang sebagian besarnya tidak berlaku untuk
+   * apa pun yang sedang dikerjakan. Yang membuka dialog ini melihat dinding
+   * tombol dan tidak tahu mana yang mengenai apa.
+   *
+   * Sekarang paling banyak SATU baris tampil sekaligus: setelan coretan
+   * yang sedang terpilih, atau — bila belum ada yang ditaruh — setelan alat
+   * yang sedang menyala, supaya warnanya masih dapat dipilih SEBELUM
+   * coretannya ditaruh.
+   */
+  get tampilSetelanTutup(): boolean {
+    if (this.jenisTerpilih) return this.jenisTerpilih === 'tutup';
+    return this.alatAktif === 'tutup' || this.alatAktif === 'pipet';
+  }
+
+  get tampilSetelanCatatan(): boolean {
+    if (this.jenisTerpilih) return this.jenisTerpilih === 'catatan';
+    return this.alatAktif === 'catatan';
+  }
+
+  /** Baris setelan sedang menyunting coretan yang ada, bukan yang berikutnya. */
+  get menyuntingTerpilih(): boolean {
+    return this.jenisTerpilih !== null;
+  }
 
   private get tutupTerpilih(): AnotasiSunting | null {
     const a = this.terpilih === null ? null : this.anotasi[this.terpilih];

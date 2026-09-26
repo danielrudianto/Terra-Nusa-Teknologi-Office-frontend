@@ -4227,6 +4227,8 @@
     "fonta_mono": "Monospace (Courier)",
     "ukuran": "Font size",
     "tebal": "Bold",
+    "setelanTerpilih": "selected mark",
+    "setelanBerikutnya": "next mark",
     "warnaCatatan": "Note colour",
     "note": "Note",
     "noteHint": "Write your note here",
