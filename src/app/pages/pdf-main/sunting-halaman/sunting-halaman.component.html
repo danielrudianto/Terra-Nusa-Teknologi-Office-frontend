@@ -183,6 +183,107 @@
       </label>
     </div>
 
+    <div class="sh-setel" *ngIf="tampilSetelanTutup">
+      <span class="sh-setel__nama">
+        {{ "pdf.teksPenutup" | translate }}
+        <small>{{
+          (menyuntingTerpilih ? "pdf.setelanTerpilih" : "pdf.setelanBerikutnya")
+            | translate
+        }}</small>
+      </span>
+
+      <span
+        class="sh-pil"
+        role="group"
+        [attr.aria-label]="'pdf.fonta' | translate"
+      >
+        <button
+          *ngFor="let f of fonta"
+          type="button"
+          class="sh-pil__btn"
+          [class.is-aktif]="fontaTeks === f.nilai"
+          (click)="setFontaTeks(f.nilai)"
+          [matTooltip]="'pdf.fonta_' + f.nilai | translate"
+          [attr.aria-label]="'pdf.fonta_' + f.nilai | translate"
+        >
+          <mat-icon>{{ f.ikon }}</mat-icon>
+        </button>
+      </span>
+
+      <select
+        class="sh-ukuran"
+        [ngModel]="ukuranTeks"
+        (ngModelChange)="setUkuranTeks($event)"
+        name="ukuranTeks"
+        [attr.aria-label]="'pdf.ukuran' | translate"
+        [matTooltip]="'pdf.ukuran' | translate"
+      >
+        <option *ngFor="let u of ukuranTeksPilihan" [ngValue]="u">
+          {{ u ? u + " pt" : ("pdf.ukuranOtomatis" | translate) }}
+        </option>
+      </select>
+
+      <button
+        type="button"
+        class="sh-pil__btn sh-pil__btn--lepas"
+        [class.is-aktif]="tebalTeks"
+        (click)="setTebalTeks(!tebalTeks)"
+        [matTooltip]="'pdf.tebal' | translate"
+        [attr.aria-label]="'pdf.tebal' | translate"
+      >
+        <mat-icon>format_bold</mat-icon>
+      </button>
+
+      <span
+        class="sh-pil"
+        role="group"
+        [attr.aria-label]="'pdf.rata' | translate"
+      >
+        <button
+          *ngFor="let r of rataan"
+          type="button"
+          class="sh-pil__btn"
+          [class.is-aktif]="rataTeks === r.nilai"
+          (click)="setRataTeks(r.nilai)"
+          [matTooltip]="'pdf.rata_' + r.nilai | translate"
+          [attr.aria-label]="'pdf.rata_' + r.nilai | translate"
+        >
+          <mat-icon>{{ r.ikon }}</mat-icon>
+        </button>
+      </span>
+
+      <span class="sh-warna">
+        <label
+          class="sh-warna__pilih"
+          [matTooltip]="'pdf.warnaTeksPenutup' | translate"
+        >
+          <input
+            type="color"
+            [ngModel]="warnaTeks2 || warnaTeks(warnaTutup)"
+            (ngModelChange)="setWarnaTeks($event)"
+            name="warnaTeks2"
+          />
+          <span
+            class="sh-warna__contoh"
+            [style.background]="warnaTeks2 || warnaTeks(warnaTutup)"
+          ></span>
+        </label>
+        <!-- Kembali ke kontras otomatis. Tanpa jalan pulang, sekali warnanya
+             disentuh ia terkunci selamanya — dan penutup yang kelak diganti
+             warnanya akan membawa teks yang tidak lagi terbaca. -->
+        <button
+          type="button"
+          class="sh-warna__pipet"
+          *ngIf="warnaTeks2"
+          (click)="lepasWarnaTeks()"
+          [matTooltip]="'pdf.warnaOtomatis' | translate"
+          [attr.aria-label]="'pdf.warnaOtomatis' | translate"
+        >
+          <mat-icon>auto_fix_high</mat-icon>
+        </button>
+      </span>
+    </div>
+
     <div class="sh-setel" *ngIf="tampilSetelanCatatan">
       <span class="sh-setel__nama">
         {{ "pdf.note" | translate }}
@@ -334,13 +435,12 @@
             class="sh-anotasi__teks"
             *ngIf="a.jenis !== 'ttd'"
             [style.color]="
-              a.jenis === 'tutup' ? warnaTeks(a.warna) : a.warna || '#b3322f'
+              a.jenis === 'tutup' ? warnaTeksTutup(a) : a.warna || '#b3322f'
             "
-            [style.font-size]="a.jenis === 'catatan' ? ukuranLayar(a) : null"
-            [style.font-family]="a.jenis === 'catatan' ? fontaLayar(a) : null"
-            [style.font-weight]="
-              a.jenis === 'catatan' ? (a.tebal ? 700 : 400) : null
-            "
+            [style.font-size]="a.ukuran ? ukuranLayar(a) : null"
+            [style.font-family]="fontaLayar(a)"
+            [style.font-weight]="a.tebal ? 700 : 400"
+            [style.text-align]="a.jenis === 'tutup' ? rataLayar(a) : null"
             [(ngModel)]="a.teks"
             [placeholder]="
               (a.jenis === 'tutup' ? 'pdf.overwriteHint' : 'pdf.noteHint')

@@ -125,12 +125,28 @@ interface Anotasi {
   isi?: IsiTutup;
   /** Kepekatan 0–1; kosong = 1. */
   opasitas?: number;
-  /** Rupa huruf catatan; kosong = `sans`. */
+  /**
+   * Rupa huruf. Dipakai catatan DAN teks pengganti pada penutup; kosong =
+   * `sans`.
+   */
   fonta?: FontaCatatan;
-  /** Besar huruf catatan (titik); kosong = 10. */
+  /**
+   * Besar huruf (titik). Kosong pada catatan = 10; kosong pada penutup =
+   * menyesuaikan tinggi kotaknya sendiri, seperti sebelum ukurannya dapat
+   * dipilih.
+   */
   ukuran?: number;
-  /** Catatan dicetak tebal. */
+  /** Huruf tebal. */
   tebal?: boolean;
+  /**
+   * Warna teks pengganti pada penutup. Kosong = dihitung agar KONTRAS
+   * terhadap warna penutupnya — perilaku sebelum warnanya dapat dipilih.
+   *
+   * Terpisah dari `warna`, yang pada penutup adalah warna ISIAN-nya.
+   */
+  warnaTeks?: string;
+  /** Perataan teks pengganti pada penutup; kosong = kiri. */
+  rata?: RataTeks;
   /**
    * Bentuk penutup. Kosong berarti `kotak` — supaya coretan yang sudah
    * terlanjur dibuat sebelum bentuk lain ada tetap tergambar seperti dulu.
@@ -154,6 +170,9 @@ export type IsiTutup = 'warna' | 'garis' | 'silang' | 'titik' | 'buram';
 
 /** Rupa huruf catatan. */
 export type FontaCatatan = 'sans' | 'serif' | 'mono';
+
+/** Perataan teks pengganti pada penutup. */
+export type RataTeks = 'kiri' | 'tengah' | 'kanan';
 
 interface PageData {
   pdf: string;
@@ -757,7 +776,11 @@ export class PdfMainComponent implements OnInit {
     const perlu = new Set<string>(['sans']);
     for (const h of halaman) {
       for (const a of h.anotasi || []) {
-        if (a.jenis === 'catatan') {
+        // Teks pengganti pada PENUTUP kini punya rupa hurufnya sendiri —
+        // bukan hanya catatan. Melewatkannya di sini membuat `font.get()`
+        // mengembalikan undefined saat menggambar, dan seluruh tulisannya
+        // jatuh kembali ke `sans` tanpa ada yang tahu.
+        if (a.teks && (a.jenis === 'catatan' || a.jenis === 'tutup')) {
           perlu.add(PdfMainComponent.kunciFonta(a.fonta, a.tebal));
         }
       }
@@ -926,6 +949,28 @@ export class PdfMainComponent implements OnInit {
   static keOpasitas(n?: number): number {
     if (typeof n !== 'number' || !isFinite(n)) return 1;
     return Math.min(1, Math.max(0, n));
+  }
+
+  /**
+   * Geser mendatar teks di dalam kotak selebar `lebar`, menurut perataannya.
+   *
+   * Dihitung dari LEBAR TULISANNYA yang sebenarnya (`widthOfTextAtSize`),
+   * bukan dari perkiraan jumlah huruf: huruf proporsional membuat "IIII"
+   * dan "WWWW" berbeda jauh, dan tengah yang diperkirakan akan meleset
+   * justru pada tulisan pendek — yang paling sering dipakai pada penutup.
+   *
+   * Tidak pernah kurang dari sisipannya: tulisan yang lebih lebar daripada
+   * kotaknya tetap mulai dari tepi kiri, bukan menjorok keluar ke kiri.
+   */
+  static geserRata(
+    rata: RataTeks | undefined,
+    lebar: number,
+    lebarTeks: number,
+    sisip: number,
+  ): number {
+    if (rata === 'tengah') return Math.max(sisip, (lebar - lebarTeks) / 2);
+    if (rata === 'kanan') return Math.max(sisip, lebar - lebarTeks - sisip);
+    return sisip;
   }
 
   /** Besar huruf catatan, dijepit ke jangkauan yang masuk akal. */
@@ -1176,16 +1221,39 @@ export class PdfMainComponent implements OnInit {
 
       if (a.teks) {
         const j = PdfMainComponent.jangkarPutar(k, putar);
-        const g = PdfMainComponent.geserPutar(2, 3, putar);
-        // Hitam di atas penutup gelap = tidak terbaca sama sekali.
-        const tk = PdfMainComponent.teksKontras(a.warna);
+        const f =
+          font.get(PdfMainComponent.kunciFonta(a.fonta, a.tebal)) ??
+          font.get('sans');
+
+        // Tanpa ukuran, menyesuaikan tinggi kotaknya — persis seperti
+        // sebelum ukurannya dapat dipilih. `j.height` adalah tinggi kotak
+        // SEBAGAIMANA TERLIHAT; pada 90° dan 270° itu `k.width`.
+        const ukuran =
+          a.ukuran && a.ukuran > 0
+            ? PdfMainComponent.ukuranCatatan(a.ukuran)
+            : Math.min(11, j.height * 0.75);
+
+        // Tanpa warna sendiri, dihitung agar kontras terhadap penutupnya.
+        const tk = a.warnaTeks
+          ? PdfMainComponent.keRgb(a.warnaTeks)
+          : PdfMainComponent.teksKontras(a.warna);
+
+        const lebarTeks = f?.widthOfTextAtSize
+          ? f.widthOfTextAtSize(a.teks, ukuran)
+          : 0;
+        const dx = PdfMainComponent.geserRata(
+          a.rata,
+          j.width,
+          lebarTeks,
+          2,
+        );
+        const g = PdfMainComponent.geserPutar(dx, 3, putar);
+
         page.drawText(a.teks, {
           x: j.x + g.dx,
           y: j.y + g.dy,
-          // `j.height` adalah tinggi kotak SEBAGAIMANA TERLIHAT — pada 90°
-          // dan 270° itu `k.width`, bukan `k.height`.
-          size: Math.min(11, j.height * 0.75),
-          font: font.get('sans'),
+          size: ukuran,
+          font: f,
           color: rgb(tk.r, tk.g, tk.b),
           rotate: degrees(j.sudut),
         });

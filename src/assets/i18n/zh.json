@@ -4244,6 +4244,14 @@
     "ttdTersimpan": "已载入上次的签名——如需更换请重新绘制。",
     "ukuran": "字号",
     "warna": "遮盖颜色",
+    "teksPenutup": "遮盖文字",
+    "warnaTeksPenutup": "遮盖文字颜色",
+    "warnaOtomatis": "恢复为自动配色",
+    "ukuranOtomatis": "自动",
+    "rata": "对齐方式",
+    "rata_kiri": "左对齐",
+    "rata_tengah": "居中",
+    "rata_kanan": "右对齐",
     "warnaCatatan": "批注颜色"
   },
   "reimbursementPayment": {

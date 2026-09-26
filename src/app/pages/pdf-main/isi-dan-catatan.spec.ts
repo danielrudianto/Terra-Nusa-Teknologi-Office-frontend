@@ -547,3 +547,119 @@ describe('Dialog sunting — kertasnya tampil, bukan menciut jadi nol', () => {
     fixture.destroy();
   });
 });
+
+/*
+ * TEKS PENGGANTI PADA PENUTUP — rupa huruf, warna, dan perataannya.
+ *
+ * Dua bawaan yang TIDAK BOLEH bergeser, karena keduanya sudah berlaku pada
+ * ribuan coretan yang sudah terlanjur dibuat:
+ *
+ *   * tanpa ukuran, besar hurufnya MENYESUAIKAN tinggi kotaknya;
+ *   * tanpa warna sendiri, warnanya dihitung agar KONTRAS terhadap
+ *     penutupnya — hitam di atas putih, putih di atas biru tua.
+ *
+ * Yang ketiga baru, dan satu-satunya yang butuh hitungan: perataan diukur
+ * dari LEBAR TULISAN SEBENARNYA, bukan dari jumlah hurufnya.
+ */
+describe('geserRata — perataan teks di dalam kotak', () => {
+  const rata = (PdfMainComponent as any).geserRata;
+
+  it('kiri (dan tanpa perataan) = sisipannya saja', () => {
+    expect(rata(undefined, 100, 40, 2)).toBe(2);
+    expect(rata('kiri', 100, 40, 2)).toBe(2);
+  });
+
+  it('tengah membagi sisa ruangnya', () => {
+    expect(rata('tengah', 100, 40, 2)).toBe(30);
+  });
+
+  it('kanan menempel tepi kanan, dikurangi sisipannya', () => {
+    expect(rata('kanan', 100, 40, 2)).toBe(58);
+  });
+
+  it('tulisan yang LEBIH LEBAR dari kotaknya tidak menjorok keluar ke kiri', () => {
+    // Tanpa jepitan, (100-160)/2 = -30: tulisannya mulai di luar kotak,
+    // dan pada penutup itu berarti menimpa isi halaman di sebelahnya.
+    expect(rata('tengah', 100, 160, 2)).toBe(2);
+    expect(rata('kanan', 100, 160, 2)).toBe(2);
+  });
+});
+
+describe('Teks penutup — bawaan lama dipertahankan', () => {
+  let pdf: string;
+
+  beforeAll(async () => {
+    pdf = await halamanBase64();
+  });
+
+  async function bita(anotasi?: any[]): Promise<Uint8Array> {
+    const c = komponen();
+    c.processedDocuments = [
+      { pdf, thumbnail: '', pageNumber: 1, fileName: 'a.pdf', selected: true, anotasi },
+    ];
+    c.updateSelectionState();
+    return unduh(c, () => c.saveSelectedPages());
+  }
+
+  const tutup = {
+    jenis: 'tutup',
+    x: 0.1,
+    y: 0.1,
+    lebar: 0.4,
+    tinggi: 0.05,
+    teks: 'Rp 120.000',
+  };
+
+  it('penutup lama (tanpa rupa, ukuran, warna teks, perataan) tidak berubah', async () => {
+    const lama = await bita([{ ...tutup }]);
+    const eksplisit = await bita([
+      { ...tutup, fonta: 'sans', tebal: false, rata: 'kiri' },
+    ]);
+    expect(lama.length).toBe(eksplisit.length);
+  });
+
+  it('rupa huruf penutup benar-benar berubah di berkasnya', async () => {
+    const sans = await bita([{ ...tutup }]);
+    const serif = await bita([{ ...tutup, fonta: 'serif' }]);
+    expect(serif.length).not.toBe(sans.length);
+  });
+
+  it('perataan mengubah letaknya', async () => {
+    const kiri = await bita([{ ...tutup, rata: 'kiri' }]);
+    const tengah = await bita([{ ...tutup, rata: 'tengah' }]);
+    expect(tengah.length).not.toBe(kiri.length);
+  });
+
+  it('warna teks sendiri dipakai; tanpa itu, kontras', async () => {
+    const otomatis = await bita([{ ...tutup, warna: '#ffffff' }]);
+    const sendiri = await bita([{ ...tutup, warna: '#ffffff', warnaTeks: '#154dec' }]);
+    expect(sendiri.length).not.toBe(otomatis.length);
+  });
+
+  it('rupa huruf penutup ikut disematkan, bukan hanya rupa huruf catatan', async () => {
+    // Kalau `sediakanFonta` melewatkan penutup, `font.get()` mengembalikan
+    // undefined dan seluruh tulisannya diam-diam jatuh ke sans.
+    const c = komponen();
+    const dok = await PDFDocument.create();
+    const peta = await (c as any).sediakanFonta(dok, [
+      { anotasi: [{ jenis: 'tutup', teks: 'x', fonta: 'mono', tebal: true }] },
+    ]);
+    expect([...peta.keys()].sort()).toEqual(['mono-tebal', 'sans']);
+  });
+
+  it('penutup TANPA tulisan tidak menyeret rupa huruf apa pun', async () => {
+    const c = komponen();
+    const dok = await PDFDocument.create();
+    const peta = await (c as any).sediakanFonta(dok, [
+      { anotasi: [{ jenis: 'tutup', fonta: 'serif' }] },
+    ]);
+    expect([...peta.keys()]).toEqual(['sans']);
+  });
+
+  it('ukuran & tebal terpakai tanpa menjatuhkan unduhan', async () => {
+    const hasil = await PDFDocument.load(
+      await bita([{ ...tutup, ukuran: 24, tebal: true, rata: 'kanan' }]),
+    );
+    expect(hasil.getPageCount()).toBe(1);
+  });
+});

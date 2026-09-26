@@ -48,16 +48,30 @@ export interface AnotasiSunting {
   isi?: IsiTutup;
   /** Kepekatan 0–1; kosong = 1 (pekat penuh). */
   opasitas?: number;
-  /** Rupa huruf catatan; kosong = `sans`. */
+  /** Rupa huruf catatan / teks penutup; kosong = `sans`. */
   fonta?: FontaCatatan;
-  /** Besar huruf catatan dalam titik; kosong = 10. */
+  /**
+   * Besar huruf dalam titik. Kosong pada catatan = 10; kosong pada penutup
+   * = menyesuaikan tinggi kotaknya sendiri.
+   */
   ukuran?: number;
   /** Huruf tebal. */
   tebal?: boolean;
+  /**
+   * Warna teks pengganti pada penutup; kosong = dihitung agar KONTRAS
+   * terhadap warna penutupnya. Terpisah dari `warna`, yang pada penutup
+   * adalah warna isiannya.
+   */
+  warnaTeks?: string;
+  /** Perataan teks pengganti pada penutup; kosong = kiri. */
+  rata?: RataTeks;
 }
 
-/** Rupa huruf yang tersedia untuk catatan. */
+/** Rupa huruf yang tersedia untuk catatan dan teks penutup. */
 export type FontaCatatan = 'sans' | 'serif' | 'mono';
+
+/** Perataan teks pengganti pada penutup. */
+export type RataTeks = 'kiri' | 'tengah' | 'kanan';
 
 /** Bentuk penutup yang tersedia. */
 export type BentukTutup = 'kotak' | 'lingkaran' | 'segitiga';
@@ -185,6 +199,33 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
 
   /** Besar huruf yang lazim; bebas diketik di luar daftar ini. */
   readonly ukuranPilihan: readonly number[] = [8, 9, 10, 12, 14, 18, 24, 32];
+
+  /**
+   * Rupa teks pengganti pada penutup.
+   *
+   * TERPISAH dari setelan catatan meskipun kolomnya sama: keduanya dipakai
+   * pada saat yang berbeda dan nyaris tidak pernah ingin sama. Warna
+   * catatan merah menyala; teks penutup hampir selalu ingin senada dengan
+   * penutupnya.
+   *
+   * `warnaTeks` kosong berarti IKUT KONTRAS penutupnya — bawaan yang sudah
+   * berlaku sebelum warnanya dapat dipilih, dan yang benar pada hampir
+   * semua kasus.
+   */
+  fontaTeks: FontaCatatan = 'sans';
+  ukuranTeks = 0; // 0 = menyesuaikan tinggi kotaknya
+  tebalTeks = false;
+  warnaTeks2 = '';
+  rataTeks: RataTeks = 'kiri';
+
+  readonly rataan: readonly { nilai: RataTeks; ikon: string }[] = [
+    { nilai: 'kiri', ikon: 'format_align_left' },
+    { nilai: 'tengah', ikon: 'format_align_center' },
+    { nilai: 'kanan', ikon: 'format_align_right' },
+  ];
+
+  /** 0 berarti menyesuaikan tinggi kotaknya sendiri. */
+  readonly ukuranTeksPilihan: readonly number[] = [0, 8, 9, 10, 12, 14, 18, 24, 32];
 
   readonly isian: readonly { nilai: IsiTutup; ikon: string }[] = [
     { nilai: 'warna', ikon: 'format_color_fill' },
@@ -373,6 +414,11 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
       this.isiTutup = a.isi ?? 'warna';
       this.warnaTutup = a.warna ?? '#ffffff';
       this.opasitasTutup = Math.round((a.opasitas ?? 1) * 100);
+      this.fontaTeks = a.fonta ?? 'sans';
+      this.ukuranTeks = a.ukuran ?? 0;
+      this.tebalTeks = !!a.tebal;
+      this.warnaTeks2 = a.warnaTeks ?? '';
+      this.rataTeks = a.rata ?? 'kiri';
     } else if (a.jenis === 'catatan') {
       this.fontaCatatan = a.fonta ?? 'sans';
       this.ukuranCatatan = a.ukuran ?? 10;
@@ -412,6 +458,51 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
     this.opasitasTutup = n;
     const a = this.tutupTerpilih;
     if (a) a.opasitas = n / 100;
+  }
+
+  /**
+   * Setelan teks pengganti pada penutup.
+   *
+   * Tidak memanggil `perbaruiIsi`: yang berubah tulisannya, bukan isian
+   * kotaknya — membuat ulang gambar buram/pola di sini hanya membuang
+   * waktu pada tiap penekanan tombol.
+   */
+  setFontaTeks(f: FontaCatatan): void {
+    this.fontaTeks = f;
+    const a = this.tutupTerpilih;
+    if (a) a.fonta = f;
+  }
+
+  setUkuranTeks(n: number): void {
+    this.ukuranTeks = n;
+    const a = this.tutupTerpilih;
+    // NOL berarti "menyesuaikan tinggi kotaknya" — disimpan sebagai KOSONG,
+    // bukan nol, supaya `ukuran && ukuran > 0` di sisi PDF membacanya
+    // sebagai tidak diatur.
+    if (a) a.ukuran = n > 0 ? n : undefined;
+  }
+
+  setTebalTeks(t: boolean): void {
+    this.tebalTeks = t;
+    const a = this.tutupTerpilih;
+    if (a) a.tebal = t;
+  }
+
+  setWarnaTeks(w: string): void {
+    this.warnaTeks2 = w;
+    const a = this.tutupTerpilih;
+    if (a) a.warnaTeks = w || undefined;
+  }
+
+  /** Kembalikan warna teks ke perhitungan kontras terhadap penutupnya. */
+  lepasWarnaTeks(): void {
+    this.setWarnaTeks('');
+  }
+
+  setRataTeks(r: RataTeks): void {
+    this.rataTeks = r;
+    const a = this.tutupTerpilih;
+    if (a) a.rata = r;
   }
 
   setFonta(f: FontaCatatan): void {
@@ -713,6 +804,11 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
       warna: this.warnaTutup,
       isi: this.isiTutup,
       opasitas: this.opasitasTutup / 100,
+      fonta: this.fontaTeks,
+      ukuran: this.ukuranTeks > 0 ? this.ukuranTeks : undefined,
+      tebal: this.tebalTeks,
+      warnaTeks: this.warnaTeks2 || undefined,
+      rata: this.rataTeks,
     };
     this.perbaruiIsi(a);
     this.anotasi.push(a);
@@ -780,6 +876,11 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
         warna: this.warnaTutup,
         isi: this.isiTutup,
         opasitas: this.opasitasTutup / 100,
+        fonta: this.fontaTeks,
+        ukuran: this.ukuranTeks > 0 ? this.ukuranTeks : undefined,
+        tebal: this.tebalTeks,
+        warnaTeks: this.warnaTeks2 || undefined,
+        rata: this.rataTeks,
       };
       this.perbaruiIsi(a);
       this.anotasi.push(a);
@@ -1009,6 +1110,23 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
   ukuranLayar(a: AnotasiSunting): string {
     const pt = a.ukuran && a.ukuran > 0 ? a.ukuran : 10;
     return `${(pt / this.lebarPt) * this.lebarKertasPx}px`;
+  }
+
+  /**
+   * Warna teks pengganti pada penutup: yang dipilih, atau kontras.
+   *
+   * Satu tempat untuk keduanya supaya layar dan PDF tidak dapat berbeda
+   * pendapat tentang warna yang sama.
+   */
+  warnaTeksTutup(a: AnotasiSunting): string {
+    return a.warnaTeks || this.warnaTeks(a.warna);
+  }
+
+  /** Perataan teks penutup sebagaimana dipahami CSS. */
+  rataLayar(a: AnotasiSunting): string {
+    if (a.rata === 'tengah') return 'center';
+    if (a.rata === 'kanan') return 'right';
+    return 'left';
   }
 
   /** Rupa huruf di layar yang paling mendekati font baku PDF-nya. */
