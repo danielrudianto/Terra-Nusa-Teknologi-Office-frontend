@@ -2917,6 +2917,9 @@
     "deleteSupplier": "Hapus data supplier"
   },
   "user": {
+    "kolomTtd": "Tanda tangan",
+    "ttdAda": "Terdaftar",
+    "ttdBelum": "Belum",
     "title": "Pengguna",
     "description": "Kelola akun pengguna sistem",
     "createNew": "Pengguna Baru",

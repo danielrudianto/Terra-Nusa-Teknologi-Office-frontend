@@ -2917,6 +2917,9 @@
     "deleteSupplier": "Delete supplier data"
   },
   "user": {
+    "kolomTtd": "Signature",
+    "ttdAda": "Registered",
+    "ttdBelum": "None",
     "title": "Users",
     "description": "Manage system user accounts",
     "createNew": "New User",

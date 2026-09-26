@@ -94,6 +94,37 @@
         </ng-container>
 
         <!-- Status -->
+        <!--
+          TANDA TANGAN — sudah terdaftar atau belum.
+
+          Yang dikirim server hanya penandanya (`hasSignature`), bukan
+          gambarnya: daftar ini memuat seluruh pengguna, dan menarik gambar
+          tiap orang berarti memindahkan puluhan tanda tangan ke peramban
+          setiap kali halaman ini dibuka — untuk menghasilkan satu centang
+          per baris.
+        -->
+        <ng-container matColumnDef="ttd">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "user.kolomTtd" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span
+              class="ul-chip"
+              [class.ul-chip--active]="element.hasSignature"
+              [class.ul-chip--belum]="!element.hasSignature"
+              [title]="
+                (element.hasSignature ? 'user.ttdAda' : 'user.ttdBelum')
+                  | translate
+              "
+            >
+              {{
+                (element.hasSignature ? "user.ttdAda" : "user.ttdBelum")
+                  | translate
+              }}
+            </span>
+          </td>
+        </ng-container>
+
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef>
             {{ "user.status" | translate }}

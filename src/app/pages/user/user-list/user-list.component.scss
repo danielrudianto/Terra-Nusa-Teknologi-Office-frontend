@@ -289,3 +289,13 @@
     justify-content: flex-end;
   }
 }
+
+/* Belum punya tanda tangan: KUNING, bukan merah.
+   Merah dipakai akun nonaktif di kolom sebelahnya, dan itu keadaan yang
+   sama sekali berbeda — yang satu tidak boleh masuk, yang lain sekadar
+   belum sempat menggambar. Dua hal berbeda berwarna sama pada satu baris
+   membuat yang membacanya berhenti membedakannya. */
+.ul-chip--belum {
+  background: var(--warn-bg, #fcf0d9);
+  color: var(--warn-fg, #8f5914);
+}

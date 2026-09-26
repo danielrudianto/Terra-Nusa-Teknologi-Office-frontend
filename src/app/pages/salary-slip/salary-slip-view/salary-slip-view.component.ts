@@ -43,6 +43,13 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
 })
 export class SalarySlipViewComponent {
   private readonly serverMessage = inject(ServerMessageService);
+
+  /** Pembuat slip — nama, jabatan, tanda tangan. Diisi saat memuat. */
+  private pembuat: {
+    createdByName: string | null;
+    createdByPosition: string | null;
+    createdBySignature: string | null;
+  } = { createdByName: null, createdByPosition: null, createdBySignature: null };
   constructor(
     private translate: TranslateService,
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
@@ -204,6 +211,19 @@ export class SalarySlipViewComponent {
     this.apiService.get(`salary-slips/${this.data.id}`, {}).subscribe({
       next: (data: any) => {
         this.formGroup.patchValue(data.data);
+        /*
+         * Pembuat slip disimpan TERPISAH dari formulirnya.
+         *
+         * Formulirnya hanya memuat isian yang dapat diubah; nama pembuat dan
+         * tanda tangannya bukan isian — keduanya milik server dan dipakai
+         * saat mencetak. Menaruhnya di `formGroup` berarti mereka ikut
+         * terkirim kembali pada penyimpanan berikutnya.
+         */
+        this.pembuat = {
+          createdByName: data.data?.createdByName ?? null,
+          createdByPosition: data.data?.createdByPosition ?? null,
+          createdBySignature: data.data?.createdBySignature ?? null,
+        };
         data.allowances.forEach((x: any) => {
           this.allowancesFormArray.push(
             this.formBuilder.group({
@@ -315,6 +335,7 @@ export class SalarySlipViewComponent {
       bankAccountName: v.bankAccountName,
       bankAccountNumber: v.bankAccountNumber,
       bankName: v.bankName,
+      ...this.pembuat,
     };
     SalarySlipHelper.createProxyPaymentPDF(data as any);
   }

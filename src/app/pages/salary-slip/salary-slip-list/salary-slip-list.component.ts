@@ -405,6 +405,10 @@ export class SalarySlipListComponent {
           bankAccountName: d.bankAccountName,
           bankAccountNumber: d.bankAccountNumber,
           bankName: d.bankName,
+          // Pembuat slip + tanda tangannya, untuk kolom "Dibuat oleh".
+          createdByName: d.createdByName,
+          createdByPosition: d.createdByPosition,
+          createdBySignature: d.createdBySignature,
         };
         SalarySlipHelper.createProxyPaymentPDF(data as any);
       },

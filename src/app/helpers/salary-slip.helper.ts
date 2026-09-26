@@ -42,9 +42,60 @@ export interface ISalarySlip {
   bankAccountName: string;
   bankAccountNumber: string;
   bankName: string;
+
+  /* ---- blok tanda tangan ---- */
+
+  /**
+   * Pembuat slip — nama, jabatan, dan tanda tangannya.
+   *
+   * HANYA kolom "Dibuat oleh" yang dapat terisi. Slip gaji tidak menyimpan
+   * pemeriksa maupun penyetuju, jadi dua kolom lainnya memang tidak punya
+   * orangnya; mengisinya dengan nama yang sama berarti satu orang tampak
+   * memeriksa dan menyetujui pekerjaannya sendiri di atas kertas.
+   *
+   * Ketiganya opsional: slip yang dicetak dari layar lama, yang belum
+   * mengirimkannya, tercetak persis seperti sebelumnya.
+   */
+  createdByName?: string | null;
+  createdByPosition?: string | null;
+  createdBySignature?: string | null;
 }
 
 export class SalarySlipHelper {
+  /**
+   * Isi kolom "Dibuat oleh" pada blok tanda tangan.
+   *
+   * Tiga keadaan, dan ketiganya harus setinggi sama dengan kolom kosong di
+   * sebelahnya (label + delapan baris kosong):
+   *
+   *   1. Tanpa nama sama sekali -> persis seperti sebelum fitur ini ada.
+   *   2. Ada nama, belum punya tanda tangan -> label, ruang kosong, lalu
+   *      namanya. Ruangnya tetap untuk ditandatangani tangan.
+   *   3. Ada tanda tangan -> gambarnya mengisi sebagian ruang itu.
+   */
+  static kolomPembuat(data: ISalarySlip): any[] {
+    const nama = (data.createdByName || '').trim();
+    if (!nama) return [{ text: 'Dibuat oleh\n\n\n\n\n\n\n\n' }];
+
+    const jabatan = (data.createdByPosition || '').trim();
+    const ttd = data.createdBySignature;
+
+    return [
+      { text: 'Dibuat oleh' },
+      ttd
+        ? {
+            image: ttd,
+            // `fit`, bukan `width`: nisbah gambarnya terjaga dan lebarnya
+            // tidak pernah melewati kolomnya.
+            fit: [130, 42] as [number, number],
+            margin: [0, 4, 0, 4] as Margins,
+          }
+        : { text: '\n\n\n\n\n' },
+      { text: nama, bold: true },
+      { text: jabatan || ' ', fontSize: 9 },
+    ];
+  }
+
   static createProxyPaymentPDF(data: ISalarySlip) {
     const tableBody: any[] = [
       [
@@ -568,8 +619,17 @@ export class SalarySlipHelper {
             widths: ['*', '*', '*'],
             body: [
               [
+                /*
+                 * Kolom "Dibuat oleh" — satu-satunya yang punya orangnya.
+                 *
+                 * Tingginya DISAMAKAN dengan dua kolom lain, bertanda tangan
+                 * maupun tidak: tinggi baris tabel ditentukan sel tertinggi,
+                 * jadi kolom yang meninggi sendiri menggeser garis tanda
+                 * tangan kedua kolom di sebelahnya turun — dan yang tercetak
+                 * menjadi tiga garis yang tidak sejajar.
+                 */
                 {
-                  text: 'Dibuat oleh\n\n\n\n\n\n\n\n',
+                  stack: SalarySlipHelper.kolomPembuat(data),
                 },
                 {
                   text: 'Diperiksa oleh\n\n\n\n\n\n\n\n',

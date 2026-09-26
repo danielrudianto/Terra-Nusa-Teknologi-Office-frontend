@@ -2912,6 +2912,9 @@
     "deleteSupplier": "删除供应商数据"
   },
   "user": {
+    "kolomTtd": "签名",
+    "ttdAda": "已登记",
+    "ttdBelum": "未设置",
     "title": "用户",
     "description": "管理系统用户账户",
     "createNew": "新用户",

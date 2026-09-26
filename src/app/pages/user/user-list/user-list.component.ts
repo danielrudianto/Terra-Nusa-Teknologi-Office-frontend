@@ -76,6 +76,12 @@ export class UserListComponent {
     'name',
     'email',
     'authLevel',
+    // Tanda tangan sudah terdaftar atau belum.
+    //
+    // Di sebelah status, bukan di ujung: keduanya menjawab pertanyaan yang
+    // sama — "akun ini siap dipakai atau belum" — dan yang memeriksanya
+    // membaca keduanya sekaligus.
+    'ttd',
     'status',
     'action',
   ];

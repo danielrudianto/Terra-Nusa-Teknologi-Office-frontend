@@ -104,3 +104,61 @@ describe('signatureBlock — meneruskan tanda tangan ke dalam blok', () => {
     expect(lama.unbreakable).toBeTrue();
   });
 });
+
+/*
+ * SLIP GAJI — kolom "Dibuat oleh".
+ *
+ * Bloknya tiga kolom: Dibuat oleh, Diperiksa oleh, Disetujui oleh. Hanya yang
+ * pertama punya orangnya — slip gaji tidak menyimpan pemeriksa maupun
+ * penyetuju — dan itu batas yang disengaja: mengisi ketiganya dengan nama
+ * yang sama membuat satu orang tampak memeriksa dan menyetujui pekerjaannya
+ * sendiri di atas kertas.
+ */
+
+import { SalarySlipHelper } from './salary-slip.helper';
+
+function kolom(d: any): any[] {
+  return SalarySlipHelper.kolomPembuat(d as any);
+}
+
+describe('slip gaji — kolom Dibuat oleh', () => {
+  it('tanpa nama: persis seperti sebelum fitur ini ada', () => {
+    const k = kolom({});
+    expect(k.length).toBe(1);
+    expect(k[0].text).toContain('Dibuat oleh');
+    expect(k[0].text).toContain('\n\n');
+  });
+
+  it('ada nama tanpa tanda tangan: ruangnya tetap untuk tanda tangan basah', () => {
+    const k = kolom({ createdByName: 'Stephanie', createdByPosition: 'Staf HRD' });
+
+    expect(k.some((n) => n.image)).toBeFalse();
+    expect(k.some((n) => n.text === 'Stephanie')).toBeTrue();
+    expect(k.some((n) => n.text === 'Staf HRD')).toBeTrue();
+    // Ruang kosongnya tetap ada; tanpa itu namanya menempel ke labelnya.
+    expect(k.some((n) => typeof n.text === 'string' && n.text.includes('\n\n'))).toBeTrue();
+  });
+
+  it('ada tanda tangan: gambarnya mengisi ruang itu', () => {
+    const k = kolom({
+      createdByName: 'Stephanie',
+      createdBySignature: 'data:image/png;base64,AAAA',
+    });
+
+    const img = k.find((n) => n.image);
+    expect(img).withContext('gambar tidak masuk').toBeTruthy();
+    expect(img.fit[0]).toBeGreaterThan(0);
+  });
+
+  it('tanda tangan TANPA nama tidak dibubuhkan', () => {
+    // Nama kosong berarti pembuatnya tidak diketahui — gambar tanpa nama di
+    // bawahnya adalah coretan yang tidak dapat dipertanggungjawabkan.
+    const k = kolom({ createdBySignature: 'data:image/png;base64,AAAA' });
+    expect(k.some((n) => n.image)).toBeFalse();
+  });
+
+  it('jabatan kosong tidak meruntuhkan barisnya', () => {
+    const k = kolom({ createdByName: 'Stephanie' });
+    expect(k[k.length - 1].text).toBe(' ');
+  });
+});
