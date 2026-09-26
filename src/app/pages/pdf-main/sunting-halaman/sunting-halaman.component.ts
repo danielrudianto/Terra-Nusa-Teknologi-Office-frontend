@@ -589,32 +589,133 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
     this.papanTtd = false;
   }
 
-  /** Coretan pada papan: setiap goresan sebagai deretan titik. */
-  private jejak: { x: number; y: number }[][] = [];
+  /**
+   * Coretan pada papan: setiap goresan sebagai deretan titik.
+   *
+   * `t` adalah TEKANAN, 0..1. Pena (S-Pen, Apple Pencil, Wacom) melaporkannya
+   * sungguhan; tetikus dan jari tidak, dan peramban mengisinya 0,5 untuk
+   * mereka. Lihat `TEKANAN_TETIKUS`.
+   */
+  private jejak: { x: number; y: number; t: number }[][] = [];
   private sedangGores = false;
 
+  /**
+   * Tekanan yang dipakai bila alatnya TIDAK melaporkan tekanan.
+   *
+   * Spesifikasi Pointer Events menetapkan 0,5 untuk alat tanpa tekanan yang
+   * sedang menekan. Dipakai juga sebagai nilai pengganti saat `pressure`
+   * bernilai 0 di tengah goresan — sebagian peramban mengirimkannya pada
+   * kejadian pertama, dan tebal nol membuat awal goresan hilang.
+   */
+  private static readonly TEKANAN_TETIKUS = 0.5;
+
+  /**
+   * Jenis alat yang memulai goresan yang sedang berjalan.
+   *
+   * INI YANG MENOLAK TELAPAK TANGAN. Menulis dengan S-Pen berarti sisi
+   * telapak menempel di layar, dan sentuhan itu datang sebagai
+   * `pointerType: 'touch'` — tanpa penolakan, satu tanda tangan disertai
+   * satu coretan tebal melintang yang tidak digambar siapa pun.
+   *
+   * Yang ditolak hanya sentuhan SELAMA pena dipakai, bukan sentuhan pada
+   * umumnya: di ponsel tanpa pena, jari tetap satu-satunya cara menggambar.
+   */
+  private jenisGores: string | null = null;
+
+  /** Pernah menggambar pakai pena di papan ini? */
+  private penaDipakai = false;
+
   mulaiGores(ev: PointerEvent): void {
+    // Tombol kanan / tengah tidak menggambar.
+    if (ev.button > 0) return;
+
+    if (ev.pointerType === 'pen') this.penaDipakai = true;
+    // Telapak tangan: sentuhan yang datang sesudah penanya dipakai.
+    else if (ev.pointerType === 'touch' && this.penaDipakai) return;
+
+    this.jenisGores = ev.pointerType;
     this.sedangGores = true;
     this.jejak.push([]);
+
+    /*
+     * Penunjuknya DIKUNCI ke kanvas.
+     *
+     * Tanpa ini, goresan yang ujungnya keluar sedikit dari kotak kanvas
+     * berhenti di tepinya: `pointermove` berikutnya dikirim ke elemen lain.
+     * Yang terlihat bukan galat — ekor tanda tangan sekadar terpotong rata,
+     * dan orang mengulanginya sambil mengira tangannya yang meleset.
+     *
+     * Dibungkus `try`: sebagian lingkungan uji tidak memilikinya.
+     */
+    const kanvas = ev.currentTarget as HTMLCanvasElement;
+    try {
+      kanvas.setPointerCapture?.(ev.pointerId);
+    } catch {
+      // Tidak apa-apa — goresannya tetap jalan, hanya tidak terkunci.
+    }
+
     this.gores(ev);
   }
 
   gores(ev: PointerEvent): void {
     if (!this.sedangGores) return;
+    // Alat lain yang menyentuh di tengah goresan diabaikan — lihat
+    // `jenisGores`.
+    if (this.jenisGores && ev.pointerType !== this.jenisGores) return;
+
     const kanvas = ev.currentTarget as HTMLCanvasElement;
     const kotak = kanvas.getBoundingClientRect();
-    // Titiknya disimpan sebagai PECAHAN, bukan piksel: kanvasnya diperbesar
-    // saat diubah menjadi gambar, dan piksel yang benar di layar akan
-    // meleset pada ukuran itu.
-    this.jejak[this.jejak.length - 1].push({
-      x: (ev.clientX - kotak.left) / kotak.width,
-      y: (ev.clientY - kotak.top) / kotak.height,
-    });
+    const titik = this.jejak[this.jejak.length - 1];
+    if (!titik) return;
+
+    /*
+     * KEJADIAN YANG DIGABUNGKAN peramban ikut dibaca.
+     *
+     * S-Pen mencuplik jauh lebih cepat daripada laju gambar layar (sebagian
+     * perangkat 240Hz lawan 60Hz). Peramban menyimpan cuplikan di antara dua
+     * frame dan mengirimkannya sekaligus; yang membaca `ev` saja membuang
+     * tiga dari empat titik. Akibatnya goresan cepat menjadi patah bersegi,
+     * dan itu paling terlihat justru pada tanda tangan — yang memang ditulis
+     * cepat.
+     */
+    const kejadian =
+      typeof ev.getCoalescedEvents === 'function'
+        ? ev.getCoalescedEvents()
+        : [];
+    const deret = kejadian.length ? kejadian : [ev];
+
+    for (const e of deret) {
+      // Titiknya disimpan sebagai PECAHAN, bukan piksel: kanvasnya
+      // diperbesar saat diubah menjadi gambar, dan piksel yang benar di
+      // layar akan meleset pada ukuran itu.
+      titik.push({
+        x: (e.clientX - kotak.left) / kotak.width,
+        y: (e.clientY - kotak.top) / kotak.height,
+        t: SuntingHalamanComponent.tekanan(e),
+      });
+    }
     this.gambarUlangPapan(kanvas);
   }
 
-  selesaiGores(): void {
+  /** Tekanan satu kejadian, 0..1, dengan nilai pengganti yang masuk akal. */
+  static tekanan(ev: { pressure?: number; pointerType?: string }): number {
+    const p = Number(ev?.pressure);
+    if (!Number.isFinite(p) || p <= 0) {
+      return SuntingHalamanComponent.TEKANAN_TETIKUS;
+    }
+    return Math.min(1, p);
+  }
+
+  selesaiGores(ev?: PointerEvent): void {
     this.sedangGores = false;
+    this.jenisGores = null;
+    if (!ev) return;
+    const kanvas = ev.currentTarget as HTMLCanvasElement;
+    try {
+      kanvas.releasePointerCapture?.(ev.pointerId);
+    } catch {
+      // Penunjuknya memang sudah dilepas.
+    }
   }
 
   bersihkanPapan(kanvas?: HTMLCanvasElement): void {
@@ -623,24 +724,97 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
     if (kanvas) this.gambarUlangPapan(kanvas);
   }
 
+  /** Batas bawah dan atas tebal garis, sebagai kelipatan tebal dasarnya. */
+  private static readonly TEBAL_MIN = 0.45;
+  private static readonly TEBAL_MAKS = 1.7;
+
+  /**
+   * Tebal garis untuk satu tekanan.
+   *
+   * Dipisah supaya dapat diuji tanpa kanvas: yang menentukan rasa "seperti
+   * pulpen" adalah kurva ini, dan memeriksanya lewat piksel berarti tidak
+   * pernah memeriksanya.
+   *
+   * Akar kuadrat, bukan lurus. Tekanan yang dilaporkan pena menumpuk di
+   * bagian bawah rentangnya — menulis biasa jarang melewati 0,4 — sehingga
+   * pemetaan lurus membuat hampir seluruh tanda tangan setipis mungkin dan
+   * perbedaannya nyaris tidak terlihat.
+   */
+  static lebarGores(dasar: number, tekanan: number): number {
+    const t = Math.min(1, Math.max(0, Number(tekanan) || 0));
+    const k =
+      SuntingHalamanComponent.TEBAL_MIN +
+      (SuntingHalamanComponent.TEBAL_MAKS - SuntingHalamanComponent.TEBAL_MIN) *
+        Math.sqrt(t);
+    return dasar * k;
+  }
+
   private gambarUlangPapan(kanvas: HTMLCanvasElement): void {
     const ctx = kanvas.getContext('2d');
     if (!ctx) return;
     ctx.clearRect(0, 0, kanvas.width, kanvas.height);
-    ctx.lineWidth = Math.max(2, kanvas.width / 220);
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.strokeStyle = '#111827';
+    ctx.fillStyle = '#111827';
+
+    const dasar = Math.max(2, kanvas.width / 220);
+
     for (const goresan of this.jejak) {
       if (!goresan.length) continue;
-      ctx.beginPath();
-      goresan.forEach((t, i) => {
-        const x = t.x * kanvas.width;
-        const y = t.y * kanvas.height;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.stroke();
+
+      const p = goresan.map((t) => ({
+        x: t.x * kanvas.width,
+        y: t.y * kanvas.height,
+        t: t.t,
+      }));
+
+      // Satu titik = titik, bukan garis sepanjang nol yang tidak tergambar.
+      // Tanda titik pada tanda tangan hilang tanpa ini.
+      if (p.length === 1) {
+        ctx.beginPath();
+        ctx.arc(
+          p[0].x,
+          p[0].y,
+          SuntingHalamanComponent.lebarGores(dasar, p[0].t) / 2,
+          0,
+          Math.PI * 2,
+        );
+        ctx.fill();
+        continue;
+      }
+
+      /*
+       * Tiap ruas digambar SENDIRI, karena tebalnya berbeda-beda.
+       *
+       * `lineWidth` berlaku untuk seluruh jalur, jadi satu `beginPath` untuk
+       * seluruh goresan berarti satu tebal untuk seluruh goresan — persis
+       * yang hendak ditinggalkan.
+       *
+       * Bentuk ruasnya kurva kuadratik dari titik tengah ke titik tengah,
+       * dengan titik aslinya sebagai kendali. Itu cara termurah membuat
+       * deretan titik terbaca sebagai garis tulisan: sudut di tiap titik
+       * hilang tanpa perlu menghitung spline.
+       */
+      for (let i = 1; i < p.length; i++) {
+        const a = p[i - 1];
+        const b = p[i];
+        // Tekanan ruas = rata-rata kedua ujungnya, supaya tebalnya berubah
+        // bertahap dan tidak melompat tiap titik.
+        ctx.lineWidth = SuntingHalamanComponent.lebarGores(
+          dasar,
+          (a.t + b.t) / 2,
+        );
+        ctx.beginPath();
+        if (i === 1) ctx.moveTo(a.x, a.y);
+        else ctx.moveTo((p[i - 2].x + a.x) / 2, (p[i - 2].y + a.y) / 2);
+        if (i === p.length - 1) {
+          ctx.quadraticCurveTo(a.x, a.y, b.x, b.y);
+        } else {
+          ctx.quadraticCurveTo(a.x, a.y, (a.x + b.x) / 2, (a.y + b.y) / 2);
+        }
+        ctx.stroke();
+      }
     }
   }
 

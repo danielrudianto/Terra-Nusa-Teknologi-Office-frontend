@@ -639,7 +639,22 @@ h2.sh-title {
     border-radius: 10px;
     background: var(--kertas, #fff);
     cursor: crosshair;
+    /*
+     * `touch-action: none` — TANPA INI PENA MENGGULIR HALAMAN.
+     *
+     * Peramban memperlakukan sapuan pena dan jari sebagai gulir sampai
+     * elemennya menyatakan menanganinya sendiri. Yang terjadi bukan galat:
+     * papannya sekadar tidak menerima `pointermove`, dan dialognya
+     * berpindah-pindah saat orang mencoba menandatangani.
+     *
+     * `user-select` dan `-webkit-touch-callout` menutup dua gangguan lain di
+     * ponsel: menahan pena sebentar memunculkan menu salin/bagikan, dan
+     * sapuan cepat menyeleksi teks di sekitarnya.
+     */
     touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
   }
   &__catatan {
     margin: 0.5rem 0 0;

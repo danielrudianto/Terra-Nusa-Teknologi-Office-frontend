@@ -494,8 +494,10 @@
           height="240"
           (pointerdown)="mulaiGores($event)"
           (pointermove)="gores($event)"
-          (pointerup)="selesaiGores()"
-          (pointerleave)="selesaiGores()"
+          (pointerup)="selesaiGores($event)"
+          (pointercancel)="selesaiGores($event)"
+          (pointerleave)="selesaiGores($event)"
+          (contextmenu)="$event.preventDefault()"
         ></canvas>
 
         <p class="sh-papan__catatan" *ngIf="ttdSiap">
