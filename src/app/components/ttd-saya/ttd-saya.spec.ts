@@ -219,3 +219,68 @@ describe('TtdSayaComponent — dialognya', () => {
     expect(nanti.length).toBe(0);
   });
 });
+
+/*
+ * KEADAAN KETIGA: sudah punya, sedang menunggu persetujuan pergantian.
+ *
+ * Tanpa keadaan ini, orang yang sudah mengajukan akan ditawari lagi setiap
+ * sesi — dan tiap tawaran yang diterima membuat satu permintaan baru di
+ * antrean direktur.
+ */
+describe('TandaTanganService — pergantian yang sedang menunggu', () => {
+  let dibuka: any[];
+
+  function layanan(status: any): TandaTanganService {
+    dibuka = [];
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: ApiService, useValue: { get: () => of(status) } },
+        {
+          provide: MatDialog,
+          useValue: {
+            open: (komp: any, cfg: any) => {
+              dibuka.push({ komp, cfg });
+              return { afterClosed: () => of(true) };
+            },
+          },
+        },
+      ],
+    });
+    return TestBed.inject(TandaTanganService);
+  }
+
+  beforeEach(() => {
+    try {
+      sessionStorage.removeItem(KUNCI);
+    } catch {}
+  });
+
+  it('yang sedang menunggu TIDAK ditawari lagi', async () => {
+    const s = layanan({ hasSignature: true, pending: true });
+    await s.tawarkanBilaBelumAda();
+    expect(dibuka.length).toBe(0);
+  });
+
+  it('belum punya TETAPI sudah mengajukan juga tidak ditawari', async () => {
+    // Bisa terjadi bila tanda tangan pertamanya dihapus admin sementara
+    // permintaannya masih menggantung.
+    const s = layanan({ hasSignature: false, pending: true });
+    await s.tawarkanBilaBelumAda();
+    expect(dibuka.length).toBe(0);
+  });
+
+  it('keadaan() menerjemahkan jawaban server apa adanya', async () => {
+    const s = layanan({
+      hasSignature: true,
+      pending: true,
+      pendingSince: '2026-09-26T10:00:00',
+    });
+    const k = await s.keadaan();
+    expect(k).toEqual({
+      punya: true,
+      tertunda: true,
+      tertundaSejak: '2026-09-26T10:00:00',
+    });
+  });
+});

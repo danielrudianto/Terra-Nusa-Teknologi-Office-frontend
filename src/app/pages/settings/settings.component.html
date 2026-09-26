@@ -81,6 +81,127 @@
     </div>
   </section>
 
+  <!-- ===== BLOK TANDA TANGAN =====
+    Dipisah dari kartu Profil: yang ini punya keadaan sendiri (belum ada,
+    ada, sedang menunggu persetujuan) dan tombolnya membuka dialog, bukan
+    mengisi kotak. Digabung ke Profil, ketiga keadaan itu bersaing ruang
+    dengan isian nama dan surel.
+  -->
+  <section class="st-card">
+    <div class="st-card__head">
+      <span class="st-card__icon">
+        <mat-icon>draw</mat-icon>
+      </span>
+      <div class="st-card__titles">
+        <h2 class="st-card__title">{{ "ttd.blokJudul" | translate }}</h2>
+        <span class="st-card__desc">{{ "ttd.blokSub" | translate }}</span>
+      </div>
+    </div>
+
+    @if (ttdMemuat) {
+      <p class="st-ttd__kosong">{{ "common.loading" | translate }}</p>
+    } @else {
+      <div class="st-ttd">
+        @if (ttdGambar) {
+          <img class="st-ttd__gambar" [src]="ttdGambar" alt="" />
+        } @else {
+          <div class="st-ttd__kosong">
+            <mat-icon>gesture</mat-icon>
+            <span>{{ "ttd.belumAda" | translate }}</span>
+          </div>
+        }
+
+        <div class="st-ttd__aksi">
+          <button mat-flat-button color="primary" (click)="suntingTtd()">
+            <mat-icon>{{ ttdGambar ? "edit" : "add" }}</mat-icon>&nbsp;{{
+              (ttdGambar ? "ttd.ganti" : "ttd.siapkan") | translate
+            }}
+          </button>
+        </div>
+      </div>
+
+      @if (ttdTertunda) {
+        <!--
+          Banner, bukan mat-hint: yang dibaca di sini adalah alasan mengapa
+          dokumen masih memakai tanda tangan lama.
+        -->
+        <div class="st-ttd__banner">
+          <mat-icon>hourglass_top</mat-icon>
+          <div>
+            <strong>{{ "ttd.tertundaJudul" | translate }}</strong>
+            <span>{{ "ttd.tertundaIsi" | translate }}</span>
+          </div>
+        </div>
+      } @else if (ttdGambar) {
+        <div class="st-ttd__banner st-ttd__banner--datar">
+          <mat-icon>info</mat-icon>
+          <div>
+            <span>{{ "ttd.gantiPerluSetuju" | translate }}</span>
+          </div>
+        </div>
+      }
+    }
+  </section>
+
+  <!-- ===== ANTREAN PERSETUJUAN TANDA TANGAN (level 5) ===== -->
+  @if (bolehSetujuiTtd && antreanTtd.length) {
+    <section class="st-card">
+      <div class="st-card__head">
+        <span class="st-card__icon">
+          <mat-icon>how_to_reg</mat-icon>
+        </span>
+        <div class="st-card__titles">
+          <h2 class="st-card__title">{{ "ttd.antreanJudul" | translate }}</h2>
+          <span class="st-card__desc">{{ "ttd.antreanSub" | translate }}</span>
+        </div>
+      </div>
+
+      @for (p of antreanTtd; track p.id) {
+        <div class="st-ttd-antre">
+          <img class="st-ttd__gambar" [src]="p.image" alt="" />
+          <div class="st-ttd-antre__teks">
+            <span class="st-row__label">{{ p.userName }}</span>
+            <span class="st-row__hint">{{ p.createdAt | date: "d MMM y" }}</span>
+
+            <!--
+              PENANDA KEMIRIPAN.
+
+              Menandai, bukan menolak: dua orang yang sama-sama bertanda
+              tangan coretan sederhana dapat berkemiripan tinggi tanpa niat
+              buruk. Yang memutuskan orang yang membaca baris ini.
+            -->
+            @if (p.similarLevel) {
+              <span
+                class="st-ttd-antre__mirip"
+                [class.is-keras]="p.similarLevel === 'sangat_mirip'"
+              >
+                <mat-icon>warning</mat-icon>
+                {{
+                  (p.similarLevel === "sangat_mirip"
+                    ? "ttd.sangatMirip"
+                    : "ttd.mirip"
+                  ) | translate: { persen: persenMirip(p) }
+                }}
+              </span>
+            }
+          </div>
+          <div class="st-ttd-antre__aksi">
+            <button mat-stroked-button (click)="putuskanTtd(p, false)">
+              {{ "ttd.tolak" | translate }}
+            </button>
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="putuskanTtd(p, true)"
+            >
+              {{ "ttd.setujui" | translate }}
+            </button>
+          </div>
+        </div>
+      }
+    </section>
+  }
+
   <!-- ===== APPEARANCE ===== -->
   <section class="st-card">
     <div class="st-card__head">

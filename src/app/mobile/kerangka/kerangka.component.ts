@@ -17,6 +17,7 @@ import { AccountService } from '../../services/account.service';
 import { PermissionService } from '../../services/permission.service';
 import { bolehMembuatBapMobile, bolehMenyetujuiCop } from '../penjaga-level';
 import { SettingsService } from '../../services/setting.service';
+import { TandaTanganService } from '../../services/tanda-tangan.service';
 import { TransisiHalamanDirective } from '../../animations/transisi-halaman.directive';
 
 /**
@@ -46,6 +47,7 @@ export class KerangkaComponent implements AfterViewInit, OnDestroy {
   private readonly izin = inject(PermissionService);
   private readonly router = inject(Router);
   private readonly settings = inject(SettingsService);
+  private readonly tandaTangan = inject(TandaTanganService);
 
   /** Setelan transisi yang berlaku (Pengaturan → Transisi), sama dengan desktop. */
   readonly setelan = computed(() => this.settings.transisiParams());
@@ -68,6 +70,17 @@ export class KerangkaComponent implements AfterViewInit, OnDestroy {
    * Diukur nyata (skala teks dapat mengubahnya) dan diperbarui saat berubah.
    */
   ngAfterViewInit(): void {
+    /*
+     * Tanda tangan ditawarkan di sini juga, bukan hanya di kerangka desktop.
+     *
+     * Justru DI SINI yang paling penting: yang memeriksa dan menyetujui di
+     * lapangan memakai ponsel, dan ponsel berpena (S-Pen) adalah tempat
+     * tanda tangan paling enak dibuat. Layanannya menjaga sendiri agar
+     * dialognya muncul sekali per sesi, jadi membuka aplikasi di dua
+     * kerangka tidak berarti ditawari dua kali.
+     */
+    void this.tandaTangan.tawarkanBilaBelumAda();
+
     const el = this.kepala?.nativeElement;
     if (!el) return;
     const set = () =>

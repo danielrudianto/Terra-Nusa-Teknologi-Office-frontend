@@ -34,6 +34,10 @@ import { VersiService } from 'src/app/services/versi.service';
 import { PushService } from '../../../app/services/push.service';
 import { PermissionService } from '../../../app/services/permission.service';
 import {
+  PermintaanTtd,
+  TandaTanganService,
+} from '../../services/tanda-tangan.service';
+import {
   AppLang,
   LangOption,
   LanguageService,
@@ -93,6 +97,72 @@ export class SettingsComponent implements OnInit {
   readonly versi = inject(VersiService);
   private readonly push = inject(PushService);
   private readonly izin = inject(PermissionService);
+  private readonly ttd = inject(TandaTanganService);
+
+  /* ---------- blok tanda tangan ---------- */
+
+  /** Tanda tangan sendiri sebagai data-URI; null bila belum ada. */
+  ttdGambar: string | null = null;
+
+  /** Pergantian sudah diajukan dan sedang menunggu keputusan direktur. */
+  ttdTertunda = false;
+
+  ttdMemuat = true;
+
+  /**
+   * Antrean pergantian milik orang lain — hanya terisi bagi penyetuju.
+   *
+   * Dimuat hanya bila izinnya ada. Memanggilnya untuk semua orang berarti
+   * setiap pembukaan halaman Pengaturan menembak endpoint yang akan
+   * menjawab 403, dan log server penuh penolakan yang tidak berarti apa-apa.
+   */
+  antreanTtd: PermintaanTtd[] = [];
+
+  get bolehSetujuiTtd(): boolean {
+    return this.izin.can('user_signature', 'approve');
+  }
+
+  private async muatTtd(): Promise<void> {
+    this.ttdMemuat = true;
+    const keadaan = await this.ttd.keadaan();
+    this.ttdTertunda = !!keadaan?.tertunda;
+    this.ttdGambar = keadaan?.punya ? await this.ttd.milikSendiri() : null;
+    this.ttdMemuat = false;
+    if (this.bolehSetujuiTtd) this.antreanTtd = await this.ttd.antrean();
+  }
+
+  /** Buat atau ganti tanda tangan sendiri. */
+  async suntingTtd(): Promise<void> {
+    const berubah = await this.ttd.buka({
+      bolehLewat: true,
+      awal: this.ttdGambar,
+    });
+    if (berubah) await this.muatTtd();
+  }
+
+  /** Setujui atau tolak satu permintaan dari antrean. */
+  async putuskanTtd(p: PermintaanTtd, setuju: boolean): Promise<void> {
+    try {
+      await this.ttd.putuskan(p.id, setuju);
+      this.snackBar.open(
+        this.translate.instant(setuju ? 'ttd.disetujui' : 'ttd.ditolak'),
+        this.translate.instant('common.close'),
+        { duration: 4000 },
+      );
+    } catch (e) {
+      this.snackBar.open(
+        this.translate.instant('ttd.gagalPutus'),
+        this.translate.instant('common.close'),
+        { duration: 6000 },
+      );
+    }
+    await this.muatTtd();
+  }
+
+  /** Kemiripan sebagai persen bulat, untuk ditampilkan. */
+  persenMirip(p: PermintaanTtd): number {
+    return Math.round((p.similarity ?? 0) * 100);
+  }
 
   constructor(
     private apiService: ApiService,
@@ -148,6 +218,8 @@ export class SettingsComponent implements OnInit {
 
     // Daftarkan service worker & segarkan status langganan.
     void this.push.init();
+
+    void this.muatTtd();
   }
 
   // ---- Notifikasi -------------------------------------------------------

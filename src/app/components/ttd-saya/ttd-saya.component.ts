@@ -88,11 +88,22 @@ export class TtdSayaComponent {
     if (!gambar || this.menyimpan) return;
     this.menyimpan = true;
     try {
-      await firstValueFrom(this.api.put('user-signatures/me', { image: gambar }));
+      const hasil: any = await firstValueFrom(
+        this.api.put('user-signatures/me', { image: gambar }),
+      );
+      /*
+       * Dua jawaban yang berbeda, dan bedanya HARUS terdengar.
+       *
+       * Yang pertama berlaku seketika; pergantian menunggu persetujuan
+       * direktur. Menyebut keduanya "tersimpan" membuat orang mengira tanda
+       * tangannya sudah berganti, lalu heran ketika dokumen berikutnya masih
+       * memakai yang lama.
+       */
+      const tertunda = hasil?.state === 'pending';
       this.snack.open(
-        this.terjemah.instant('ttd.tersimpan'),
+        this.terjemah.instant(tertunda ? 'ttd.menunggu' : 'ttd.tersimpan'),
         this.terjemah.instant('common.close'),
-        { duration: 3000 },
+        { duration: tertunda ? 7000 : 3000 },
       );
       this.dialogRef.close(true);
     } catch (e) {

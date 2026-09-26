@@ -8,6 +8,25 @@ import {
   TtdSayaComponent,
 } from '../components/ttd-saya/ttd-saya.component';
 
+export interface KeadaanTtd {
+  punya: boolean;
+  /** Pergantian sudah diajukan dan sedang menunggu persetujuan direktur. */
+  tertunda: boolean;
+  tertundaSejak: string | null;
+}
+
+export interface PermintaanTtd {
+  id: number;
+  userID: number;
+  userName: string;
+  image: string;
+  similarity: number | null;
+  /** `sangat_mirip` | `mirip` | null — lihat `utils/sidik_ttd.py` di server. */
+  similarLevel: string | null;
+  similarTo: number | null;
+  createdAt: string;
+}
+
 /**
  * Tanda tangan pengguna: memeriksa punya-tidaknya, dan memintanya bila belum.
  *
@@ -31,19 +50,63 @@ export class TandaTanganService {
 
   private static readonly KUNCI_SESI = 'tnt.ttd.ditawarkan';
 
-  /** Sudah punya tanda tangan? `null` bila gagal menanyakan. */
-  async punya(): Promise<boolean | null> {
+  /** Keadaan tanda tangan sendiri; `null` bila gagal menanyakan. */
+  async keadaan(): Promise<KeadaanTtd | null> {
     try {
       const res: any = await firstValueFrom(
         this.api.get('user-signatures/status', {}),
       );
-      return !!res?.hasSignature;
+      return {
+        punya: !!res?.hasSignature,
+        tertunda: !!res?.pending,
+        tertundaSejak: res?.pendingSince ?? null,
+      };
     } catch {
       // Gagal menanyakan BUKAN berarti belum punya. Menganggapnya belum
       // membuat dialog muncul setiap kali jaringan sedang buruk — di depan
       // orang yang tanda tangannya sudah tersimpan sejak bulan lalu.
       return null;
     }
+  }
+
+  /** Sudah punya tanda tangan? `null` bila gagal menanyakan. */
+  async punya(): Promise<boolean | null> {
+    const k = await this.keadaan();
+    return k ? k.punya : null;
+  }
+
+  /** Tanda tangan SENDIRI sebagai data-URI; `null` bila belum ada. */
+  async milikSendiri(): Promise<string | null> {
+    try {
+      const res: any = await firstValueFrom(
+        this.api.get('user-signatures/me', {}),
+      );
+      return res?.image ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  /** Antrean pergantian yang menunggu keputusan — hanya level 5. */
+  async antrean(): Promise<PermintaanTtd[]> {
+    try {
+      const res: any = await firstValueFrom(
+        this.api.get('user-signatures/permintaan', {}),
+      );
+      return Array.isArray(res) ? res : [];
+    } catch {
+      return [];
+    }
+  }
+
+  /** Setujui atau tolak satu permintaan. */
+  async putuskan(id: number, setuju: boolean, catatan?: string): Promise<void> {
+    await firstValueFrom(
+      this.api.post(
+        `user-signatures/permintaan/${id}/${setuju ? 'setujui' : 'tolak'}`,
+        { note: catatan ?? null },
+      ),
+    );
   }
 
   /**
@@ -54,8 +117,8 @@ export class TandaTanganService {
    */
   async tawarkanBilaBelumAda(): Promise<void> {
     if (this.sudahDitawarkan()) return;
-    const punya = await this.punya();
-    if (punya !== false) return;
+    const keadaan = await this.keadaan();
+    if (!keadaan || keadaan.punya || keadaan.tertunda) return;
 
     this.tandaiDitawarkan();
     this.buka({ bolehLewat: true });
