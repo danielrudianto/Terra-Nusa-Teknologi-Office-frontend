@@ -1,4 +1,5 @@
 import { TranslatePipe } from '@ngx-translate/core';
+import { POLA_TIPE_PEMBELIAN } from 'src/app/constants/purchase-type-label.constant';
 import { nilaiUang } from '../../../utils/angka';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -144,9 +145,7 @@ export class PurchaseDraftCreateComponent {
     ]),
     purchaseType: new FormControl('', [
       Validators.required,
-      Validators.pattern(
-        /^\A|B|C|D|E|F|G|H1|H2|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2$/,
-      ),
+      Validators.pattern(POLA_TIPE_PEMBELIAN),
     ]),
     dpp: new FormControl(0, [Validators.required, Validators.min(1)]),
     ppn: new FormControl(0, [Validators.required, Validators.min(0)]),

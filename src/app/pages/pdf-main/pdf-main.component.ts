@@ -61,7 +61,29 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 // `Promise.try` di dalam worker (pdf.js v5 memakainya) lalu memuat worker
 // aslinya. Tanpa itu, unggah PDF melempar "Promise.try is not a function"
 // di peramban lama.
-pdfjslib.GlobalWorkerOptions.workerSrc = '/assets/pdf-worker-shim.mjs';
+/*
+ * VERSI DITEMPELKAN PADA ALAMAT WORKER — dan itu bukan hiasan.
+ *
+ * `pdf-worker-shim.mjs` dan `pdf.worker.min.mjs` adalah dua-duanya berkas
+ * TANPA hash pada namanya, sementara nginx menyajikan `/assets/` dengan
+ * `expires 30d`. Akibatnya, sesudah pdfjs dinaikkan ke 6.3.289, peramban
+ * yang sudah pernah membuka halaman PDF tetap memakai worker 5.6.205 dari
+ * singgahannya sendiri — sampai tiga puluh hari:
+ *
+ *   The API version "6.3.289" does not match the Worker version "5.6.205".
+ *
+ * `Ctrl+Shift+R` pun kerap tidak menolongnya: worker-nya tidak dimuat
+ * sebagai bagian halaman, melainkan lewat `import()` saat berjalan.
+ *
+ * Dengan versinya ikut pada alamat, naiknya paket otomatis mengubah
+ * alamatnya — singgahan lama tidak pernah terpakai lagi, tanpa siapa pun
+ * perlu membersihkan apa pun. Diambil dari `pdfjslib.version`, bukan
+ * ditulis tangan: yang ditulis tangan akan tertinggal pada kenaikan
+ * berikutnya, dan gejalanya persis sama.
+ */
+export const JALUR_WORKER_PDF = `/assets/pdf-worker-shim.mjs?v=${pdfjslib.version}`;
+
+pdfjslib.GlobalWorkerOptions.workerSrc = JALUR_WORKER_PDF;
 
 /**
  * Satu coretan pada halaman.
@@ -72,8 +94,11 @@ pdfjslib.GlobalWorkerOptions.workerSrc = '/assets/pdf-worker-shim.mjs';
  * lain.
  */
 interface Anotasi {
-  /** `tutup` menutupi teks lama; `catatan` menambahkan tulisan di atasnya. */
-  jenis: 'tutup' | 'catatan';
+  /**
+   * `tutup` menutupi teks lama; `catatan` menambahkan tulisan di atasnya;
+   * `ttd` menempelkan gambar tanda tangan.
+   */
+  jenis: 'tutup' | 'catatan' | 'ttd';
   /** Kiri, dari tepi kiri halaman (0–1). */
   x: number;
   /** Atas, dari tepi atas halaman (0–1). */
@@ -84,6 +109,14 @@ interface Anotasi {
   tinggi?: number;
   /** Tulisan yang ditumpangkan; boleh kosong pada penutup polos. */
   teks?: string;
+  /**
+   * Gambar tanda tangan sebagai data-URI PNG.
+   *
+   * PNG, bukan JPEG: tanda tangan perlu LATAR TEMBUS PANDANG. JPEG tidak
+   * punya kanal alfa, sehingga yang tertempel adalah kotak putih berisi
+   * coretan — menutupi garis tanda tangan tercetak di bawahnya.
+   */
+  gambar?: string;
 }
 
 interface PageData {
@@ -618,6 +651,15 @@ export class PdfMainComponent implements OnInit {
     tujuan: PDFDocument,
     pageData: PageData,
     font: any,
+    /*
+     * Gambar tanda tangan yang SUDAH disematkan, berkunci data-URI-nya.
+     *
+     * Satu tanda tangan kerap dipakai pada banyak halaman. Menyematkannya
+     * ulang tiap halaman menyalin bita PNG-nya sebanyak itu juga — pada
+     * berkas dua puluh halaman, ukurannya membengkak tanpa satu piksel pun
+     * bertambah.
+     */
+    gambarTersemat?: Map<string, any>,
   ): Promise<void> {
     const pdfBytes = Uint8Array.from(atob(pageData.pdf), (c) =>
       c.charCodeAt(0),
@@ -652,7 +694,13 @@ export class PdfMainComponent implements OnInit {
     }
 
     for (const a of pageData.anotasi || []) {
-      this.gambarAnotasi(copiedPage, a, efektif, font);
+      this.gambarAnotasi(
+        copiedPage,
+        a,
+        efektif,
+        font,
+        a.gambar ? gambarTersemat?.get(a.gambar) : undefined,
+      );
     }
 
     tujuan.addPage(copiedPage);
@@ -742,8 +790,28 @@ export class PdfMainComponent implements OnInit {
     a: Anotasi,
     putar: number,
     font: any,
+    gambar?: any,
   ): void {
     const { width: W, height: H } = page.getSize();
+
+    if (a.jenis === 'ttd') {
+      // Tanpa gambarnya tidak ada yang dapat digambar — dan menggambar
+      // kotak kosong sebagai gantinya justru menutupi isi halaman.
+      if (!gambar) return;
+      const k = PdfMainComponent.petaAnotasi(
+        { ...a, lebar: a.lebar ?? 0.22, tinggi: a.tinggi ?? 0.06 },
+        W,
+        H,
+        putar,
+      );
+      page.drawImage(gambar, {
+        x: k.x,
+        y: k.y,
+        width: k.width,
+        height: k.height,
+      });
+      return;
+    }
 
     if (a.jenis === 'tutup') {
       const k = PdfMainComponent.petaAnotasi(

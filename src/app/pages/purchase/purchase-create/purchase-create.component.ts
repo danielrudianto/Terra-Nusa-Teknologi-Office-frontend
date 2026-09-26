@@ -1,4 +1,5 @@
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { POLA_TIPE_PEMBELIAN, JENIS_TANPA_PPH } from 'src/app/constants/purchase-type-label.constant';
 import { pphDiputuskan, tarifPphNol } from 'src/app/utils/pph-wajib';
 import { Component, ElementRef, ViewChild, inject, signal } from '@angular/core';
 import { nilaiUang } from '../../../utils/angka';
@@ -266,9 +267,7 @@ export class PurchaseCreateComponent {
       ]),
       purchaseType: new FormControl('', [
         Validators.required,
-        Validators.pattern(
-          /^\A|B|C|D|E|F|G|H1|H2|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2|6\.5\.1$/,
-        ),
+        Validators.pattern(POLA_TIPE_PEMBELIAN),
       ]),
       documentType: new FormControl('', Validators.required),
       lastStatus: new FormControl('ready', Validators.required),
@@ -752,7 +751,22 @@ export class PurchaseCreateComponent {
          * meloloskan faktur jasa tanpa kode — persis kebocoran yang
          * gerbang ini dipasang untuk menutupnya.
          */
-        this.valueFormGroup.patchValue({ tanpaPph: false });
+        /*
+         * KECUALI jenis yang memang bukan objek pemotongan.
+         *
+         * Asuransi (6.4.2) salah satunya — dikonfirmasi ke konsultan pajak.
+         * Tanpa pengecualian ini, tiap faktur asuransi berhenti di gerbang
+         * PPh: tombol "Hitung total" mati, dan yang mengisinya tidak punya
+         * petunjuk bahwa yang kurang justru pernyataan "tidak dipotong".
+         *
+         * Tetap BAWAAN, bukan kunci: centangnya dapat dibuka kembali.
+         */
+        const jenisPembelian = String(
+          this.metaFormGroup.controls['purchaseType'].value || '',
+        );
+        this.valueFormGroup.patchValue({
+          tanpaPph: JENIS_TANPA_PPH.has(jenisPembelian),
+        });
       }
 
       /*
@@ -765,7 +779,7 @@ export class PurchaseCreateComponent {
        * sebelumnya. Kolom PPh sendiri tidak mengubah `isFinal` — hanya dpp,
        * ppn, pbbkb, dan nilai lain yang melakukannya.
        */
-      this.isFinal = false;
+      this.tandaiTotalBasi();
     });
 
     /*
@@ -920,7 +934,7 @@ export class PurchaseCreateComponent {
         this.valueFormGroup.controls['ppnValue'].setValue(0);
       }
 
-      this.isFinal = false;
+      this.tandaiTotalBasi();
     });
 
     this.valueFormGroup.controls['dpp'].valueChanges.subscribe((value) => {
@@ -939,15 +953,15 @@ export class PurchaseCreateComponent {
         this.valueFormGroup.controls['ppnValue'].setValue(0);
       }
 
-      this.isFinal = false;
+      this.tandaiTotalBasi();
     });
 
     this.valueFormGroup.controls['pbbkb'].valueChanges.subscribe((value) => {
-      this.isFinal = false;
+      this.tandaiTotalBasi();
     });
 
     this.valueFormGroup.controls['otherValue'].valueChanges.subscribe((_) => {
-      this.isFinal = false;
+      this.tandaiTotalBasi();
     });
 
     this.metaFormGroup.controls['purchaseOrderName'].valueChanges.subscribe(
@@ -963,6 +977,11 @@ export class PurchaseCreateComponent {
           const expenseType = purchaseOrderName.split('-')[3];
           this.metaFormGroup.controls['projectName'].setValue(projectName);
           this.metaFormGroup.controls['purchaseType'].setValue(expenseType);
+          // Jenis yang memang tidak dipotong PPh langsung dinyatakan
+          // begitu — lihat `JENIS_TANPA_PPH`. Dapat dibuka kembali.
+          if (JENIS_TANPA_PPH.has(String(expenseType || ''))) {
+            this.valueFormGroup.patchValue({ tanpaPph: true });
+          }
         } else {
           // set the project name to empty string if the purchase order name is not valid
           this.metaFormGroup.controls['projectName'].setValue('');
@@ -1390,8 +1409,36 @@ export class PurchaseCreateComponent {
           }
         });
 
-      this.isFinal = false;
+      this.tandaiTotalBasi();
     }
+  }
+
+  /**
+   * Tandai TOTAL sudah tidak sesuai lagi dengan isian di atasnya.
+   *
+   * Sebelumnya perubahan nilai hanya mematikan `isFinal`, sementara angka
+   * total yang LAMA tetap terpampang. Akibatnya, yang menambahkan "Nilai
+   * lain" sepuluh setengah juta tetap melihat "Total Rp 60 000" di
+   * bawahnya — angka yang terbaca sebagai hasil hitungan, padahal hasil
+   * hitungan sebelum nilai itu dimasukkan.
+   *
+   * Lebih buruk lagi bila tombol "Hitung total" sedang tidak dapat ditekan
+   * — misalnya PPh belum diputuskan: yang melihat layar tidak punya satu
+   * pun petunjuk bahwa angka itu basi.
+   *
+   * Karena itu totalnya DIKOSONGKAN, bukan sekadar ditandai. Kolomnya
+   * wajib diisi, jadi langkah berikutnya ikut tertahan sampai tombol
+   * hitungnya ditekan — dan itu memang yang diinginkan.
+   *
+   * `emitEvent: false` supaya pengosongan ini tidak menyalakan langganan
+   * nilai lain dan memulai putaran yang sama sekali lagi.
+   */
+  private tandaiTotalBasi(): void {
+    this.isFinal = false;
+    this.valueFormGroup.get('total')?.setValue('', { emitEvent: false });
+    this.paymentFormGroup
+      ?.get('paymentTotal')
+      ?.setValue('', { emitEvent: false });
   }
 
   calculateTotal() {

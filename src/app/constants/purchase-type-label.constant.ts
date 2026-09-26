@@ -55,6 +55,67 @@ export const PURCHASE_TYPE_LABELS: { [key: string]: string } = {
   H2: 'Subcontractor (individual)',
 };
 
+/**
+ * Pola yang menerima SELURUH kode jenis pembelian yang dikenal aplikasi.
+ *
+ * DISUSUN DARI `PURCHASE_TYPE_LABELS`, bukan ditulis tangan.
+ *
+ * Sebelumnya polanya disalin ke empat formulir — buat pembelian, ubah
+ * pembelian, buat draf, dan ubah draf jadi pembelian — dan keempatnya sudah
+ * berselisih:
+ *
+ *   buat pembelian    : … 6.4.1, 6.4.2, 6.5.1
+ *   ubah pembelian    : … 6.4.1
+ *   buat draf         : … 6.4.1, 6.4.2
+ *   ubah draf         : … 6.4.1
+ *
+ * Akibatnya pembelian asuransi (6.4.2) BISA dibuat, tetapi tidak bisa
+ * disunting dan tidak bisa dijadikan pembelian dari draf. Tidak ada galat
+ * yang menyebut sebabnya — isiannya sekadar merah, dan tombol berikutnya
+ * mati.
+ *
+ * KEEMPATNYA JUGA TIDAK BENAR-BENAR MENYARING. Bentuk lamanya:
+ *
+ *   /^\A|B|C|D|…|6\.4\.1$/
+ *
+ * Tanpa tanda kurung, jangkarnya hanya mengikat cabang PERTAMA dan
+ * TERAKHIR. Cabang di tengah bebas cocok di mana saja, sehingga "ABC",
+ * "xxBxx", bahkan "6.9.9B" semuanya lolos. Yang dijaga selama ini praktis
+ * tidak ada.
+ *
+ * Bentuk di bawah membungkusnya dalam satu grup, sehingga jangkarnya
+ * berlaku untuk seluruh cabang — dan daftarnya tidak mungkin tertinggal
+ * lagi, sebab ia dibaca dari satu-satunya tempat yang menyimpan kodenya.
+ */
+export const POLA_TIPE_PEMBELIAN = new RegExp(
+  '^(' +
+    Object.keys(PURCHASE_TYPE_LABELS)
+      .map((k) => k.replace(/[.]/g, '\\.'))
+      .join('|') +
+    ')$',
+);
+
+/**
+ * Jenis pembelian yang MEMANG TIDAK DIPOTONG PPh.
+ *
+ * Dipakai sebagai BAWAAN pada formulir, bukan sebagai kunci: kotak "Faktur
+ * ini memang tidak dipotong PPh" tetap dapat dibuka kembali. Yang dihemat
+ * satu langkah yang jawabannya sudah pasti; yang tidak diambil alih adalah
+ * keputusannya.
+ *
+ *   6.4.2 — Asuransi. Jasa asuransi tidak termasuk objek pemotongan PPh
+ *           pasal 23. Dikonfirmasi Daniel ke konsultan pajaknya,
+ *           25 September 2026.
+ *
+ * Tanpa bawaan ini, tiap faktur asuransi berhenti di gerbang PPh: tombol
+ * "Hitung total" mati, dan yang mengisinya tidak punya petunjuk bahwa yang
+ * kurang justru pernyataan "tidak dipotong".
+ *
+ * Menambah kode ke sini berarti menyatakan sebuah aturan pajak. Sebutkan
+ * sumbernya di komentar, seperti di atas.
+ */
+export const JENIS_TANPA_PPH: ReadonlySet<string> = new Set(['6.4.2']);
+
 export const MASTER_ITEM_PURCHASE_TYPES: string[] = [
   'F',
   'G',

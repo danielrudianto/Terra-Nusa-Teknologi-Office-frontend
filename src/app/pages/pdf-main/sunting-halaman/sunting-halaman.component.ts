@@ -16,6 +16,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { JALUR_WORKER_PDF } from '../pdf-main.component';
 
 /**
  * Satu coretan pada halaman — bentuknya sama persis dengan yang dipakai
@@ -128,7 +129,9 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
    */
   private async gambarHalaman(): Promise<string> {
     const pdfjslib: any = await import('pdfjs-dist');
-    pdfjslib.GlobalWorkerOptions.workerSrc = '/assets/pdf-worker-shim.mjs';
+    // Alamat yang SAMA dengan halaman PDF — termasuk penanda versinya.
+    // Dua alamat berbeda berarti dua worker diunduh untuk satu pekerjaan.
+    pdfjslib.GlobalWorkerOptions.workerSrc = JALUR_WORKER_PDF;
 
     const bita = Uint8Array.from(atob(this.data.pdf), (c) => c.charCodeAt(0));
     const dok = await pdfjslib.getDocument({ data: bita }).promise;

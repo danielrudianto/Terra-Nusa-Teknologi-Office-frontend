@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { POLA_TIPE_PEMBELIAN } from 'src/app/constants/purchase-type-label.constant';
 import { TranslateService } from '@ngx-translate/core';
 import { Component, Inject, inject } from '@angular/core';
 import {
@@ -118,9 +119,7 @@ export class PurchaseUpdateComponent {
     ]),
     purchaseType: new FormControl('', [
       Validators.required,
-      Validators.pattern(
-        /^\A|B|C|D|E|F|G|H1|H2|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1$/,
-      ),
+      Validators.pattern(POLA_TIPE_PEMBELIAN),
     ]),
     lastStatus: new FormControl('ready', Validators.required),
     lastStatusDescription: new FormControl(''),
