@@ -166,9 +166,18 @@ h2.sh-title {
 /* Kertasnya: gambar halaman + lapisan coretan yang PERSIS seukuran. */
 .sh-kertas {
   position: relative;
-  /* Acuan satuan `cqw`: besar huruf catatan dinyatakan sebagai persentase
-     lebar kertas, supaya yang terlihat sepadan dengan yang tercetak. */
-  container-type: inline-size;
+  /*
+    JANGAN pasang `container-type: inline-size` di sini.
+
+    Kertasnya berada di dalam grid `place-items: center`, jadi lebarnya
+    ditentukan oleh ISINYA — gambar halamannya. `inline-size` justru
+    memerintahkan peramban menghitung lebar TANPA melihat isinya, sehingga
+    kertasnya menciut menjadi nol dan halamannya hilang dari layar sama
+    sekali. Tidak ada galat, tidak ada pemuat: hanya kosong.
+
+    Besar huruf catatan karena itu dihitung di TypeScript dari lebar
+    kertasnya yang sebenarnya (`ResizeObserver`), bukan lewat satuan `cqw`.
+  */
   display: block;
   max-width: 100%;
   line-height: 0;
@@ -219,6 +228,15 @@ h2.sh-title {
        Bingkai putus-putusnya hanya ada selama disunting. */
     background: transparent;
     outline: 1px dashed var(--brand, #154dec);
+  }
+
+  /* Yang sedang disunting bilah alatnya. Bingkainya TEGAS, bukan
+     putus-putus: setelan di atas mengenai kotak ini dan bukan yang lain,
+     dan itu harus terlihat tanpa dicari. */
+  &.is-terpilih {
+    outline: 2px solid var(--brand, #154dec);
+    outline-offset: 1px;
+    box-shadow: 0 0 0 4px rgba(21, 77, 236, 0.16);
   }
 }
 
@@ -284,7 +302,6 @@ h2.sh-title {
    tombol yang dijejalkan ke dalamnya menutupi justru teks yang sedang
    diketik. */
 .sh-anotasi__pegang,
-.sh-anotasi__cat,
 .sh-anotasi__x {
   position: absolute;
   top: 50%;
@@ -312,16 +329,6 @@ h2.sh-title {
   color: $muted;
   &:active {
     cursor: grabbing;
-  }
-}
-.sh-anotasi__cat {
-  /* Di bawah tombol hapus, bukan di sampingnya: penutup setebal satu baris
-     tidak punya ruang mendatar di kanan-kirinya. */
-  right: -26px;
-  top: calc(50% + 24px);
-  color: var(--brand, #154dec);
-  &:hover {
-    background: var(--brand-soft, #eef2fe);
   }
 }
 .sh-anotasi__x {

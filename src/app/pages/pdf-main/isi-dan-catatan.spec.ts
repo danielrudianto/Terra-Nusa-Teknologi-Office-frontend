@@ -377,26 +377,75 @@ describe('Dialog sunting — isi penutup & rupa catatan', () => {
     );
   });
 
-  it('cat ulang menerapkan rupa huruf pada catatan yang sudah ada', () => {
+  it('catatan TERPILIH ikut berubah saat rupa & besar hurufnya diganti', () => {
     const c = buat();
     c.anotasi = [{ jenis: 'catatan', x: 0.2, y: 0.2, teks: 'lama' }];
-    c.fontaCatatan = 'serif';
-    c.ukuranCatatan = 24;
-    c.catUlang(0, new Event('click'));
-    expect(c.anotasi[0].fonta).toBe('serif');
-    expect(c.anotasi[0].ukuran).toBe(24);
-    expect(c.anotasi[0].teks).toBe('lama');
+    c.pilihAnotasi(0, new Event('click'));
+    c.setFonta('serif');
+    c.setUkuran(24);
+    c.setTebal(true);
+    c.setWarnaCatatan('#000000');
+    expect(c.anotasi[0]).toEqual(
+      jasmine.objectContaining({
+        fonta: 'serif',
+        ukuran: 24,
+        tebal: true,
+        warna: '#000000',
+        teks: 'lama',
+      }),
+    );
   });
 
-  it('besar huruf di layar dinyatakan sebagai persentase lebar kertas', () => {
-    // Piksel akan salah: kertasnya ditampilkan sekecil apa pun yang muat.
+  it('memilih catatan membawa bilah alatnya ke rupa huruf catatan itu', () => {
+    const c = buat();
+    c.anotasi = [
+      { jenis: 'catatan', x: 0.2, y: 0.2, teks: 'x', fonta: 'mono', ukuran: 18, tebal: true },
+    ];
+    c.pilihAnotasi(0, new Event('click'));
+    expect(c.fontaCatatan).toBe('mono');
+    expect(c.ukuranCatatan).toBe(18);
+    expect(c.tebalCatatan).toBeTrue();
+  });
+
+  it('isi bergambar dibuat ULANG saat bentuk atau warnanya diganti', () => {
+    // Pola memakai warnanya sebagai dasar dan dipotong mengikuti bentuknya,
+    // jadi keduanya harus membuat gambarnya dari awal — kalau tidak, yang
+    // tampil masih gambar yang lama.
+    const c = buat();
+    c.isiTutup = 'silang';
+    c.pilihAlat('tutup');
+    c.taruh(klik());
+    const awal = c.anotasi[0].gambar;
+
+    c.setWarnaTutup('#000000');
+    const sesudahWarna = c.anotasi[0].gambar;
+    expect(sesudahWarna).not.toBe(awal);
+
+    c.setBentuk('lingkaran');
+    expect(c.anotasi[0].gambar).not.toBe(sesudahWarna);
+  });
+
+  it('besar huruf di layar diskalakan dengan lebar kertas yang TERUKUR', () => {
+    // Titik bukan piksel: kertasnya ditampilkan sekecil apa pun yang muat,
+    // jadi 10 pt pada kertas selebar 1190 px bukan 10 px.
+    //
+    // Pernah dipecahkan dengan satuan `cqw`, dan itu menuntut
+    // `container-type: inline-size` pada kertasnya — containment yang
+    // MENCIUTKAN kertasnya menjadi nol sehingga halamannya hilang dari
+    // layar sama sekali, tanpa galat apa pun.
     const c = buat();
     c.lebarPt = 595;
-    expect(c.ukuranLayar({ jenis: 'catatan', x: 0, y: 0, ukuran: 59.5 })).toBe('10cqw');
+    c.lebarKertasPx = 1190; // dua kali lipat
+    expect(c.ukuranLayar({ jenis: 'catatan', x: 0, y: 0, ukuran: 10 })).toBe('20px');
     // Tanpa ukuran, 10 titik — sama dengan yang digambar ke PDF-nya.
-    expect(c.ukuranLayar({ jenis: 'catatan', x: 0, y: 0 })).toBe(
-      `${(10 / 595) * 100}cqw`,
-    );
+    expect(c.ukuranLayar({ jenis: 'catatan', x: 0, y: 0 })).toBe('20px');
+  });
+
+  it('kertas seukuran halamannya berarti titik = piksel', () => {
+    const c = buat();
+    c.lebarPt = 595;
+    c.lebarKertasPx = 595;
+    expect(c.ukuranLayar({ jenis: 'catatan', x: 0, y: 0, ukuran: 14 })).toBe('14px');
   });
 
   it('rupa huruf layar mengikuti pilihan yang sama', () => {
@@ -404,5 +453,97 @@ describe('Dialog sunting — isi penutup & rupa catatan', () => {
     expect(c.fontaLayar({ jenis: 'catatan', x: 0, y: 0, fonta: 'serif' })).toContain('Times');
     expect(c.fontaLayar({ jenis: 'catatan', x: 0, y: 0, fonta: 'mono' })).toContain('Courier');
     expect(c.fontaLayar({ jenis: 'catatan', x: 0, y: 0 })).toContain('Helvetica');
+  });
+});
+
+/*
+ * KERTASNYA HARUS PUNYA LEBAR.
+ *
+ * Cacat yang diuji di sini tidak menghasilkan galat, tidak menghasilkan
+ * pemuat, dan tidak menghasilkan pesan gagal — dialognya terbuka dengan
+ * seluruh bilah alatnya, dan halamannya sekadar TIDAK ADA.
+ *
+ * Sebabnya satu baris CSS: `container-type: inline-size` pada kertasnya,
+ * dipasang supaya besar huruf catatan dapat memakai satuan `cqw`. Kertas
+ * itu berada di dalam grid `place-items: center`, jadi lebarnya ditentukan
+ * oleh isinya — sementara containment itu justru melarang peramban melihat
+ * isinya. Lebarnya menjadi nol.
+ *
+ * Ini diuji dengan MERAKIT komponennya sungguhan, bukan memanggil
+ * fungsinya: yang rusak tata letaknya, dan tata letak hanya dapat diperiksa
+ * oleh peramban. Penggambaran pdf.js diganti (Karma tidak dapat menyajikan
+ * worker-nya); yang diuji hanya apa yang terjadi SESUDAH gambarnya ada.
+ */
+describe('Dialog sunting — kertasnya tampil, bukan menciut jadi nol', () => {
+  /** PNG 600×800 penuh warna — pengganti halaman yang digambar pdf.js. */
+  function halamanPng(): string {
+    const k = document.createElement('canvas');
+    k.width = 600;
+    k.height = 800;
+    const ctx = k.getContext('2d')!;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, 600, 800);
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(40, 40, 300, 24);
+    return k.toDataURL('image/png');
+  }
+
+  it('lebar dan tinggi kertasnya lebih dari nol', async () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [TranslateModule.forRoot()],
+      providers: [
+        provideNoopAnimations(),
+        { provide: MatDialogRef, useValue: { close: () => {} } },
+        {
+          provide: MAT_DIALOG_DATA,
+          useValue: {
+            pdf: '',
+            nomor: 1,
+            fileName: 'a.pdf',
+            rotation: 0,
+            anotasi: [{ jenis: 'catatan', x: 0.2, y: 0.2, teks: 'Halo' }],
+          },
+        },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(SuntingHalamanComponent);
+    const png = halamanPng();
+    // pdf.js diganti: Karma tidak dapat menyajikan worker-nya.
+    (fixture.componentInstance as any).gambarHalaman = async () => png;
+
+    // Dialog ini biasanya dibuka pada lebar tetapnya; di dalam harness
+    // Karma induknya selebar apa adanya, jadi dipatok supaya ukurannya
+    // dapat diperiksa dengan pasti.
+    fixture.nativeElement.style.width = '1180px';
+    document.body.appendChild(fixture.nativeElement);
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const kertas: HTMLElement | null =
+      fixture.nativeElement.querySelector('.sh-kertas');
+    expect(kertas).withContext('kertasnya tidak dirakit sama sekali').toBeTruthy();
+
+    // Tunggu gambarnya termuat — sebelum itu kertasnya memang belum punya
+    // ukuran, dan ujinya akan merah karena alasan yang keliru.
+    const img = kertas!.querySelector('img') as HTMLImageElement;
+    if (!img.complete) {
+      await new Promise<void>((s) => {
+        img.onload = () => s();
+        img.onerror = () => s();
+      });
+    }
+    fixture.detectChanges();
+
+    expect(kertas!.getBoundingClientRect().width)
+      .withContext('kertasnya menciut — periksa containment pada .sh-kertas')
+      .toBeGreaterThan(100);
+    expect(kertas!.getBoundingClientRect().height).toBeGreaterThan(100);
+
+    fixture.nativeElement.remove();
+    fixture.destroy();
   });
 });

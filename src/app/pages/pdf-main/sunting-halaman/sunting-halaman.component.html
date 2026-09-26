@@ -81,9 +81,10 @@
     </div>
 
     <!--
-      Setelan berlaku untuk coretan BERIKUTNYA yang ditaruh. Yang sudah ada
-      diubah lewat tombol kuas pada coretannya — supaya letak yang sudah pas
-      tidak perlu dibuat ulang hanya karena warnanya salah.
+      Setelan mengenai coretan yang SEDANG TERPILIH, dan bila tidak ada yang
+      terpilih, coretan berikutnya yang ditaruh. Memilih satu coretan juga
+      membawa bilah alat ini ikut ke setelannya — kalau tidak, yang tampil
+      di sini bukan yang sedang disunting.
     -->
     <div class="sh-setel">
       <span class="sh-setel__nama">{{ "pdf.overwrite" | translate }}</span>
@@ -98,7 +99,7 @@
           type="button"
           class="sh-pil__btn"
           [class.is-aktif]="bentukTutup === b.nilai"
-          (click)="bentukTutup = b.nilai"
+          (click)="setBentuk(b.nilai)"
           [matTooltip]="'pdf.bentuk_' + b.nilai | translate"
           [attr.aria-label]="'pdf.bentuk_' + b.nilai | translate"
         >
@@ -117,7 +118,7 @@
           class="sh-pil__btn"
           [class.is-aktif]="isiTutup === i.nilai"
           [disabled]="i.nilai === 'buram' && !pipetSiap"
-          (click)="isiTutup = i.nilai"
+          (click)="setIsi(i.nilai)"
           [matTooltip]="'pdf.isi_' + i.nilai | translate"
           [attr.aria-label]="'pdf.isi_' + i.nilai | translate"
         >
@@ -127,7 +128,12 @@
 
       <span class="sh-warna">
         <label class="sh-warna__pilih" [matTooltip]="'pdf.warna' | translate">
-          <input type="color" [(ngModel)]="warnaTutup" name="warnaTutup" />
+          <input
+            type="color"
+            [ngModel]="warnaTutup"
+            (ngModelChange)="setWarnaTutup($event)"
+            name="warnaTutup"
+          />
           <span class="sh-warna__contoh" [style.background]="warnaTutup"></span>
         </label>
         <button
@@ -136,7 +142,7 @@
           class="sh-warna__cepat"
           [class.is-aktif]="warnaTutup.toLowerCase() === w"
           [style.background]="w"
-          (click)="warnaTutup = w"
+          (click)="setWarnaTutup(w)"
           [attr.aria-label]="w"
         ></button>
         <button
@@ -159,7 +165,8 @@
           min="10"
           max="100"
           step="5"
-          [(ngModel)]="opasitasTutup"
+          [ngModel]="opasitasTutup"
+          (ngModelChange)="setOpasitas($event)"
           name="opasitasTutup"
           [attr.aria-label]="'pdf.opasitas' | translate"
         />
@@ -180,7 +187,7 @@
           type="button"
           class="sh-pil__btn"
           [class.is-aktif]="fontaCatatan === f.nilai"
-          (click)="fontaCatatan = f.nilai"
+          (click)="setFonta(f.nilai)"
           [matTooltip]="'pdf.fonta_' + f.nilai | translate"
           [attr.aria-label]="'pdf.fonta_' + f.nilai | translate"
         >
@@ -190,7 +197,8 @@
 
       <select
         class="sh-ukuran"
-        [(ngModel)]="ukuranCatatan"
+        [ngModel]="ukuranCatatan"
+        (ngModelChange)="setUkuran($event)"
         name="ukuranCatatan"
         [attr.aria-label]="'pdf.ukuran' | translate"
         [matTooltip]="'pdf.ukuran' | translate"
@@ -204,7 +212,7 @@
         type="button"
         class="sh-pil__btn sh-pil__btn--lepas"
         [class.is-aktif]="tebalCatatan"
-        (click)="tebalCatatan = !tebalCatatan"
+        (click)="setTebal(!tebalCatatan)"
         [matTooltip]="'pdf.tebal' | translate"
         [attr.aria-label]="'pdf.tebal' | translate"
       >
@@ -215,7 +223,12 @@
         class="sh-warna__pilih"
         [matTooltip]="'pdf.warnaCatatan' | translate"
       >
-        <input type="color" [(ngModel)]="warnaCatatan" name="warnaCatatan" />
+        <input
+          type="color"
+          [ngModel]="warnaCatatan"
+          (ngModelChange)="setWarnaCatatan($event)"
+          name="warnaCatatan"
+        />
         <span class="sh-warna__contoh" [style.background]="warnaCatatan"></span>
       </label>
     </div>
@@ -258,7 +271,8 @@
           [style.height.%]="
             a.jenis === 'catatan' ? null : (a.tinggi || 0.024) * 100
           "
-          (click)="$event.stopPropagation()"
+          [class.is-terpilih]="terpilih === i"
+          (click)="pilihAnotasi(i, $event)"
         >
           <span
             class="sh-anotasi__pegang"
@@ -300,7 +314,6 @@
               (a.jenis === 'tutup' ? 'pdf.overwriteHint' : 'pdf.noteHint')
                 | translate
             "
-            (click)="$event.stopPropagation()"
           />
 
           <!-- Tanda tangan digambar sebagai gambar utuh, bukan latar: latar
@@ -312,17 +325,6 @@
             alt=""
             draggable="false"
           />
-
-          <button
-            type="button"
-            class="sh-anotasi__cat"
-            *ngIf="a.jenis === 'tutup'"
-            (click)="catUlang(i, $event)"
-            [matTooltip]="'pdf.catUlang' | translate"
-            [attr.aria-label]="'pdf.catUlang' | translate"
-          >
-            <mat-icon>format_paint</mat-icon>
-          </button>
 
           <button
             type="button"

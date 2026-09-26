@@ -335,25 +335,106 @@ describe('Dialog sunting — bentuk, warna, pipet', () => {
     expect(c.warnaDiTitik(1, 1)).toBe('#000000');
   });
 
-  it('CAT ULANG menerapkan bentuk & warna pada penutup yang sudah ada', () => {
+  it('penutup TERPILIH ikut berubah saat bentuk & warnanya diganti', () => {
     // Tanpa ini, satu-satunya cara mengganti warna adalah menghapus lalu
     // menaruh ulang — dan letaknya yang sudah pas ikut hilang.
     const c = buat();
     c.anotasi = [{ jenis: 'tutup', x: 0.3, y: 0.4, lebar: 0.2, tinggi: 0.02 }];
-    c.bentukTutup = 'segitiga';
-    c.warnaTutup = '#b3322f';
-    c.catUlang(0, new Event('click'));
+    c.pilihAnotasi(0, new Event('click'));
+    c.setBentuk('segitiga');
+    c.setWarnaTutup('#b3322f');
     expect(c.anotasi[0]).toEqual(
       jasmine.objectContaining({ x: 0.3, y: 0.4, bentuk: 'segitiga', warna: '#b3322f' }),
     );
   });
 
-  it('cat ulang tidak menyentuh catatan maupun tanda tangan', () => {
+  it('setelan penutup tidak menyentuh catatan yang terpilih', () => {
     const c = buat();
     c.anotasi = [{ jenis: 'catatan', x: 0.1, y: 0.1, teks: 'halo' }];
-    c.bentukTutup = 'lingkaran';
-    c.catUlang(0, new Event('click'));
+    c.pilihAnotasi(0, new Event('click'));
+    c.setBentuk('lingkaran');
+    c.setWarnaTutup('#000000');
     expect(c.anotasi[0].bentuk).toBeUndefined();
+    // Warna penutup dan warna catatan dua setelan yang berbeda; yang satu
+    // tidak boleh bocor ke yang lain.
+    expect(c.anotasi[0].warna).toBeUndefined();
+  });
+
+  it('tanpa yang terpilih, setelannya hanya mengenai coretan BERIKUTNYA', () => {
+    const c = buat();
+    c.anotasi = [{ jenis: 'tutup', x: 0.3, y: 0.4, lebar: 0.2, tinggi: 0.02 }];
+    c.setWarnaTutup('#000000');
+    expect(c.anotasi[0].warna).toBeUndefined();
+
+    c.pilihAlat('tutup');
+    c.taruh(klik());
+    expect(c.anotasi[1].warna).toBe('#000000');
+  });
+
+  it('memilih satu coretan MEMBAWA bilah alatnya ke setelan coretan itu', () => {
+    // Kalau tidak, yang tampil di bilah alat bukan yang sedang disunting —
+    // dan menyentuh apa pun di sana mengubahnya menjadi yang tidak diminta.
+    const c = buat();
+    c.anotasi = [
+      {
+        jenis: 'tutup',
+        x: 0.1,
+        y: 0.1,
+        lebar: 0.2,
+        tinggi: 0.02,
+        bentuk: 'lingkaran',
+        warna: '#fde68a',
+        opasitas: 0.5,
+      },
+    ];
+    c.pilihAnotasi(0, new Event('click'));
+    expect(c.bentukTutup).toBe('lingkaran');
+    expect(c.warnaTutup).toBe('#fde68a');
+    expect(c.opasitasTutup).toBe(50);
+  });
+
+  it('coretan yang baru ditaruh langsung terpilih', () => {
+    const c = buat();
+    c.pilihAlat('tutup');
+    c.taruh(klik());
+    expect(c.terpilih).toBe(0);
+  });
+
+  it('menekan kertas yang kosong melepas pilihannya', () => {
+    const c = buat();
+    c.pilihAlat('tutup');
+    c.taruh(klik());
+    expect(c.terpilih).toBe(0);
+    // Alatnya mati sendiri setelah menaruh, jadi klik berikutnya jatuh ke
+    // kertas kosong.
+    c.taruh(klik(0.9, 0.9));
+    expect(c.terpilih).toBeNull();
+  });
+
+  it('menghapus menggeser pilihannya, bukan membiarkannya menunjuk tetangga', () => {
+    const c = buat();
+    c.anotasi = [
+      { jenis: 'tutup', x: 0.1, y: 0.1 },
+      { jenis: 'tutup', x: 0.2, y: 0.2 },
+      { jenis: 'tutup', x: 0.3, y: 0.3 },
+    ];
+    c.terpilih = 2;
+    c.hapus(0);
+    expect(c.terpilih).toBe(1);
+    expect(c.anotasi[1].x).toBe(0.3);
+
+    c.hapus(1);
+    expect(c.terpilih).toBeNull();
+  });
+
+  it('PIPET mewarnai penutup yang sedang terpilih, bukan hanya yang berikutnya', () => {
+    const c = buat();
+    pasangContoh(c, '#154dec');
+    c.anotasi = [{ jenis: 'tutup', x: 0.3, y: 0.4, lebar: 0.2, tinggi: 0.02 }];
+    c.pilihAnotasi(0, new Event('click'));
+    c.pilihAlat('pipet');
+    c.taruh(klik());
+    expect(c.anotasi[0].warna).toBe('#154dec');
   });
 
   it('warnaTeks di layar sepakat dengan yang digambar ke PDF-nya', () => {

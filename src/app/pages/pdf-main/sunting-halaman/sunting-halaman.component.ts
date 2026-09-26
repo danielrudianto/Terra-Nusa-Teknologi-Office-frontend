@@ -142,7 +142,27 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
   /** Lebar halaman sebagaimana ditampilkan, dalam titik. */
   lebarPt = 595;
 
+  /**
+   * Lebar kertas di layar, dalam piksel.
+   *
+   * Diukur, bukan dihitung: kertasnya menyusut mengikuti lebar dialog, dan
+   * dialognya sendiri berubah bila jendelanya diubah ukurannya.
+   */
+  lebarKertasPx = 595;
+
   alatAktif: 'tutup' | 'catatan' | 'ttd' | 'pipet' | null = null;
+
+  /**
+   * Coretan yang sedang disunting, atau null.
+   *
+   * Setelan pada bilah alat berlaku untuk coretan INI selama ada yang
+   * terpilih, dan untuk coretan berikutnya bila tidak ada. Sebelumnya
+   * keduanya dipisah: setelan hanya berlaku untuk yang berikutnya, dan
+   * yang sudah ada harus ditimpa lewat tombol kuas tersendiri — satu
+   * langkah tambahan yang tidak dimengerti siapa pun yang sekadar ingin
+   * mengganti warna kotak yang barusan ditaruhnya.
+   */
+  terpilih: number | null = null;
 
   /** Bentuk, isi, warna & kepekatan penutup BERIKUTNYA yang ditaruh. */
   bentukTutup: BentukTutup = 'kotak';
@@ -220,6 +240,7 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.lepasPendengar();
+    this.pengamatKertas?.disconnect();
   }
 
   /**
@@ -279,6 +300,100 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
       return;
     }
     this.alatAktif = this.alatAktif === alat ? null : alat;
+  }
+
+  // ---- yang terpilih ------------------------------------------------------
+
+  private get tutupTerpilih(): AnotasiSunting | null {
+    const a = this.terpilih === null ? null : this.anotasi[this.terpilih];
+    return a && a.jenis === 'tutup' ? a : null;
+  }
+
+  private get catatanTerpilih(): AnotasiSunting | null {
+    const a = this.terpilih === null ? null : this.anotasi[this.terpilih];
+    return a && a.jenis === 'catatan' ? a : null;
+  }
+
+  /**
+   * Pilih satu coretan, dan BAWA BILAH ALATNYA ikut ke setelan coretan itu.
+   *
+   * Tanpa langkah kedua, bilah alatnya menampilkan setelan yang lain
+   * daripada yang sedang disunting — dan menyentuh apa pun di sana akan
+   * mengubah coretannya menjadi sesuatu yang tidak diminta.
+   */
+  pilihAnotasi(i: number, ev: Event): void {
+    ev.stopPropagation();
+    this.terpilih = i;
+    const a = this.anotasi[i];
+    if (!a) return;
+    if (a.jenis === 'tutup') {
+      this.bentukTutup = a.bentuk ?? 'kotak';
+      this.isiTutup = a.isi ?? 'warna';
+      this.warnaTutup = a.warna ?? '#ffffff';
+      this.opasitasTutup = Math.round((a.opasitas ?? 1) * 100);
+    } else if (a.jenis === 'catatan') {
+      this.fontaCatatan = a.fonta ?? 'sans';
+      this.ukuranCatatan = a.ukuran ?? 10;
+      this.tebalCatatan = !!a.tebal;
+      this.warnaCatatan = a.warna ?? '#b3322f';
+    }
+  }
+
+  setBentuk(b: BentukTutup): void {
+    this.bentukTutup = b;
+    const a = this.tutupTerpilih;
+    if (!a) return;
+    a.bentuk = b;
+    // Isi bergambar dipotong mengikuti bentuknya, jadi bentuknya berubah
+    // berarti gambarnya harus dibuat ulang.
+    this.perbaruiIsi(a);
+  }
+
+  setIsi(i: IsiTutup): void {
+    this.isiTutup = i;
+    const a = this.tutupTerpilih;
+    if (!a) return;
+    a.isi = i;
+    this.perbaruiIsi(a);
+  }
+
+  setWarnaTutup(w: string): void {
+    this.warnaTutup = w;
+    const a = this.tutupTerpilih;
+    if (!a) return;
+    a.warna = w;
+    // Pola memakai warnanya sebagai dasar, jadi gambarnya ikut berubah.
+    this.perbaruiIsi(a);
+  }
+
+  setOpasitas(n: number): void {
+    this.opasitasTutup = n;
+    const a = this.tutupTerpilih;
+    if (a) a.opasitas = n / 100;
+  }
+
+  setFonta(f: FontaCatatan): void {
+    this.fontaCatatan = f;
+    const a = this.catatanTerpilih;
+    if (a) a.fonta = f;
+  }
+
+  setUkuran(n: number): void {
+    this.ukuranCatatan = n;
+    const a = this.catatanTerpilih;
+    if (a) a.ukuran = n;
+  }
+
+  setTebal(t: boolean): void {
+    this.tebalCatatan = t;
+    const a = this.catatanTerpilih;
+    if (a) a.tebal = t;
+  }
+
+  setWarnaCatatan(w: string): void {
+    this.warnaCatatan = w;
+    const a = this.catatanTerpilih;
+    if (a) a.warna = w;
   }
 
   // ---- papan tanda tangan -------------------------------------------------
@@ -427,6 +542,38 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
     if (el) this.siapkanPapan(el.nativeElement);
   }
 
+  private pengamatKertas?: ResizeObserver;
+
+  /**
+   * Amati lebar kertasnya supaya besar huruf catatan ikut menyesuaikan.
+   *
+   * `ResizeObserver` tidak selalu ada (peramban lama, sebagian lingkungan
+   * uji), jadi ketiadaannya bukan galat — besar hurufnya sekadar memakai
+   * lebar terakhir yang diketahui.
+   */
+  @ViewChild('kertas') set kertasRef(el: ElementRef<HTMLElement> | undefined) {
+    this.pengamatKertas?.disconnect();
+    this.pengamatKertas = undefined;
+    if (!el) return;
+
+    const ukur = () => {
+      const l = el.nativeElement.getBoundingClientRect().width;
+      if (l > 0) this.lebarKertasPx = l;
+    };
+
+    if (typeof ResizeObserver === 'undefined') {
+      // Penyetel `ViewChild` berjalan SESUDAH tampilannya diperiksa, jadi
+      // mengubah nilai terikat di sini melempar
+      // `ExpressionChangedAfterItHasBeenChecked` pada mode pengembangan.
+      // `ResizeObserver` sendiri memanggil balik secara asinkron, jadi
+      // hanya jalur cadangan ini yang perlu ditunda.
+      setTimeout(ukur);
+      return;
+    }
+    this.pengamatKertas = new ResizeObserver(ukur);
+    this.pengamatKertas.observe(el.nativeElement);
+  }
+
   /** Gambar papan dari tanda tangan tersimpan saat papannya dibuka. */
   siapkanPapan(kanvas: HTMLCanvasElement): void {
     if (!this.ttdSiap || this.jejak.length) return;
@@ -441,7 +588,13 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
 
   /** Taruh coretan baru pada titik yang ditekan. */
   taruh(ev: MouseEvent): void {
-    if (!this.alatAktif) return;
+    if (!this.alatAktif) {
+      // Menekan bagian kertas yang kosong melepas pilihan — kalau tidak,
+      // setelan di bilah alat tetap mengenai coretan yang sudah lama tidak
+      // dilihat orangnya.
+      this.terpilih = null;
+      return;
+    }
     const kotak = (ev.currentTarget as HTMLElement).getBoundingClientRect();
     const x = (ev.clientX - kotak.left) / kotak.width;
     const y = (ev.clientY - kotak.top) / kotak.height;
@@ -451,7 +604,9 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
       // menyerahkan giliran kembali ke alat penutup — yang hampir selalu
       // menjadi maksud mengambil warnanya.
       const w = this.warnaDiTitik(x, y);
-      if (w) this.warnaTutup = w;
+      // Lewat penyetelnya, supaya warnanya ikut mengenai penutup yang
+      // sedang terpilih — bukan hanya penutup berikutnya.
+      if (w) this.setWarnaTutup(w);
       this.alatAktif = 'tutup';
       return;
     }
@@ -472,6 +627,7 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
       };
       this.perbaruiIsi(a);
       this.anotasi.push(a);
+      this.terpilih = this.anotasi.length - 1;
     } else if (this.alatAktif === 'ttd') {
       // Ukuran bawaan kira-kira selebar kolom tanda tangan pada surat
       // berkop: cukup terbaca, dan tetap dapat diubah sesudah ditaruh.
@@ -483,6 +639,7 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
         tinggi: 0.06,
         gambar: this.ttdSiap || undefined,
       });
+      this.terpilih = this.anotasi.length - 1;
     } else {
       this.anotasi.push({
         jenis: 'catatan',
@@ -494,34 +651,9 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
         ukuran: this.ukuranCatatan,
         tebal: this.tebalCatatan,
       });
+      this.terpilih = this.anotasi.length - 1;
     }
     this.alatAktif = null;
-  }
-
-  /**
-   * Terapkan bentuk & warna dari bilah alat pada penutup yang sudah ada.
-   *
-   * Tanpa ini, satu-satunya cara mengubah warna adalah menghapus lalu
-   * menaruh ulang — dan letaknya yang sudah pas hilang bersamanya.
-   */
-  catUlang(i: number, ev: Event): void {
-    ev.stopPropagation();
-    const a = this.anotasi[i];
-    if (!a) return;
-    if (a.jenis === 'tutup') {
-      a.bentuk = this.bentukTutup;
-      a.warna = this.warnaTutup;
-      a.isi = this.isiTutup;
-      a.opasitas = this.opasitasTutup / 100;
-      this.perbaruiIsi(a);
-      return;
-    }
-    if (a.jenis === 'catatan') {
-      a.warna = this.warnaCatatan;
-      a.fonta = this.fontaCatatan;
-      a.ukuran = this.ukuranCatatan;
-      a.tebal = this.tebalCatatan;
-    }
   }
 
   // ---- isi penutup: buram & pola -----------------------------------------
@@ -706,16 +838,21 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Besar huruf catatan di layar, dalam satuan `cqw` (persen lebar kertas).
+   * Besar huruf catatan di layar, dalam piksel.
    *
-   * Besar huruf disimpan dalam TITIK karena itulah satuan PDF. Di layar,
-   * kertasnya ditampilkan sekecil apa pun yang muat, jadi ukuran piksel
-   * tetap akan salah pada salah satu dari keduanya. Dinyatakan sebagai
-   * persentase lebar kertas, keduanya selalu sepadan.
+   * Besar huruf disimpan dalam TITIK karena itulah satuan PDF, sedangkan
+   * kertasnya di layar ditampilkan sekecil apa pun yang muat — jadi angka
+   * pikselnya harus diskalakan dengan perbandingan keduanya, kalau tidak
+   * yang terlihat saat menyunting bukan yang tercetak.
+   *
+   * Pernah ditulis dengan satuan `cqw` supaya penskalaannya diurus CSS.
+   * Itu menuntut `container-type: inline-size` pada kertasnya, dan
+   * containment itu MENCIUTKAN kertasnya menjadi nol — halamannya hilang
+   * sama sekali. Lihat keterangannya di berkas SCSS-nya.
    */
   ukuranLayar(a: AnotasiSunting): string {
     const pt = a.ukuran && a.ukuran > 0 ? a.ukuran : 10;
-    return `${(pt / this.lebarPt) * 100}cqw`;
+    return `${(pt / this.lebarPt) * this.lebarKertasPx}px`;
   }
 
   /** Rupa huruf di layar yang paling mendekati font baku PDF-nya. */
@@ -802,6 +939,11 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
 
   hapus(i: number): void {
     this.anotasi.splice(i, 1);
+    // Indeksnya bergeser. Tanpa ini, menghapus satu coretan membuat bilah
+    // alat menyunting TETANGGANYA tanpa ada yang menyadarinya.
+    if (this.terpilih === null) return;
+    if (this.terpilih === i) this.terpilih = null;
+    else if (this.terpilih > i) this.terpilih -= 1;
   }
 
   /**
@@ -819,6 +961,7 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
   ): void {
     ev.preventDefault();
     ev.stopPropagation();
+    this.pilihAnotasi(i, ev);
     this.seret = {
       i,
       mode,
