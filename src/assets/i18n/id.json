@@ -4634,7 +4634,6 @@
     "noContractHint": "Margin tidak dapat dihitung sebelum dokumen kontrak dimasukkan.",
     "openProject": "Buka proyek",
     "tabOverview": "Ikhtisar",
-    "contractDppHint": "DPP, di luar PPN",
     "grossValue": "nominal",
     "composition": "Komposisi biaya",
     "includeInternal": "Sertakan pembelian internal",

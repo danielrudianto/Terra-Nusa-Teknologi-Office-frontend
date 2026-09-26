@@ -4634,7 +4634,6 @@
     "noContractHint": "Margin cannot be calculated until a contract document is added.",
     "openProject": "Open project",
     "tabOverview": "Overview",
-    "contractDppHint": "Tax base, excluding VAT",
     "grossValue": "gross",
     "composition": "Cost composition",
     "includeInternal": "Include internal purchases",

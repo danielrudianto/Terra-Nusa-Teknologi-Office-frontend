@@ -1018,7 +1018,8 @@
     "periksaKonfirmasi": "标记为已检查",
     "periksaBuatanSendiri": "此单据由您创建，需由他人检查。",
     "setujuiBuatanSendiri": "此单据由您创建，需由他人审批。",
-    "cabutBukanPemeriksa": "仅 {{nama}} 或四级以上可撤销此审核"
+    "cabutBukanPemeriksa": "仅 {{nama}} 或四级以上可撤销此审核",
+    "viewTanpaPagu": "单价合同 — 工程量尚未确定"
   },
   "income": {
     "title": "其他收入",
@@ -1376,7 +1377,8 @@
     "pembelian": "采购",
     "fakturPenjualan": "销售发票",
     "tender": "招标",
-    "karyawan": "员工"
+    "karyawan": "员工",
+    "pengguna": "用户"
   },
   "notifikasi": {
     "judul": "等待您处理",
@@ -1670,7 +1672,12 @@
     "masaPajakMundurKet": "这是换开发票的情形：单据在更正当月开具，而所属期仍沿用原发票。属正常情况——只需确认所属期与原发票一致。",
     "masaPajakJauhKet": "晚于单据日期三个月以上。仍可保存——请确认发票确实如此。",
     "methodCekGiro": "支票 / 划拨",
-    "methodCekGiroHint": "从账户中支取；划拨于指定日期到期。"
+    "methodCekGiroHint": "从账户中支取；划拨于指定日期到期。",
+    "pphNolJudul": "所选税率为 0% — 不予预扣",
+    "pphNolKeterangan": "本次采购将完全不预扣所得税。零税率可能来自本身税率为零的税目代码，也可能来自代码选择器中的 SKB 勾选。",
+    "pphWajibJudul": "尚未确定预扣税",
+    "pphWajibKeterangan": "请选择税目代码，或勾选本发票确实无需预扣所得税。二者缺一，将无法进入金额步骤。",
+    "tanpaPph": "本发票确实无需预扣所得税"
   },
   "reimbursementCreate": {
     "sectionDetail": "详情",
@@ -2137,7 +2144,9 @@
     "balance": "项目现金余额",
     "negativeSince": "自 {{bulan}} 起为负",
     "scopeTitle": "现金流出仅涵盖采购与报销。",
-    "scopeHint": "系统中的运营费用与薪资没有项目字段，无法归集到此处。该流出金额为下限，并非全貌。"
+    "scopeHint": "系统中的运营费用与薪资没有项目字段，无法归集到此处。该流出金额为下限，并非全貌。",
+    "dasarKeluar": "从账户支出的金额 — 含增值税",
+    "dasarMasuk": "收入账户的金额 — 计税基础 + 增值税 − 预扣税"
   },
   "unduhKalender": {
     "judul": "下载现金日历",
@@ -2199,7 +2208,16 @@
     "mustPick": "请从列表中选择账户",
     "balance": "余额",
     "actions": "操作",
-    "rowActions": "行操作"
+    "rowActions": "行操作",
+    "pickerKosongkan": "清除选择",
+    "pickerLoading": "正在加载账户列表…",
+    "pickerSearch": "搜索账户",
+    "pickerSearchPlaceholder": "账号、户名或银行",
+    "pickerSub": "仍然有效的公司账户。",
+    "pickerTakAda": "暂无有效账户。",
+    "pickerTitle": "选择账户",
+    "terhapusJudul": "该账户已被删除",
+    "terhapusKet": "本单据创建时该账户尚在。如仍需使用本单据，请另选一个账户。"
   },
   "expenseOpponent": {
     "title": "交易对方",
@@ -3681,7 +3699,9 @@
     "set_checked": "审核状态已更改",
     "access": "已访问",
     "approve_bap": "BAP 已批准",
-    "update_adjustments": "调整已更新"
+    "update_adjustments": "调整已更新",
+    "progress_rebase": "系统自动调整（合同已变更）",
+    "purchase_project_override": "已计入其他项目"
   },
   "activity": {
     "title": "活动记录",
@@ -4145,7 +4165,13 @@
     "invoiceDetail": "发票明细",
     "receivedAmount": "收款金额",
     "destinationAccount": "收款账户",
-    "receivedDate": "收款日期"
+    "receivedDate": "收款日期",
+    "betulkan": "修正收款",
+    "betulkanJudul": "正在修正已记录的收款",
+    "betulkanKet": "保存将覆盖历史中所选的那一条记录，而不是新增一笔收款。所属发票不可更改。",
+    "hapusJudul": "删除这笔收款？",
+    "hapusKet": "已删除的收款不再计入本发票，发票可能重新显示为未付清。变更记录仍会保留。",
+    "simpanPerubahan": "保存更改"
   },
   "pdf": {
     "noPdf": "尚无 PDF",
@@ -4188,7 +4214,35 @@
     "dragDropFilePdfDi": "将 PDF 拖放至上方区域，或点击浏览",
     "moveUp": "上移",
     "moveDown": "下移",
-    "remove": "移除"
+    "remove": "移除",
+    "bentuk": "遮盖形状",
+    "bentuk_kotak": "矩形",
+    "bentuk_lingkaran": "椭圆",
+    "bentuk_segitiga": "三角形",
+    "catUlang": "应用此形状与颜色",
+    "fonta": "字体",
+    "fonta_mono": "等宽（Courier）",
+    "fonta_sans": "无衬线（Helvetica）",
+    "fonta_serif": "衬线（Times）",
+    "isi": "遮盖填充",
+    "isi_buram": "模糊（马赛克）",
+    "isi_garis": "斜线填充",
+    "isi_silang": "交叉斜线",
+    "isi_titik": "圆点",
+    "isi_warna": "纯色",
+    "opasitas": "不透明度",
+    "pipet": "从页面拾取颜色",
+    "pipetPetunjuk": "点击页面以拾取该处颜色",
+    "tebal": "粗体",
+    "ttd": "签名",
+    "ttdBersihkan": "重新绘制",
+    "ttdJudul": "添加签名",
+    "ttdPakai": "使用此签名",
+    "ttdPetunjuk": "请在下方方框内绘制您的签名。",
+    "ttdTersimpan": "已载入上次的签名——如需更换请重新绘制。",
+    "ukuran": "字号",
+    "warna": "遮盖颜色",
+    "warnaCatatan": "批注颜色"
   },
   "reimbursementPayment": {
     "createPayment": "创建报销付款",
@@ -4575,7 +4629,7 @@
     "noContractHint": "在添加合同单据之前无法计算毛利。",
     "openProject": "打开项目",
     "tabOverview": "概览",
-    "contractDppHint": "计税基础，不含增值税",
+    "contractDppHint": "计税基础 — 本页所有数字的计算基准",
     "grossValue": "含税",
     "composition": "成本构成",
     "includeInternal": "包含内部采购",
@@ -5585,7 +5639,15 @@
     "diputuskanPada": "决定于",
     "pemenangDitetapkan": "已确定中标方。",
     "tenderDitutup": "招标已结束，无中标方。",
-    "terlaluBanyakCetak": "一页内超过 {{n}} 家供应商难以阅读，数字可能被截断。"
+    "terlaluBanyakCetak": "一页内超过 {{n}} 家供应商难以阅读，数字可能被截断。",
+    "drafLangkah1": "请核对询价清单及条款——一经批准，再作修改就意味着供应商回应的是另一份清单。",
+    "drafLangkah2": "批准招标。此后即可录入报价。",
+    "drafLangkah3": "下载图片并复制文本，然后通过 WhatsApp 发送给供应商。",
+    "drafTakBerwenang": "招标批准仅限采购三级及以上权限。请交由有权限的人处理。",
+    "hapus": "删除招标",
+    "hapusJudul": "删除此招标？",
+    "hapusKet": "招标“{{nama}}”及其询价清单将被删除且无法恢复。已确定中标方的招标不可删除。",
+    "setujui": "批准招标"
   },
   "rencana": {
     "buatJudul": "资金计划",
@@ -5897,7 +5959,10 @@
     "masaPajakHint": "进项税额抵扣的月份。留空表示跟随单据日期。",
     "masaPajakKosongkan": "恢复为跟随单据日期",
     "masaPajakMundur": "所属期早于单据日期——属换开发票的情形：单据在更正当月开具，所属期仍沿用原发票。",
-    "masaPajakJauh": "所属期晚于单据日期三个月以上。仍可保存。"
+    "masaPajakJauh": "所属期晚于单据日期三个月以上。仍可保存。",
+    "proyekBedaJudul": "已计入其他项目",
+    "proyekBedaKet": "该采购订单属于项目 {{po}}。本次采购的成本将计入上方所选项目，而非 {{po}} — 差异会记录在变更记录中。",
+    "proyekDibebani": "计入的项目"
   },
   "poReissue": {
     "menu": "重新签发（强制编号）",
@@ -6150,7 +6215,23 @@
     "tindihBolehLanjut": "若属有意为之——例如返工后的重新认证——可继续。否则请先更正日期。",
     "tindihPerbaiki": "更正日期",
     "tindihLanjut": "继续",
-    "periodeWajibKet": "保存本付款证书前，期间的起始日和结束日均为必填。"
+    "periodeWajibKet": "保存本付款证书前，期间的起始日和结束日均为必填。",
+    "dariTanggal": "从",
+    "dihapusOleh": "删除人",
+    "ditagihLewat": "已通过 {{nomor}} 开票",
+    "ditagihTanpaNomor": "已开具发票",
+    "keadaan_dihapus": "已删除",
+    "keadaan_ditagih": "已开票",
+    "keadaan_siap": "可开票",
+    "lepasRentang": "清除日期范围",
+    "lihatSpk": "查看工作指令",
+    "nomorSpk": "工作指令编号",
+    "rentangTanggal": "日期范围",
+    "sampaiTanggal": "至",
+    "saringTautanIsi": "打开本页的链接要求使用“{{nilai}}”筛选，而上方没有对应的筛选标签。因此这里的单据数量可能与未经该链接打开的其他标签页不同——刷新也不会改变，因为重新加载的仍是同一筛选下的数据。",
+    "saringTautanJudul": "此列表已被筛选",
+    "sudahDihapus": "该单据已被删除",
+    "tagihanLunas": "已付款"
   },
   "taxInvoiceEdit": {
     "title": "录入税务发票",
@@ -6201,5 +6282,61 @@
     "ptkpMarried": "已婚 (K)",
     "ptkpSingle": "未婚 (TK)",
     "tax": "税务"
+  },
+  "copRekap": {
+    "gagal": "汇总文件生成失败。",
+    "judul": "付款证书汇总",
+    "judulBerkas": "付款证书汇总",
+    "keterangan": "尚未批准的单据也会列入，并标注其阶段。剩余额度仅按工作指令显示——无额度上限的工作指令（D 类）该列留空。",
+    "kolBelumDitagih": "尚未开票",
+    "kolBersih": "净额",
+    "kolDisertifikasi": "已确认工程量",
+    "kolJenis": "类型",
+    "kolJumlahCop": "付款证书数",
+    "kolJumlahSpk": "工作指令数",
+    "kolKotor": "总额",
+    "kolNilaiKontrak": "合同金额",
+    "kolNomor": "付款证书编号",
+    "kolPemasok": "供应商",
+    "kolPeriode": "工作周期",
+    "kolPotongan": "扣减",
+    "kolProyek": "项目",
+    "kolSisaPagu": "剩余额度",
+    "kolSpk": "工作指令编号",
+    "kolTagihan": "发票编号",
+    "kolTahap": "阶段",
+    "kolTambahan": "增项",
+    "kolTanggal": "日期",
+    "kosong": "该项目尚无付款证书。",
+    "kosongPemasok": "该供应商尚无付款证书。",
+    "kosongRentang": "{{rentang}} 内没有付款证书。",
+    "lembarIkhtisar": "概览",
+    "lembarPerCop": "按付款证书",
+    "lembarPerSpk": "按工作指令",
+    "menu": "付款证书汇总",
+    "menyusun": "正在生成…",
+    "mulai": "开始",
+    "opsional": "可选",
+    "pemasok": "供应商",
+    "perPemasok": "供应商",
+    "perProyek": "项目",
+    "periode": "期间",
+    "pilihPemasok": "选择供应商",
+    "rentang": "日期范围",
+    "rentangSalah": "请填写两个日期，且开始日期不得晚于结束日期。",
+    "saringProyek": "按项目筛选",
+    "selesai": "结束",
+    "semuaProyek": "全部项目",
+    "sub": "选择项目或供应商，然后将汇总下载为 Excel。",
+    "subtotalPemasok": "{{nama}} 小计",
+    "sudut": "汇总维度",
+    "tanpaPagu": "无额度上限",
+    "total": "合计",
+    "unduh": "下载"
+  },
+  "izin": {
+    "hanyaBaca": "只读",
+    "hanyaBacaJudul": "审阅账号 — 只读",
+    "hanyaBacaKet": "该账号可以查看其权限范围内的全部数据，但不能创建、修改、批准或删除任何内容。"
   }
 }
