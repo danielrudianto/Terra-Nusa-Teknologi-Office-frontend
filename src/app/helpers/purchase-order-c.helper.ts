@@ -57,6 +57,8 @@ export interface IPurchaseOrderC {
   approvedByPosition?: string | null;
   /** Nama penyetuju; kosong selama dokumennya belum disetujui. */
   approvedByName?: string | null;
+  /** Gambar tanda tangan penyetuju, dari server; kosong bila belum ada. */
+  approvedBySignature?: string | null;
 
   /**
    * Keterangan penelusuran di bawah blok tanda tangan.
@@ -275,6 +277,7 @@ export function printPurchaseOrderC(
         data.approvedAt,
         data.checkedByName,
         data.purchaseOrderName,
+        data.approvedBySignature,
       ),
 
       {

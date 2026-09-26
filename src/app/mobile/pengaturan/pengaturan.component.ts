@@ -12,6 +12,10 @@ import { PushService } from '../../services/push.service';
 import { VersiService } from '../../services/versi.service';
 import { PwaPasangService } from '../../services/pwa-pasang.service';
 import { PwaPasangComponent } from '../pwa-pasang/pwa-pasang.component';
+import {
+  PermintaanTtd,
+  TandaTanganService,
+} from '../../services/tanda-tangan.service';
 
 /**
  * Pengaturan mobile: tema dan keluar.
@@ -44,10 +48,72 @@ export class PengaturanComponent implements OnInit {
   readonly versi = inject(VersiService);
   /** Tawaran pasang aplikasi (PWA); menyembunyikan dirinya bila tak relevan. */
   readonly pwa = inject(PwaPasangService);
+  private readonly ttd = inject(TandaTanganService);
 
   ngOnInit(): void {
     // Daftarkan service worker & segarkan status langganan.
     void this.push.init();
+
+    void this.muatTtd();
+  }
+
+  /* ---------- blok tanda tangan ---------- */
+
+  /**
+   * Tanda tangan diurus DI SINI juga, bukan hanya di Pengaturan desktop.
+   *
+   * Kerangka mobile memang menawarkannya sekali saat login, tetapi yang
+   * menutup tawaran itu dengan "Nanti saja" tidak punya jalan lain untuk
+   * membuatnya — dan justru ponsel berpena tempat tanda tangan paling enak
+   * dibuat. Tanpa bagian ini, satu-satunya jalan adalah membuka aplikasi di
+   * komputer.
+   */
+  ttdGambar: string | null = null;
+  ttdTertunda = false;
+  ttdMemuat = true;
+  antreanTtd: PermintaanTtd[] = [];
+
+  get bolehSetujuiTtd(): boolean {
+    return this.izin.can('user_signature', 'approve');
+  }
+
+  private async muatTtd(): Promise<void> {
+    this.ttdMemuat = true;
+    const keadaan = await this.ttd.keadaan();
+    this.ttdTertunda = !!keadaan?.tertunda;
+    this.ttdGambar = keadaan?.punya ? await this.ttd.milikSendiri() : null;
+    this.ttdMemuat = false;
+    if (this.bolehSetujuiTtd) this.antreanTtd = await this.ttd.antrean();
+  }
+
+  async suntingTtd(): Promise<void> {
+    const berubah = await this.ttd.buka({
+      bolehLewat: true,
+      awal: this.ttdGambar,
+    });
+    if (berubah) await this.muatTtd();
+  }
+
+  async putuskanTtd(p: PermintaanTtd, setuju: boolean): Promise<void> {
+    try {
+      await this.ttd.putuskan(p.id, setuju);
+      this.snackBar.open(
+        this.translate.instant(setuju ? 'ttd.disetujui' : 'ttd.ditolak'),
+        this.translate.instant('common.close'),
+        { duration: 4000 },
+      );
+    } catch {
+      this.snackBar.open(
+        this.translate.instant('ttd.gagalPutus'),
+        this.translate.instant('common.close'),
+        { duration: 6000 },
+      );
+    }
+    await this.muatTtd();
+  }
+
+  persenMirip(p: PermintaanTtd): number {
+    return Math.round((p.similarity ?? 0) * 100);
   }
 
   /**

@@ -227,3 +227,95 @@
     transition: none;
   }
 }
+
+/* ---------- tanda tangan ---------- */
+
+.mst-ttd {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 14px;
+  background: var(--surface, #fff);
+  text-align: left;
+  color: inherit;
+  font: inherit;
+
+  &__gambar {
+    /* Latar putih dipasang DI SINI, bukan dibakar ke gambarnya: tanda tangan
+       disimpan bertepi tembus pandang supaya dapat dicap di atas garis
+       tercetak, dan di tema gelap tinta hitam di atas latar gelap hilang. */
+    background: #fff;
+    border-radius: 8px;
+    width: 72px;
+    height: 28px;
+    object-fit: contain;
+    flex: 0 0 auto;
+  }
+
+  &__teks {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__judul { font-size: 0.92rem; font-weight: 600; }
+
+  &__ket {
+    font-size: 0.74rem;
+    color: var(--muted, #6b7280);
+    /* Dua baris cukup: keterangannya panjang, dan kartu yang memanjang
+       mendorong tombol keluar ke bawah layar. */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__panah { margin-left: auto; color: var(--muted, #6b7280); }
+}
+
+.mst-ttd-antre {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--surface, #fff);
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+
+  &__teks { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+  &__mirip {
+    font-size: 0.72rem;
+    color: var(--warn-fg, #8f5914);
+
+    &.is-keras { color: var(--danger, #b3322f); font-weight: 600; }
+  }
+
+  &__aksi {
+    margin-left: auto;
+    display: flex;
+    gap: 6px;
+
+    button {
+      border: 1px solid var(--line, #e4e9fb);
+      background: transparent;
+      color: inherit;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font: inherit;
+      font-size: 0.8rem;
+    }
+
+    .is-utama {
+      background: var(--brand, #154dec);
+      border-color: var(--brand, #154dec);
+      color: #fff;
+    }
+  }
+}

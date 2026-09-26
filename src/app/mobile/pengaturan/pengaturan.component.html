@@ -63,6 +63,69 @@
 }
 
 <!-- Keluar -->
+<!-- Tanda tangan: dibuat dan diganti langsung dari ponsel.
+     Ponsel berpena adalah tempat tanda tangan paling enak dibuat, jadi bagian
+     ini justru yang paling dipakai — bukan yang di desktop. -->
+<div class="mst-seksi">{{ "ttd.blokJudul" | translate }}</div>
+@if (ttdMemuat) {
+  <div class="mst-ttd"><mat-spinner diameter="20" /></div>
+} @else {
+  <button type="button" class="mst-ttd" (click)="suntingTtd()">
+    @if (ttdGambar) {
+      <img class="mst-ttd__gambar" [src]="ttdGambar" alt="" />
+    } @else {
+      <mat-icon>gesture</mat-icon>
+    }
+    <span class="mst-ttd__teks">
+      <span class="mst-ttd__judul">{{
+        (ttdGambar ? "ttd.ganti" : "ttd.siapkan") | translate
+      }}</span>
+      <span class="mst-ttd__ket">{{
+        (ttdTertunda
+          ? "ttd.tertundaIsi"
+          : ttdGambar
+            ? "ttd.gantiPerluSetuju"
+            : "ttd.blokSub"
+        ) | translate
+      }}</span>
+    </span>
+    <mat-icon class="mst-ttd__panah">chevron_right</mat-icon>
+  </button>
+}
+
+@if (bolehSetujuiTtd && antreanTtd.length) {
+  <div class="mst-seksi">{{ "ttd.antreanJudul" | translate }}</div>
+  @for (p of antreanTtd; track p.id) {
+    <div class="mst-ttd-antre">
+      <img class="mst-ttd__gambar" [src]="p.image" alt="" />
+      <div class="mst-ttd-antre__teks">
+        <span class="mst-ttd__judul">{{ p.userName }}</span>
+        @if (p.similarLevel) {
+          <span
+            class="mst-ttd-antre__mirip"
+            [class.is-keras]="p.similarLevel === 'sangat_mirip'"
+          >
+            {{
+              (p.similarLevel === "sangat_mirip"
+                ? "ttd.sangatMirip"
+                : "ttd.mirip"
+              ) | translate: { persen: persenMirip(p) }
+            }}
+          </span>
+        }
+      </div>
+      <div class="mst-ttd-antre__aksi">
+        <button type="button" (click)="putuskanTtd(p, false)">
+          {{ "ttd.tolak" | translate }}
+        </button>
+        <button type="button" class="is-utama" (click)="putuskanTtd(p, true)">
+          {{ "ttd.setujui" | translate }}
+        </button>
+      </div>
+    </div>
+  }
+}
+
 <div class="mst-seksi">{{ "mobile.setelan.akun" | translate }}</div>
 <button type="button" class="mst-keluar" (click)="keluar()">
   <mat-icon>logout</mat-icon>

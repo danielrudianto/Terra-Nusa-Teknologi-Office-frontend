@@ -319,6 +319,19 @@ export function signerLines(
   approvedByName?: string | null,
   approvedByPosition?: string | null,
   rataKanan = false,
+  /**
+   * Gambar tanda tangan penyetuju, sebagai data-URI PNG.
+   *
+   * Opsional, dan ketiadaannya BUKAN kegagalan: lembarnya tercetak persis
+   * seperti sebelum fitur ini ada — ruang kosong untuk ditandatangani
+   * tangan. Sebagian orang memang belum menyiapkan tanda tangannya, dan
+   * dokumen tidak boleh menunggu mereka.
+   *
+   * Hanya dibubuhkan bila `approvedByName` ada, yaitu bila dokumennya
+   * memang sudah disetujui. Lembar draf bertanda tangan direktur tidak
+   * dapat dibedakan dari yang sah begitu keluar dari pencetak.
+   */
+  ttd?: string | null,
 ) {
   const nama = (approvedByName || '').trim();
   // Perataan yang sama dipakai seluruh baris blok ini, supaya nama, garis,
@@ -344,8 +357,32 @@ export function signerLines(
       italics: true,
       margin: [0, 12, 0, 0] as Margins,
     },
-    // Ruang kosong tempat tanda tangan dibubuhkan.
-    { text: ' ', margin: [0, 0, 0, 12] as Margins },
+    /*
+     * Ruang tempat tanda tangan dibubuhkan.
+     *
+     * TINGGINYA SAMA, bertanda tangan maupun tidak (12pt jarak kosong lawan
+     * gambar 26pt + 4pt). Blok yang meninggi menggeser seluruh kaki dokumen
+     * dan dapat mendorongnya ke halaman berikutnya — dan yang mencetak tidak
+     * akan menghubungkan halaman baru itu dengan tanda tangan yang baru
+     * dipasang seseorang kemarin.
+     */
+    belumSetuju || !ttd
+      ? { text: ' ', margin: [0, 0, 0, 12] as Margins }
+      : {
+          image: ttd,
+          height: 26,
+          // Lebarnya dibiarkan mengikuti nisbah gambarnya sampai batas lebar
+          // garis di bawahnya; tanda tangan yang melebar melewati garisnya
+          // terbaca seperti coretan yang salah tempat.
+          fit: [LEBAR_GARIS_TTD, 26] as [number, number],
+          alignment: rata,
+          margin: [
+            rataKanan ? LEBAR_KOLOM_TTD - LEBAR_GARIS_TTD : 0,
+            0,
+            0,
+            4,
+          ] as Margins,
+        },
 
     /*
      * Nama, tepat di atas garis.
@@ -468,6 +505,8 @@ export function signatureBlock(
   approvedAt?: string | Date | null,
   checkedByName?: string | null,
   documentNumber?: string | null,
+  /** Gambar tanda tangan penyetuju; lihat `signerLines`. */
+  ttd?: string | null,
 ) {
   return {
     unbreakable: true,
@@ -477,7 +516,7 @@ export function signatureBlock(
       // Jarak ke garis diatur `signerLines` lewat margin penandanya, bukan
       // lewat baris kosong: baris kosong menambah tinggi yang tidak sama
       // pada kedua keadaan.
-      ...signerLines(approvedByName, approvedByPosition),
+      ...signerLines(approvedByName, approvedByPosition, false, ttd),
       // Ketiganya opsional: pemanggil lama yang belum mengirimnya tetap
       // menghasilkan dokumen yang sama seperti sebelumnya.
       ...keteranganPersetujuan(approvedAt, checkedByName, documentNumber),

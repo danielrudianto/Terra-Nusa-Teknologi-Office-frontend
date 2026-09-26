@@ -59,6 +59,8 @@ export interface IPurchaseOrderH {
   approvedByPosition?: string | null;
   /** Nama penyetuju; kosong selama dokumennya belum disetujui. */
   approvedByName?: string | null;
+  /** Gambar tanda tangan penyetuju, dari server; kosong bila belum ada. */
+  approvedBySignature?: string | null;
   purchaseOrderName: string;
   date: Date | string;
   projectName: string;
@@ -293,7 +295,12 @@ function signatureColumns(data: IPurchaseOrderH) {
           { text: 'PT. Alpha Konstruksi Nusantara' },
           // Jarak ke garis diatur `signerLines`; baris kosong tambahan
           // membuat tingginya berbeda antar dokumen.
-          ...signerLines(data.approvedByName, data.approvedByPosition),
+          ...signerLines(
+            data.approvedByName,
+            data.approvedByPosition,
+            false,
+            data.approvedBySignature,
+          ),
         ],
       },
       {

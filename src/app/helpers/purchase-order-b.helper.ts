@@ -98,6 +98,8 @@ export interface IPurchaseOrderB {
   approvedByPosition?: string | null;
   /** Nama penyetuju; kosong selama dokumennya belum disetujui. */
   approvedByName?: string | null;
+  /** Gambar tanda tangan penyetuju, dari server; kosong bila belum ada. */
+  approvedBySignature?: string | null;
   /**
    * Kode jenis PO untuk memilih template klausul. Default 'B'.
    * PO 5.1.2 mode jasa memakai tata letak SPK yang sama persis, hanya
@@ -494,7 +496,12 @@ function signatureColumns(data: IPurchaseOrderB) {
           { text: 'PT. Alpha Konstruksi Nusantara' },
           // Jarak ke garis diatur `signerLines`; baris kosong tambahan
           // membuat tingginya berbeda antar dokumen.
-          ...signerLines(data.approvedByName, data.approvedByPosition),
+          ...signerLines(
+            data.approvedByName,
+            data.approvedByPosition,
+            false,
+            data.approvedBySignature,
+          ),
         ],
       },
       {

@@ -61,6 +61,8 @@ export interface IPurchaseOrderG {
   approvedByPosition?: string | null;
   /** Nama penyetuju; kosong selama dokumennya belum disetujui. */
   approvedByName?: string | null;
+  /** Gambar tanda tangan penyetuju, dari server; kosong bila belum ada. */
+  approvedBySignature?: string | null;
 
   /**
    * Keterangan penelusuran di bawah blok tanda tangan.
@@ -291,6 +293,7 @@ export function printPurchaseOrderG(
         data.approvedAt,
         data.checkedByName,
         data.purchaseOrderName,
+        data.approvedBySignature,
       ),
 
       // Judul lampiran: dua baris dengan gaya yang sama (Calibri 16 bold).
