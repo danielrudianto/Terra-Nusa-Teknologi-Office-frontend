@@ -47,6 +47,26 @@
         <span>{{ "pdf.note" | translate }}</span>
       </button>
 
+      <button
+        type="button"
+        class="sh-alat__btn"
+        [class.is-aktif]="alatAktif === 'ttd'"
+        (click)="pilihAlat('ttd')"
+      >
+        <mat-icon>draw</mat-icon>
+        <span>{{ "pdf.ttd" | translate }}</span>
+      </button>
+      <button
+        type="button"
+        class="sh-alat__ganti"
+        *ngIf="ttdSiap"
+        (click)="gantiTtd($event)"
+        [matTooltip]="'pdf.ttdBersihkan' | translate"
+        [attr.aria-label]="'pdf.ttdBersihkan' | translate"
+      >
+        <mat-icon>edit</mat-icon>
+      </button>
+
       <span class="sh-alat__petunjuk" *ngIf="alatAktif">
         {{ "pdf.clickToPlace" | translate }}
       </span>
@@ -83,11 +103,14 @@
           *ngFor="let a of anotasi; let i = index"
           [class.sh-anotasi--tutup]="a.jenis === 'tutup'"
           [class.sh-anotasi--catatan]="a.jenis === 'catatan'"
+          [class.sh-anotasi--ttd]="a.jenis === 'ttd'"
           [style.left.%]="a.x * 100"
           [style.top.%]="a.y * 100"
-          [style.width.%]="a.jenis === 'tutup' ? (a.lebar || 0.24) * 100 : null"
+          [style.width.%]="
+            a.jenis === 'catatan' ? null : (a.lebar || 0.24) * 100
+          "
           [style.height.%]="
-            a.jenis === 'tutup' ? (a.tinggi || 0.024) * 100 : null
+            a.jenis === 'catatan' ? null : (a.tinggi || 0.024) * 100
           "
           (click)="$event.stopPropagation()"
         >
@@ -101,12 +124,23 @@
 
           <input
             class="sh-anotasi__teks"
+            *ngIf="a.jenis !== 'ttd'"
             [(ngModel)]="a.teks"
             [placeholder]="
               (a.jenis === 'tutup' ? 'pdf.overwriteHint' : 'pdf.noteHint')
                 | translate
             "
             (click)="$event.stopPropagation()"
+          />
+
+          <!-- Tanda tangan digambar sebagai gambar utuh, bukan latar: latar
+               yang dipotong `cover` akan memangkas ujung coretannya. -->
+          <img
+            class="sh-anotasi__ttd"
+            *ngIf="a.jenis === 'ttd' && a.gambar"
+            [src]="a.gambar"
+            alt=""
+            draggable="false"
           />
 
           <button
@@ -119,13 +153,64 @@
             <mat-icon>close</mat-icon>
           </button>
 
-          <!-- Hanya penutup yang punya ukuran; catatan hanya tulisan. -->
+          <!-- Penutup dan tanda tangan punya ukuran; catatan hanya tulisan. -->
           <span
             class="sh-anotasi__ukur"
-            *ngIf="a.jenis === 'tutup'"
+            *ngIf="a.jenis !== 'catatan'"
             (mousedown)="mulaiSeret($event, i, 'ukur', kertas)"
             [matTooltip]="'pdf.suntingUkur' | translate"
           ></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Papan tanda tangan. Berupa lapisan di dalam dialog ini, bukan dialog
+         kedua: dialog di atas dialog membuat tombol Simpan di bawahnya masih
+         terlihat dan dapat ditekan, dan urutan fokusnya kacau. -->
+    <div class="sh-papan" *ngIf="papanTtd" (click)="$event.stopPropagation()">
+      <div class="sh-papan__kotak">
+        <h3 class="sh-papan__judul">{{ "pdf.ttdJudul" | translate }}</h3>
+        <p class="sh-papan__petunjuk">{{ "pdf.ttdPetunjuk" | translate }}</p>
+
+        <canvas
+          class="sh-papan__kanvas"
+          #papan
+          width="720"
+          height="240"
+          (pointerdown)="mulaiGores($event)"
+          (pointermove)="gores($event)"
+          (pointerup)="selesaiGores()"
+          (pointerleave)="selesaiGores()"
+        ></canvas>
+
+        <p class="sh-papan__catatan" *ngIf="ttdSiap">
+          {{ "pdf.ttdTersimpan" | translate }}
+        </p>
+
+        <div class="sh-papan__aksi">
+          <button
+            type="button"
+            class="sh-btn sh-btn--ghost"
+            (click)="bersihkanPapan(papan)"
+          >
+            {{ "pdf.ttdBersihkan" | translate }}
+          </button>
+          <span class="sh-spacer"></span>
+          <button
+            type="button"
+            class="sh-btn sh-btn--ghost"
+            (click)="tutupPapanTtd()"
+          >
+            {{ "common.cancel" | translate }}
+          </button>
+          <button
+            type="button"
+            class="sh-btn sh-btn--utama"
+            [disabled]="papanKosong"
+            (click)="pakaiTtd(papan)"
+          >
+            {{ "pdf.ttdPakai" | translate }}
+          </button>
         </div>
       </div>
     </div>

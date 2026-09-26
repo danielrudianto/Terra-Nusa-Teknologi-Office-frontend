@@ -2,7 +2,15 @@
 // lewat impor dinamis, jadi tambalannya disebut di sini juga.
 import '../../../polyfill-peta';
 import { CommonModule } from '@angular/common';
-import { Component, Inject, OnDestroy, OnInit, inject } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Inject,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import {
@@ -24,12 +32,14 @@ import { JALUR_WORKER_PDF } from '../pdf-main.component';
  * agar keduanya tidak dapat berbeda diam-diam.
  */
 export interface AnotasiSunting {
-  jenis: 'tutup' | 'catatan';
+  jenis: 'tutup' | 'catatan' | 'ttd';
   x: number;
   y: number;
   lebar?: number;
   tinggi?: number;
   teks?: string;
+  /** Gambar tanda tangan sebagai data-URI PNG (berlatar tembus pandang). */
+  gambar?: string;
 }
 
 export interface DataSuntingHalaman {
@@ -89,7 +99,7 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
   memuat = true;
   gagal = false;
 
-  alatAktif: 'tutup' | 'catatan' | null = null;
+  alatAktif: 'tutup' | 'catatan' | 'ttd' | null = null;
 
   /** Indeks coretan yang sedang digeser/diubah ukurannya. */
   private seret: {
@@ -103,6 +113,7 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: DataSuntingHalaman) {
     this.anotasi = (data.anotasi || []).map((a) => ({ ...a }));
+    this.ttdSiap = this.ttdTersimpan();
   }
 
   async ngOnInit(): Promise<void> {
@@ -162,8 +173,176 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
     }
   }
 
-  pilihAlat(alat: 'tutup' | 'catatan'): void {
+  pilihAlat(alat: 'tutup' | 'catatan' | 'ttd'): void {
+    // Tanda tangan perlu ada gambarnya dulu; alatnya baru menyala sesudah
+    // itu. Tanpa urutan ini, menekan halaman menaruh kotak kosong.
+    //
+    // Kalau tanda tangannya sudah ada — digambar tadi, atau tersimpan dari
+    // berkas sebelumnya — alatnya langsung menyala tanpa membuka papan
+    // lagi: membubuhkan tanda tangan kedua tidak perlu menggambar ulang.
+    if (alat === 'ttd' && this.alatAktif !== 'ttd' && !this.ttdSiap) {
+      this.bukaPapanTtd();
+      return;
+    }
     this.alatAktif = this.alatAktif === alat ? null : alat;
+  }
+
+  // ---- papan tanda tangan -------------------------------------------------
+
+  /** Papan gambar sedang terbuka. */
+  papanTtd = false;
+
+  /**
+   * Tanda tangan yang siap dibubuhkan, sebagai data-URI PNG.
+   *
+   * Diisi dari simpanan begitu dialognya dibuka, sehingga tombol alatnya
+   * langsung siap pakai pada berkas berikutnya.
+   */
+  ttdSiap: string | null = null;
+
+  /**
+   * Tanda tangan terakhir, diingat antar berkas.
+   *
+   * `localStorage`, dan itu memang tempatnya: ia kenyamanan satu orang di
+   * satu peramban — bukan data perusahaan. Tidak pernah dikirim ke server,
+   * dan hilangnya tidak merusak apa pun; yang terjadi hanya perlu
+   * menggambar ulang.
+   *
+   * Dibungkus `try` karena penyimpanan dapat ditolak — jendela penyamaran,
+   * atau setelan yang memblokir data situs — dan penolakan itu MELEMPAR,
+   * bukan mengembalikan null.
+   */
+  private static readonly KUNCI_TTD = 'tnt.ttd.terakhir';
+
+  private ttdTersimpan(): string | null {
+    try {
+      return localStorage.getItem(SuntingHalamanComponent.KUNCI_TTD);
+    } catch {
+      return null;
+    }
+  }
+
+  private simpanTtd(src: string): void {
+    try {
+      localStorage.setItem(SuntingHalamanComponent.KUNCI_TTD, src);
+    } catch {
+      // Tidak apa-apa — hanya perlu digambar ulang lain kali.
+    }
+  }
+
+  bukaPapanTtd(): void {
+    this.alatAktif = null;
+    this.ttdSiap = this.ttdTersimpan();
+    this.papanTtd = true;
+    this.jejak = [];
+  }
+
+  /** Tombol kecil di bilah alat: buka papannya untuk mengganti tanda tangan. */
+  gantiTtd(ev: Event): void {
+    ev.stopPropagation();
+    this.bukaPapanTtd();
+  }
+
+  tutupPapanTtd(): void {
+    this.papanTtd = false;
+  }
+
+  /** Coretan pada papan: setiap goresan sebagai deretan titik. */
+  private jejak: { x: number; y: number }[][] = [];
+  private sedangGores = false;
+
+  mulaiGores(ev: PointerEvent): void {
+    this.sedangGores = true;
+    this.jejak.push([]);
+    this.gores(ev);
+  }
+
+  gores(ev: PointerEvent): void {
+    if (!this.sedangGores) return;
+    const kanvas = ev.currentTarget as HTMLCanvasElement;
+    const kotak = kanvas.getBoundingClientRect();
+    // Titiknya disimpan sebagai PECAHAN, bukan piksel: kanvasnya diperbesar
+    // saat diubah menjadi gambar, dan piksel yang benar di layar akan
+    // meleset pada ukuran itu.
+    this.jejak[this.jejak.length - 1].push({
+      x: (ev.clientX - kotak.left) / kotak.width,
+      y: (ev.clientY - kotak.top) / kotak.height,
+    });
+    this.gambarUlangPapan(kanvas);
+  }
+
+  selesaiGores(): void {
+    this.sedangGores = false;
+  }
+
+  bersihkanPapan(kanvas?: HTMLCanvasElement): void {
+    this.jejak = [];
+    this.ttdSiap = null;
+    if (kanvas) this.gambarUlangPapan(kanvas);
+  }
+
+  private gambarUlangPapan(kanvas: HTMLCanvasElement): void {
+    const ctx = kanvas.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, kanvas.width, kanvas.height);
+    ctx.lineWidth = Math.max(2, kanvas.width / 220);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#111827';
+    for (const goresan of this.jejak) {
+      if (!goresan.length) continue;
+      ctx.beginPath();
+      goresan.forEach((t, i) => {
+        const x = t.x * kanvas.width;
+        const y = t.y * kanvas.height;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+    }
+  }
+
+  get papanKosong(): boolean {
+    return !this.jejak.some((g) => g.length > 1) && !this.ttdSiap;
+  }
+
+  /**
+   * Ambil gambar dari papan, lalu nyalakan alatnya.
+   *
+   * PNG, bukan JPEG: tanda tangan perlu LATAR TEMBUS PANDANG. JPEG tidak
+   * punya kanal alfa, sehingga yang tertempel adalah kotak putih berisi
+   * coretan — menutupi garis tanda tangan tercetak di bawahnya.
+   */
+  pakaiTtd(kanvas: HTMLCanvasElement): void {
+    if (this.jejak.some((g) => g.length > 1)) {
+      this.ttdSiap = kanvas.toDataURL('image/png');
+      this.simpanTtd(this.ttdSiap);
+    }
+    if (!this.ttdSiap) return;
+    this.papanTtd = false;
+    this.alatAktif = 'ttd';
+  }
+
+  /**
+   * Papannya baru ada di DOM sesudah `papanTtd` menyala, jadi gambarnya
+   * dipulihkan lewat penyetel `ViewChild` — yang dipanggil tepat ketika
+   * elemennya muncul. Memanggilnya dari `bukaPapanTtd` akan kena kanvas
+   * yang belum dibuat.
+   */
+  @ViewChild('papan') set papanRef(el: ElementRef<HTMLCanvasElement> | undefined) {
+    if (el) this.siapkanPapan(el.nativeElement);
+  }
+
+  /** Gambar papan dari tanda tangan tersimpan saat papannya dibuka. */
+  siapkanPapan(kanvas: HTMLCanvasElement): void {
+    if (!this.ttdSiap || this.jejak.length) return;
+    const img = new Image();
+    img.onload = () => {
+      const ctx = kanvas.getContext('2d');
+      ctx?.clearRect(0, 0, kanvas.width, kanvas.height);
+      ctx?.drawImage(img, 0, 0, kanvas.width, kanvas.height);
+    };
+    img.src = this.ttdSiap;
   }
 
   /** Taruh coretan baru pada titik yang ditekan. */
@@ -181,6 +360,17 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
         lebar: 0.24,
         tinggi: 0.024,
         teks: '',
+      });
+    } else if (this.alatAktif === 'ttd') {
+      // Ukuran bawaan kira-kira selebar kolom tanda tangan pada surat
+      // berkop: cukup terbaca, dan tetap dapat diubah sesudah ditaruh.
+      this.anotasi.push({
+        jenis: 'ttd',
+        x: this.jepit(x - 0.11),
+        y: this.jepit(y - 0.03),
+        lebar: 0.22,
+        tinggi: 0.06,
+        gambar: this.ttdSiap || undefined,
       });
     } else {
       this.anotasi.push({
@@ -265,7 +455,10 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
     // hanyalah kotak di layar yang membuat orang mengira ada sesuatu di
     // sana.
     const bersih = this.anotasi.filter(
-      (a) => a.jenis === 'tutup' || (a.teks || '').trim().length > 0,
+      (a) =>
+        a.jenis === 'tutup' ||
+        (a.jenis === 'ttd' && !!a.gambar) ||
+        (a.teks || '').trim().length > 0,
     );
     this.dialog.close(bersih);
   }

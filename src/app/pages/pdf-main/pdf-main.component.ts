@@ -503,10 +503,14 @@ export class PdfMainComponent implements OnInit {
       // Font disematkan SEKALI untuk seluruh halaman; berulang kali hanya
       // membuat berkas hasilnya membesar tanpa guna.
       const font = await mergedPdf.embedFont(StandardFonts.Helvetica);
+      const gambar = await this.sematkanGambar(
+        mergedPdf,
+        this.processedDocuments,
+      );
 
       for (const pageData of this.processedDocuments) {
         try {
-          await this.salinHalaman(mergedPdf, pageData, font);
+          await this.salinHalaman(mergedPdf, pageData, font, gambar);
         } catch (pageError) {
           console.error(
             `Error processing page ${pageData.fileName}:`,
@@ -647,6 +651,41 @@ export class PdfMainComponent implements OnInit {
    * kelak berarti memanggil fungsi ini, bukan menyalin sepuluh baris yang
    * harus diingat untuk ikut diperbaiki.
    */
+  /**
+   * Sematkan SELURUH gambar tanda tangan yang dipakai, satu kali saja.
+   *
+   * Satu tanda tangan kerap dibubuhkan pada banyak halaman. Menyematkannya
+   * per halaman menyalin bita PNG-nya sebanyak itu pula — pada berkas dua
+   * puluh halaman, ukurannya membengkak tanpa satu piksel pun bertambah.
+   *
+   * Berkunci data-URI-nya: dua tanda tangan yang isinya persis sama hanya
+   * disematkan sekali.
+   *
+   * Gambar yang gagal disematkan DILEWATI, bukan menjatuhkan seluruh
+   * penyimpanan: satu coretan rusak tidak boleh membuat dua puluh halaman
+   * lain ikut gagal terbit.
+   */
+  private async sematkanGambar(
+    tujuan: PDFDocument,
+    halaman: PageData[],
+  ): Promise<Map<string, any>> {
+    const peta = new Map<string, any>();
+    const alamat = new Set<string>();
+    for (const h of halaman) {
+      for (const a of h.anotasi || []) {
+        if (a.jenis === 'ttd' && a.gambar) alamat.add(a.gambar);
+      }
+    }
+    for (const src of alamat) {
+      try {
+        peta.set(src, await tujuan.embedPng(src));
+      } catch (e) {
+        console.error('Tanda tangan gagal disematkan:', e);
+      }
+    }
+    return peta;
+  }
+
   private async salinHalaman(
     tujuan: PDFDocument,
     pageData: PageData,
@@ -781,6 +820,82 @@ export class PdfMainComponent implements OnInit {
   }
 
   /**
+   * Jangkar & sudut gambar untuk kotak `k` pada halaman ber-`/Rotate`.
+   *
+   * `petaAnotasi` sudah menaruh KOTAKNYA di tempat yang benar, tetapi ISI
+   * kotaknya — tulisan, tanda tangan — digambar pada ruang halaman ASLI.
+   * Pada halaman yang diputar, isi yang tegak di ruang itu tampil REBAH di
+   * layar: tanda tangan yang dibubuhkan di atas garis tanda tangan justru
+   * terbaca dari samping, dan pada 90°/270° ia juga tergencet karena sisi
+   * kotaknya bertukar.
+   *
+   * Jadi isinya ikut diputar sebesar sudut halamannya (pdf-lib memutar
+   * BERLAWANAN arah jarum jam, PDF menampilkan SEARAH — keduanya saling
+   * meniadakan, hasilnya tegak). Karena pdf-lib memutar terhadap titik
+   * `(x, y)`, titik itu pindah ke sudut kotak yang lain, dan lebar-tinggi
+   * yang dikirim adalah ukuran SEBELUM diputar.
+   */
+  static jangkarPutar(
+    k: { x: number; y: number; width: number; height: number },
+    putar: number,
+  ): { x: number; y: number; width: number; height: number; sudut: number } {
+    const r = (((putar % 360) + 360) % 360);
+    switch (r) {
+      case 90:
+        return {
+          x: k.x + k.width,
+          y: k.y,
+          width: k.height,
+          height: k.width,
+          sudut: 90,
+        };
+      case 180:
+        return {
+          x: k.x + k.width,
+          y: k.y + k.height,
+          width: k.width,
+          height: k.height,
+          sudut: 180,
+        };
+      case 270:
+        return {
+          x: k.x,
+          y: k.y + k.height,
+          width: k.height,
+          height: k.width,
+          sudut: 270,
+        };
+      default:
+        return { x: k.x, y: k.y, width: k.width, height: k.height, sudut: 0 };
+    }
+  }
+
+  /**
+   * Geser sebesar `(dx, dy)` PADA KERANGKA YANG SUDAH DIPUTAR.
+   *
+   * Sisipan tiga titik dari tepi kiri-bawah kotak harus tetap tiga titik
+   * dari tepi kiri-bawah SEBAGAIMANA TERLIHAT; ditambahkan mentah-mentah,
+   * pada halaman terbalik ia justru mendorong tulisan keluar kotaknya.
+   */
+  static geserPutar(
+    dx: number,
+    dy: number,
+    putar: number,
+  ): { dx: number; dy: number } {
+    const r = (((putar % 360) + 360) % 360);
+    switch (r) {
+      case 90:
+        return { dx: -dy, dy: dx };
+      case 180:
+        return { dx: -dx, dy: -dy };
+      case 270:
+        return { dx: dy, dy: -dx };
+      default:
+        return { dx, dy };
+    }
+  }
+
+  /**
    * Gambar satu coretan pada halaman PDF.
    *
    * Hitungan letaknya ada di `petaAnotasi`; di sini tinggal menggambar.
@@ -804,11 +919,13 @@ export class PdfMainComponent implements OnInit {
         H,
         putar,
       );
+      const j = PdfMainComponent.jangkarPutar(k, putar);
       page.drawImage(gambar, {
-        x: k.x,
-        y: k.y,
-        width: k.width,
-        height: k.height,
+        x: j.x,
+        y: j.y,
+        width: j.width,
+        height: j.height,
+        rotate: degrees(j.sudut),
       });
       return;
     }
@@ -829,12 +946,17 @@ export class PdfMainComponent implements OnInit {
       });
 
       if (a.teks) {
+        const j = PdfMainComponent.jangkarPutar(k, putar);
+        const g = PdfMainComponent.geserPutar(2, 3, putar);
         page.drawText(a.teks, {
-          x: k.x + 2,
-          y: k.y + 3,
-          size: Math.min(11, k.height * 0.75),
+          x: j.x + g.dx,
+          y: j.y + g.dy,
+          // `j.height` adalah tinggi kotak SEBAGAIMANA TERLIHAT — pada 90°
+          // dan 270° itu `k.width`, bukan `k.height`.
+          size: Math.min(11, j.height * 0.75),
           font,
           color: rgb(0, 0, 0),
+          rotate: degrees(j.sudut),
         });
       }
       return;
@@ -843,14 +965,16 @@ export class PdfMainComponent implements OnInit {
     // Catatan: tulisan saja, tanpa menutupi apa pun di bawahnya.
     if (!a.teks) return;
     const t = PdfMainComponent.petaAnotasi(a, W, H, putar);
+    const jt = PdfMainComponent.jangkarPutar(t, putar);
     page.drawText(a.teks, {
-      x: t.x,
+      x: jt.x,
       // `t.y` adalah tepi BAWAH kotak setinggi nol, jadi ia sekaligus garis
       // dasar tulisannya.
-      y: t.y,
+      y: jt.y,
       size: 10,
       font,
       color: rgb(0.72, 0.11, 0.11),
+      rotate: degrees(jt.sudut),
     });
   }
 
@@ -906,9 +1030,10 @@ export class PdfMainComponent implements OnInit {
       // Font disiapkan sekali untuk seluruh halaman: menyematkannya
       // berulang membuat berkas hasilnya membesar tanpa guna.
       const font = await newPdf.embedFont(StandardFonts.Helvetica);
+      const gambar = await this.sematkanGambar(newPdf, selectedPages);
 
       for (const pageData of selectedPages) {
-        await this.salinHalaman(newPdf, pageData, font);
+        await this.salinHalaman(newPdf, pageData, font, gambar);
       }
 
       const mergedPdfBytes = await newPdf.save();
@@ -945,9 +1070,10 @@ export class PdfMainComponent implements OnInit {
     try {
       const mergedPdf = await PDFDocument.create();
       const font = await mergedPdf.embedFont(StandardFonts.Helvetica);
+      const gambar = await this.sematkanGambar(mergedPdf, selectedPages);
 
       for (const pageData of selectedPages) {
-        await this.salinHalaman(mergedPdf, pageData, font);
+        await this.salinHalaman(mergedPdf, pageData, font, gambar);
       }
 
       const mergedPdfBytes = await mergedPdf.save();
