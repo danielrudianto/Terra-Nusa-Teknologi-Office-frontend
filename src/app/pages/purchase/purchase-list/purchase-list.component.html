@@ -335,6 +335,53 @@
           </td>
         </ng-container>
 
+        <!--
+          CoP penagih.
+
+          Tidak dapat diurutkan: kolomnya menjawab "pembelian ini datang dari
+          mana", dan pengurutan menurut nomor CoP tidak menjawab pertanyaan
+          apa pun yang pernah ditanyakan. Pengurutan yang tidak dipakai tetap
+          menambah satu kolom yang dapat ditekan tanpa hasil yang berarti.
+        -->
+        <ng-container matColumnDef="cop">
+          <th mat-header-cell *matHeaderCellDef>
+            <span class="pl-th">{{ "purchase.colCop" | translate }}</span>
+          </th>
+          <td mat-cell *matCellDef="let purchase">
+            @if (copDapatDibuka(purchase)) {
+              <button
+                type="button"
+                class="pl-polink"
+                [title]="'purchaseView.bukaCop' | translate"
+                (click)="$event.stopPropagation(); bukaCop(purchase)"
+              >
+                {{ nomorCopBaris(purchase) }}
+              </button>
+            } @else if (purchase.certificateOfPaymentID) {
+              <!--
+                Nomornya tetap terbaca: yang hilang hanya tautannya, entah
+                karena dokumennya sudah dihapus atau karena yang membaca tidak
+                berhak membuka CoP.
+              -->
+              <span
+                class="pl-polink pl-polink--missing"
+                [title]="
+                  purchase.certificate_of_payment_deleted
+                    ? ('purchaseView.copTerhapus' | translate)
+                    : ''
+                "
+              >
+                {{ nomorCopBaris(purchase) }}
+                @if (purchase.certificate_of_payment_deleted) {
+                  <mat-icon class="pl-polink__warn">help_outline</mat-icon>
+                }
+              </span>
+            } @else {
+              <span class="pl-secondary">—</span>
+            }
+          </td>
+        </ng-container>
+
         <!-- Total -->
         <ng-container matColumnDef="total">
           <th

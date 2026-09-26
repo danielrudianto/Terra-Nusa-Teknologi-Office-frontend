@@ -774,6 +774,7 @@
   "purchase": {
     "title": "采购",
     "colMasaPajak": "税期",
+    "colCop": "付款证明",
     "description": "在此管理您的采购数据",
     "createNew": "创建新采购",
     "searchPlaceholder": "发票、收据、采购订单、供应商或税务发票",

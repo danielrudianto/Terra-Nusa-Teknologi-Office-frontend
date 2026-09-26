@@ -774,6 +774,7 @@
   "purchase": {
     "title": "Pembelian",
     "colMasaPajak": "Masa Pajak",
+    "colCop": "CoP",
     "description": "Kelola data pembelian di sini",
     "createNew": "Buat pembelian baru",
     "searchPlaceholder": "Faktur, kwitansi, PO, pemasok, atau faktur pajak",

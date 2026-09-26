@@ -312,10 +312,35 @@ export const DATA_BERSARANG = 'transisiBersarang';
  * berikutnya cukup menambah satu baris di tempat ia didefinisikan, dan tidak
  * ada daftar terpisah yang dapat tertinggal.
  *
- * Di luar subpohon bersarang, `urlPenuh` dikembalikan apa adanya — termasuk
- * parameter kueri. Itu perilaku yang sudah ada dan disengaja: menyaring daftar
- * lewat parameter kueri mengganti isi halaman, dan animasinya yang menandai
- * bahwa isinya memang berganti.
+ * PARAMETER KUERI TIDAK IKUT
+ *
+ * Dulu ikut, dengan alasan "menyaring daftar mengganti isi halaman, dan
+ * animasinya yang menandai bahwa isinya memang berganti". Alasan itu keliru,
+ * dan kelirunya dilaporkan tiga kali dengan kalimat yang hampir sama:
+ *
+ *   "di data master, kenapa tiap kali gw pindah dari supplier ke karyawan,
+ *    ini yang transisi nya 1 page 1 page nya"
+ *   "penyakit sama nih, tiap gw pilih menu di secondary side navigation,
+ *    transition nya 1 page"
+ *   "COP tiap ganti halaman ngaco dah, transition nya kok 1 page ya?"
+ *
+ * Sebabnya satu: setiap daftar yang menulis keadaannya ke alamat — penyaring,
+ * pencarian, urutan, DAN NOMOR HALAMAN — mengubah URL penuh pada setiap
+ * ketukan. Menekan "halaman berikutnya" lalu menganimasikan seluruh kerangka
+ * (judul, menu samping, bilah alat, semuanya) hanya karena sepuluh baris
+ * tabelnya berganti.
+ *
+ * Dua laporan sebelumnya ditambal satu per satu, dengan menandai rutenya
+ * `transisiBersarang`. Itu menambal satu halaman dan meninggalkan seluruh
+ * halaman lain yang berperilaku sama — dan daftar yang menulis keadaannya ke
+ * alamat terus bertambah, jadi tambalan per rute adalah janji akan laporan
+ * keempat.
+ *
+ * Karena itu sekarang kuerinya DIBUANG untuk semua rute: kerangka utama
+ * beranimasi saat HALAMANNYA berganti, bukan saat isi halaman yang sama
+ * dimuat ulang. Halaman yang ingin menandai isinya berganti memasang
+ * `appTransisiHalaman` sendiri pada bagian yang berganti — lihat
+ * `kunciDaftar` di daftar pelamar, yang menggerakkan tabelnya saja.
  */
 export function kunciTransisi(akar: SimpulRute | null, urlPenuh: string): string {
   const bagian: string[] = [];
@@ -331,5 +356,12 @@ export function kunciTransisi(akar: SimpulRute | null, urlPenuh: string): string
     simpul = simpul.firstChild;
   }
 
-  return urlPenuh;
+  /*
+   * Kueri dipotong di sini, bukan di pemanggilnya: `kunciTransisi` adalah
+   * satu-satunya yang menentukan kunci kerangka utama, dan potongan yang
+   * hidup di pemanggil dapat tertinggal saat pemanggil berikutnya ditulis.
+   * Penggalan tanda `#` ikut dibuang — alamat yang hanya berbeda penggalan
+   * masih halaman yang sama.
+   */
+  return urlPenuh.split('#')[0].split('?')[0];
 }

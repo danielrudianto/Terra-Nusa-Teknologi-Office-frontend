@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CanDirective } from '../../../directives/can.directive';
 import { PurchaseOrderViewComponent } from '../../purchase-order/purchase-order-view/purchase-order-view.component';
+import { CertificateOfPaymentViewComponent } from '../../certificate-of-payment/certificate-of-payment-view/certificate-of-payment-view.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
 import { SelaraskanLunasService } from 'src/app/services/selaraskan-lunas.service';
@@ -129,6 +130,10 @@ export class PurchaseListComponent {
     'supplier',
     'projectName',
     'purchaseOrderName',
+    // Nomor CoP yang menagihkan baris ini. Duduk bersebelahan dengan nomor
+    // PO: keduanya adalah asal-usul pembelian, dan yang menelusurinya
+    // membaca keduanya sekaligus.
+    'cop',
     'total',
     'status',
     'paidStatus',
@@ -497,6 +502,57 @@ export class PurchaseListComponent {
     }
     this.dialog.open(PurchaseOrderViewComponent, {
       data: { id },
+      width: '900px',
+      maxWidth: '94vw',
+      autoFocus: false,
+    });
+  }
+
+  /**
+   * Boleh membuka dokumen CoP?
+   *
+   * Nomornya tetap TERBACA bagi semua — sama seperti nomor PO. Yang dijaga
+   * hanya tautannya: menyembunyikan nomornya membuat pembelian kehilangan
+   * asal-usul di mata orang yang memang berhak melihat pembeliannya.
+   */
+  get bolehLihatCop(): boolean {
+    return this.permissionService.can('certificate_of_payment', 'read');
+  }
+
+  /**
+   * CoP-nya masih dapat dibuka?
+   *
+   * `certificate_of_payment_deleted` datang dari sambungan yang SENGAJA tidak
+   * menyaring `isDelete`, supaya pembelian yang CoP-nya telanjur dihapus
+   * tetap menyebut nomornya. Yang dihapus tidak ditawarkan sebagai tautan:
+   * tautan yang selalu gagal lebih membingungkan daripada teks biasa.
+   */
+  copDapatDibuka(purchase: any): boolean {
+    return (
+      !!purchase?.certificateOfPaymentID &&
+      !purchase?.certificate_of_payment_deleted &&
+      this.bolehLihatCop
+    );
+  }
+
+  /** Nomor CoP untuk ditampilkan; "—" bila pembeliannya berdiri sendiri. */
+  nomorCopBaris(purchase: any): string {
+    if (!purchase?.certificateOfPaymentID) return '';
+    return String(purchase.certificate_of_payment_name ?? '').trim() || '#' +
+      purchase.certificateOfPaymentID;
+  }
+
+  /**
+   * Buka CoP penagih sebagai DIALOG, bukan berpindah halaman.
+   *
+   * Alasannya sama seperti tombol PO di sebelahnya: berpindah halaman
+   * membuang penyaring, pencarian, urutan, dan halaman yang sedang dibuka —
+   * dan yang menelusuri sepuluh baris harus menyusunnya ulang sepuluh kali.
+   */
+  bukaCop(purchase: any): void {
+    if (!this.copDapatDibuka(purchase)) return;
+    this.dialog.open(CertificateOfPaymentViewComponent, {
+      data: { id: purchase.certificateOfPaymentID },
       width: '900px',
       maxWidth: '94vw',
       autoFocus: false,

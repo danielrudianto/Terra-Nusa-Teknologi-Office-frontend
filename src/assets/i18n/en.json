@@ -774,6 +774,7 @@
   "purchase": {
     "title": "Purchase",
     "colMasaPajak": "Tax Period",
+    "colCop": "CoP",
     "description": "Manage your purchase data here",
     "createNew": "Create new purchase",
     "searchPlaceholder": "Invoice, receipt, PO, supplier, or tax invoice",

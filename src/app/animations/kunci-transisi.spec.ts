@@ -81,15 +81,61 @@ describe('kunciTransisi', () => {
     expect(satu).not.toBe(dua);
   });
 
-  it('mempertahankan parameter kueri di luar subpohon bersarang', () => {
-    // Menyaring daftar lewat parameter kueri mengganti isi halaman, dan
-    // animasinya yang menandai bahwa isinya memang berganti.
+  it('MEMBUANG parameter kueri — menyaring daftar bukan berpindah halaman', () => {
+    // Dulu kuerinya ikut, dan itu sebab laporan "transisi nya 1 page":
+    // setiap daftar yang menulis penyaringnya ke alamat menganimasikan
+    // seluruh kerangka pada tiap ketukan.
     const hasil = kunciTransisi(
       simpul([], undefined, simpul(['Purchase'], {}, null)),
       '/Purchase?status=draft',
     );
 
-    expect(hasil).toBe('/Purchase?status=draft');
+    expect(hasil).toBe('/Purchase');
+  });
+
+  it('berganti HALAMAN pada daftar yang sama tidak mengubah kunci', () => {
+    // "COP tiap ganti halaman ngaco dah, transition nya kok 1 page ya?"
+    //
+    // `simpanKeAlamat()` di daftar CoP menulis `?hal=2` saat pemenggal
+    // halamannya ditekan. Selama kuncinya berisi kuerinya, satu ketukan
+    // pemenggal = satu animasi seluruh halaman.
+    const pohon = () =>
+      simpul([], undefined, simpul(['CertificateOfPayment'], {}, null));
+    const satu = kunciTransisi(pohon(), '/CertificateOfPayment');
+    const dua = kunciTransisi(pohon(), '/CertificateOfPayment?hal=2');
+    const tiga = kunciTransisi(
+      pohon(),
+      '/CertificateOfPayment?hal=3&keadaan=draft&urut=nilai',
+    );
+
+    expect(satu).toBe('/CertificateOfPayment');
+    expect(dua).toBe(satu);
+    expect(tiga).toBe(satu);
+  });
+
+  it('masih membedakan halaman yang berbeda, bukan menyamakan semuanya', () => {
+    // Penjaga arah sebaliknya: pemotongan yang terlalu rakus membuat SELURUH
+    // aplikasi tidak pernah beranimasi lagi, dan itu tidak akan terlihat di
+    // uji mana pun kecuali yang ini.
+    const cop = kunciTransisi(
+      simpul([], undefined, simpul(['CertificateOfPayment'], {}, null)),
+      '/CertificateOfPayment?hal=2',
+    );
+    const beli = kunciTransisi(
+      simpul([], undefined, simpul(['Purchase'], {}, null)),
+      '/Purchase?hal=2',
+    );
+
+    expect(cop).not.toBe(beli);
+  });
+
+  it('membuang penggalan tanda # juga', () => {
+    const hasil = kunciTransisi(
+      simpul([], undefined, simpul(['Purchase'], {}, null)),
+      '/Purchase#baris-12',
+    );
+
+    expect(hasil).toBe('/Purchase');
   });
 
   it('berhenti di rute bersarang PERTAMA, meski ada yang lebih dalam', () => {
