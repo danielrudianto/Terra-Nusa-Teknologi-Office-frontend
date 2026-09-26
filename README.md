@@ -1,9 +1,38 @@
+<div align="center">
+
 # TerraBot — Frontend
 
-Antarmuka sistem manajemen PT Alpha Konstruksi Nusantara: purchase order,
-pembelian, pembayaran, penggajian, dan pelaporan proyek.
+**Antarmuka sistem manajemen keuangan & HR PT Alpha Konstruksi Nusantara**
+purchase order · pembelian · pembayaran · penggajian · pelaporan proyek
 
-Angular 20 · Angular Material · ngx-translate
+<br>
+
+![Angular](https://img.shields.io/badge/Angular-20-DD0031?style=flat-square&logo=angular&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Angular Material](https://img.shields.io/badge/Angular%20Material-757575?style=flat-square&logo=angular&logoColor=white)
+![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?style=flat-square&logo=chartdotjs&logoColor=white)
+
+![Komponen](https://img.shields.io/badge/komponen-222-2ea44f?style=flat-square)
+![Bahasa](https://img.shields.io/badge/i18n-3%20bahasa-0a7ea4?style=flat-square)
+![Status](https://img.shields.io/badge/status-produksi-0a7ea4?style=flat-square)
+
+</div>
+
+---
+
+## Daftar isi
+
+- [Keadaan](#keadaan)
+- [Menjalankan](#menjalankan)
+- [Susunan](#susunan)
+- [Keputusan yang tidak boleh dibalik tanpa berpikir](#keputusan-yang-tidak-boleh-dibalik-tanpa-berpikir)
+- [Hal yang mudah salah](#hal-yang-mudah-salah)
+- [Purchase order](#purchase-order)
+- [i18n](#i18n)
+- [Panduan dalam aplikasi](#panduan-dalam-aplikasi)
+- [Bagian yang sama di semua jenis](#bagian-yang-sama-di-semua-jenis)
+- [Tampilan](#tampilan)
+- [Yang belum beres](#yang-belum-beres)
 
 ---
 
