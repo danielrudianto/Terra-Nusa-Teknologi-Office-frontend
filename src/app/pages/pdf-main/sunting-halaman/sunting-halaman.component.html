@@ -69,9 +69,12 @@
       <span class="sh-alat__petunjuk" *ngIf="alatAktif === 'pipet'">
         {{ "pdf.pipetPetunjuk" | translate }}
       </span>
+      <span class="sh-alat__petunjuk" *ngIf="alatAktif === 'tutup'">
+        {{ "pdf.clickOrDrag" | translate }}
+      </span>
       <span
         class="sh-alat__petunjuk"
-        *ngIf="alatAktif && alatAktif !== 'pipet'"
+        *ngIf="alatAktif && alatAktif !== 'pipet' && alatAktif !== 'tutup'"
       >
         {{ "pdf.clickToPlace" | translate }}
       </span>
@@ -265,9 +268,25 @@
         *ngIf="!memuat && !gagal"
         [class.is-menaruh]="alatAktif && alatAktif !== 'pipet'"
         [class.is-memipet]="alatAktif === 'pipet'"
+        (mousedown)="mulaiGambar($event)"
         (click)="taruh($event)"
       >
         <img class="sh-kertas__img" [src]="gambar" alt="" draggable="false" />
+
+        <!-- Kotak yang sedang ditarik. Belum masuk daftar coretan: tarikan
+             yang dibatalkan tidak boleh meninggalkan apa pun. -->
+        <span
+          class="sh-tarik"
+          *ngIf="pratinjauGambar as g"
+          [style.left.%]="g.left"
+          [style.top.%]="g.top"
+          [style.width.%]="g.width"
+          [style.height.%]="g.height"
+          [style.background]="warnaTutup"
+          [style.opacity]="opasitasTutup / 100"
+          [class.is-lingkaran]="bentukTutup === 'lingkaran'"
+          [class.is-segitiga]="bentukTutup === 'segitiga'"
+        ></span>
 
         <div
           class="sh-anotasi"
@@ -284,6 +303,7 @@
             a.jenis === 'catatan' ? null : (a.tinggi || 0.024) * 100
           "
           [class.is-terpilih]="terpilih === i"
+          (mousedown)="$event.stopPropagation()"
           (click)="pilihAnotasi(i, $event)"
         >
           <span

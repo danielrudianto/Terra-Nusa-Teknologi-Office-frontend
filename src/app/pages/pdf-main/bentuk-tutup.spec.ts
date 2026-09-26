@@ -573,3 +573,190 @@ describe('Dialog sunting — bilah setelan muncul menurut keadaannya', () => {
     expect(c.menyuntingTerpilih).toBeTrue();
   });
 });
+
+/*
+ * MENGGAMBAR PENUTUP DENGAN MENARIK.
+ *
+ * Yang paling mudah rusak di sini bukan hitungan kotaknya, melainkan
+ * URUTAN PERISTIWANYA: peramban mengirim `click` sesudah `mouseup`. Tanpa
+ * penanda, satu tarikan menghasilkan DUA penutup — satu seukuran
+ * tarikannya, satu lagi seukuran bawaan di titik yang sama, bertumpuk,
+ * sehingga yang kedua nyaris tak terlihat sampai berkasnya diunduh.
+ *
+ * Dan sebaliknya: penandanya tidak boleh menelan klik BIASA, karena klik
+ * tanpa menarik tetap harus menaruh kotak seukuran bawaan.
+ */
+describe('Menggambar penutup dengan menarik', () => {
+  function buat(): any {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [TranslateModule.forRoot()],
+      providers: [
+        provideNoopAnimations(),
+        { provide: MatDialogRef, useValue: { close: () => {} } },
+        { provide: MAT_DIALOG_DATA, useValue: {} },
+      ],
+    });
+    return TestBed.runInInjectionContext(
+      () =>
+        new SuntingHalamanComponent({
+          pdf: '',
+          nomor: 1,
+          fileName: 'a.pdf',
+          rotation: 0,
+          anotasi: [],
+        }),
+    ) as any;
+  }
+
+  /** Kertas 1000x1000 piksel; koordinatnya pecahan. */
+  const KERTAS = {
+    getBoundingClientRect: () => ({ left: 0, top: 0, width: 1000, height: 1000 }),
+  };
+
+  function tekan(c: any, fx: number, fy: number): void {
+    c.mulaiGambar({
+      preventDefault: () => {},
+      currentTarget: KERTAS,
+      clientX: fx * 1000,
+      clientY: fy * 1000,
+    });
+  }
+
+  function geser(c: any, fx: number, fy: number): void {
+    c['saatGambar']({ clientX: fx * 1000, clientY: fy * 1000 });
+  }
+
+  function lepas(c: any, fx: number, fy: number): void {
+    geser(c, fx, fy);
+    c['saatLepasGambar']({ clientX: fx * 1000, clientY: fy * 1000 });
+  }
+
+  function klikKertas(fx = 0.5, fy = 0.5): any {
+    return {
+      clientX: fx * 1000,
+      clientY: fy * 1000,
+      currentTarget: KERTAS,
+    };
+  }
+
+  it('tarikan menghasilkan penutup seukuran tarikannya', () => {
+    const c = buat();
+    c.pilihAlat('tutup');
+    tekan(c, 0.2, 0.3);
+    lepas(c, 0.6, 0.5);
+
+    expect(c.anotasi.length).toBe(1);
+    const a = c.anotasi[0];
+    expect(a.x).toBeCloseTo(0.2, 6);
+    expect(a.y).toBeCloseTo(0.3, 6);
+    expect(a.lebar).toBeCloseTo(0.4, 6);
+    expect(a.tinggi).toBeCloseTo(0.2, 6);
+  });
+
+  it('menarik MUNDUR (kanan-bawah ke kiri-atas) tetap benar', () => {
+    const c = buat();
+    c.pilihAlat('tutup');
+    tekan(c, 0.6, 0.5);
+    lepas(c, 0.2, 0.3);
+    const a = c.anotasi[0];
+    expect(a.x).toBeCloseTo(0.2, 6);
+    expect(a.y).toBeCloseTo(0.3, 6);
+    expect(a.lebar).toBeCloseTo(0.4, 6);
+    expect(a.tinggi).toBeCloseTo(0.2, 6);
+  });
+
+  it('satu tarikan = SATU penutup, bukan dua', () => {
+    // `click` menyusul `mouseup`. Ini cacat yang paling mungkin terjadi.
+    const c = buat();
+    c.pilihAlat('tutup');
+    tekan(c, 0.2, 0.3);
+    lepas(c, 0.6, 0.5);
+    c.taruh(klikKertas(0.6, 0.5)); // klik yang menyusul
+    expect(c.anotasi.length).toBe(1);
+  });
+
+  it('klik BIASA tetap menaruh kotak seukuran bawaan', () => {
+    // Penanda pengabai tidak boleh menelan klik yang bukan tarikan.
+    const c = buat();
+    c.pilihAlat('tutup');
+    tekan(c, 0.5, 0.5);
+    lepas(c, 0.5, 0.5); // tidak bergerak
+    expect(c.anotasi.length).toBe(0);
+
+    c.taruh(klikKertas(0.5, 0.5));
+    expect(c.anotasi.length).toBe(1);
+    expect(c.anotasi[0].lebar).toBeCloseTo(0.24, 6);
+  });
+
+  it('gerakan sependek beberapa piksel dianggap klik, bukan tarikan', () => {
+    const c = buat();
+    c.pilihAlat('tutup');
+    tekan(c, 0.5, 0.5);
+    lepas(c, 0.502, 0.502); // ~2,8 px pada kertas 1000 px
+    expect(c.anotasi.length).toBe(0);
+  });
+
+  it('penutup hasil tarikan membawa bentuk, isi, warna & kepekatan yang dipilih', () => {
+    const c = buat();
+    c.bentukTutup = 'lingkaran';
+    c.warnaTutup = '#154dec';
+    c.opasitasTutup = 40;
+    c.pilihAlat('tutup');
+    tekan(c, 0.1, 0.1);
+    lepas(c, 0.4, 0.3);
+    expect(c.anotasi[0]).toEqual(
+      jasmine.objectContaining({ bentuk: 'lingkaran', warna: '#154dec' }),
+    );
+    expect(c.anotasi[0].opasitas).toBeCloseTo(0.4, 6);
+  });
+
+  it('sesudah menarik: alatnya mati dan kotaknya terpilih', () => {
+    const c = buat();
+    c.pilihAlat('tutup');
+    tekan(c, 0.1, 0.1);
+    lepas(c, 0.4, 0.3);
+    expect(c.alatAktif).toBeNull();
+    expect(c.terpilih).toBe(0);
+  });
+
+  it('alat SELAIN penutup tidak memulai tarikan', () => {
+    // Catatan tidak punya ukuran; tanda tangan ditaruh seukuran gambarnya.
+    for (const alat of ['catatan', 'pipet']) {
+      const c = buat();
+      c.alatAktif = alat;
+      tekan(c, 0.2, 0.2);
+      expect(c.gambar2).withContext(alat).toBeNull();
+      lepas(c, 0.6, 0.6);
+      expect(c.anotasi.length).withContext(alat).toBe(0);
+    }
+  });
+
+  it('pratinjaunya mengikuti tarikan, lalu hilang saat dilepas', () => {
+    const c = buat();
+    c.pilihAlat('tutup');
+    expect(c.pratinjauGambar).toBeNull();
+
+    tekan(c, 0.2, 0.3);
+    geser(c, 0.6, 0.5);
+    expect(c.pratinjauGambar).toEqual({
+      left: 20,
+      top: 30,
+      width: 40,
+      height: 20,
+    });
+
+    lepas(c, 0.6, 0.5);
+    expect(c.pratinjauGambar).toBeNull();
+  });
+
+  it('tarikan tidak pernah keluar dari kertasnya', () => {
+    const c = buat();
+    c.pilihAlat('tutup');
+    tekan(c, 0.8, 0.8);
+    lepas(c, 3, 3); // jauh di luar
+    const a = c.anotasi[0];
+    expect(a.x + a.lebar).toBeLessThanOrEqual(1);
+    expect(a.y + a.tinggi).toBeLessThanOrEqual(1);
+  });
+});

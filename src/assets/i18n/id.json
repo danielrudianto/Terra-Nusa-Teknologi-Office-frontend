@@ -4233,6 +4233,7 @@
     "note": "Catatan",
     "noteHint": "Tulis catatan di sini",
     "clickToPlace": "Klik pada halaman untuk menempatkan",
+    "clickOrDrag": "Klik untuk ukuran bawaan, atau tarik untuk menentukan sendiri",
     "pendingChanges": "Ada perubahan yang belum disimpan",
     "rotate": "Putar halaman",
     "needTwoDocs": "Tambahkan minimal 2 berkas PDF untuk digabung.",

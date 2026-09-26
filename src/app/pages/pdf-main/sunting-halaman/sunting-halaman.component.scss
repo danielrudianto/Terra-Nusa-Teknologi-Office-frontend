@@ -200,6 +200,23 @@ h2.sh-title {
   }
 }
 
+/* Kotak yang sedang ditarik — pratinjau, bukan coretan.
+   Tidak menerima penunjuk: ia muncul TEPAT di bawah kursor yang sedang
+   menarik, dan menelan `mousemove`-nya akan menghentikan tarikannya. */
+.sh-tarik {
+  position: absolute;
+  pointer-events: none;
+  outline: 1px dashed var(--brand, #154dec);
+  outline-offset: 0;
+
+  &.is-lingkaran {
+    border-radius: 50%;
+  }
+  &.is-segitiga {
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+  }
+}
+
 /* coretan */
 .sh-anotasi {
   position: absolute;

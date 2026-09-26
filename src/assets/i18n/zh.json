@@ -4199,6 +4199,7 @@
     "note": "备注",
     "noteHint": "在此填写备注",
     "clickToPlace": "点击页面以放置",
+    "clickOrDrag": "点击使用默认大小，或拖动自行设定",
     "pendingChanges": "有未保存的更改",
     "rotate": "旋转页面",
     "needTwoDocs": "请至少添加 2 个 PDF 文件以合并。",

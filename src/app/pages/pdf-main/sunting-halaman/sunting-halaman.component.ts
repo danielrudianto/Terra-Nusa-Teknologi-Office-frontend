@@ -240,6 +240,8 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.lepasPendengar();
+    window.removeEventListener('mousemove', this.saatGambar);
+    window.removeEventListener('mouseup', this.saatLepasGambar);
     this.pengamatKertas?.disconnect();
   }
 
@@ -626,8 +628,122 @@ export class SuntingHalamanComponent implements OnInit, OnDestroy {
     img.src = this.ttdSiap;
   }
 
+  // ---- menggambar penutup dengan menarik --------------------------------
+
+  /**
+   * Kotak yang sedang ditarik, dalam pecahan halaman. Null bila tidak.
+   *
+   * Disimpan TERPISAH dari `anotasi`: kotak yang belum dilepas belum tentu
+   * jadi. Menaruhnya lebih dulu ke daftar berarti tarikan yang dibatalkan
+   * meninggalkan coretan, dan setiap gerakan tetikus menandai dokumennya
+   * berubah.
+   */
+  gambar2: { x1: number; y1: number; x2: number; y2: number } | null = null;
+
+  private kotakGambar: DOMRect | null = null;
+
+  /**
+   * Klik yang HARUS DIABAIKAN karena sudah dilayani sebagai tarikan.
+   *
+   * Peramban mengirim `click` sesudah `mouseup`. Tanpa penanda ini, satu
+   * tarikan menghasilkan DUA penutup: satu seukuran tarikannya, satu lagi
+   * seukuran bawaan di titik yang sama.
+   */
+  private abaikanKlik = false;
+
+  /** Ambang piksel yang memisahkan "menarik" dari "mengklik". */
+  private static readonly AMBANG_SERET = 6;
+
+  mulaiGambar(ev: MouseEvent): void {
+    // Hanya alat penutup. Catatan tidak punya ukuran, dan tanda tangan
+    // ditaruh seukuran gambarnya supaya tidak gepeng.
+    if (this.alatAktif !== 'tutup') return;
+    ev.preventDefault();
+    const kotak = (ev.currentTarget as HTMLElement).getBoundingClientRect();
+    this.kotakGambar = kotak;
+    const x = this.jepit((ev.clientX - kotak.left) / kotak.width);
+    const y = this.jepit((ev.clientY - kotak.top) / kotak.height);
+    this.gambar2 = { x1: x, y1: y, x2: x, y2: y };
+    window.addEventListener('mousemove', this.saatGambar);
+    window.addEventListener('mouseup', this.saatLepasGambar);
+  }
+
+  private readonly saatGambar = (ev: MouseEvent): void => {
+    const g = this.gambar2;
+    const kotak = this.kotakGambar;
+    if (!g || !kotak) return;
+    g.x2 = this.jepit((ev.clientX - kotak.left) / kotak.width);
+    g.y2 = this.jepit((ev.clientY - kotak.top) / kotak.height);
+  };
+
+  private readonly saatLepasGambar = (ev: MouseEvent): void => {
+    const g = this.gambar2;
+    const kotak = this.kotakGambar;
+    this.gambar2 = null;
+    this.kotakGambar = null;
+    window.removeEventListener('mousemove', this.saatGambar);
+    window.removeEventListener('mouseup', this.saatLepasGambar);
+    if (!g || !kotak) return;
+
+    const lebarPx = Math.abs(g.x2 - g.x1) * kotak.width;
+    const tinggiPx = Math.abs(g.y2 - g.y1) * kotak.height;
+    // Tarikan yang terlalu pendek DIANGGAP KLIK, dan dibiarkan jatuh ke
+    // `taruh()` — yang menaruh kotak seukuran bawaan. Menganggapnya tarikan
+    // akan menghasilkan penutup sebesar dua piksel yang tidak terlihat dan
+    // tidak dapat diambil kembali.
+    if (Math.hypot(lebarPx, tinggiPx) < SuntingHalamanComponent.AMBANG_SERET) {
+      return;
+    }
+
+    const x = Math.min(g.x1, g.x2);
+    const y = Math.min(g.y1, g.y2);
+    // Batas terkecil sama dengan yang dipakai saat mengubah ukuran, supaya
+    // kotak yang digambar tipis sekali tetap dapat dipegang kembali.
+    const lebar = Math.max(0.01, Math.abs(g.x2 - g.x1));
+    const tinggi = Math.max(0.008, Math.abs(g.y2 - g.y1));
+
+    const a: AnotasiSunting = {
+      jenis: 'tutup',
+      x,
+      y,
+      lebar: Math.min(lebar, 1 - x),
+      tinggi: Math.min(tinggi, 1 - y),
+      teks: '',
+      bentuk: this.bentukTutup,
+      warna: this.warnaTutup,
+      isi: this.isiTutup,
+      opasitas: this.opasitasTutup / 100,
+    };
+    this.perbaruiIsi(a);
+    this.anotasi.push(a);
+    this.terpilih = this.anotasi.length - 1;
+    this.alatAktif = null;
+    this.abaikanKlik = true;
+  };
+
+  /** Kotak pratinjau saat menarik, dalam persen — untuk gayanya di layar. */
+  get pratinjauGambar(): {
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null {
+    const g = this.gambar2;
+    if (!g) return null;
+    return {
+      left: Math.min(g.x1, g.x2) * 100,
+      top: Math.min(g.y1, g.y2) * 100,
+      width: Math.abs(g.x2 - g.x1) * 100,
+      height: Math.abs(g.y2 - g.y1) * 100,
+    };
+  }
+
   /** Taruh coretan baru pada titik yang ditekan. */
   taruh(ev: MouseEvent): void {
+    if (this.abaikanKlik) {
+      this.abaikanKlik = false;
+      return;
+    }
     if (!this.alatAktif) {
       // Menekan bagian kertas yang kosong melepas pilihan — kalau tidak,
       // setelan di bilah alat tetap mengenai coretan yang sudah lama tidak

@@ -4233,6 +4233,7 @@
     "note": "Note",
     "noteHint": "Write your note here",
     "clickToPlace": "Click on the page to place it",
+    "clickOrDrag": "Click for the default size, or drag to set your own",
     "pendingChanges": "There are unsaved changes",
     "rotate": "Rotate page",
     "needTwoDocs": "Add at least 2 PDF files to merge.",
